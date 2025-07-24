@@ -29,11 +29,19 @@ function LoginContent() {
     
     // Check if user is already logged in
     const checkSession = async () => {
-      const session = await getSession()
-      if (session) {
-        // Redirect based on user role
-        const redirectUrl = session.user?.role === 'ADMIN' ? '/admin' : '/dashboard'
-        router.push(redirectUrl)
+      try {
+        const session = await getSession()
+        console.log('🔍 Initial session check:', session)
+        
+        if (session?.user) {
+          console.log('✅ User already logged in, redirecting...', session.user)
+          const redirectUrl = session.user.role === 'ADMIN' ? '/admin' : '/dashboard'
+          router.push(redirectUrl)
+        } else {
+          console.log('👤 No active session found')
+        }
+      } catch (error) {
+        console.error('❌ Session check error:', error)
       }
     }
     
@@ -62,6 +70,8 @@ function LoginContent() {
     setMessage('')
 
     try {
+      console.log('🔄 Attempting login for:', formData.email)
+      
       const result = await signIn('credentials', {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
@@ -69,14 +79,16 @@ function LoginContent() {
       })
 
       if (result?.error) {
+        console.error('❌ Login error:', result.error)
         setError('Invalid email or password')
       } else if (result?.ok) {
-        // Get session to determine redirect
-        const session = await getSession()
-        const redirectUrl = session?.user?.role === 'ADMIN' ? '/admin' : '/dashboard'
-        router.push(redirectUrl)
+        console.log('✅ Login successful, forcing session refresh...')
+        
+        // Force a hard refresh to ensure session is established
+        window.location.href = '/dashboard'
       }
     } catch (error) {
+      console.error('❌ Login exception:', error)
       setError('Login failed. Please try again.')
     } finally {
       setIsLoading(false)
