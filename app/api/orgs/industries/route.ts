@@ -27,8 +27,7 @@ export async function GET(request: NextRequest) {
     if (q) {
       baseConditions.OR = [
         { name: { contains: q, mode: 'insensitive' } },
-        { description: { contains: q, mode: 'insensitive' } },
-        { industry: { contains: q, mode: 'insensitive' } }
+        { description: { contains: q, mode: 'insensitive' } }
       ];
     }
 
