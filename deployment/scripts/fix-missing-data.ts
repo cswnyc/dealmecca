@@ -51,83 +51,68 @@ async function fixMissingData() {
       
       const events = [
         {
-          title: 'Cannes Lions 2025',
-          slug: 'cannes-lions-2025',
+          name: 'Cannes Lions 2025',
           description: 'Premier global event for creative communications industry',
           startDate: new Date('2025-06-16'),
           endDate: new Date('2025-06-20'),
           location: 'Cannes, France',
-          eventType: 'CONFERENCE' as const,
-          industry: 'ENTERTAINMENT_MEDIA' as const,
+          category: 'CONFERENCE' as const,
+          industry: '["DIGITAL_ADVERTISING"]',
           capacity: 15000,
           isVirtual: false,
-          organizer: 'Cannes Lions',
-          status: 'PUBLISHED' as const,
-          visibility: 'PUBLIC' as const,
+          organizerName: 'Cannes Lions',
           registrationUrl: 'https://www.canneslions.com'
         },
         {
-          title: 'Advertising Week NY 2025',
-          slug: 'advertising-week-ny-2025',
+          name: 'Advertising Week NY 2025',
           description: 'Premier event for marketing and advertising professionals',
           startDate: new Date('2025-09-22'),
           endDate: new Date('2025-09-26'),
           location: 'New York, NY',
-          eventType: 'CONFERENCE' as const,
-          industry: 'ENTERTAINMENT_MEDIA' as const,
+          category: 'CONFERENCE' as const,
+          industry: '["DIGITAL_ADVERTISING"]',
           capacity: 10000,
           isVirtual: false,
-          organizer: 'Advertising Week',
-          status: 'PUBLISHED' as const,
-          visibility: 'PUBLIC' as const,
+          organizerName: 'Advertising Week',
           registrationUrl: 'https://www.advertisingweek.com'
         },
         {
-          title: 'Marketing Tech Summit 2025',
-          slug: 'marketing-tech-summit-2025',
+          name: 'Marketing Tech Summit 2025',
           description: 'Leading conference for marketing technology professionals',
           startDate: new Date('2025-04-15'),
           endDate: new Date('2025-04-17'),
           location: 'San Francisco, CA',
-          eventType: 'CONFERENCE' as const,
-          industry: 'TECHNOLOGY' as const,
+          category: 'SUMMIT' as const,
+          industry: '["DIGITAL_ADVERTISING"]',
           capacity: 5000,
           isVirtual: false,
-          organizer: 'MarTech Alliance',
-          status: 'PUBLISHED' as const,
-          visibility: 'PUBLIC' as const,
+          organizerName: 'MarTech Alliance',
           registrationUrl: 'https://www.martech.org'
         },
         {
-          title: 'Digital Marketing Awards 2025',
-          slug: 'digital-marketing-awards-2025',
+          name: 'Digital Marketing Awards 2025',
           description: 'Annual awards for innovative digital marketing campaigns',
           startDate: new Date('2025-11-10'),
           endDate: new Date('2025-11-10'),
           location: 'London, UK',
-          eventType: 'AWARDS' as const,
-          industry: 'TECHNOLOGY' as const,
+          category: 'AWARDS' as const,
+          industry: '["DIGITAL_ADVERTISING"]',
           capacity: 2000,
           isVirtual: false,
-          organizer: 'Digital Marketing Institute',
-          status: 'PUBLISHED' as const,
-          visibility: 'PUBLIC' as const,
+          organizerName: 'Digital Marketing Institute',
           registrationUrl: 'https://www.dmiawards.com'
         },
         {
-          title: 'Content Marketing World 2025',
-          slug: 'content-marketing-world-2025',
+          name: 'Content Marketing World 2025',
           description: 'Largest content marketing event in the world',
           startDate: new Date('2025-08-05'),
           endDate: new Date('2025-08-08'),
           location: 'Cleveland, OH',
-          eventType: 'CONFERENCE' as const,
-          industry: 'ENTERTAINMENT_MEDIA' as const,
+          category: 'CONFERENCE' as const,
+          industry: '["DIGITAL_ADVERTISING"]',
           capacity: 8000,
           isVirtual: false,
-          organizer: 'Content Marketing Institute',
-          status: 'PUBLISHED' as const,
-          visibility: 'PUBLIC' as const,
+          organizerName: 'Content Marketing Institute',
           registrationUrl: 'https://www.contentmarketingworld.com'
         }
       ];
@@ -135,9 +120,9 @@ async function fixMissingData() {
       for (const event of events) {
         try {
           await prisma.event.create({ data: event });
-          console.log(`   ✅ Created: ${event.title}`);
+          console.log(`   ✅ Created: ${event.name}`);
         } catch (error) {
-          console.log(`   ❌ Failed: ${event.title} - ${error}`);
+          console.log(`   ❌ Failed: ${event.name} - ${error}`);
         }
       }
     }
@@ -244,7 +229,7 @@ async function fixMissingData() {
     console.log(`✅ Sample posts query: ${samplePosts.length} results`);
 
     if (sampleEvents.length > 0) {
-      console.log(`   Sample event: ${sampleEvents[0].title}`);
+      console.log(`   Sample event: ${sampleEvents[0].name}`);
     }
     
     if (samplePosts.length > 0) {
