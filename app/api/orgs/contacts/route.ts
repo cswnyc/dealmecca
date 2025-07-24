@@ -25,39 +25,36 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   
-  // SIMPLE TEST FIRST - Just get basic contact count
+  // SIMPLE TEST FIRST - Just check if Contact table exists
   try {
-    console.log('🔍 Testing basic contact query...');
+    console.log('🔍 Testing Contact table existence...');
     
-    const basicCount = await prisma.contact.count();
-    console.log(`✅ Basic contact count: ${basicCount}`);
+    // Test 1: Raw query to see if contact table exists
+    const tables = await prisma.$queryRaw`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name LIKE '%contact%';
+    `;
+    console.log(`✅ Contact-related tables:`, tables);
     
-    const basicContacts = await prisma.contact.findMany({
-      take: 3,
-      include: {
-        company: {
-          select: {
-            id: true,
-            name: true
-          }
-        }
-      }
-    });
-    console.log(`✅ Basic contacts query successful, found ${basicContacts.length} contacts`);
+    // Test 2: Try to count contacts directly
+    const contactCount = await prisma.$executeRaw`SELECT COUNT(*) FROM contacts;`;
+    console.log(`✅ Contact count via raw query:`, contactCount);
     
     return NextResponse.json({
       success: true,
-      contacts: basicContacts,
-      totalCount: basicCount,
-      debug: 'Basic query worked'
+      tables: tables,
+      contactCount: contactCount,
+      debug: 'Table existence test'
     });
     
   } catch (error) {
-    console.error('❌ Basic contact query failed:', error);
+    console.error('❌ Contact table test failed:', error);
     return NextResponse.json({
       error: 'Failed to search contacts',
       details: error instanceof Error ? error.message : 'Unknown error',
-      debug: 'Basic query failed'
+      debug: 'Table existence test failed'
     }, { status: 500 });
   }
 
