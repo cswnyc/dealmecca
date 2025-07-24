@@ -44,7 +44,8 @@ export default function OrgsPage() {
       }
     }
 
-    if (status === 'authenticated') {
+    // Load companies regardless of auth status for testing
+    if (status !== 'loading') {
       fetchCompanies();
     }
   }, [status]);
