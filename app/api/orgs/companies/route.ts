@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
       state: searchParams.getAll('state').filter(Boolean),
       region: searchParams.getAll('region').filter(Boolean),
       employeeCount: searchParams.getAll('employeeCount').filter(Boolean),
-      verified: searchParams.get('verified') === 'true',
+      verified: searchParams.get('verified') ? searchParams.get('verified') === 'true' : undefined,
       hasContacts: searchParams.get('hasContacts') === 'true',
       sortBy: searchParams.get('sortBy') || 'relevance',
       limit: limit,
