@@ -6,12 +6,12 @@
  * Rapid status check for DealMecca production monitoring
  */
 
-const PRODUCTION_URL = 'https://website-gjgyoiava-cws-projects-e62034bb.vercel.app';
+const QUICK_CHECK_PRODUCTION_URL = 'https://website-gjgyoiava-cws-projects-e62034bb.vercel.app';
 
 async function quickHealthCheck() {
   console.log(`⚡ QUICK HEALTH CHECK`);
   console.log(`===================`);
-  console.log(`🌐 URL: ${PRODUCTION_URL}`);
+  console.log(`🌐 URL: ${QUICK_CHECK_PRODUCTION_URL}`);
   console.log(`📅 Time: ${new Date().toLocaleString()}\n`);
 
   const checks = [
@@ -28,7 +28,7 @@ async function quickHealthCheck() {
   for (const check of checks) {
     try {
       const startTime = Date.now();
-      const response = await fetch(`${PRODUCTION_URL}${check.url}`);
+      const response = await fetch(`${QUICK_CHECK_PRODUCTION_URL}${check.url}`);
       const duration = Date.now() - startTime;
       
       const status = response.ok || response.url.includes('/auth/signin') ? 'PASS' : 'FAIL';

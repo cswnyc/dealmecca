@@ -6,7 +6,7 @@
  * Tests all critical endpoints and functionality
  */
 
-const PRODUCTION_URL = 'https://website-incne6jv0-cws-projects-e62034bb.vercel.app';
+const DEBUG_PROD_URL = 'https://website-incne6jv0-cws-projects-e62034bb.vercel.app';
 
 interface TestResult {
   name: string;
@@ -21,7 +21,7 @@ class ProductionDebugger {
   private results: TestResult[] = [];
 
   private async testEndpoint(name: string, path: string, expectedStatus: number = 200): Promise<TestResult> {
-    const url = `${PRODUCTION_URL}${path}`;
+    const url = `${DEBUG_PROD_URL}${path}`;
     const startTime = Date.now();
     
     try {
@@ -76,7 +76,7 @@ class ProductionDebugger {
 
   async runDiagnostics() {
     console.log(`\n🔍 DEALMECCA PRODUCTION DIAGNOSTICS\n===================================`);
-    console.log(`🌐 Testing: ${PRODUCTION_URL}\n📅 Date: ${new Date().toLocaleString()}\n===================================\n`);
+    console.log(`🌐 Testing: ${DEBUG_PROD_URL}\n📅 Date: ${new Date().toLocaleString()}\n===================================\n`);
 
     // Core Infrastructure Tests
     console.log('🏗️  INFRASTRUCTURE TESTS');

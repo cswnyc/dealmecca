@@ -6,12 +6,12 @@
  * Tests the most critical issues with DealMecca production deployment
  */
 
-const PRODUCTION_URL = 'https://website-incne6jv0-cws-projects-e62034bb.vercel.app';
+const VERCEL_TEST_URL = 'https://website-incne6jv0-cws-projects-e62034bb.vercel.app';
 
 async function testHealthEndpoint() {
   console.log(`🔍 Testing Health Endpoint...`);
   try {
-    const response = await fetch(`${PRODUCTION_URL}/api/health`);
+    const response = await fetch(`${VERCEL_TEST_URL}/api/health`);
     const data = await response.json();
     
     if (data.status === 'healthy') {
@@ -39,7 +39,7 @@ async function testBasicPages() {
   
   for (const page of pages) {
     try {
-      const response = await fetch(`${PRODUCTION_URL}${page.path}`);
+      const response = await fetch(`${VERCEL_TEST_URL}${page.path}`);
       if (response.ok) {
         console.log(`✅ ${page.name}: Loading correctly`);
       } else {
@@ -75,7 +75,7 @@ function showEnvironmentVariables() {
 async function main() {
   console.log(`\n🚀 DEALMECCA VERCEL QUICK TEST`);
   console.log(`=============================`);
-  console.log(`🌐 Testing: ${PRODUCTION_URL}`);
+  console.log(`🌐 Testing: ${VERCEL_TEST_URL}`);
   console.log(`📅 Time: ${new Date().toLocaleString()}\n`);
 
   const healthOK = await testHealthEndpoint();
