@@ -1,0 +1,1229 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User management
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  name            String?
+  password        String?  // for email/password auth
+  role            Role     @default(FREE)
+  subscriptionTier SubscriptionTier @default(FREE)
+  searchesUsed    Int      @default(0)
+  searchesResetAt DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Dashboard tracking
+  lastDashboardVisit   DateTime?
+  dashboardVisits      Int      @default(0)
+  searchesThisMonth    Int      @default(0)
+  searchResetDate      DateTime @default(now())
+  
+  // Goals and achievements
+  annualEventGoal      Int?     @default(6)
+  annualNetworkingGoal Int?     @default(100)
+  annualRevenueGoal    Float?
+  
+  // Achievements
+  achievements         String?  // JSON string of achievement IDs
+  achievementPoints    Int      @default(0)
+  
+  // Stripe subscription management
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  subscriptionStatus   SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  
+  // Usage tracking for enforcement
+  lastSearchLimitCheck DateTime  @default(now())
+  
+  // Org Chart Integration
+  companyId          String?          // Optional association with company in org chart
+  
+  // Relations
+  posts              Post[]
+  comments           Comment[]
+  searches           Search[]
+  savedSearches      SavedSearch[]
+  connections        UserConnection[]
+  accounts           Account[]
+  sessions           Session[]
+  eventAttendees     EventAttendee[]
+  eventRatings       EventRating[]
+  createdEvents      Event[]        @relation("EventCreator") // Events created by admin
+  dashboardActivities DashboardActivity[]
+  subscriptions      Subscription[]
+  payments           Payment[]
+  
+  // Forum relations
+  forumPosts         ForumPost[]      @relation("ForumPosts")
+  forumComments      ForumComment[]   @relation("ForumComments")
+  forumVotes         ForumVote[]      @relation("ForumVotes")
+  forumCommentVotes  ForumCommentVote[] @relation("ForumCommentVotes")
+  forumBookmarks     ForumBookmark[]  @relation("ForumBookmarks")
+  
+  // Org Chart Community Integration relations
+  company            Company?         @relation("UserCompany", fields: [companyId], references: [id], onDelete: SetNull)
+  companyMentions    CompanyMention[] @relation("CompanyMentionedBy")
+  contactMentions    ContactMention[] @relation("ContactMentionedBy")
+  networkingActivity UserNetworkingActivity[]
+  notifications      Notification[]   @relation("UserNotifications")
+}
+
+// For OAuth (Google, LinkedIn)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Enhanced Company model for org chart system
+model Company {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  website         String?
+  logoUrl         String?
+  description     String?
+  
+  // Classification fields
+  companyType     CompanyType
+  agencyType      AgencyType?
+  industry        Industry?
+  // mediaTypes will be handled via separate relation table
+  
+  // Location fields  
+  address         String?
+  city            String?
+  state           String?
+  region          Region?
+  country         String   @default("US")
+  zipCode         String?
+  
+  // Size and scale
+  employeeCount   EmployeeRange?
+  revenueRange    RevenueRange?
+  teamCount       Int?
+  
+  // Legacy fields (preserved for compatibility)
+  foundedYear     Int?
+  stockSymbol     String?
+  linkedinUrl     String?
+  twitterHandle   String?
+  headquarters    String?
+  revenue         String?    // Keep for backward compatibility
+  
+  // Company hierarchy
+  parentCompanyId String?
+  parentCompany   Company? @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
+  subsidiaries    Company[] @relation("CompanyHierarchy")
+  
+  // Data quality and verification
+  verified        Boolean  @default(false)
+  dataQuality     DataQuality @default(BASIC)
+  lastVerified    DateTime?
+  verifiedBy      String?
+  
+  // AI-powered fields (preserved)
+  aiSummary       String?    // Auto-generated company summary
+  lastInsightUpdate DateTime? // When AI insights were last refreshed
+  
+  // Relationships (preserved and enhanced)
+  contacts        Contact[]
+  insights        CompanyInsight[]
+  searches        Search[]
+  eventAttendees  EventAttendee[] // Link to event attendees
+  
+  // Org Chart Community Integration relationships
+  users           User[]           @relation("UserCompany") // Users associated with this company
+  companyMentions CompanyMention[] @relation("CompanyMentioned")
+  networkingActivity UserNetworkingActivity[]
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([name])
+  @@index([companyType])
+  @@index([industry])
+  @@index([city, state])
+  @@index([verified])
+  @@index([lastInsightUpdate])
+  @@map("companies")
+}
+
+// Enhanced Contact model for org chart system  
+model Contact {
+  id              String   @id @default(cuid())
+  
+  // Personal information
+  firstName       String
+  lastName        String
+  fullName        String   // Will be computed from firstName + lastName
+  title           String
+  email           String?
+  phone           String?
+  linkedinUrl     String?
+  personalEmail   String?
+  
+  // Professional information
+  department      Department?
+  seniority       SeniorityLevel
+  primaryRole     ContactRole?
+  // Additional roles and mediaTypes will be handled via separate relation tables
+  
+  // Company relationship
+  companyId       String
+  company         Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  // Responsibilities and territories (stored as JSON strings for SQLite compatibility)
+  territories     String? // JSON array of geographic areas they cover
+  accounts        String? // JSON array of client accounts they manage
+  budgetRange     BudgetRange?
+  
+  // Legacy compatibility fields
+  name            String?  // Deprecated, use firstName + lastName
+  isDecisionMaker Boolean @default(false)
+  
+  // Contact quality and verification
+  verified        Boolean  @default(false)
+  dataQuality     DataQuality @default(BASIC)
+  lastVerified    DateTime?
+  isActive        Boolean  @default(true)
+  
+  // Communication preferences
+  preferredContact ContactMethod?
+  
+  // Relationships (preserved)
+  connections     UserConnection[]
+  eventAttendees  EventAttendee[] // Link to event attendees
+  
+  // Org Chart Community Integration relationships
+  contactMentions ContactMention[] @relation("ContactMentioned")
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([companyId])
+  @@index([firstName, lastName])
+  @@index([title])
+  @@index([department])
+  @@index([seniority])
+  @@index([verified])
+  @@map("contacts")
+}
+
+model Post {
+  id            String      @id @default(cuid())
+  userId        String
+  title         String
+  content       String
+  category      PostCategory
+  anonymousName String      // e.g., "MediaBuyer123"
+  votes         Int         @default(0)
+  isAnonymous   Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments      Comment[]
+  
+  @@index([category])
+  @@index([createdAt])
+  @@index([votes])
+}
+
+model Comment {
+  id            String   @id @default(cuid())
+  postId        String
+  userId        String
+  content       String
+  anonymousName String
+  votes         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([postId])
+  @@index([createdAt])
+}
+
+model Search {
+  id           String   @id @default(cuid())
+  userId       String
+  query        String
+  resultsCount Int
+  searchType   String?  // "company", "contact", "general"
+  companyId    String?  // Optional: if search was related to a specific company
+  createdAt    DateTime @default(now())
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company      Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([companyId])
+  @@index([createdAt])
+}
+
+model SavedSearch {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  query       String
+  filters     String   // JSON string of SearchFilters object
+  alertEnabled Boolean @default(false)
+  lastRun     DateTime @default(now())
+  resultCount Int?     // Last known result count
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([lastRun])
+}
+
+model CompanyInsight {
+  id          String      @id @default(cuid())
+  companyId   String
+  type        InsightType
+  title       String
+  content     String      // JSON string with structured insight data
+  sourceUrl   String?
+  relevanceScore Int      @default(50)
+  isAiGenerated Boolean   @default(false)
+  createdAt   DateTime    @default(now())
+  expiresAt   DateTime?   // For time-sensitive insights
+  
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  @@index([companyId, type])
+  @@index([createdAt])
+  @@index([relevanceScore])
+}
+
+model UserConnection {
+  id          String           @id @default(cuid())
+  userId      String
+  contactId   String
+  relationship ConnectionType
+  strength    ConnectionStrength
+  source      String           // 'linkedin', 'event', 'referral', 'import', etc.
+  notes       String?
+  lastContact DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact     Contact          @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, contactId])
+  @@index([userId])
+  @@index([contactId])
+  @@index([strength])
+}
+
+model SearchSuggestion {
+  id          String   @id @default(cuid())
+  query       String
+  type        String   // 'company', 'industry', 'person', 'trend'
+  description String
+  popularity  Int      @default(0)
+  category    String?  // Industry or context category
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([type])
+  @@index([popularity])
+  @@index([category])
+}
+
+// Dashboard activity tracking
+model DashboardActivity {
+  id          String      @id @default(cuid())
+  userId      String
+  actionType  ActivityType
+  title       String
+  description String?
+  metadata    String?     // JSON string for flexible data storage
+  createdAt   DateTime    @default(now())
+  
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, createdAt])
+}
+
+// Events & Conferences - Enhanced for Version 1
+model Event {
+  id            String      @id @default(cuid())
+  name          String
+  description   String?
+  website       String?
+  startDate     DateTime
+  endDate       DateTime
+  location      String      // "Las Vegas, NV" or "Virtual"
+  venue         String?     // "Mandalay Bay Convention Center"
+  category      EventCategory
+  industry      String      // JSON array of EventIndustry values
+  estimatedCost Int?        // USD for typical attendance
+  attendeeCount Int?        // Expected/historical attendance
+  isVirtual     Boolean     @default(false)
+  isHybrid      Boolean     @default(false)
+  imageUrl      String?
+  logoUrl       String?
+  organizerName String?
+  organizerUrl  String?
+  registrationUrl String?
+  callForSpeakers Boolean   @default(false)
+  sponsorshipAvailable Boolean @default(false)
+  
+  // NEW FIELDS for Version 1 requirements
+  createdBy     String?     // Admin who created the event
+  status        EventStatus @default(DRAFT)
+  capacity      Int?        // Maximum number of attendees
+  registrationDeadline DateTime? // Registration cutoff date
+  eventType     String?     // Additional event classification
+  
+  // Aggregated ratings
+  avgOverallRating    Float?  @default(0)
+  avgNetworkingRating Float?  @default(0)
+  avgContentRating    Float?  @default(0)
+  avgROIRating        Float?  @default(0)
+  totalRatings        Int     @default(0)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  creator       User?       @relation("EventCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  attendees     EventAttendee[]
+  ratings       EventRating[]
+  forumPosts    ForumPost[] @relation("EventForumPosts")
+  
+  @@index([startDate])
+  @@index([category])
+  @@index([location])
+  @@index([avgOverallRating])
+  @@index([createdBy])
+  @@index([status])
+  @@index([capacity])
+  @@index([registrationDeadline])
+}
+
+model EventAttendee {
+  id          String            @id @default(cuid())
+  userId      String
+  eventId     String
+  status      AttendanceStatus  @default(INTERESTED)
+  isGoing     Boolean          @default(false)
+  hasAttended Boolean          @default(false)
+  
+  // NEW FIELDS for org chart integration
+  companyId   String?          // Link to company from org chart
+  contactId   String?          // Link to contact from org chart  
+  registeredAt DateTime        @default(now()) // When they registered
+  
+  // Networking tracking
+  connectionsIntended Int     @default(0) // Goal
+  connectionsMade     Int     @default(0) // Actual
+  leadsGenerated      Int     @default(0)
+  dealsFromEvent      Int     @default(0)
+  revenueFromEvent    Float?  // USD
+  
+  // Cost tracking
+  totalCost           Float?  // Registration + travel + hotel + meals
+  
+  notes               String? // Personal notes about the event
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  // Relations
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event               Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  company             Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  contact             Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@index([companyId])
+  @@index([contactId])
+  @@index([registeredAt])
+}
+
+model EventRating {
+  id              String   @id @default(cuid())
+  userId          String
+  eventId         String
+  overallRating   Int      // 1-5 stars
+  networkingRating Int     // 1-5 stars  
+  contentRating   Int      // 1-5 stars
+  roiRating       Int      // 1-5 stars
+  
+  review          String?  // Written review
+  wouldRecommend  Boolean
+  wouldAttendAgain Boolean
+  
+  // Specific feedback
+  bestFor         String   // JSON array of EventBestFor values
+  worstAspect     String?
+  
+  isVerified      Boolean  @default(false) // Admin verified they attended
+  helpfulVotes    Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, eventId])
+  @@index([eventId])
+  @@index([overallRating])
+}
+
+// Subscription & Payment Management
+model Subscription {
+  id                  String             @id @default(cuid())
+  userId              String
+  stripeSubscriptionId String            @unique
+  stripePriceId       String
+  status              SubscriptionStatus
+  tier                SubscriptionTier
+  currentPeriodStart  DateTime
+  currentPeriodEnd    DateTime
+  cancelAtPeriodEnd   Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  userId            String
+  stripePaymentIntentId String    @unique
+  amount            Int           // Amount in cents
+  currency          String        @default("usd")
+  status            PaymentStatus
+  description       String?
+  createdAt         DateTime      @default(now())
+  
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+// Forum System Models
+model ForumCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?  // Emoji or icon name
+  color       String?  // Hex color for category
+  slug        String   @unique
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  
+  posts       ForumPost[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([order])
+}
+
+model ForumPost {
+  id              String          @id @default(cuid())
+  title           String
+  content         String          // Rich text content
+  slug            String          @unique
+  
+  // Author information
+  authorId        String
+  isAnonymous     Boolean         @default(false)
+  anonymousHandle String?         // Auto-generated if anonymous
+  
+  // Categorization
+  categoryId      String
+  tags            String          // JSON array of tags
+  
+  // Event integration
+  eventId         String?         // Optional link to specific event
+  
+  // Metadata
+  urgency         UrgencyLevel    @default(MEDIUM)
+  dealSize        DealSize?
+  location        String?         // Geographic relevance
+  mediaType       String          // JSON array of MediaType values
+  
+  // Engagement
+  views           Int             @default(0)
+  upvotes         Int             @default(0)
+  downvotes       Int             @default(0)
+  bookmarks       Int             @default(0)
+  
+  // Status
+  isPinned        Boolean         @default(false)
+  isLocked        Boolean         @default(false)
+  isFeatured      Boolean         @default(false)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  lastActivityAt  DateTime        @default(now())
+  
+  // Relations
+  author          User            @relation("ForumPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  category        ForumCategory   @relation(fields: [categoryId], references: [id])
+  event           Event?          @relation("EventForumPosts", fields: [eventId], references: [id], onDelete: SetNull)
+  comments        ForumComment[]
+  votes           ForumVote[]
+  bookmarkedBy    ForumBookmark[]
+  
+  // Org Chart Community Integration relations
+  companyMentions CompanyMention[] @relation("PostCompanyMentions")
+  contactMentions ContactMention[] @relation("PostContactMentions")
+  
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([eventId])
+  @@index([createdAt])
+  @@index([lastActivityAt])
+  @@index([urgency])
+  @@index([location])
+}
+
+model ForumComment {
+  id              String   @id @default(cuid())
+  content         String
+  
+  // Author information
+  authorId        String
+  isAnonymous     Boolean  @default(false)
+  anonymousHandle String?
+  
+  // Thread structure
+  postId          String
+  parentId        String?  // For nested replies
+  depth           Int      @default(0)
+  
+  // Engagement
+  upvotes         Int      @default(0)
+  downvotes       Int      @default(0)
+  
+  // Status
+  isDeleted       Boolean  @default(false)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  author          User           @relation("ForumComments", fields: [authorId], references: [id], onDelete: Cascade)
+  post            ForumPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent          ForumComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies         ForumComment[] @relation("CommentReplies")
+  votes           ForumCommentVote[]
+  
+  @@index([postId])
+  @@index([authorId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model ForumVote {
+  id        String    @id @default(cuid())
+  userId    String
+  postId    String
+  type      VoteType  // UPVOTE, DOWNVOTE
+  createdAt DateTime  @default(now())
+  
+  user      User      @relation("ForumVotes", fields: [userId], references: [id], onDelete: Cascade)
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId])
+  @@index([postId])
+}
+
+model ForumCommentVote {
+  id        String       @id @default(cuid())
+  userId    String
+  commentId String
+  type      VoteType
+  createdAt DateTime     @default(now())
+  
+  user      User         @relation("ForumCommentVotes", fields: [userId], references: [id], onDelete: Cascade)
+  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, commentId])
+  @@index([commentId])
+}
+
+model ForumBookmark {
+  id        String    @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime  @default(now())
+  
+  user      User      @relation("ForumBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId])
+  @@index([userId])
+}
+
+// Org Chart Community Integration Models
+model CompanyMention {
+  id          String    @id @default(cuid())
+  postId      String
+  companyId   String
+  mentionedBy String    // User ID who made the mention
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  post        ForumPost @relation("PostCompanyMentions", fields: [postId], references: [id], onDelete: Cascade)
+  company     Company   @relation("CompanyMentioned", fields: [companyId], references: [id], onDelete: Cascade)
+  user        User      @relation("CompanyMentionedBy", fields: [mentionedBy], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, companyId, mentionedBy])
+  @@index([postId])
+  @@index([companyId])
+  @@index([mentionedBy])
+  @@index([createdAt])
+}
+
+model ContactMention {
+  id          String    @id @default(cuid())
+  postId      String
+  contactId   String
+  mentionedBy String    // User ID who made the mention
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  post        ForumPost @relation("PostContactMentions", fields: [postId], references: [id], onDelete: Cascade)
+  contact     Contact   @relation("ContactMentioned", fields: [contactId], references: [id], onDelete: Cascade)
+  user        User      @relation("ContactMentionedBy", fields: [mentionedBy], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, contactId, mentionedBy])
+  @@index([postId])
+  @@index([contactId])
+  @@index([mentionedBy])
+  @@index([createdAt])
+}
+
+model UserNetworkingActivity {
+  id              String               @id @default(cuid())
+  userId          String
+  companyId       String?              // Optional - activity might not be company-specific
+  interactionType NetworkingActivityType
+  metadata        String?              // JSON string for additional context
+  createdAt       DateTime             @default(now())
+  
+  // Relations
+  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company         Company?             @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([companyId])
+  @@index([interactionType])
+  @@index([createdAt])
+}
+
+// Notification System
+model Notification {
+  id              String            @id @default(cuid())
+  userId          String            // User receiving the notification
+  type            NotificationType
+  title           String
+  message         String
+  metadata        String?           // JSON string for additional context
+  read            Boolean           @default(false)
+  actionUrl       String?           // URL to navigate when clicked
+  createdAt       DateTime          @default(now())
+  readAt          DateTime?
+  
+  // Relations
+  user            User              @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([type])
+  @@index([read])
+  @@index([createdAt])
+}
+
+// Enums
+enum Role {
+  FREE
+  PRO
+  TEAM_ADMIN
+  ADMIN
+}
+
+enum InsightType {
+  NEWS
+  LEADERSHIP_CHANGE
+  FUNDING
+  ACQUISITION
+  PRODUCT_LAUNCH
+  MARKET_EXPANSION
+  FINANCIAL_RESULTS
+  HIRING_SURGE
+  MEDIA_SPEND_CHANGE
+  COMPETITIVE_INTEL
+  PARTNERSHIP
+  OFFICE_MOVE
+  REGULATORY_CHANGE
+  INDUSTRY_TREND
+  AI_SUMMARY
+}
+
+enum ConnectionType {
+  COLLEAGUE
+  FORMER_COLLEAGUE
+  CLIENT
+  VENDOR
+  EVENT_CONNECTION
+  REFERRAL
+  SOCIAL_MEDIA
+  MUTUAL_CONNECTION
+  INDUSTRY_CONTACT
+  PROSPECT
+}
+
+enum ConnectionStrength {
+  STRONG
+  MEDIUM
+  WEAK
+}
+
+enum SubscriptionTier {
+  FREE      // 10 searches/month
+  PRO       // $99/month - unlimited
+  TEAM      // $299/month - team features
+}
+
+// Enhanced Company Type classifications
+enum CompanyType {
+  INDEPENDENT_AGENCY
+  HOLDING_COMPANY_AGENCY
+  MEDIA_HOLDING_COMPANY
+  NATIONAL_ADVERTISER
+  LOCAL_ADVERTISER
+  ADTECH_VENDOR
+  MARTECH_VENDOR
+  MEDIA_OWNER
+  BROADCASTER
+  PUBLISHER
+  CONSULTANCY
+  PRODUCTION_COMPANY
+  
+  // Legacy values for backward compatibility
+  ADVERTISER      // Maps to NATIONAL_ADVERTISER
+  AGENCY          // Maps to INDEPENDENT_AGENCY
+  MEDIA_COMPANY   // Maps to MEDIA_OWNER
+  TECH_VENDOR     // Maps to ADTECH_VENDOR
+}
+
+// Agency specialization types
+enum AgencyType {
+  FULL_SERVICE
+  MEDIA_SPECIALIST
+  CREATIVE_SPECIALIST
+  DIGITAL_SPECIALIST
+  PROGRAMMATIC_SPECIALIST
+  SOCIAL_MEDIA_SPECIALIST
+  SEARCH_SPECIALIST
+  INFLUENCER_SPECIALIST
+  PERFORMANCE_MARKETING
+  BRAND_STRATEGY
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  DATA_ANALYTICS
+  CONTENT_MARKETING
+}
+
+// Industry classifications
+enum Industry {
+  AUTOMOTIVE
+  CPG_FOOD_BEVERAGE
+  CPG_PERSONAL_CARE
+  CPG_HOUSEHOLD
+  FINANCIAL_SERVICES
+  HEALTHCARE_PHARMA
+  RETAIL_ECOMMERCE
+  TECHNOLOGY
+  ENTERTAINMENT_MEDIA
+  TRAVEL_HOSPITALITY
+  TELECOM
+  FASHION_BEAUTY
+  SPORTS_FITNESS
+  EDUCATION
+  REAL_ESTATE
+  ENERGY
+  GOVERNMENT_NONPROFIT
+  GAMING
+  CRYPTOCURRENCY
+  INSURANCE
+  B2B_SERVICES
+  STARTUPS
+  NONPROFIT
+  PROFESSIONAL_SERVICES
+  LOGISTICS
+}
+
+enum PostCategory {
+  ACCOUNT_MOVES
+  RFPS
+  INDUSTRY_NEWS
+  QA
+  NETWORKING
+  DEALS
+  EVENTS
+}
+
+enum EventStatus {
+  DRAFT          // Event created but not published
+  PUBLISHED      // Event is live and accepting registrations
+  CANCELLED      // Event was cancelled
+  COMPLETED      // Event has finished
+  SUSPENDED      // Temporarily unavailable
+}
+
+enum EventCategory {
+  CONFERENCE
+  TRADE_SHOW
+  SUMMIT
+  WORKSHOP
+  NETWORKING
+  AWARDS
+  WEBINAR
+  MASTERCLASS
+}
+
+enum EventIndustry {
+  DIGITAL_ADVERTISING
+  TV_BROADCASTING
+  RADIO
+  PRINT_MEDIA
+  OUT_OF_HOME
+  STREAMING
+  PODCASTING
+  ADTECH
+  MARTECH
+  PROGRAMMATIC
+  SOCIAL_MEDIA
+  INFLUENCER
+  EMAIL_MARKETING
+  MOBILE_ADVERTISING
+  VIDEO_ADVERTISING
+  DATA_ANALYTICS
+}
+
+enum AttendanceStatus {
+  INTERESTED
+  PLANNING_TO_ATTEND
+  REGISTERED
+  ATTENDING
+  ATTENDED
+  CANCELLED
+}
+
+enum EventBestFor {
+  NEW_BUSINESS
+  LEARNING
+  NETWORKING
+  PRODUCT_DEMOS
+  PARTNERSHIPS
+  RECRUITING
+  BRAND_AWARENESS
+  THOUGHT_LEADERSHIP
+}
+
+enum ActivityType {
+  SEARCH
+  EVENT_ATTENDED
+  EVENT_REGISTERED
+  FORUM_POST
+  CONNECTION_MADE
+  GOAL_ACHIEVED
+  MILESTONE_REACHED
+  UPGRADE_PROMPT_SHOWN
+  UPGRADE_COMPLETED
+  ACHIEVEMENT_UNLOCKED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  PAST_DUE
+  UNPAID
+  TRIALING
+}
+
+enum PaymentStatus {
+  SUCCEEDED
+  PENDING
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+// Forum System Enums
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum DealSize {
+  SMALL      // Under $50K
+  MEDIUM     // $50K - $500K
+  LARGE      // $500K - $2M
+  ENTERPRISE // $2M+
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+// Enhanced media type classifications  
+enum MediaType {
+  DIGITAL_DISPLAY
+  SEARCH_SEM
+  SOCIAL_MEDIA
+  VIDEO_STREAMING
+  CONNECTED_TV
+  TRADITIONAL_TV
+  RADIO
+  PODCAST
+  PRINT_NEWSPAPER
+  PRINT_MAGAZINE
+  OUT_OF_HOME
+  BILLBOARD
+  TRANSIT
+  CINEMA
+  DIRECT_MAIL
+  EMAIL_MARKETING
+  INFLUENCER
+  PROGRAMMATIC
+  NATIVE_ADVERTISING
+  AFFILIATE
+  MOBILE_APP
+  AUDIO_STREAMING
+  GAMING_ADVERTISING
+  VIRTUAL_REALITY
+}
+
+// Geographic regions
+enum Region {
+  NORTHEAST
+  SOUTHEAST
+  MIDWEST
+  SOUTHWEST
+  WEST
+  NORTHWEST
+  NATIONAL
+  INTERNATIONAL
+  CANADA
+  GLOBAL
+}
+
+// Employee count ranges
+enum EmployeeRange {
+  STARTUP_1_10
+  SMALL_11_50
+  MEDIUM_51_200
+  LARGE_201_1000
+  ENTERPRISE_1001_5000
+  MEGA_5000_PLUS
+}
+
+// Revenue ranges
+enum RevenueRange {
+  UNDER_1M
+  RANGE_1M_5M
+  RANGE_5M_25M
+  RANGE_25M_100M
+  RANGE_100M_500M
+  RANGE_500M_1B
+  OVER_1B
+  UNDISCLOSED
+}
+
+// Contact departments
+enum Department {
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  DIGITAL_MARKETING
+  PROGRAMMATIC
+  SOCIAL_MEDIA
+  SEARCH_MARKETING
+  STRATEGY_PLANNING
+  ANALYTICS_INSIGHTS
+  CREATIVE_SERVICES
+  ACCOUNT_MANAGEMENT
+  BUSINESS_DEVELOPMENT
+  OPERATIONS
+  TECHNOLOGY
+  FINANCE
+  LEADERSHIP
+  HUMAN_RESOURCES
+  SALES
+  MARKETING
+  PRODUCT
+  DATA_SCIENCE
+}
+
+// Seniority levels
+enum SeniorityLevel {
+  INTERN
+  COORDINATOR
+  SPECIALIST
+  SENIOR_SPECIALIST
+  MANAGER
+  SENIOR_MANAGER
+  DIRECTOR
+  SENIOR_DIRECTOR
+  VP
+  SVP
+  EVP
+  C_LEVEL
+  FOUNDER_OWNER
+}
+
+// Contact roles and responsibilities
+enum ContactRole {
+  MEDIA_BUYER
+  MEDIA_PLANNER
+  STRATEGIST
+  ANALYST
+  CREATIVE
+  ACCOUNT_MANAGER
+  PROJECT_MANAGER
+  BUSINESS_DEVELOPER
+  DECISION_MAKER
+  INFLUENCER
+  GATEKEEPER
+  IMPLEMENTER
+  ADVISOR
+  BUDGET_HOLDER
+  PROCUREMENT
+}
+
+// Data quality levels
+enum DataQuality {
+  BASIC
+  VERIFIED
+  PREMIUM
+  EXPERT_VERIFIED
+}
+
+// Communication methods
+enum ContactMethod {
+  EMAIL
+  PHONE
+  LINKEDIN
+  DIRECT_MESSAGE
+  NO_CONTACT
+}
+
+// Budget ranges
+enum BudgetRange {
+  UNDER_10K
+  RANGE_10K_25K
+  RANGE_25K_50K
+  RANGE_50K_100K
+  RANGE_100K_250K
+  RANGE_250K_500K
+  RANGE_500K_1M
+  RANGE_1M_5M
+  RANGE_5M_25M
+  OVER_25M
+  CONFIDENTIAL
+}
+
+// Networking activity types for community integration
+enum NetworkingActivityType {
+  FORUM_POST_CREATED
+  FORUM_COMMENT_POSTED
+  COMPANY_MENTIONED
+  CONTACT_MENTIONED
+  POST_BOOKMARKED
+  USER_FOLLOWED
+  PROFILE_VIEWED
+  COMPANY_PROFILE_VIEWED
+  CONTACT_PROFILE_VIEWED
+  NETWORKING_EVENT_JOINED
+  DISCUSSION_PARTICIPATED
+  EXPERTISE_SHARED
+  QUESTION_ANSWERED
+  OPPORTUNITY_SHARED
+  INTRODUCTION_MADE
+  CONNECTION_REQUESTED
+  MESSAGE_SENT
+}
+
+enum NotificationType {
+  COMPANY_MENTIONED
+  CONTACT_MENTIONED
+  FORUM_POST_REPLY
+  EVENT_REMINDER
+  CONNECTION_REQUEST
+  ACHIEVEMENT_UNLOCKED
+  SYSTEM_ANNOUNCEMENT
+}

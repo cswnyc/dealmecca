@@ -1,0 +1,44 @@
+{
+  "healthChecks": [
+    {
+      "name": "application",
+      "endpoint": "/api/health",
+      "interval": 30000,
+      "timeout": 5000,
+      "retries": 3
+    },
+    {
+      "name": "database",
+      "type": "prisma",
+      "interval": 60000,
+      "timeout": 10000,
+      "retries": 2
+    },
+    {
+      "name": "redis",
+      "type": "redis",
+      "interval": 60000,
+      "timeout": 5000,
+      "retries": 2
+    }
+  ],
+  "alerts": {
+    "email": "alerts@dealmecca.com",
+    "webhook": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+    "thresholds": {
+      "responseTime": 2000,
+      "errorRate": 0.05,
+      "uptime": 0.99
+    }
+  },
+  "metrics": {
+    "enabled": true,
+    "retention": "30d",
+    "endpoints": [
+      "/api/health",
+      "/api/orgs/companies",
+      "/api/events",
+      "/api/forum/posts"
+    ]
+  }
+}

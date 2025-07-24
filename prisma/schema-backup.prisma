@@ -1,0 +1,781 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User management
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  name            String?
+  password        String?  // for email/password auth
+  role            Role     @default(FREE)
+  subscriptionTier SubscriptionTier @default(FREE)
+  searchesUsed    Int      @default(0)
+  searchesResetAt DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Dashboard tracking
+  lastDashboardVisit   DateTime?
+  dashboardVisits      Int      @default(0)
+  searchesThisMonth    Int      @default(0)
+  searchResetDate      DateTime @default(now())
+  
+  // Goals and achievements
+  annualEventGoal      Int?     @default(6)
+  annualNetworkingGoal Int?     @default(100)
+  annualRevenueGoal    Float?
+  
+  // Achievements
+  achievements         String?  // JSON string of achievement IDs
+  achievementPoints    Int      @default(0)
+  
+  // Stripe subscription management
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  subscriptionStatus   SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  
+  // Usage tracking for enforcement
+  lastSearchLimitCheck DateTime  @default(now())
+  
+  // Relations
+  posts              Post[]
+  comments           Comment[]
+  searches           Search[]
+  savedSearches      SavedSearch[]
+  connections        UserConnection[]
+  accounts           Account[]
+  sessions           Session[]
+  eventAttendees     EventAttendee[]
+  eventRatings       EventRating[]
+  dashboardActivities DashboardActivity[]
+  subscriptions      Subscription[]
+  payments           Payment[]
+  
+  // Forum relations
+  forumPosts         ForumPost[]      @relation("ForumPosts")
+  forumComments      ForumComment[]   @relation("ForumComments")
+  forumVotes         ForumVote[]      @relation("ForumVotes")
+  forumCommentVotes  ForumCommentVote[] @relation("ForumCommentVotes")
+  forumBookmarks     ForumBookmark[]  @relation("ForumBookmarks")
+}
+
+// For OAuth (Google, LinkedIn)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Core business models
+model Company {
+  id           String    @id @default(cuid())
+  name         String
+  type         CompanyType
+  industry     String?
+  description  String?
+  website      String?
+  employeeCount Int?
+  headquarters String?
+  revenue      String?
+  parentCompany String?
+  
+  // Enhanced fields for AI insights
+  foundedYear  Int?
+  stockSymbol  String?
+  linkedinUrl  String?
+  twitterHandle String?
+  logoUrl      String?
+  
+  // AI-powered fields
+  aiSummary    String?    // Auto-generated company summary
+  lastInsightUpdate DateTime? // When AI insights were last refreshed
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  contacts     Contact[]
+  insights     CompanyInsight[]
+  
+  @@index([name])
+  @@index([type])
+  @@index([industry])
+  @@index([lastInsightUpdate])
+}
+
+model Contact {
+  id          String   @id @default(cuid())
+  companyId   String
+  name        String
+  title       String?
+  email       String?
+  phone       String?
+  linkedinUrl String?
+  isDecisionMaker Boolean @default(false)
+  department  String?
+  seniority   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  connections UserConnection[]
+  
+  @@index([companyId])
+  @@index([name])
+  @@index([title])
+}
+
+model Post {
+  id            String      @id @default(cuid())
+  userId        String
+  title         String
+  content       String
+  category      PostCategory
+  anonymousName String      // e.g., "MediaBuyer123"
+  votes         Int         @default(0)
+  isAnonymous   Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments      Comment[]
+  
+  @@index([category])
+  @@index([createdAt])
+  @@index([votes])
+}
+
+model Comment {
+  id            String   @id @default(cuid())
+  postId        String
+  userId        String
+  content       String
+  anonymousName String
+  votes         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([postId])
+  @@index([createdAt])
+}
+
+model Search {
+  id           String   @id @default(cuid())
+  userId       String
+  query        String
+  resultsCount Int
+  searchType   String?  // "company", "contact", "general"
+  createdAt    DateTime @default(now())
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SavedSearch {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  query       String
+  filters     String   // JSON string of SearchFilters object
+  alertEnabled Boolean @default(false)
+  lastRun     DateTime @default(now())
+  resultCount Int?     // Last known result count
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([lastRun])
+}
+
+model CompanyInsight {
+  id          String      @id @default(cuid())
+  companyId   String
+  type        InsightType
+  title       String
+  content     String      // JSON string with structured insight data
+  sourceUrl   String?
+  relevanceScore Int      @default(50)
+  isAiGenerated Boolean   @default(false)
+  createdAt   DateTime    @default(now())
+  expiresAt   DateTime?   // For time-sensitive insights
+  
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  @@index([companyId, type])
+  @@index([createdAt])
+  @@index([relevanceScore])
+}
+
+model UserConnection {
+  id          String           @id @default(cuid())
+  userId      String
+  contactId   String
+  relationship ConnectionType
+  strength    ConnectionStrength
+  source      String           // 'linkedin', 'event', 'referral', 'import', etc.
+  notes       String?
+  lastContact DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact     Contact          @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, contactId])
+  @@index([userId])
+  @@index([contactId])
+  @@index([strength])
+}
+
+model SearchSuggestion {
+  id          String   @id @default(cuid())
+  query       String
+  type        String   // 'company', 'industry', 'person', 'trend'
+  description String
+  popularity  Int      @default(0)
+  category    String?  // Industry or context category
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([type])
+  @@index([popularity])
+  @@index([category])
+}
+
+// Dashboard activity tracking
+model DashboardActivity {
+  id          String      @id @default(cuid())
+  userId      String
+  actionType  ActivityType
+  title       String
+  description String?
+  metadata    String?     // JSON string for flexible data storage
+  createdAt   DateTime    @default(now())
+  
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, createdAt])
+}
+
+// Events & Conferences
+model Event {
+  id            String      @id @default(cuid())
+  name          String
+  description   String?
+  website       String?
+  startDate     DateTime
+  endDate       DateTime
+  location      String      // "Las Vegas, NV" or "Virtual"
+  venue         String?     // "Mandalay Bay Convention Center"
+  category      EventCategory
+  industry      String      // JSON array of EventIndustry values
+  estimatedCost Int?        // USD for typical attendance
+  attendeeCount Int?        // Expected/historical attendance
+  isVirtual     Boolean     @default(false)
+  isHybrid      Boolean     @default(false)
+  imageUrl      String?
+  logoUrl       String?
+  organizerName String?
+  organizerUrl  String?
+  registrationUrl String?
+  callForSpeakers Boolean   @default(false)
+  sponsorshipAvailable Boolean @default(false)
+  
+  // Aggregated ratings
+  avgOverallRating    Float?  @default(0)
+  avgNetworkingRating Float?  @default(0)
+  avgContentRating    Float?  @default(0)
+  avgROIRating        Float?  @default(0)
+  totalRatings        Int     @default(0)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  attendees     EventAttendee[]
+  ratings       EventRating[]
+  
+  @@index([startDate])
+  @@index([category])
+  @@index([location])
+  @@index([avgOverallRating])
+}
+
+model EventAttendee {
+  id          String            @id @default(cuid())
+  userId      String
+  eventId     String
+  status      AttendanceStatus  @default(INTERESTED)
+  isGoing     Boolean          @default(false)
+  hasAttended Boolean          @default(false)
+  
+  // Networking tracking
+  connectionsIntended Int     @default(0) // Goal
+  connectionsMade     Int     @default(0) // Actual
+  leadsGenerated      Int     @default(0)
+  dealsFromEvent      Int     @default(0)
+  revenueFromEvent    Float?  // USD
+  
+  // Cost tracking
+  totalCost           Float?  // Registration + travel + hotel + meals
+  
+  notes               String? // Personal notes about the event
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event               Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+}
+
+model EventRating {
+  id              String   @id @default(cuid())
+  userId          String
+  eventId         String
+  overallRating   Int      // 1-5 stars
+  networkingRating Int     // 1-5 stars  
+  contentRating   Int      // 1-5 stars
+  roiRating       Int      // 1-5 stars
+  
+  review          String?  // Written review
+  wouldRecommend  Boolean
+  wouldAttendAgain Boolean
+  
+  // Specific feedback
+  bestFor         String   // JSON array of EventBestFor values
+  worstAspect     String?
+  
+  isVerified      Boolean  @default(false) // Admin verified they attended
+  helpfulVotes    Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, eventId])
+  @@index([eventId])
+  @@index([overallRating])
+}
+
+// Subscription & Payment Management
+model Subscription {
+  id                  String             @id @default(cuid())
+  userId              String
+  stripeSubscriptionId String            @unique
+  stripePriceId       String
+  status              SubscriptionStatus
+  tier                SubscriptionTier
+  currentPeriodStart  DateTime
+  currentPeriodEnd    DateTime
+  cancelAtPeriodEnd   Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  userId            String
+  stripePaymentIntentId String    @unique
+  amount            Int           // Amount in cents
+  currency          String        @default("usd")
+  status            PaymentStatus
+  description       String?
+  createdAt         DateTime      @default(now())
+  
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+// Forum System Models
+model ForumCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?  // Emoji or icon name
+  color       String?  // Hex color for category
+  slug        String   @unique
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  
+  posts       ForumPost[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([order])
+}
+
+model ForumPost {
+  id              String          @id @default(cuid())
+  title           String
+  content         String          // Rich text content
+  slug            String          @unique
+  
+  // Author information
+  authorId        String
+  isAnonymous     Boolean         @default(false)
+  anonymousHandle String?         // Auto-generated if anonymous
+  
+  // Categorization
+  categoryId      String
+  tags            String          // JSON array of tags
+  
+  // Metadata
+  urgency         UrgencyLevel    @default(MEDIUM)
+  dealSize        DealSize?
+  location        String?         // Geographic relevance
+  mediaType       String          // JSON array of MediaType values
+  
+  // Engagement
+  views           Int             @default(0)
+  upvotes         Int             @default(0)
+  downvotes       Int             @default(0)
+  bookmarks       Int             @default(0)
+  
+  // Status
+  isPinned        Boolean         @default(false)
+  isLocked        Boolean         @default(false)
+  isFeatured      Boolean         @default(false)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  lastActivityAt  DateTime        @default(now())
+  
+  // Relations
+  author          User            @relation("ForumPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  category        ForumCategory   @relation(fields: [categoryId], references: [id])
+  comments        ForumComment[]
+  votes           ForumVote[]
+  bookmarkedBy    ForumBookmark[]
+  
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([lastActivityAt])
+  @@index([urgency])
+  @@index([location])
+}
+
+model ForumComment {
+  id              String   @id @default(cuid())
+  content         String
+  
+  // Author information
+  authorId        String
+  isAnonymous     Boolean  @default(false)
+  anonymousHandle String?
+  
+  // Thread structure
+  postId          String
+  parentId        String?  // For nested replies
+  depth           Int      @default(0)
+  
+  // Engagement
+  upvotes         Int      @default(0)
+  downvotes       Int      @default(0)
+  
+  // Status
+  isDeleted       Boolean  @default(false)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  author          User           @relation("ForumComments", fields: [authorId], references: [id], onDelete: Cascade)
+  post            ForumPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent          ForumComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies         ForumComment[] @relation("CommentReplies")
+  votes           ForumCommentVote[]
+  
+  @@index([postId])
+  @@index([authorId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model ForumVote {
+  id        String    @id @default(cuid())
+  userId    String
+  postId    String
+  type      VoteType  // UPVOTE, DOWNVOTE
+  createdAt DateTime  @default(now())
+  
+  user      User      @relation("ForumVotes", fields: [userId], references: [id], onDelete: Cascade)
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId])
+  @@index([postId])
+}
+
+model ForumCommentVote {
+  id        String       @id @default(cuid())
+  userId    String
+  commentId String
+  type      VoteType
+  createdAt DateTime     @default(now())
+  
+  user      User         @relation("ForumCommentVotes", fields: [userId], references: [id], onDelete: Cascade)
+  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, commentId])
+  @@index([commentId])
+}
+
+model ForumBookmark {
+  id        String    @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime  @default(now())
+  
+  user      User      @relation("ForumBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId])
+  @@index([userId])
+}
+
+// Enums
+enum Role {
+  FREE
+  PRO
+  TEAM_ADMIN
+  ADMIN
+}
+
+enum InsightType {
+  NEWS
+  LEADERSHIP_CHANGE
+  FUNDING
+  ACQUISITION
+  PRODUCT_LAUNCH
+  MARKET_EXPANSION
+  FINANCIAL_RESULTS
+  HIRING_SURGE
+  MEDIA_SPEND_CHANGE
+  COMPETITIVE_INTEL
+  PARTNERSHIP
+  OFFICE_MOVE
+  REGULATORY_CHANGE
+  INDUSTRY_TREND
+  AI_SUMMARY
+}
+
+enum ConnectionType {
+  COLLEAGUE
+  FORMER_COLLEAGUE
+  CLIENT
+  VENDOR
+  EVENT_CONNECTION
+  REFERRAL
+  SOCIAL_MEDIA
+  MUTUAL_CONNECTION
+  INDUSTRY_CONTACT
+  PROSPECT
+}
+
+enum ConnectionStrength {
+  STRONG
+  MEDIUM
+  WEAK
+}
+
+enum SubscriptionTier {
+  FREE      // 10 searches/month
+  PRO       // $99/month - unlimited
+  TEAM      // $299/month - team features
+}
+
+enum CompanyType {
+  ADVERTISER
+  AGENCY
+  MEDIA_COMPANY
+  TECH_VENDOR
+  PUBLISHER
+  PRODUCTION_COMPANY
+}
+
+enum PostCategory {
+  ACCOUNT_MOVES
+  RFPS
+  INDUSTRY_NEWS
+  QA
+  NETWORKING
+  DEALS
+  EVENTS
+}
+
+enum EventCategory {
+  CONFERENCE
+  TRADE_SHOW
+  SUMMIT
+  WORKSHOP
+  NETWORKING
+  AWARDS
+  WEBINAR
+  MASTERCLASS
+}
+
+enum EventIndustry {
+  DIGITAL_ADVERTISING
+  TV_BROADCASTING
+  RADIO
+  PRINT_MEDIA
+  OUT_OF_HOME
+  STREAMING
+  PODCASTING
+  ADTECH
+  MARTECH
+  PROGRAMMATIC
+  SOCIAL_MEDIA
+  INFLUENCER
+  EMAIL_MARKETING
+  MOBILE_ADVERTISING
+  VIDEO_ADVERTISING
+  DATA_ANALYTICS
+}
+
+enum AttendanceStatus {
+  INTERESTED
+  PLANNING_TO_ATTEND
+  REGISTERED
+  ATTENDING
+  ATTENDED
+  CANCELLED
+}
+
+enum EventBestFor {
+  NEW_BUSINESS
+  LEARNING
+  NETWORKING
+  PRODUCT_DEMOS
+  PARTNERSHIPS
+  RECRUITING
+  BRAND_AWARENESS
+  THOUGHT_LEADERSHIP
+}
+
+enum ActivityType {
+  SEARCH
+  EVENT_ATTENDED
+  EVENT_REGISTERED
+  FORUM_POST
+  CONNECTION_MADE
+  GOAL_ACHIEVED
+  MILESTONE_REACHED
+  UPGRADE_PROMPT_SHOWN
+  UPGRADE_COMPLETED
+  ACHIEVEMENT_UNLOCKED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  PAST_DUE
+  UNPAID
+  TRIALING
+}
+
+enum PaymentStatus {
+  SUCCEEDED
+  PENDING
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+// Forum System Enums
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum DealSize {
+  SMALL      // Under $50K
+  MEDIUM     // $50K - $500K
+  LARGE      // $500K - $2M
+  ENTERPRISE // $2M+
+}
+
+enum MediaType {
+  TV
+  RADIO
+  DIGITAL
+  PRINT
+  OOH        // Out of Home
+  STREAMING
+  PODCAST
+  SOCIAL
+  PROGRAMMATIC
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}

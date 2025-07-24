@@ -1,0 +1,59 @@
+[
+  {
+    "id": "FBMDC8P9LLZETA0",
+    "userId": "BUMDC8P9LHQYAEA",
+    "userName": "Sarah Johnson",
+    "email": "sarah.j@techcorp.com",
+    "timestamp": "2025-07-20T22:19:50.361Z",
+    "category": "bug",
+    "priority": "high",
+    "title": "Search results not loading on mobile",
+    "description": "When I search for companies on my mobile device, the results page just shows a loading spinner and never loads.",
+    "stepsToReproduce": "1. Open mobile browser\n2. Go to /orgs/companies\n3. Enter search term\n4. Observe loading state",
+    "expectedBehavior": "Search results should load within 3 seconds",
+    "actualBehavior": "Infinite loading spinner, no results shown",
+    "browserInfo": "Safari on iOS 15.2, iPhone 12",
+    "status": "new",
+    "votes": 0,
+    "comments": [],
+    "tags": []
+  },
+  {
+    "id": "FBMDC8P9LM6TAXD",
+    "userId": "BUMDC8P9LJ2ESD7",
+    "userName": "Michael Chen",
+    "email": "mchen@startup.co",
+    "timestamp": "2025-07-20T22:19:50.362Z",
+    "category": "feature",
+    "priority": "medium",
+    "title": "Need bulk export feature for contacts",
+    "description": "Would love to be able to export all my saved contacts to CSV for use in my CRM system.",
+    "status": "new",
+    "votes": 0,
+    "comments": [],
+    "tags": [
+      "export",
+      "contacts",
+      "integration"
+    ]
+  },
+  {
+    "id": "FBMDC8P9LOILV8F",
+    "userId": "BUMDC8P9LKZDIM7",
+    "userName": "Emily Rodriguez",
+    "email": "emily.r@consulting.com",
+    "timestamp": "2025-07-20T22:19:50.364Z",
+    "category": "usability",
+    "priority": "medium",
+    "title": "Forum navigation is confusing",
+    "description": "It's hard to find my way back to discussions I was participating in. Need better breadcrumbs or navigation.",
+    "status": "new",
+    "votes": 0,
+    "comments": [],
+    "tags": [
+      "navigation",
+      "forum",
+      "ux"
+    ]
+  }
+]
