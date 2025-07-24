@@ -124,8 +124,9 @@ export async function middleware(req: NextRequest) {
     '/auth/error',
     '/auth/verify-request',
     '/pricing',
-    '/direct-login',  // Temporary direct login bypass
-    '/admin-bypass'   // Temporary admin bypass that handles auth client-side
+    '/direct-login',    // Temporary direct login bypass
+    '/admin-bypass',    // Temporary admin bypass that handles auth client-side
+    '/dashboard-bypass' // Temporary dashboard bypass for regular users
   ]
   
   if (publicPages.includes(pathname)) {

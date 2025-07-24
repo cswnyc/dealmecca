@@ -36,8 +36,8 @@ export default function DirectLoginPage() {
         setSuccess('Login successful! Redirecting...')
         // Small delay to show success message
         setTimeout(() => {
-          // Use bypass admin page to avoid middleware issues
-          const redirectUrl = data.user?.role === 'ADMIN' ? '/admin-bypass' : '/dashboard'
+          // Use bypass pages to avoid middleware issues
+          const redirectUrl = data.user?.role === 'ADMIN' ? '/admin-bypass' : '/dashboard-bypass'
           router.push(redirectUrl)
         }, 1000)
       } else {
@@ -58,7 +58,7 @@ export default function DirectLoginPage() {
             Direct Login (Bypass)
           </CardTitle>
           <CardDescription className="text-gray-600">
-            Bypass login system (redirects to admin-bypass for ADMIN users)
+            Bypass login system (redirects to appropriate bypass dashboard)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
