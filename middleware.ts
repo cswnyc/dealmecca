@@ -1,5 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { jwtVerify } from 'jose'
+
+// Function to verify our custom session token
+async function getCustomToken(req: NextRequest) {
+  try {
+    const sessionCookie = req.cookies.get('dealmecca-session')
+    if (!sessionCookie?.value) {
+      return null
+    }
+
+    const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+    const { payload } = await jwtVerify(sessionCookie.value, secret)
+    
+    return {
+      sub: payload.sub,
+      email: payload.email,
+      name: payload.name,
+      role: payload.role,
+      subscriptionTier: payload.subscriptionTier
+    }
+  } catch (error) {
+    console.error('Custom token verification failed:', error)
+    return null
+  }
+}
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -23,8 +48,21 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
   
-  // Get token for authentication
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  // Get token for authentication (try NextAuth first, then custom session)
+  const nextAuthToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  const customToken = await getCustomToken(req)
+  const token = nextAuthToken || customToken
+
+  // Debug logging for token resolution
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
+    console.log('🔍 Middleware token check:', {
+      pathname,
+      hasNextAuthToken: !!nextAuthToken,
+      hasCustomToken: !!customToken,
+      finalToken: !!token,
+      tokenSource: nextAuthToken ? 'nextauth' : customToken ? 'custom' : 'none'
+    })
+  }
   
   // Public API routes that don't need auth
   const publicApiRoutes = [
@@ -36,7 +74,8 @@ export async function middleware(req: NextRequest) {
     '/api/admin/promote-user',  // Temporary for admin setup
     '/api/test-auth',  // Temporary for debugging login
     '/api/check-env',  // Temporary for checking environment
-    '/api/direct-login'  // Temporary direct login bypass
+    '/api/direct-login',  // Temporary direct login bypass
+    '/api/session-status'  // Temporary for debugging sessions
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
