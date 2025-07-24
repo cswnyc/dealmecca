@@ -143,8 +143,8 @@ async function fixMissingData() {
             content: 'What are your thoughts on how AI tools like ChatGPT and DALL-E are changing the creative process? Are we seeing the beginning of AI-human collaborative creativity?',
             authorId: adminUser.id,
             categoryId: categories[0].id,
-            status: 'PUBLISHED' as const,
-            visibility: 'PUBLIC' as const
+            tags: '["AI", "Creative", "Advertising", "ChatGPT", "DALL-E", "Technology"]',
+            mediaType: '["DIGITAL_DISPLAY", "SOCIAL_MEDIA"]'
           },
           {
             title: 'Remote Agency Culture Best Practices',
@@ -152,8 +152,8 @@ async function fixMissingData() {
             content: 'Since COVID, many agencies have gone remote or hybrid. What are the best practices for maintaining creative collaboration and agency culture?',
             authorId: adminUser.id,
             categoryId: categories[1] ? categories[1].id : categories[0].id,
-            status: 'PUBLISHED' as const,
-            visibility: 'PUBLIC' as const
+            tags: '["Remote Work", "Agency Culture", "Collaboration", "Best Practices", "COVID"]',
+            mediaType: '["DIGITAL_DISPLAY", "EMAIL_MARKETING"]'
           },
           {
             title: 'Latest Nike Campaign Analysis',
@@ -161,8 +161,8 @@ async function fixMissingData() {
             content: 'Just saw Nike\'s latest campaign evolution. The way they\'re leveraging user-generated content while maintaining brand consistency is masterful.',
             authorId: adminUser.id,
             categoryId: categories[2] ? categories[2].id : categories[0].id,
-            status: 'PUBLISHED' as const,
-            visibility: 'PUBLIC' as const
+            tags: '["Nike", "Campaign Analysis", "User Generated Content", "Brand Consistency", "Creative"]',
+            mediaType: '["SOCIAL_MEDIA", "VIDEO_STREAMING", "INFLUENCER"]'
           },
           {
             title: 'Marketing Attribution Without Cookies',
@@ -170,8 +170,8 @@ async function fixMissingData() {
             content: 'With third-party cookies going away, how are you handling marketing attribution? What tools and methodologies are working for multi-touch attribution?',
             authorId: adminUser.id,
             categoryId: categories[3] ? categories[3].id : categories[0].id,
-            status: 'PUBLISHED' as const,
-            visibility: 'PUBLIC' as const
+            tags: '["Marketing Attribution", "Cookies", "Privacy", "Multi-touch Attribution", "Analytics"]',
+            mediaType: '["DIGITAL_DISPLAY", "SEARCH_SEM", "EMAIL_MARKETING"]'
           },
           {
             title: 'Career Transition to Digital Marketing',
@@ -179,8 +179,8 @@ async function fixMissingData() {
             content: 'I\'ve been in traditional advertising for 15 years and want to transition to digital. What skills should I focus on developing?',
             authorId: adminUser.id,
             categoryId: categories[4] ? categories[4].id : categories[0].id,
-            status: 'PUBLISHED' as const,
-            visibility: 'PUBLIC' as const
+            tags: '["Career Transition", "Digital Marketing", "Skills Development", "Traditional Advertising", "Learning"]',
+            mediaType: '["DIGITAL_DISPLAY", "SEARCH_SEM", "SOCIAL_MEDIA"]'
           }
         ];
 
