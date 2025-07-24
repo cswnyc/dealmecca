@@ -32,7 +32,8 @@ export async function middleware(req: NextRequest) {
     '/api/forum/search/suggestions',
     '/api/orgs/companies',
     '/api/orgs/contacts',
-    '/api/companies-public'  // Temporary for testing
+    '/api/companies-public',  // Temporary for testing
+    '/api/admin/promote-user'  // Temporary for admin setup
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
