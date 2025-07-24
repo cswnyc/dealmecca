@@ -35,7 +35,8 @@ export async function middleware(req: NextRequest) {
     '/api/companies-public',  // Temporary for testing
     '/api/admin/promote-user',  // Temporary for admin setup
     '/api/test-auth',  // Temporary for debugging login
-    '/api/check-env'  // Temporary for checking environment
+    '/api/check-env',  // Temporary for checking environment
+    '/api/direct-login'  // Temporary direct login bypass
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
@@ -71,7 +72,8 @@ export async function middleware(req: NextRequest) {
     '/auth/signup',
     '/auth/error',
     '/auth/verify-request',
-    '/pricing'
+    '/pricing',
+    '/direct-login'  // Temporary direct login bypass
   ]
   
   if (publicPages.includes(pathname)) {
