@@ -85,12 +85,15 @@ export default function SignupPage() {
 
       if (data.success) {
         setSuccess('Account created successfully! Redirecting to login...')
+        console.log('✅ User registration successful:', data.user)
         // Redirect to login page after success
         setTimeout(() => {
+          console.log('🔄 Redirecting to login page...')
           router.push('/login?message=signup-success')
         }, 2000)
       } else {
         setError(data.error || 'Registration failed')
+        console.error('❌ Registration failed:', data.error)
       }
     } catch (error) {
       setError('Network error. Please try again.')

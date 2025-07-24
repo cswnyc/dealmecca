@@ -50,13 +50,16 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        return {
+        const userToReturn = {
           id: user.id,
           email: user.email,
           name: user.name,
           role: user.role,
           subscriptionTier: user.subscriptionTier,
         }
+        
+        console.log('🔑 Credentials provider - returning user:', userToReturn)
+        return userToReturn
       },
     }),
   ],
@@ -85,17 +88,21 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        return {
+        console.log('🔐 JWT callback - user data:', user)
+        const newToken = {
           ...token,
           sub: user.id, // Explicitly set the user ID
           role: user.role,
           subscriptionTier: user.subscriptionTier,
         }
+        console.log('🔐 JWT callback - created token:', newToken)
+        return newToken
       }
       return token
     },
     async session({ session, token }) {
-      return {
+      console.log('📱 Session callback - token data:', token)
+      const newSession = {
         ...session,
         user: {
           ...session.user,
@@ -104,6 +111,8 @@ export const authOptions: NextAuthOptions = {
           subscriptionTier: token.subscriptionTier,
         },
       }
+      console.log('📱 Session callback - created session:', newSession)
+      return newSession
     },
     async signIn({ user, account, profile }) {
       if (account?.provider === 'google') {
@@ -140,6 +149,22 @@ export const authOptions: NextAuthOptions = {
         }
       }
       return true
+    },
+    async redirect({ url, baseUrl }) {
+      console.log('🔀 Redirect callback - url:', url, 'baseUrl:', baseUrl)
+      
+      // If it's a relative URL, prepend the base URL
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`
+      }
+      
+      // If it's the same origin, allow it
+      if (new URL(url).origin === baseUrl) {
+        return url
+      }
+      
+      // Default to dashboard
+      return `${baseUrl}/dashboard`
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
