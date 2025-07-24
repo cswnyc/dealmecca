@@ -24,6 +24,7 @@
     "@stripe/stripe-js": "^7.4.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.20",
+    "autoprefixer": "^10.4.20",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -32,6 +33,7 @@
     "lucide-react": "^0.468.0",
     "next": "15.0.0",
     "next-auth": "^4.24.8",
+    "postcss": "^8.5.1",
     "prisma": "^6.11.1",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0",
@@ -39,16 +41,14 @@
     "react-dom": "^18.2.0",
     "stripe": "^18.3.0",
     "tailwind-merge": "^2.5.4",
+    "tailwindcss": "^3.4.15",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",
-    "autoprefixer": "^10.4.20",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.0",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^3.4.15",
     "tsx": "^4.20.3",
     "typescript": "^5.6.3"
   }
