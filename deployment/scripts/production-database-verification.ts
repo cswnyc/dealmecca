@@ -235,7 +235,7 @@ async function verifyProductionDatabase() {
         where: {
           OR: [
             { name: { contains: 'WPP', mode: 'insensitive' } },
-            { industry: { contains: 'MEDIA', mode: 'insensitive' } }
+            { industry: { equals: 'ENTERTAINMENT_MEDIA' } }
           ]
         },
         take: 3
