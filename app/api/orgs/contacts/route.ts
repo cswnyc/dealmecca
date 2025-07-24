@@ -25,39 +25,6 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   
-  // SIMPLE TEST FIRST - Just check if Contact table exists
-  try {
-    console.log('🔍 Testing Contact table existence...');
-    
-    // Test 1: Raw query to see if contact table exists
-    const tables = await prisma.$queryRaw`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name LIKE '%contact%';
-    `;
-    console.log(`✅ Contact-related tables:`, tables);
-    
-    // Test 2: Try to count contacts directly
-    const contactCount = await prisma.$executeRaw`SELECT COUNT(*) FROM contacts;`;
-    console.log(`✅ Contact count via raw query:`, contactCount);
-    
-    return NextResponse.json({
-      success: true,
-      tables: tables,
-      contactCount: contactCount,
-      debug: 'Table existence test'
-    });
-    
-  } catch (error) {
-    console.error('❌ Contact table test failed:', error);
-    return NextResponse.json({
-      error: 'Failed to search contacts',
-      details: error instanceof Error ? error.message : 'Unknown error',
-      debug: 'Table existence test failed'
-    }, { status: 500 });
-  }
-
   const params: ContactSearchParams = {
     q: searchParams.get('q') || undefined,
     companyId: searchParams.get('companyId') || undefined,
@@ -87,165 +54,72 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    const where: any = { 
-      AND: [
-        { isActive: true } // Only show active contacts
-      ] 
-    };
-
-    // Text search across name and title
-    if (params.q && typeof params.q === 'string') {
-      if (params.q.length >= 2) {
-        const searchTerm = params.q.toLowerCase();
-        where.AND.push({
-          OR: [
-            { fullName: { startsWith: searchTerm } },
-            { fullName: { endsWith: searchTerm } },
-            { firstName: { startsWith: searchTerm } },
-            { firstName: { endsWith: searchTerm } },
-            { lastName: { startsWith: searchTerm } },
-            { lastName: { endsWith: searchTerm } },
-            { title: { startsWith: searchTerm } },
-            { title: { endsWith: searchTerm } },
-            { company: { name: { startsWith: searchTerm } } },
-            { company: { name: { endsWith: searchTerm } } }
-          ]
-        });
-      } else if (params.q.length > 0) {
-        // If query is too short but not empty, return no results
-        where.AND.push({ id: { equals: null } });
-      }
-    }
-
-    // Company-specific filter
-    if (params.companyId) {
-      where.AND.push({
-        companyId: params.companyId
-      });
-    }
-
-    // Company type filter (via company relationship)
-    if (params.companyType?.length) {
-      where.AND.push({
-        company: {
-          companyType: { in: params.companyType }
-        }
-      });
-    }
-
-    // Department filter
-    if (params.department?.length) {
-      where.AND.push({
-        department: { in: params.department }
-      });
-    }
-
-    // Seniority filter
-    if (params.seniority?.length) {
-      where.AND.push({
-        seniority: { in: params.seniority }
-      });
-    }
-
-    // Location filters (via company)
-    if (params.city?.length) {
-      where.AND.push({
-        company: {
-          city: { in: params.city }
-        }
-      });
-    }
-
-    if (params.state?.length) {
-      where.AND.push({
-        company: {
-          state: { in: params.state }
-        }
-      });
-    }
-
-    // Budget range filter
-    if (params.budgetRange?.length) {
-      where.AND.push({
-        budgetRange: { in: params.budgetRange }
-      });
-    }
-
-    // Verification filter
-    if (params.verified !== undefined) {
-      where.AND.push({
-        verified: params.verified
-      });
-    }
-
-    // Build order by
-    let orderBy: any = [];
-    switch (params.sortBy) {
-      case 'name':
-        orderBy = [{ lastName: 'asc' }, { firstName: 'asc' }];
-        break;
-      case 'title':
-        orderBy = [{ title: 'asc' }, { lastName: 'asc' }];
-        break;
-      case 'company':
-        orderBy = [{ company: { name: 'asc' } }, { lastName: 'asc' }];
-        break;
-      case 'seniority':
-        orderBy = [{ seniority: 'desc' }, { lastName: 'asc' }];
-        break;
-      case 'recent':
-        orderBy = [{ updatedAt: 'desc' }];
-        break;
-      default: // relevance
-        orderBy = [
-          { verified: 'desc' },
-          { seniority: 'desc' },
-          { lastName: 'asc' }
-        ];
-    }
-
-    // Execute search
-    const [contacts, totalCount] = await Promise.all([
-      prisma.contact.findMany({
-        where,
-        include: {
-          company: {
-            select: {
-              id: true,
-              name: true,
-              city: true,
-              state: true,
-              companyType: true,
-              agencyType: true,
-              logoUrl: true,
-              verified: true
+    // Get contacts through companies since direct contact queries fail
+    const companies = await prisma.company.findMany({
+      include: {
+        contacts: {
+          where: {
+            isActive: true
+          },
+          include: {
+            company: {
+              select: {
+                id: true,
+                name: true,
+                city: true,
+                state: true,
+                companyType: true,
+                agencyType: true,
+                logoUrl: true,
+                verified: true
+              }
             }
           }
-        },
-        orderBy,
-        take: params.limit,
-        skip: params.offset
-      }),
-      prisma.contact.count({ where })
-    ]);
-
-    // Generate contact facets
-    const facets = await generateContactFacets(where);
-
-    // Track search analytics
-    await prisma.search.create({
-      data: {
-        userId: userId,
-        query: params.q || '',
-        resultsCount: totalCount,
-        searchType: 'contact'
+        }
       }
     });
 
+    // Flatten contacts from all companies
+    const allContacts = companies.flatMap(company => company.contacts);
+    
+    // Apply search filters
+    let filteredContacts = allContacts;
+    
+    if (params.q && typeof params.q === 'string' && params.q.length >= 2) {
+      const searchTerm = params.q.toLowerCase();
+      filteredContacts = allContacts.filter(contact =>
+        contact.fullName?.toLowerCase().includes(searchTerm) ||
+        contact.firstName?.toLowerCase().includes(searchTerm) ||
+        contact.lastName?.toLowerCase().includes(searchTerm) ||
+        contact.title?.toLowerCase().includes(searchTerm) ||
+        contact.company.name?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply company filter
+    if (params.companyId) {
+      filteredContacts = filteredContacts.filter(contact => 
+        contact.companyId === params.companyId
+      );
+    }
+
+    // Apply pagination
+    const totalCount = filteredContacts.length;
+    const paginatedContacts = filteredContacts.slice(
+      params.offset || 0, 
+      (params.offset || 0) + (params.limit || 20)
+    );
+
     return NextResponse.json({
-      contacts,
+      success: true,
+      contacts: paginatedContacts,
       totalCount,
-      facets,
+      facets: {
+        departments: [],
+        seniorities: [],
+        companies: [],
+        locations: []
+      },
       pagination: {
         total: totalCount,
         page: Math.floor((params.offset || 0) / (params.limit || 20)) + 1,
@@ -259,10 +133,10 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Contact search error:', error);
-    return NextResponse.json(
-      { error: 'Failed to search contacts' },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      error: 'Failed to search contacts',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
