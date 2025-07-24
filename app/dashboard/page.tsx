@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/auth/signin')
+      router.push('/login')
       return
     }
     
@@ -100,7 +100,7 @@ export default function DashboardPage() {
         const data = await response.json()
         setProfile(data)
       } else if (response.status === 401) {
-        router.push('/auth/signin')
+        router.push('/login')
       }
     } catch (error) {
       console.error('Error fetching profile:', error)

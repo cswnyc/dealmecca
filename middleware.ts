@@ -1,41 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-import { jwtVerify } from 'jose'
-
-// Simplified function to verify our custom session token
-async function getCustomToken(req: NextRequest) {
-  try {
-    const sessionCookie = req.cookies.get('dealmecca-session')
-    if (!sessionCookie?.value) {
-      return null
-    }
-
-    // Simple JWT decode without verification for middleware
-    // (We'll do full verification in API routes)
-    const parts = sessionCookie.value.split('.')
-    if (parts.length !== 3) {
-      return null
-    }
-
-    const payload = JSON.parse(atob(parts[1]))
-    
-    // Basic expiration check
-    if (payload.exp && payload.exp < Date.now() / 1000) {
-      return null
-    }
-    
-    return {
-      sub: payload.sub,
-      email: payload.email,
-      name: payload.name,
-      role: payload.role,
-      subscriptionTier: payload.subscriptionTier
-    }
-  } catch (error) {
-    console.error('Custom token decode failed:', error)
-    return null
-  }
-}
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -59,19 +23,16 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
   
-  // Get token for authentication (try NextAuth first, then custom session)
-  const nextAuthToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
-  const customToken = await getCustomToken(req)
-  const token = nextAuthToken || customToken
+  // Get token for authentication using NextAuth
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
   // Debug logging for token resolution
   if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
     console.log('🔍 Middleware token check:', {
       pathname,
-      hasNextAuthToken: !!nextAuthToken,
-      hasCustomToken: !!customToken,
-      finalToken: !!token,
-      tokenSource: nextAuthToken ? 'nextauth' : customToken ? 'custom' : 'none'
+      hasToken: !!token,
+      userRole: token?.role || 'none',
+      userEmail: token?.email || 'none'
     })
   }
   
@@ -79,15 +40,16 @@ export async function middleware(req: NextRequest) {
   const publicApiRoutes = [
     '/api/stripe/webhook',
     '/api/forum/search/suggestions',
-    '/api/orgs/companies',
-    '/api/orgs/contacts',
+    '/api/auth/signup',       // User registration endpoint
+    '/api/orgs/companies',    // Temporary for testing
+    '/api/orgs/contacts',     // Temporary for testing
     '/api/companies-public',  // Temporary for testing
     '/api/admin/promote-user',  // Temporary for admin setup
-    '/api/test-auth',  // Temporary for debugging login
-    '/api/check-env',  // Temporary for checking environment
-    '/api/direct-login',  // Temporary direct login bypass
-    '/api/session-status',  // Temporary for debugging sessions
-    '/api/debug-middleware'  // Temporary for debugging middleware
+    '/api/test-auth',         // Temporary for debugging login
+    '/api/check-env',         // Temporary for checking environment
+    '/api/direct-login',      // Temporary direct login bypass
+    '/api/session-status',    // Temporary for debugging sessions
+    '/api/debug-middleware'   // Temporary for debugging middleware
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
@@ -120,24 +82,26 @@ export async function middleware(req: NextRequest) {
   const publicPages = [
     '/',
     '/auth/signin',
-    '/auth/signup',
+    '/auth/signup', 
     '/auth/error',
     '/auth/verify-request',
     '/pricing',
-    '/direct-login',    // Temporary direct login bypass
-    '/admin-bypass',    // Temporary admin bypass that handles auth client-side
-    '/dashboard-bypass' // Temporary dashboard bypass for regular users
+    '/login',           // Standard login page
+    '/signup',          // Standard signup page
+    '/direct-login',    // Temporary direct login bypass (for testing)
+    '/admin-bypass',    // Temporary admin bypass (for testing)
+    '/dashboard-bypass' // Temporary dashboard bypass (for testing)
   ]
   
   if (publicPages.includes(pathname)) {
     return NextResponse.next()
   }
   
-  // Redirect to signin if not authenticated
+  // Redirect to login if not authenticated
   if (!token) {
-    const signInUrl = new URL('/auth/signin', req.url)
-    signInUrl.searchParams.set('callbackUrl', pathname)
-    return NextResponse.redirect(signInUrl)
+    const loginUrl = new URL('/login', req.url)
+    loginUrl.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(loginUrl)
   }
   
   // Admin routes require admin role
