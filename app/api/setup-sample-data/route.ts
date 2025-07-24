@@ -13,12 +13,12 @@ export async function POST() {
       })
     }
     
-    // Sample company data
+    // Sample company data with correct enum values
     const sampleCompanies = [
       {
         name: 'WPP Group',
         slug: 'wpp-group',
-        companyType: 'AGENCY_HOLDING' as const,
+        companyType: 'HOLDING_COMPANY_AGENCY' as const,
         industry: 'ENTERTAINMENT_MEDIA' as const,
         city: 'New York',
         state: 'NY',
@@ -29,7 +29,7 @@ export async function POST() {
       {
         name: 'Omnicom Group',
         slug: 'omnicom-group',
-        companyType: 'AGENCY_HOLDING' as const, 
+        companyType: 'HOLDING_COMPANY_AGENCY' as const, 
         industry: 'ENTERTAINMENT_MEDIA' as const,
         city: 'New York',
         state: 'NY',
@@ -40,7 +40,7 @@ export async function POST() {
       {
         name: 'Publicis Groupe',
         slug: 'publicis-groupe',
-        companyType: 'AGENCY_HOLDING' as const,
+        companyType: 'HOLDING_COMPANY_AGENCY' as const,
         industry: 'ENTERTAINMENT_MEDIA' as const, 
         city: 'New York',
         state: 'NY',
@@ -51,7 +51,7 @@ export async function POST() {
       {
         name: 'GroupM',
         slug: 'groupm',
-        companyType: 'MEDIA_AGENCY' as const,
+        companyType: 'INDEPENDENT_AGENCY' as const,
         industry: 'ENTERTAINMENT_MEDIA' as const,
         city: 'New York', 
         state: 'NY',
@@ -62,7 +62,7 @@ export async function POST() {
       {
         name: 'Mindshare',
         slug: 'mindshare',
-        companyType: 'MEDIA_AGENCY' as const,
+        companyType: 'INDEPENDENT_AGENCY' as const,
         industry: 'ENTERTAINMENT_MEDIA' as const,
         city: 'New York',
         state: 'NY', 
@@ -95,7 +95,7 @@ export async function POST() {
       {
         name: 'Meta',
         slug: 'meta',
-        companyType: 'MEDIA_PLATFORM' as const,
+        companyType: 'ADTECH_VENDOR' as const,
         industry: 'TECHNOLOGY' as const,
         city: 'Menlo Park',
         state: 'CA', 
@@ -106,7 +106,7 @@ export async function POST() {
       {
         name: 'Google',
         slug: 'google',
-        companyType: 'MEDIA_PLATFORM' as const,
+        companyType: 'ADTECH_VENDOR' as const,
         industry: 'TECHNOLOGY' as const,
         city: 'Mountain View',
         state: 'CA',
@@ -117,7 +117,7 @@ export async function POST() {
       {
         name: 'Amazon DSP',
         slug: 'amazon-dsp',
-        companyType: 'MEDIA_PLATFORM' as const, 
+        companyType: 'ADTECH_VENDOR' as const, 
         industry: 'TECHNOLOGY' as const,
         city: 'Seattle',
         state: 'WA',
