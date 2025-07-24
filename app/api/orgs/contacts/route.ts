@@ -25,6 +25,42 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   
+  // SIMPLE TEST FIRST - Just get basic contact count
+  try {
+    console.log('🔍 Testing basic contact query...');
+    
+    const basicCount = await prisma.contact.count();
+    console.log(`✅ Basic contact count: ${basicCount}`);
+    
+    const basicContacts = await prisma.contact.findMany({
+      take: 3,
+      include: {
+        company: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    });
+    console.log(`✅ Basic contacts query successful, found ${basicContacts.length} contacts`);
+    
+    return NextResponse.json({
+      success: true,
+      contacts: basicContacts,
+      totalCount: basicCount,
+      debug: 'Basic query worked'
+    });
+    
+  } catch (error) {
+    console.error('❌ Basic contact query failed:', error);
+    return NextResponse.json({
+      error: 'Failed to search contacts',
+      details: error instanceof Error ? error.message : 'Unknown error',
+      debug: 'Basic query failed'
+    }, { status: 500 });
+  }
+
   const params: ContactSearchParams = {
     q: searchParams.get('q') || undefined,
     companyId: searchParams.get('companyId') || undefined,
