@@ -6,7 +6,7 @@
  * Helps diagnose and fix Vercel deployment issues
  */
 
-const PRODUCTION_URL = 'https://website-incne6jv0-cws-projects-e62034bb.vercel.app';
+const VERCEL_DEBUG_URL = 'https://website-incne6jv0-cws-projects-e62034bb.vercel.app';
 
 interface DiagnosticResult {
   test: string;
@@ -29,7 +29,7 @@ class VercelDebugger {
 
   async testHealthEndpoint(): Promise<void> {
     try {
-      const response = await fetch(`${PRODUCTION_URL}/api/health`);
+      const response = await fetch(`${VERCEL_DEBUG_URL}/api/health`);
       const data = await response.json();
       
       if (data.status === 'healthy') {
@@ -65,7 +65,7 @@ class VercelDebugger {
 
     for (const route of routes) {
       try {
-        const response = await fetch(`${PRODUCTION_URL}${route.path}`);
+        const response = await fetch(`${VERCEL_DEBUG_URL}${route.path}`);
         
         if (response.ok) {
           this.log({
@@ -100,7 +100,7 @@ class VercelDebugger {
 
     for (const route of protectedRoutes) {
       try {
-        const response = await fetch(`${PRODUCTION_URL}${route}`);
+        const response = await fetch(`${VERCEL_DEBUG_URL}${route}`);
         
         if (response.status === 401 || response.url.includes('/auth/signin')) {
           this.log({
@@ -172,7 +172,7 @@ class VercelDebugger {
   async runDiagnostics(): Promise<void> {
     console.log(`\n🔍 VERCEL PRODUCTION DIAGNOSTICS`);
     console.log(`================================`);
-    console.log(`🌐 Testing: ${PRODUCTION_URL}`);
+    console.log(`🌐 Testing: ${VERCEL_DEBUG_URL}`);
     console.log(`📅 Time: ${new Date().toLocaleString()}\n`);
 
     await this.testHealthEndpoint();

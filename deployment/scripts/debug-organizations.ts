@@ -8,7 +8,7 @@
 
 import { prisma } from '../../lib/prisma';
 
-const PRODUCTION_URL = 'https://website-gjgyoiava-cws-projects-e62034bb.vercel.app';
+const DEBUG_ORG_URL = 'https://website-gjgyoiava-cws-projects-e62034bb.vercel.app';
 
 async function checkDatabaseCompanies() {
   console.log(`🔍 CHECKING PRODUCTION DATABASE FOR COMPANY DATA`);
@@ -64,7 +64,7 @@ async function testOrganizationRoutes() {
 
   for (const route of routes) {
     try {
-      const response = await fetch(`${PRODUCTION_URL}${route.path}`);
+      const response = await fetch(`${DEBUG_ORG_URL}${route.path}`);
       
       if (route.path.startsWith('/api/')) {
         // API route - check for auth error vs server error
@@ -101,7 +101,7 @@ async function checkAuthenticationFlow() {
 
   try {
     // Test sign in page
-    const signInResponse = await fetch(`${PRODUCTION_URL}/auth/signin`);
+    const signInResponse = await fetch(`${DEBUG_ORG_URL}/auth/signin`);
     if (signInResponse.ok) {
       console.log(`✅ Sign In Page: Accessible`);
     } else {
@@ -109,7 +109,7 @@ async function checkAuthenticationFlow() {
     }
 
     // Test auth session endpoint
-    const sessionResponse = await fetch(`${PRODUCTION_URL}/api/auth/session`);
+    const sessionResponse = await fetch(`${DEBUG_ORG_URL}/api/auth/session`);
     if (sessionResponse.ok) {
       console.log(`✅ Auth Session Endpoint: Working`);
     } else {
@@ -146,7 +146,7 @@ async function showDiagnosisAndFixes() {
   console.log(`   Fix: Frontend needs to handle authentication state\n`);
 
   console.log(`🌐 ISSUE 3: Check Frontend Organization Pages`);
-  console.log(`   Test: Visit ${PRODUCTION_URL}/orgs after signing in`);
+      console.log(`   Test: Visit ${DEBUG_ORG_URL}/orgs after signing in`);
   console.log(`   Expected: Should show company listings after authentication\n`);
 
   console.log(`📝 NEXT STEPS:`);
@@ -159,7 +159,7 @@ async function showDiagnosisAndFixes() {
 async function main() {
   console.log(`\n🚀 ORGANIZATIONS DEBUG REPORT`);
   console.log(`=============================`);
-  console.log(`🌐 Production URL: ${PRODUCTION_URL}`);
+  console.log(`🌐 Production URL: ${DEBUG_ORG_URL}`);
   console.log(`📅 Time: ${new Date().toLocaleString()}\n`);
 
   await testOrganizationRoutes();

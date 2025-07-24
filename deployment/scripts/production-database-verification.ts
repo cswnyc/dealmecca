@@ -296,7 +296,7 @@ async function verifyProductionDatabase() {
     console.error('❌ Database connection or verification failed:', error);
     return {
       connected: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       tablesExist: false,
       readyForTesting: false
     };
