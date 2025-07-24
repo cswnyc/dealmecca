@@ -6,8 +6,7 @@ import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
 export const authOptions: NextAuthOptions = {
-  // Note: Don't use adapter with credentials provider - it causes conflicts
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -64,8 +63,9 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: 'database',
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
   cookies: {
     sessionToken: {
@@ -86,29 +86,15 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: '/auth/verify-request',
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        console.log('🔐 JWT callback - user data:', user)
-        const newToken = {
-          ...token,
-          sub: user.id, // Explicitly set the user ID
-          role: user.role,
-          subscriptionTier: user.subscriptionTier,
-        }
-        console.log('🔐 JWT callback - created token:', newToken)
-        return newToken
-      }
-      return token
-    },
-    async session({ session, token }) {
-      console.log('📱 Session callback - token data:', token)
+    async session({ session, user }) {
+      console.log('📱 Session callback - user data:', user)
       const newSession = {
         ...session,
         user: {
           ...session.user,
-          id: token.sub,
-          role: token.role,
-          subscriptionTier: token.subscriptionTier,
+          id: user.id,
+          role: user.role,
+          subscriptionTier: user.subscriptionTier,
         },
       }
       console.log('📱 Session callback - created session:', newSession)
