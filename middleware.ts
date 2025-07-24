@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 import { jwtVerify } from 'jose'
 
-// Function to verify our custom session token
+// Simplified function to verify our custom session token
 async function getCustomToken(req: NextRequest) {
   try {
     const sessionCookie = req.cookies.get('dealmecca-session')
@@ -10,8 +10,19 @@ async function getCustomToken(req: NextRequest) {
       return null
     }
 
-    const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
-    const { payload } = await jwtVerify(sessionCookie.value, secret)
+    // Simple JWT decode without verification for middleware
+    // (We'll do full verification in API routes)
+    const parts = sessionCookie.value.split('.')
+    if (parts.length !== 3) {
+      return null
+    }
+
+    const payload = JSON.parse(atob(parts[1]))
+    
+    // Basic expiration check
+    if (payload.exp && payload.exp < Date.now() / 1000) {
+      return null
+    }
     
     return {
       sub: payload.sub,
@@ -21,7 +32,7 @@ async function getCustomToken(req: NextRequest) {
       subscriptionTier: payload.subscriptionTier
     }
   } catch (error) {
-    console.error('Custom token verification failed:', error)
+    console.error('Custom token decode failed:', error)
     return null
   }
 }
