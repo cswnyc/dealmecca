@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Logo, LogoWithIcon } from "@/components/brand/Logo";
 import { Tagline, TaglineHero, RotatingTagline } from "@/components/brand/Tagline";
 import { brandConfig } from "@/lib/brand-config";
+import AuthHeader from "@/components/navigation/AuthHeader";
 
 export default function Home() {
   return (
@@ -33,19 +34,8 @@ export default function Home() {
               <a href="#resources" className="nav-link">Resources</a>
             </nav>
             
-            {/* CTA Buttons */}
-            <div className="flex items-center space-x-4">
-              <Link href="/auth/signin">
-                <Button variant="ghost" className="text-gray-700 hover:text-primary font-medium">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button className="bg-accent hover:bg-accent-700 text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
+            {/* Dynamic Auth Header */}
+            <AuthHeader />
           </div>
         </div>
       </header>
