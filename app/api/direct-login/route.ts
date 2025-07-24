@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         role: user.role,
         subscriptionTier: user.subscriptionTier
       },
-      redirectUrl: user.role === 'ADMIN' ? '/admin' : '/dashboard'
+      redirectUrl: user.role === 'ADMIN' ? '/admin-bypass' : '/dashboard-bypass'
     });
     
     // Set session cookie
