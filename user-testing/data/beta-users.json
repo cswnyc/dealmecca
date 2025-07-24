@@ -1,0 +1,67 @@
+[
+  {
+    "id": "BUMDC8P9LHQYAEA",
+    "name": "Sarah Johnson",
+    "email": "sarah.j@techcorp.com",
+    "company": "TechCorp",
+    "role": "BD Manager",
+    "industry": "Technology",
+    "joinDate": "2025-07-20T22:19:50.357Z",
+    "status": "active",
+    "engagementScore": 15,
+    "feedbackCount": 1,
+    "lastActivity": "2025-07-20T22:19:50.366Z"
+  },
+  {
+    "id": "BUMDC8P9LJ2ESD7",
+    "name": "Michael Chen",
+    "email": "mchen@startup.co",
+    "company": "InnovateCo",
+    "role": "Founder",
+    "industry": "SaaS",
+    "joinDate": "2025-07-20T22:19:50.359Z",
+    "status": "active",
+    "engagementScore": 15,
+    "feedbackCount": 1,
+    "lastActivity": "2025-07-20T22:19:50.368Z"
+  },
+  {
+    "id": "BUMDC8P9LKZDIM7",
+    "name": "Emily Rodriguez",
+    "email": "emily.r@consulting.com",
+    "company": "ProConsult",
+    "role": "Senior Consultant",
+    "industry": "Consulting",
+    "joinDate": "2025-07-20T22:19:50.360Z",
+    "status": "active",
+    "engagementScore": 5,
+    "feedbackCount": 1,
+    "lastActivity": "2025-07-20T22:19:50.364Z"
+  },
+  {
+    "id": "BUMDC8P9LK8T0KR",
+    "name": "David Kim",
+    "email": "dkim@salesforce.com",
+    "company": "SalesForce Inc",
+    "role": "Sales Director",
+    "industry": "Sales",
+    "joinDate": "2025-07-20T22:19:50.360Z",
+    "status": "active",
+    "engagementScore": 0,
+    "feedbackCount": 0,
+    "lastActivity": "2025-07-20T22:19:50.360Z"
+  },
+  {
+    "id": "BUMDC8P9LL7PCAS",
+    "name": "Lisa Thompson",
+    "email": "lisa.t@marketing.com",
+    "company": "MarketPro",
+    "role": "Marketing Manager",
+    "industry": "Marketing",
+    "joinDate": "2025-07-20T22:19:50.361Z",
+    "status": "active",
+    "engagementScore": 0,
+    "feedbackCount": 0,
+    "lastActivity": "2025-07-20T22:19:50.361Z"
+  }
+]

@@ -1,0 +1,936 @@
+// Enhanced Organization Chart Schema for DealMecca
+// Competitive advantage over SellerCrowd
+
+// Enhanced Company Model
+model Company {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  website         String?
+  logoUrl         String?
+  description     String?
+  
+  // Enhanced Classification
+  companyType     EnhancedCompanyType
+  agencyType      AgencyType?         // Only for agencies
+  industry        Industry
+  verticals       Industry[]          // Multiple industry verticals
+  mediaTypes      MediaType[]
+  serviceOfferings ServiceOffering[]
+  
+  // Geographic Information
+  city            String?
+  state           USState?
+  region          USRegion?
+  country         String   @default("US")
+  timezone        Timezone?
+  
+  // Size/Scale Metrics
+  employeeCount   EmployeeRange?
+  revenueRange    RevenueRange?
+  teamCount       Int?
+  officeCount     Int?
+  
+  // Hierarchy Relationships
+  parentCompanyId String?
+  parentCompany   Company? @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
+  subsidiaries    Company[] @relation("CompanyHierarchy")
+  holdingCompanyId String?
+  holdingCompany  Company? @relation("HoldingCompany", fields: [holdingCompanyId], references: [id])
+  portfolioCompanies Company[] @relation("HoldingCompany")
+  
+  // Business Information
+  foundedYear     Int?
+  stockSymbol     String?
+  linkedinUrl     String?
+  twitterHandle   String?
+  
+  // Verification & Quality
+  verified        Boolean  @default(false)
+  verifiedAt      DateTime?
+  verifiedBy      String?  // Admin user ID
+  dataQuality     DataQuality @default(BASIC)
+  lastReviewedAt  DateTime?
+  
+  // AI-powered fields
+  aiSummary       String?
+  lastInsightUpdate DateTime?
+  
+  // Contacts and relationships
+  contacts        Contact[]
+  insights        CompanyInsight[]
+  
+  // Tracking
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([name])
+  @@index([companyType])
+  @@index([agencyType])
+  @@index([industry])
+  @@index([city])
+  @@index([state])
+  @@index([region])
+  @@index([employeeCount])
+  @@index([revenueRange])
+  @@index([verified])
+  @@index([lastInsightUpdate])
+  @@map("companies")
+}
+
+// Enhanced Contact Model
+model Contact {
+  id              String   @id @default(cuid())
+  
+  // Personal Information
+  firstName       String
+  lastName        String
+  fullName        String   // Computed field: firstName + lastName
+  title           String
+  email           String?
+  phone           String?
+  linkedinUrl     String?
+  
+  // Professional Classification
+  department      Department?
+  subDepartment   String?           // Free text for specific teams
+  seniority       SeniorityLevel
+  roles           ContactRole[]     // Multiple roles possible
+  mediaTypes      MediaType[]       // Specializations
+  
+  // Company Relationship
+  companyId       String
+  company         Company @relation(fields: [companyId], references: [id])
+  
+  // Responsibilities & Scope
+  territories     Territory[]       // Geographic responsibilities
+  accounts        String[]          // Client accounts managed (JSON array)
+  budgetRange     BudgetRange?      // Decision-making authority
+  reportingTo     String?           // Title of direct manager
+  teamSize        TeamSize?         // People managed
+  
+  // Decision Making & Influence
+  isDecisionMaker Boolean  @default(false)
+  decisionAreas   DecisionArea[]    // Areas of decision authority
+  influenceLevel  InfluenceLevel
+  
+  // Data Quality & Verification
+  verified        Boolean  @default(false)
+  verifiedAt      DateTime?
+  dataSource      DataSource
+  lastContactedAt DateTime?
+  isActive        Boolean  @default(true)
+  
+  // Relationships
+  connections     UserConnection[]
+  
+  // Tracking
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([companyId])
+  @@index([firstName])
+  @@index([lastName])
+  @@index([fullName])
+  @@index([title])
+  @@index([department])
+  @@index([seniority])
+  @@index([verified])
+  @@index([isActive])
+  @@map("contacts")
+}
+
+// Enhanced Classification Enums
+
+enum EnhancedCompanyType {
+  // Agencies
+  INDEPENDENT_AGENCY
+  HOLDING_COMPANY_AGENCY
+  SPECIALIZED_AGENCY         // PR, Creative, Digital-only, etc.
+  MEDIA_AGENCY
+  CREATIVE_AGENCY
+  DIGITAL_AGENCY
+  PR_AGENCY
+  
+  // Advertisers/Brands
+  NATIONAL_ADVERTISER
+  LOCAL_ADVERTISER
+  B2B_ADVERTISER
+  B2C_ADVERTISER
+  
+  // Media & Publishers
+  TV_BROADCASTER
+  RADIO_BROADCASTER
+  DIGITAL_PUBLISHER
+  PRINT_PUBLISHER
+  STREAMING_SERVICE
+  PODCAST_NETWORK
+  
+  // Technology & Services
+  ADTECH_VENDOR
+  MARTECH_VENDOR
+  DATA_PROVIDER
+  RESEARCH_COMPANY
+  MEASUREMENT_COMPANY
+  
+  // Supporting Services
+  PRODUCTION_COMPANY
+  POST_PRODUCTION
+  TALENT_AGENCY
+  CONSULTANCY
+  
+  // Holding Companies
+  MEDIA_HOLDING_COMPANY
+  ADVERTISING_HOLDING_COMPANY
+}
+
+enum AgencyType {
+  FULL_SERVICE
+  MEDIA_PLANNING_BUYING
+  CREATIVE_ONLY
+  DIGITAL_SPECIALIST
+  PROGRAMMATIC_SPECIALIST
+  SOCIAL_MEDIA_SPECIALIST
+  SEARCH_SPECIALIST
+  MOBILE_SPECIALIST
+  VIDEO_SPECIALIST
+  INFLUENCER_SPECIALIST
+  B2B_SPECIALIST
+  HEALTHCARE_SPECIALIST
+  AUTOMOTIVE_SPECIALIST
+  RETAIL_SPECIALIST
+}
+
+enum Industry {
+  // CPG & Retail
+  CPG_FOOD_BEVERAGE
+  CPG_PERSONAL_CARE
+  CPG_HOUSEHOLD
+  RETAIL_GENERAL
+  RETAIL_FASHION
+  RETAIL_GROCERY
+  RETAIL_ELECTRONICS
+  
+  // Services
+  FINANCIAL_SERVICES
+  INSURANCE
+  BANKING
+  REAL_ESTATE
+  LEGAL_SERVICES
+  CONSULTING
+  
+  // Technology
+  SOFTWARE_SAAS
+  HARDWARE_ELECTRONICS
+  TELECOMMUNICATIONS
+  SOCIAL_MEDIA_PLATFORMS
+  
+  // Healthcare & Pharma
+  PHARMACEUTICAL
+  MEDICAL_DEVICES
+  HEALTHCARE_SERVICES
+  WELLNESS_FITNESS
+  
+  // Automotive & Transportation
+  AUTOMOTIVE_OEM
+  AUTOMOTIVE_DEALER
+  RIDESHARE_MOBILITY
+  AIRLINES_TRAVEL
+  SHIPPING_LOGISTICS
+  
+  // Entertainment & Media
+  ENTERTAINMENT_STREAMING
+  GAMING_ESPORTS
+  MUSIC_ENTERTAINMENT
+  SPORTS_LEAGUES
+  NEWS_MEDIA
+  
+  // Other Verticals
+  EDUCATION
+  NON_PROFIT
+  GOVERNMENT
+  ENERGY_UTILITIES
+  AGRICULTURE
+  CONSTRUCTION
+  HOSPITALITY_RESTAURANTS
+}
+
+enum ServiceOffering {
+  // Media Services
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  PROGRAMMATIC_BUYING
+  SEARCH_MARKETING
+  SOCIAL_MEDIA_MARKETING
+  INFLUENCER_MARKETING
+  
+  // Creative Services
+  CREATIVE_STRATEGY
+  CREATIVE_PRODUCTION
+  COPYWRITING
+  ART_DIRECTION
+  VIDEO_PRODUCTION
+  
+  // Digital Services
+  WEB_DEVELOPMENT
+  MOBILE_APP_DEVELOPMENT
+  E_COMMERCE
+  SEO_SEM
+  EMAIL_MARKETING
+  
+  // Analytics & Data
+  DATA_ANALYTICS
+  ATTRIBUTION_MODELING
+  AUDIENCE_RESEARCH
+  COMPETITIVE_INTELLIGENCE
+  
+  // Strategy & Consulting
+  BRAND_STRATEGY
+  MARKETING_STRATEGY
+  DIGITAL_TRANSFORMATION
+  MARKETING_OPERATIONS
+}
+
+enum USState {
+  AL, AK, AZ, AR, CA, CO, CT, DE, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD,
+  MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC,
+  SD, TN, TX, UT, VT, VA, WA, WV, WI, WY, DC
+}
+
+enum USRegion {
+  NORTHEAST      // NY, NJ, CT, MA, etc.
+  SOUTHEAST      // FL, GA, NC, SC, etc.
+  MIDWEST        // IL, IN, OH, MI, etc.
+  SOUTHWEST      // TX, AZ, NM, NV, etc.
+  WEST           // CA, OR, WA, etc.
+  MOUNTAIN       // CO, UT, MT, WY, etc.
+  GREAT_LAKES    // IL, IN, MI, WI, etc.
+}
+
+enum Timezone {
+  EASTERN
+  CENTRAL
+  MOUNTAIN
+  PACIFIC
+  ALASKA
+  HAWAII
+}
+
+enum EmployeeRange {
+  STARTUP_1_10
+  SMALL_11_50
+  MEDIUM_51_200
+  LARGE_201_1000
+  ENTERPRISE_1001_5000
+  MEGA_5000_PLUS
+}
+
+enum RevenueRange {
+  STARTUP_UNDER_1M
+  EMERGING_1M_10M
+  GROWTH_10M_50M
+  ESTABLISHED_50M_250M
+  ENTERPRISE_250M_1B
+  FORTUNE_500_1B_PLUS
+}
+
+enum Department {
+  // Agency Departments
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  DIGITAL_MARKETING
+  SOCIAL_MEDIA
+  SEARCH_MARKETING
+  PROGRAMMATIC
+  
+  // Creative Departments
+  CREATIVE_STRATEGY
+  ART_DIRECTION
+  COPYWRITING
+  PRODUCTION
+  
+  // Client Services
+  ACCOUNT_MANAGEMENT
+  ACCOUNT_PLANNING
+  CLIENT_STRATEGY
+  
+  // Analytics & Insights
+  DATA_ANALYTICS
+  RESEARCH_INSIGHTS
+  MEASUREMENT
+  
+  // Technology
+  ADTECH_OPERATIONS
+  MARKETING_TECHNOLOGY
+  DATA_SCIENCE
+  
+  // Business Functions
+  NEW_BUSINESS
+  BUSINESS_DEVELOPMENT
+  PARTNERSHIPS
+  
+  // Leadership & Operations
+  LEADERSHIP_C_SUITE
+  OPERATIONS
+  FINANCE
+  HUMAN_RESOURCES
+  LEGAL_COMPLIANCE
+}
+
+enum SeniorityLevel {
+  INTERN
+  COORDINATOR
+  SPECIALIST
+  SENIOR_SPECIALIST
+  MANAGER
+  SENIOR_MANAGER
+  DIRECTOR
+  SENIOR_DIRECTOR
+  VP
+  SVP
+  EVP
+  C_LEVEL
+  FOUNDER_OWNER
+}
+
+enum ContactRole {
+  // Buying Roles
+  MEDIA_BUYER
+  PROGRAMMATIC_BUYER
+  LOCAL_BUYER
+  NATIONAL_BUYER
+  
+  // Planning Roles
+  MEDIA_PLANNER
+  STRATEGIC_PLANNER
+  ACCOUNT_PLANNER
+  
+  // Strategy Roles
+  STRATEGIST
+  BRAND_STRATEGIST
+  DIGITAL_STRATEGIST
+  
+  // Analytics Roles
+  ANALYST
+  DATA_SCIENTIST
+  RESEARCHER
+  
+  // Creative Roles
+  CREATIVE_DIRECTOR
+  ART_DIRECTOR
+  COPYWRITER
+  
+  // Account Management
+  ACCOUNT_MANAGER
+  CLIENT_LEAD
+  RELATIONSHIP_MANAGER
+  
+  // Decision Making
+  BUDGET_APPROVER
+  VENDOR_SELECTOR
+  FINAL_DECISION_MAKER
+}
+
+enum Territory {
+  // US Regions
+  US_NORTHEAST
+  US_SOUTHEAST
+  US_MIDWEST
+  US_SOUTHWEST
+  US_WEST
+  US_NATIONAL
+  
+  // Major Markets
+  NYC_TRI_STATE
+  LOS_ANGELES
+  CHICAGO
+  SAN_FRANCISCO_BAY
+  DALLAS_FORT_WORTH
+  ATLANTA
+  BOSTON
+  PHILADELPHIA
+  WASHINGTON_DC
+  DETROIT
+  
+  // International
+  CANADA
+  LATIN_AMERICA
+  EUROPE
+  ASIA_PACIFIC
+  GLOBAL
+}
+
+enum BudgetRange {
+  UNDER_100K
+  _100K_500K
+  _500K_1M
+  _1M_5M
+  _5M_25M
+  _25M_100M
+  _100M_PLUS
+}
+
+enum TeamSize {
+  INDIVIDUAL_CONTRIBUTOR
+  SMALL_TEAM_2_5
+  MEDIUM_TEAM_6_15
+  LARGE_TEAM_16_50
+  DEPARTMENT_50_PLUS
+}
+
+enum InfluenceLevel {
+  LOW_INFLUENCE
+  MODERATE_INFLUENCE
+  HIGH_INFLUENCE
+  EXECUTIVE_INFLUENCE
+  C_LEVEL_INFLUENCE
+}
+
+enum DecisionArea {
+  MEDIA_VENDOR_SELECTION
+  AGENCY_SELECTION
+  BUDGET_ALLOCATION
+  STRATEGY_APPROVAL
+  CAMPAIGN_APPROVAL
+  TECHNOLOGY_SELECTION
+  PARTNERSHIP_APPROVAL
+  HIRING_DECISIONS
+}
+
+enum DataSource {
+  MANUAL_ENTRY
+  LINKEDIN_IMPORT
+  EVENT_ATTENDANCE
+  BUSINESS_CARD_SCAN
+  EMAIL_SIGNATURE
+  COMPANY_WEBSITE
+  PRESS_RELEASE
+  INDUSTRY_PUBLICATION
+  REFERRAL
+  VERIFIED_SUBMISSION
+}
+
+enum DataQuality {
+  BASIC           // Name, company, title only
+  STANDARD        // + contact info, department
+  ENHANCED        // + responsibilities, territories
+  PREMIUM         // + decision authority, full profile
+  VERIFIED        // Admin verified accuracy
+} 
+
+// Enhanced Events System Schema for DealMecca Version 1
+// This extends the existing schema with admin controls, capacity management, and org chart integration
+
+// Enhanced Event model with admin controls and capacity management
+model Event {
+  id            String      @id @default(cuid())
+  name          String
+  description   String?
+  website       String?
+  startDate     DateTime
+  endDate       DateTime
+  location      String      // "Las Vegas, NV" or "Virtual"
+  venue         String?     // "Mandalay Bay Convention Center"
+  category      EventCategory
+  industry      String      // JSON array of EventIndustry values
+  estimatedCost Int?        // USD for typical attendance
+  attendeeCount Int?        // Expected/historical attendance
+  isVirtual     Boolean     @default(false)
+  isHybrid      Boolean     @default(false)
+  imageUrl      String?
+  logoUrl       String?
+  organizerName String?
+  organizerUrl  String?
+  registrationUrl String?
+  callForSpeakers Boolean   @default(false)
+  sponsorshipAvailable Boolean @default(false)
+  
+  // NEW FIELDS for Version 1 requirements
+  createdBy     String?     // Admin who created the event
+  status        EventStatus @default(DRAFT)
+  capacity      Int?        // Maximum number of attendees
+  registrationDeadline DateTime? // Registration cutoff date
+  eventType     String?     // Additional event classification
+  
+  // Aggregated ratings (existing)
+  avgOverallRating    Float?  @default(0)
+  avgNetworkingRating Float?  @default(0)
+  avgContentRating    Float?  @default(0)
+  avgROIRating        Float?  @default(0)
+  totalRatings        Int     @default(0)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  creator       User?       @relation("EventCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  attendees     EventAttendee[]
+  ratings       EventRating[]
+  
+  @@index([startDate])
+  @@index([category])
+  @@index([location])
+  @@index([avgOverallRating])
+  @@index([createdBy])
+  @@index([status])
+  @@index([capacity])
+  @@index([registrationDeadline])
+}
+
+// Enhanced EventAttendee model with org chart integration
+model EventAttendee {
+  id          String            @id @default(cuid())
+  userId      String
+  eventId     String
+  status      AttendanceStatus  @default(INTERESTED)
+  isGoing     Boolean          @default(false)
+  hasAttended Boolean          @default(false)
+  
+  // NEW FIELDS for org chart integration
+  companyId   String?          // Link to company from org chart
+  contactId   String?          // Link to contact from org chart  
+  registeredAt DateTime        @default(now()) // When they registered
+  
+  // Networking tracking (existing)
+  connectionsIntended Int     @default(0) // Goal
+  connectionsMade     Int     @default(0) // Actual
+  leadsGenerated      Int     @default(0)
+  dealsFromEvent      Int     @default(0)
+  revenueFromEvent    Float?  // USD
+  
+  // Cost tracking (existing)
+  totalCost           Float?  // Registration + travel + hotel + meals
+  
+  notes               String? // Personal notes about the event
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  // Relations
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event               Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  company             Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  contact             Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@index([companyId])
+  @@index([contactId])
+  @@index([registeredAt])
+}
+
+// Enhanced User model with events relation
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  name            String?
+  password        String?  // for email/password auth
+  role            Role     @default(FREE)
+  subscriptionTier SubscriptionTier @default(FREE)
+  searchesUsed    Int      @default(0)
+  searchesResetAt DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // ... existing fields ...
+  
+  // Relations (existing + new)
+  eventAttendees     EventAttendee[]
+  eventRatings       EventRating[]
+  createdEvents      Event[]        @relation("EventCreator") // NEW: Events created by admin
+  
+  // ... other existing relations ...
+}
+
+// Enhanced Company model with events integration
+model Company {
+  id                    String       @id @default(cuid())
+  name                  String
+  slug                  String       @unique
+  companyType           CompanyType
+  agencyType            AgencyType?
+  industry              Industry?
+  website               String?
+  description           String?
+  employeeCount         EmployeeRange?
+  revenue               RevenueRange?
+  yearFounded           Int?
+  isPublic              Boolean      @default(false)
+  stockSymbol           String?
+  parentCompanyId       String?
+  
+  // Location information
+  city                  String?
+  state                 String?
+  country               String?      @default("United States")
+  region                String?
+  headquarters          String?
+  
+  // Business details
+  specialties           String?      // JSON array
+  serviceOfferings      String?      // JSON array
+  keyClients            String?      // JSON array
+  certifications        String?      // JSON array
+  awards                String?      // JSON array
+  
+  // Data quality
+  verified              Boolean      @default(false)
+  dataQuality           DataQuality  @default(BASIC)
+  lastVerified          DateTime?
+  verifiedBy            String?
+  
+  // Social and contact
+  linkedinUrl           String?
+  twitterHandle         String?
+  facebookUrl           String?
+  phone                 String?
+  email                 String?
+  
+  // Internal tracking
+  isActive              Boolean      @default(true)
+  internalNotes         String?
+  tags                  String?      // JSON array
+  
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  
+  // Relations (existing + new)
+  contacts              Contact[]
+  searches              Search[]
+  parentCompany         Company?     @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
+  subsidiaries          Company[]    @relation("CompanyHierarchy")
+  eventAttendees        EventAttendee[] // NEW: Link to event attendees
+  
+  @@index([name])
+  @@index([companyType])
+  @@index([industry])
+  @@index([city])
+  @@index([verified])
+  @@index([isActive])
+}
+
+// Enhanced Contact model with events integration
+model Contact {
+  id                String        @id @default(cuid())
+  companyId         String
+  firstName         String
+  lastName          String
+  fullName          String        // Computed field
+  title             String
+  email             String?       @unique
+  phone             String?
+  linkedinUrl       String?
+  personalEmail     String?
+  
+  // Professional details
+  department        Department?
+  seniority         SeniorityLevel
+  isDecisionMaker   Boolean       @default(false)
+  preferredContact  ContactMethod?
+  
+  // Data quality
+  verified          Boolean       @default(false)
+  dataQuality       DataQuality   @default(BASIC)
+  lastVerified      DateTime?
+  
+  // Status
+  isActive          Boolean       @default(true)
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  // Relations (existing + new)
+  company           Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  eventAttendees    EventAttendee[] // NEW: Link to event attendees
+  
+  @@index([companyId])
+  @@index([fullName])
+  @@index([email])
+  @@index([verified])
+  @@index([isActive])
+  @@index([seniority])
+}
+
+// NEW ENUM: Event Status for admin control
+enum EventStatus {
+  DRAFT          // Event created but not published
+  PUBLISHED      // Event is live and accepting registrations
+  CANCELLED      // Event was cancelled
+  COMPLETED      // Event has finished
+  SUSPENDED      // Temporarily unavailable
+}
+
+// Enhanced existing enums with more options
+enum AttendanceStatus {
+  INTERESTED
+  PLANNING_TO_ATTEND
+  REGISTERED
+  ATTENDING
+  ATTENDED
+  CANCELLED
+  WAITLISTED     // NEW: For capacity management
+  NO_SHOW        // NEW: Registered but didn't attend
+}
+
+enum Department {
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  DIGITAL_MARKETING
+  PROGRAMMATIC
+  SOCIAL_MEDIA
+  SEARCH_MARKETING
+  STRATEGY_PLANNING
+  ANALYTICS_INSIGHTS
+  CREATIVE_SERVICES
+  ACCOUNT_MANAGEMENT
+  BUSINESS_DEVELOPMENT
+  OPERATIONS
+  TECHNOLOGY
+  FINANCE
+  LEADERSHIP
+  HUMAN_RESOURCES
+  SALES
+  MARKETING
+  PRODUCT
+  DATA_SCIENCE
+}
+
+enum SeniorityLevel {
+  C_LEVEL
+  VP
+  SVP
+  EVP
+  DIRECTOR
+  SENIOR_DIRECTOR
+  MANAGER
+  SENIOR_MANAGER
+  SENIOR_SPECIALIST
+  SPECIALIST
+  COORDINATOR
+  ANALYST
+  ASSOCIATE
+  UNKNOWN
+}
+
+enum ContactMethod {
+  EMAIL
+  PHONE
+  LINKEDIN
+  IN_PERSON
+}
+
+// Additional enums for comprehensive event management
+enum EventCategory {
+  CONFERENCE
+  TRADE_SHOW
+  SUMMIT
+  WORKSHOP
+  NETWORKING
+  AWARDS
+  WEBINAR
+  MASTERCLASS
+  PANEL_DISCUSSION
+  MEETUP
+  TRAINING
+  CERTIFICATION
+}
+
+enum DataQuality {
+  BASIC
+  ENHANCED
+  VERIFIED
+  PREMIUM
+}
+
+enum EmployeeRange {
+  STARTUP_1_10
+  SMALL_11_50
+  MEDIUM_51_200
+  LARGE_201_1000
+  ENTERPRISE_1001_5000
+  MEGA_5000_PLUS
+  UNKNOWN
+}
+
+enum RevenueRange {
+  STARTUP_UNDER_1M
+  SMALL_1M_10M
+  MEDIUM_10M_100M
+  LARGE_100M_1B
+  ENTERPRISE_1B_PLUS
+  PUBLIC_COMPANY
+  UNKNOWN
+}
+
+enum CompanyType {
+  INDEPENDENT_AGENCY
+  HOLDING_COMPANY_AGENCY
+  MEDIA_HOLDING_COMPANY
+  NATIONAL_ADVERTISER
+  LOCAL_ADVERTISER
+  ADTECH_VENDOR
+  MARTECH_VENDOR
+  MEDIA_OWNER
+  BROADCASTER
+  PUBLISHER
+  CONSULTANCY
+  PRODUCTION_COMPANY
+}
+
+enum AgencyType {
+  FULL_SERVICE
+  MEDIA_SPECIALIST
+  CREATIVE_SPECIALIST
+  DIGITAL_SPECIALIST
+  PROGRAMMATIC_SPECIALIST
+  SOCIAL_MEDIA_SPECIALIST
+  SEARCH_SPECIALIST
+  INFLUENCER_SPECIALIST
+  PERFORMANCE_MARKETING
+  BRAND_STRATEGY
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  DATA_ANALYTICS
+  CONTENT_MARKETING
+}
+
+enum Industry {
+  AUTOMOTIVE
+  CPG_FOOD_BEVERAGE
+  CPG_PERSONAL_CARE
+  CPG_HOUSEHOLD
+  FINANCIAL_SERVICES
+  HEALTHCARE_PHARMA
+  RETAIL_ECOMMERCE
+  TECHNOLOGY
+  ENTERTAINMENT_MEDIA
+  TRAVEL_HOSPITALITY
+  TELECOM
+  FASHION_BEAUTY
+  SPORTS_FITNESS
+  EDUCATION
+  REAL_ESTATE
+  ENERGY
+  GOVERNMENT_NONPROFIT
+  GAMING
+  CRYPTOCURRENCY
+  INSURANCE
+  B2B_SERVICES
+  STARTUPS
+  NONPROFIT
+  PROFESSIONAL_SERVICES
+  LOGISTICS
+}
+
+enum Role {
+  FREE
+  PRO
+  TEAM_ADMIN
+  ADMIN
+}
+
+enum SubscriptionTier {
+  FREE      // 10 searches/month
+  PRO       // $99/month - unlimited
+  TEAM      // $299/month - team features
+} 

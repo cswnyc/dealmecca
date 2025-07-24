@@ -1,0 +1,36 @@
+[
+  {
+    "id": "WSMDC8P9LQ0YR34",
+    "userId": "BUMDC8P9LHQYAEA",
+    "week": 1,
+    "timestamp": "2025-07-20T22:19:50.366Z",
+    "overallSatisfaction": 7,
+    "easeOfUse": 8,
+    "featureCompleteness": 6,
+    "performance": 5,
+    "wouldRecommend": 7,
+    "mostUsefulFeature": "Company search and discovery",
+    "leastUsefulFeature": "Forum discussions",
+    "missingFeatures": "Mobile app, CRM integration",
+    "biggestPainPoint": "Mobile experience needs work",
+    "improvementSuggestions": "Focus on mobile optimization",
+    "additionalComments": "Great concept, execution needs refinement"
+  },
+  {
+    "id": "WSMDC8P9LSE9HMK",
+    "userId": "BUMDC8P9LJ2ESD7",
+    "week": 1,
+    "timestamp": "2025-07-20T22:19:50.368Z",
+    "overallSatisfaction": 8,
+    "easeOfUse": 9,
+    "featureCompleteness": 7,
+    "performance": 8,
+    "wouldRecommend": 8,
+    "mostUsefulFeature": "Event discovery and networking",
+    "leastUsefulFeature": "Advanced search filters",
+    "missingFeatures": "Integration with LinkedIn, calendar sync",
+    "biggestPainPoint": "Limited integration options",
+    "improvementSuggestions": "Add more integration possibilities",
+    "additionalComments": "Really enjoying the platform so far!"
+  }
+]

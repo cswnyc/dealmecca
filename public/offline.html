@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DealMecca - You're Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .offline-container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+        
+        .offline-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff6b6b;
+        }
+        
+        .status-dot.online {
+            background: #51cf66;
+        }
+        
+        .feature-list {
+            text-align: left;
+            margin: 24px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .feature-list h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .feature-list ul {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 4px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .feature-list li::before {
+            content: "✓ ";
+            color: #51cf66;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 480px) {
+            .offline-container {
+                padding: 0 16px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">
+            📡
+        </div>
+        
+        <h1>You're Offline</h1>
+        <p>No internet connection detected. Some features are still available while you're offline.</p>
+        
+        <div class="feature-list">
+            <h3>Available Offline:</h3>
+            <ul>
+                <li>View cached search results</li>
+                <li>Browse saved companies</li>
+                <li>Take notes and favorites</li>
+                <li>View event schedules</li>
+            </ul>
+        </div>
+        
+        <div class="offline-actions">
+            <button class="btn btn-primary" onclick="checkConnection()">
+                Check Connection
+            </button>
+            <button class="btn" onclick="goToCache()">
+                View Cached Data
+            </button>
+            <button class="btn" onclick="goHome()">
+                Go to Home
+            </button>
+        </div>
+        
+        <div class="status-indicator">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Offline</span>
+        </div>
+    </div>
+
+    <script>
+        // Check online status
+        function updateConnectionStatus() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (navigator.onLine) {
+                statusDot.classList.add('online');
+                statusText.textContent = 'Connection restored';
+                
+                // Automatically redirect to home when back online
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } else {
+                statusDot.classList.remove('online');
+                statusText.textContent = 'Offline';
+            }
+        }
+        
+        function checkConnection() {
+            updateConnectionStatus();
+            
+            if (navigator.onLine) {
+                window.location.href = '/';
+            } else {
+                // Show feedback that we're still offline
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Still Offline...';
+                button.style.opacity = '0.6';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.opacity = '1';
+                }, 2000);
+            }
+        }
+        
+        function goToCache() {
+            // Try to load cached dashboard or search
+            window.location.href = '/dashboard';
+        }
+        
+        function goHome() {
+            window.location.href = '/';
+        }
+        
+        // Listen for online/offline events
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        
+        // Initial status check
+        updateConnectionStatus();
+        
+        // Periodic connection check
+        setInterval(updateConnectionStatus, 5000);
+    </script>
+</body>
+</html> 

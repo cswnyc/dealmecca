@@ -1,0 +1,253 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # MAIN APPLICATION
+  # =============================================================================
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: production
+    container_name: dealmecca-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    env_file:
+      - .env.production
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    volumes:
+      - uploads:/app/uploads
+      - logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: '1.0'
+        reservations:
+          memory: 1g
+          cpus: '0.5'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dealmecca.rule=Host(`your-domain.com`)"
+      - "traefik.http.routers.dealmecca.tls=true"
+      - "traefik.http.routers.dealmecca.tls.certresolver=letsencrypt"
+
+  # =============================================================================
+  # DATABASE
+  # =============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: dealmecca-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dealmecca}
+      POSTGRES_USER: ${POSTGRES_USER:-dealmecca}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dealmecca} -d ${POSTGRES_DB:-dealmecca}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: '0.5'
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+
+  # =============================================================================
+  # REDIS CACHE
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: dealmecca-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '0.25'
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  # =============================================================================
+  # REVERSE PROXY (NGINX)
+  # =============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: dealmecca-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+      - uploads:/var/www/uploads:ro
+      - logs:/var/log/nginx
+    depends_on:
+      - app
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # =============================================================================
+  # SSL CERTIFICATE MANAGEMENT
+  # =============================================================================
+  certbot:
+    image: certbot/certbot
+    container_name: dealmecca-certbot
+    volumes:
+      - ./ssl:/etc/letsencrypt
+      - ./nginx/html:/var/www/html
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    depends_on:
+      - nginx
+    networks:
+      - app-network
+
+  # =============================================================================
+  # MONITORING & LOGGING
+  # =============================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dealmecca-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - app-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dealmecca-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - app-network
+    depends_on:
+      - prometheus
+
+  # =============================================================================
+  # BACKUP SERVICE
+  # =============================================================================
+  backup:
+    image: postgres:15-alpine
+    container_name: dealmecca-backup
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-dealmecca}
+      POSTGRES_USER: ${POSTGRES_USER:-dealmecca}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      BACKUP_SCHEDULE: "0 2 * * *"
+      BACKUP_RETENTION_DAYS: 30
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache dcron
+        echo "$${BACKUP_SCHEDULE} /backup.sh" | crontab -
+        crond -f
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploads:
+    driver: local
+  logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local 
