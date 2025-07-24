@@ -49,7 +49,8 @@ export async function middleware(req: NextRequest) {
     '/api/check-env',         // Temporary for checking environment
     '/api/direct-login',      // Temporary direct login bypass
     '/api/session-status',    // Temporary for debugging sessions
-    '/api/debug-middleware'   // Temporary for debugging middleware
+    '/api/debug-middleware',  // Temporary for debugging middleware
+    '/api/debug-session'      // Temporary for debugging NextAuth sessions
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
