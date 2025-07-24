@@ -29,7 +29,10 @@ export async function middleware(req: NextRequest) {
   // Public API routes that don't need auth
   const publicApiRoutes = [
     '/api/stripe/webhook',
-    '/api/forum/search/suggestions'
+    '/api/forum/search/suggestions',
+    '/api/orgs/companies',
+    '/api/orgs/contacts',
+    '/api/companies-public'  // Temporary for testing
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {

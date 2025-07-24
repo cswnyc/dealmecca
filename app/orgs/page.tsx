@@ -24,8 +24,10 @@ interface Company {
 export default function OrgsPage() {
   const { data: session, status } = useSession();
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function fetchCompanies() {
@@ -37,6 +39,7 @@ export default function OrgsPage() {
         }
         const data = await response.json();
         setCompanies(data.companies || []);
+        setFilteredCompanies(data.companies || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -49,6 +52,21 @@ export default function OrgsPage() {
       fetchCompanies();
     }
   }, [status]);
+
+  // Filter companies based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredCompanies(companies);
+    } else {
+      const filtered = companies.filter(company =>
+        company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        company.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        company.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        company.state.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredCompanies(filtered);
+    }
+  }, [searchQuery, companies]);
 
   if (status === 'loading') {
     return (
@@ -67,10 +85,28 @@ export default function OrgsPage() {
   }
 
   const headerActions = (
-    <Button variant="outline">
-      <Search className="w-4 h-4 mr-2" />
-      Advanced Search
-    </Button>
+    <div className="flex items-center space-x-2">
+      <div className="relative">
+        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search companies..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-64"
+        />
+      </div>
+      {searchQuery && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSearchQuery('')}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          Clear
+        </Button>
+      )}
+    </div>
   );
 
   return (
@@ -131,7 +167,9 @@ export default function OrgsPage() {
         {/* Companies List */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Companies</CardTitle>
+            <CardTitle>
+              {searchQuery ? `Search Results (${filteredCompanies.length})` : 'Recent Companies'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -143,13 +181,24 @@ export default function OrgsPage() {
               <div className="text-center py-8">
                 <p className="text-red-600">Error: {error}</p>
               </div>
-            ) : companies.length === 0 ? (
+            ) : filteredCompanies.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-600">No companies found</p>
+                <p className="text-gray-600">
+                  {searchQuery ? `No companies found matching "${searchQuery}"` : 'No companies found'}
+                </p>
+                {searchQuery && (
+                  <Button
+                    variant="link"
+                    onClick={() => setSearchQuery('')}
+                    className="mt-2"
+                  >
+                    Clear search
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
-                {companies.slice(0, 10).map((company) => (
+                {filteredCompanies.slice(0, 10).map((company) => (
                   <div key={company.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <div className="bg-sky-100 p-2 rounded-lg">

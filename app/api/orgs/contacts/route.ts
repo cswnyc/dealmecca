@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     city: searchParams.getAll('city'),
     state: searchParams.getAll('state'),
     budgetRange: searchParams.getAll('budgetRange'),
-    verified: searchParams.get('verified') === 'true',
+    verified: searchParams.get('verified') ? searchParams.get('verified') === 'true' : undefined,
     sortBy: searchParams.get('sortBy') || 'relevance',
     limit: Math.min(parseInt(searchParams.get('limit') || '20'), 100),
     offset: (() => {
