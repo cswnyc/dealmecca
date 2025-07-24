@@ -78,7 +78,7 @@ export const authOptions: NextAuthOptions = {
   },
   useSecureCookies: process.env.NODE_ENV === 'production',
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/login',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
   },
