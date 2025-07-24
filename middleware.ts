@@ -34,7 +34,8 @@ export async function middleware(req: NextRequest) {
     '/api/orgs/contacts',
     '/api/companies-public',  // Temporary for testing
     '/api/admin/promote-user',  // Temporary for admin setup
-    '/api/test-auth'  // Temporary for debugging login
+    '/api/test-auth',  // Temporary for debugging login
+    '/api/check-env'  // Temporary for checking environment
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
