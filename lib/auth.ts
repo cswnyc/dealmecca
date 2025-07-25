@@ -6,6 +6,7 @@ import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
 export const authOptions: NextAuthOptions = {
+  // Use adapter for OAuth providers only, not for credentials
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -63,7 +64,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: 'database',
+    strategy: 'jwt', // Required for credentials provider
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 24 hours
   },
@@ -86,15 +87,50 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: '/auth/verify-request',
   },
   callbacks: {
-    async session({ session, user }) {
-      console.log('📱 Session callback - user data:', user)
+    async jwt({ token, user, account }) {
+      console.log('🔐 JWT callback - user:', user, 'account:', account?.provider)
+      
+      if (user) {
+        // First time JWT is created (login)
+        const newToken = {
+          ...token,
+          sub: user.id,
+          role: user.role,
+          subscriptionTier: user.subscriptionTier,
+        }
+        console.log('🔐 JWT callback - created token:', newToken)
+        
+        // For credentials provider, manually create session record
+        if (account?.provider === 'credentials') {
+          try {
+            const sessionToken = `cred_session_${Date.now()}_${user.id}_${Math.random().toString(36).substring(2)}`
+            await prisma.session.create({
+              data: {
+                sessionToken,
+                userId: user.id,
+                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+              },
+            })
+            console.log('✅ Manual session created for credentials user:', user.id, 'token:', sessionToken)
+          } catch (error) {
+            console.error('❌ Failed to create manual session:', error)
+          }
+        }
+        
+        return newToken
+      }
+      
+      return token
+    },
+    async session({ session, token }) {
+      console.log('📱 Session callback - token data:', token)
       const newSession = {
         ...session,
         user: {
           ...session.user,
-          id: user.id,
-          role: user.role,
-          subscriptionTier: user.subscriptionTier,
+          id: token.sub,
+          role: token.role,
+          subscriptionTier: token.subscriptionTier,
         },
       }
       console.log('📱 Session callback - created session:', newSession)
