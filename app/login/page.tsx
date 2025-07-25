@@ -20,7 +20,12 @@ function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
+  // Add debugging for component mount
   useEffect(() => {
+    console.log('🏗️ LOGIN COMPONENT: Mounted successfully')
+    console.log('🏗️ LOGIN COMPONENT: NextAuth signIn function:', typeof signIn)
+    console.log('🏗️ LOGIN COMPONENT: getSession function:', typeof getSession)
+    
     // Check for success messages from URL params
     const messageParam = searchParams.get('message')
     if (messageParam === 'signup-success') {
@@ -49,6 +54,7 @@ function LoginContent() {
   }, [searchParams, router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('📝 FORM INPUT: Field changed:', e.target.name, e.target.value)
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -57,19 +63,32 @@ function LoginContent() {
     if (error) setError('')
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!formData.email.trim() || !formData.password) {
-      setError('Please fill in all fields')
-      return
-    }
-    
-    setIsLoading(true)
-    setError('')
-    setMessage('')
+  // Add explicit button click handler for debugging
+  const handleButtonClick = () => {
+    console.log('🖱️ BUTTON CLICK: Sign In button clicked!')
+    console.log('🖱️ BUTTON CLICK: isLoading state:', isLoading)
+    console.log('🖱️ BUTTON CLICK: Form data:', formData)
+  }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log('📋 FORM SUBMIT: Event triggered')
+    console.log('📋 FORM SUBMIT: Event object:', e)
+    
     try {
+      e.preventDefault()
+      console.log('📋 FORM SUBMIT: Default prevented')
+      
+      if (!formData.email.trim() || !formData.password) {
+        console.log('❌ FORM SUBMIT: Validation failed - missing fields')
+        setError('Please fill in all fields')
+        return
+      }
+      
+      console.log('📋 FORM SUBMIT: Validation passed')
+      setIsLoading(true)
+      setError('')
+      setMessage('')
+
       console.log('🔄 Attempting login for:', formData.email)
       console.log('🔍 Form data:', { email: formData.email, hasPassword: !!formData.password })
       
@@ -125,60 +144,60 @@ function LoginContent() {
           const sessionData = await sessionResponse.json()
           console.log('📱 Session data:', sessionData)
           
-                        if (sessionData?.user) {
-                console.log('✅ Session confirmed, redirecting to dashboard')
-                window.location.href = '/dashboard'
+          if (sessionData?.user) {
+            console.log('✅ Session confirmed, redirecting to dashboard')
+            window.location.href = '/dashboard'
+          } else {
+            console.log('⚠️ No session found, checking NextAuth debug...')
+            
+            // Check NextAuth session debug
+            try {
+              const debugResponse = await fetch('/api/debug-nextauth-session', {
+                credentials: 'include',
+                cache: 'no-cache'
+              })
+              const debugData = await debugResponse.json()
+              console.log('🔍 NextAuth debug data:', debugData)
+              
+              if (debugData?.results?.databaseSessions?.activeSessions > 0) {
+                console.log('💾 Active database sessions found, forcing refresh...')
+                // Force a hard refresh to ensure NextAuth picks up the session
+                window.location.reload()
               } else {
-                console.log('⚠️ No session found, checking NextAuth debug...')
+                console.log('⚠️ No active database sessions, retrying...')
                 
-                // Check NextAuth session debug
-                try {
-                  const debugResponse = await fetch('/api/debug-nextauth-session', {
-                    credentials: 'include',
-                    cache: 'no-cache'
-                  })
-                  const debugData = await debugResponse.json()
-                  console.log('🔍 NextAuth debug data:', debugData)
-                  
-                  if (debugData?.results?.databaseSessions?.activeSessions > 0) {
-                    console.log('💾 Active database sessions found, forcing refresh...')
-                    // Force a hard refresh to ensure NextAuth picks up the session
-                    window.location.reload()
-                  } else {
-                    console.log('⚠️ No active database sessions, retrying...')
+                // Wait and retry session check
+                setTimeout(async () => {
+                  try {
+                    const retryResponse = await fetch('/api/auth/session', {
+                      credentials: 'include',
+                      cache: 'no-cache'
+                    })
+                    const retryData = await retryResponse.json()
+                    console.log('🔄 Retry session data:', retryData)
                     
-                    // Wait and retry session check
-                    setTimeout(async () => {
-                      try {
-                        const retryResponse = await fetch('/api/auth/session', {
-                          credentials: 'include',
-                          cache: 'no-cache'
-                        })
-                        const retryData = await retryResponse.json()
-                        console.log('🔄 Retry session data:', retryData)
-                        
-                        if (retryData?.user) {
-                          window.location.href = '/dashboard'
-                        } else {
-                          console.log('⚠️ Still no session, forcing dashboard redirect')
-                          window.location.href = '/dashboard'
-                        }
-                      } catch (error) {
-                        console.error('❌ Retry session check failed:', error)
-                        window.location.href = '/dashboard'
-                      }
-                    }, 2000)
-                  }
-                } catch (debugError) {
-                  console.error('❌ Debug check failed:', debugError)
-                  console.log('⚠️ Falling back to retry logic...')
-                  
-                  // Fallback to original retry logic
-                  setTimeout(() => {
+                    if (retryData?.user) {
+                      window.location.href = '/dashboard'
+                    } else {
+                      console.log('⚠️ Still no session, forcing dashboard redirect')
+                      window.location.href = '/dashboard'
+                    }
+                  } catch (error) {
+                    console.error('❌ Retry session check failed:', error)
                     window.location.href = '/dashboard'
-                  }, 2000)
-                }
+                  }
+                }, 2000)
               }
+            } catch (debugError) {
+              console.error('❌ Debug check failed:', debugError)
+              console.log('⚠️ Falling back to retry logic...')
+              
+              // Fallback to original retry logic
+              setTimeout(() => {
+                window.location.href = '/dashboard'
+              }, 2000)
+            }
+          }
         } catch (error) {
           console.error('❌ Immediate session check failed:', error)
           // Force redirect anyway
@@ -191,14 +210,17 @@ function LoginContent() {
         setError('Login failed. Please try again.')
       }
     } catch (error: any) {
-      console.error('❌ Login exception:', error)
+      console.error('❌ FORM SUBMIT: Critical error in handleSubmit:', error)
+      console.error('❌ FORM SUBMIT: Error stack:', error.stack)
       setError(`Login failed: ${error?.message || 'Unknown error'}`)
     } finally {
+      console.log('🔄 FORM SUBMIT: Setting loading to false')
       setIsLoading(false)
     }
   }
 
   const handleGoogleSignIn = async () => {
+    console.log('🔗 GOOGLE SIGNIN: Button clicked')
     setIsLoading(true)
     setError('')
     
@@ -207,6 +229,7 @@ function LoginContent() {
         callbackUrl: '/dashboard' 
       })
     } catch (error) {
+      console.error('❌ GOOGLE SIGNIN: Error:', error)
       setError('Google sign-in failed. Please try again.')
       setIsLoading(false)
     }
@@ -270,7 +293,10 @@ function LoginContent() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => {
+                    console.log('👁️ PASSWORD TOGGLE: Button clicked')
+                    setShowPassword(!showPassword)
+                  }}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (
@@ -290,14 +316,25 @@ function LoginContent() {
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit Button with Enhanced Debugging */}
             <Button
               type="submit"
               className="w-full"
               disabled={isLoading}
+              onClick={handleButtonClick}
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
+
+            {/* Alternative Button for Testing */}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+              onClick={() => console.log('🔄 NATIVE BUTTON: Clicked')}
+            >
+              {isLoading ? 'Signing in (Native)...' : 'Sign In (Native Button)'}
+            </button>
           </form>
 
           {/* Divider */}
@@ -338,6 +375,15 @@ function LoginContent() {
             </svg>
             Continue with Google
           </Button>
+
+          {/* Debug Information */}
+          <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
+            <div>Debug Info:</div>
+            <div>Email: {formData.email || 'empty'}</div>
+            <div>Password: {formData.password ? '****' : 'empty'}</div>
+            <div>Loading: {isLoading ? 'true' : 'false'}</div>
+            <div>NextAuth signIn: {typeof signIn}</div>
+          </div>
 
           {/* Forgot Password Link */}
           <div className="text-center">
