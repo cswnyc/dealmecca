@@ -71,6 +71,15 @@ function LoginContent() {
 
     try {
       console.log('🔄 Attempting login for:', formData.email)
+      console.log('🔍 Form data:', { email: formData.email, hasPassword: !!formData.password })
+      
+      // Check if service worker is interfering
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration()
+        if (registration) {
+          console.log('🔧 Service worker detected:', registration.scope)
+        }
+      }
       
       const result = await signIn('credentials', {
         email: formData.email.trim().toLowerCase(),
@@ -82,33 +91,67 @@ function LoginContent() {
 
       if (result?.error) {
         console.error('❌ Login error:', result.error)
-        setError('Invalid email or password')
+        if (result.error === 'CredentialsSignin') {
+          setError('Invalid email or password. Please check your credentials.')
+        } else {
+          setError(`Login failed: ${result.error}`)
+        }
       } else if (result?.ok) {
         console.log('✅ Login successful, checking session...')
         
-        // Wait a moment then check session
-        setTimeout(async () => {
-          try {
-            const sessionResponse = await fetch('/api/auth/session')
-            const sessionData = await sessionResponse.json()
-            console.log('📱 Session after login:', sessionData)
-            
-            if (sessionData?.user) {
-              console.log('✅ Session confirmed, redirecting to dashboard')
-              window.location.href = '/dashboard'
-            } else {
-              console.log('⚠️ No session found, forcing refresh anyway')
-              window.location.href = '/dashboard'
-            }
-          } catch (error) {
-            console.error('❌ Session check failed:', error)
+        // Immediate session check
+        try {
+          const sessionResponse = await fetch('/api/auth/session', {
+            credentials: 'include',
+            cache: 'no-cache'
+          })
+          console.log('📡 Session response status:', sessionResponse.status)
+          
+          const sessionData = await sessionResponse.json()
+          console.log('📱 Session data:', sessionData)
+          
+          if (sessionData?.user) {
+            console.log('✅ Session confirmed, redirecting to dashboard')
             window.location.href = '/dashboard'
+          } else {
+            console.log('⚠️ No session found, waiting and retrying...')
+            
+            // Wait and retry session check
+            setTimeout(async () => {
+              try {
+                const retryResponse = await fetch('/api/auth/session', {
+                  credentials: 'include',
+                  cache: 'no-cache'
+                })
+                const retryData = await retryResponse.json()
+                console.log('🔄 Retry session data:', retryData)
+                
+                if (retryData?.user) {
+                  window.location.href = '/dashboard'
+                } else {
+                  console.log('⚠️ Still no session, forcing dashboard redirect')
+                  window.location.href = '/dashboard'
+                }
+              } catch (error) {
+                console.error('❌ Retry session check failed:', error)
+                window.location.href = '/dashboard'
+              }
+            }, 2000)
           }
-        }, 1000)
+        } catch (error) {
+          console.error('❌ Immediate session check failed:', error)
+          // Force redirect anyway
+          setTimeout(() => {
+            window.location.href = '/dashboard'
+          }, 1000)
+        }
+      } else {
+        console.error('❌ Unexpected login result:', result)
+        setError('Login failed. Please try again.')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Login exception:', error)
-      setError('Login failed. Please try again.')
+      setError(`Login failed: ${error?.message || 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }

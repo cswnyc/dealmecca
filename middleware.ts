@@ -51,7 +51,8 @@ export async function middleware(req: NextRequest) {
     '/api/session-status',    // Temporary for debugging sessions
     '/api/debug-middleware',  // Temporary for debugging middleware
     '/api/debug-session',     // Temporary for debugging NextAuth sessions
-    '/api/test-session-creation' // Temporary for testing manual session creation
+    '/api/test-session-creation', // Temporary for testing manual session creation
+    '/api/disable-sw'         // Temporary for disabling service worker during debug
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dealmecca-v1.0.0'
+const CACHE_NAME = 'dealmecca-v1.1.0-auth-fix'
 const STATIC_CACHE_URLS = [
   '/',
   '/dashboard',
@@ -13,13 +13,12 @@ const STATIC_CACHE_URLS = [
 ]
 
 const API_CACHE_URLS = [
-  '/api/users/profile',
-  '/api/dashboard/metrics',
-  '/api/search/suggestions'
+  // Removed API endpoints from pre-caching to prevent installation errors
+  // These will be cached on-demand instead
 ]
 
-const RUNTIME_CACHE = 'dealmecca-runtime-v1'
-const API_CACHE = 'dealmecca-api-v1'
+const RUNTIME_CACHE = 'dealmecca-runtime-v1.1-auth-fix'
+const API_CACHE = 'dealmecca-api-v1.1-auth-fix'
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -28,13 +27,16 @@ self.addEventListener('install', (event) => {
     Promise.all([
       caches.open(CACHE_NAME).then((cache) => {
         console.log('[SW] Caching static assets')
-        return cache.addAll(STATIC_CACHE_URLS)
+        return cache.addAll(STATIC_CACHE_URLS).catch(error => {
+          console.error('[SW] Failed to cache some static assets:', error)
+          // Continue installation even if some assets fail to cache
+          return Promise.resolve()
+        })
       }),
       caches.open(API_CACHE).then((cache) => {
-        console.log('[SW] Pre-caching API routes')
-        return cache.addAll(API_CACHE_URLS.map(url => new Request(url, { 
-          credentials: 'same-origin' 
-        })))
+        console.log('[SW] API cache initialized (no pre-caching)')
+        // Don't pre-cache API routes to avoid authentication conflicts
+        return Promise.resolve()
       })
     ])
   )
@@ -73,6 +75,27 @@ self.addEventListener('fetch', (event) => {
 
   // Skip cross-origin requests
   if (url.origin !== location.origin) {
+    return
+  }
+
+  // CRITICAL: Never cache authentication endpoints
+  const authEndpoints = [
+    '/api/auth/',
+    '/api/auth/session',
+    '/api/auth/signin',
+    '/api/auth/signout',
+    '/api/auth/signup',
+    '/api/auth/csrf',
+    '/api/auth/providers',
+    '/api/auth/callback',
+    '/api/direct-login',
+    '/api/debug-session',
+    '/api/test-session-creation'
+  ]
+  
+  if (authEndpoints.some(endpoint => url.pathname.startsWith(endpoint))) {
+    console.log('[SW] Bypassing auth endpoint:', url.pathname)
+    // Let auth requests go directly to network - NO CACHING
     return
   }
 
