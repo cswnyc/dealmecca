@@ -51,6 +51,8 @@ export async function middleware(req: NextRequest) {
     '/api/session-status',    // Temporary for debugging sessions
     '/api/debug-middleware',  // Temporary for debugging middleware
     '/api/debug-session',     // Temporary for debugging NextAuth sessions
+    '/api/debug-nextauth-session', // Temporary for NextAuth-specific session debugging
+    '/api/force-session-refresh', // Temporary for forcing session refresh
     '/api/test-session-creation', // Temporary for testing manual session creation
     '/api/test-auth-pipeline', // Temporary for testing complete auth pipeline
     '/api/test-basic-auth',   // Temporary for testing basic auth functionality

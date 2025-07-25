@@ -125,34 +125,60 @@ function LoginContent() {
           const sessionData = await sessionResponse.json()
           console.log('📱 Session data:', sessionData)
           
-          if (sessionData?.user) {
-            console.log('✅ Session confirmed, redirecting to dashboard')
-            window.location.href = '/dashboard'
-          } else {
-            console.log('⚠️ No session found, waiting and retrying...')
-            
-            // Wait and retry session check
-            setTimeout(async () => {
-              try {
-                const retryResponse = await fetch('/api/auth/session', {
-                  credentials: 'include',
-                  cache: 'no-cache'
-                })
-                const retryData = await retryResponse.json()
-                console.log('🔄 Retry session data:', retryData)
-                
-                if (retryData?.user) {
-                  window.location.href = '/dashboard'
-                } else {
-                  console.log('⚠️ Still no session, forcing dashboard redirect')
-                  window.location.href = '/dashboard'
-                }
-              } catch (error) {
-                console.error('❌ Retry session check failed:', error)
+                        if (sessionData?.user) {
+                console.log('✅ Session confirmed, redirecting to dashboard')
                 window.location.href = '/dashboard'
+              } else {
+                console.log('⚠️ No session found, checking NextAuth debug...')
+                
+                // Check NextAuth session debug
+                try {
+                  const debugResponse = await fetch('/api/debug-nextauth-session', {
+                    credentials: 'include',
+                    cache: 'no-cache'
+                  })
+                  const debugData = await debugResponse.json()
+                  console.log('🔍 NextAuth debug data:', debugData)
+                  
+                  if (debugData?.results?.databaseSessions?.activeSessions > 0) {
+                    console.log('💾 Active database sessions found, forcing refresh...')
+                    // Force a hard refresh to ensure NextAuth picks up the session
+                    window.location.reload()
+                  } else {
+                    console.log('⚠️ No active database sessions, retrying...')
+                    
+                    // Wait and retry session check
+                    setTimeout(async () => {
+                      try {
+                        const retryResponse = await fetch('/api/auth/session', {
+                          credentials: 'include',
+                          cache: 'no-cache'
+                        })
+                        const retryData = await retryResponse.json()
+                        console.log('🔄 Retry session data:', retryData)
+                        
+                        if (retryData?.user) {
+                          window.location.href = '/dashboard'
+                        } else {
+                          console.log('⚠️ Still no session, forcing dashboard redirect')
+                          window.location.href = '/dashboard'
+                        }
+                      } catch (error) {
+                        console.error('❌ Retry session check failed:', error)
+                        window.location.href = '/dashboard'
+                      }
+                    }, 2000)
+                  }
+                } catch (debugError) {
+                  console.error('❌ Debug check failed:', debugError)
+                  console.log('⚠️ Falling back to retry logic...')
+                  
+                  // Fallback to original retry logic
+                  setTimeout(() => {
+                    window.location.href = '/dashboard'
+                  }, 2000)
+                }
               }
-            }, 2000)
-          }
         } catch (error) {
           console.error('❌ Immediate session check failed:', error)
           // Force redirect anyway
