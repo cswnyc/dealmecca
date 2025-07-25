@@ -78,14 +78,33 @@ function LoginContent() {
         redirect: false
       })
 
+      console.log('🔍 SignIn result:', result)
+
       if (result?.error) {
         console.error('❌ Login error:', result.error)
         setError('Invalid email or password')
       } else if (result?.ok) {
-        console.log('✅ Login successful, forcing session refresh...')
+        console.log('✅ Login successful, checking session...')
         
-        // Force a hard refresh to ensure session is established
-        window.location.href = '/dashboard'
+        // Wait a moment then check session
+        setTimeout(async () => {
+          try {
+            const sessionResponse = await fetch('/api/auth/session')
+            const sessionData = await sessionResponse.json()
+            console.log('📱 Session after login:', sessionData)
+            
+            if (sessionData?.user) {
+              console.log('✅ Session confirmed, redirecting to dashboard')
+              window.location.href = '/dashboard'
+            } else {
+              console.log('⚠️ No session found, forcing refresh anyway')
+              window.location.href = '/dashboard'
+            }
+          } catch (error) {
+            console.error('❌ Session check failed:', error)
+            window.location.href = '/dashboard'
+          }
+        }, 1000)
       }
     } catch (error) {
       console.error('❌ Login exception:', error)
