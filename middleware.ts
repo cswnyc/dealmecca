@@ -52,6 +52,7 @@ export async function middleware(req: NextRequest) {
     '/api/debug-middleware',  // Temporary for debugging middleware
     '/api/debug-session',     // Temporary for debugging NextAuth sessions
     '/api/test-session-creation', // Temporary for testing manual session creation
+    '/api/test-auth-pipeline', // Temporary for testing complete auth pipeline
     '/api/disable-sw'         // Temporary for disabling service worker during debug
   ]
   

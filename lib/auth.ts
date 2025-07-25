@@ -27,39 +27,66 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
+        console.log('🔄 AUTHORIZE CALLBACK STARTED')
+        console.log('📧 Credentials received:', { 
+          email: credentials?.email, 
+          hasPassword: !!credentials?.password,
+          passwordLength: credentials?.password?.length || 0
         })
 
-        if (!user || !user.password) {
+        if (!credentials?.email || !credentials?.password) {
+          console.log('❌ AUTHORIZE: Missing credentials')
           return null
         }
 
-        const isPasswordValid = await compare(
-          credentials.password,
-          user.password
-        )
+        try {
+          console.log('🔍 AUTHORIZE: Looking up user in database...')
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email,
+            },
+          })
+          
+          console.log('👤 AUTHORIZE: User lookup result:', {
+            found: !!user,
+            userId: user?.id,
+            userEmail: user?.email,
+            hasPassword: !!user?.password,
+            userRole: user?.role
+          })
 
-        if (!isPasswordValid) {
+          if (!user || !user.password) {
+            console.log('❌ AUTHORIZE: User not found or no password')
+            return null
+          }
+
+          console.log('🔐 AUTHORIZE: Verifying password...')
+          const isPasswordValid = await compare(
+            credentials.password,
+            user.password
+          )
+          
+          console.log('🔐 AUTHORIZE: Password verification result:', isPasswordValid)
+
+          if (!isPasswordValid) {
+            console.log('❌ AUTHORIZE: Invalid password')
+            return null
+          }
+
+          const userToReturn = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            subscriptionTier: user.subscriptionTier,
+          }
+          
+          console.log('✅ AUTHORIZE: Authentication successful, returning user:', userToReturn)
+          return userToReturn
+        } catch (error) {
+          console.error('❌ AUTHORIZE: Database/verification error:', error)
           return null
         }
-
-        const userToReturn = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          subscriptionTier: user.subscriptionTier,
-        }
-        
-        console.log('🔑 Credentials provider - returning user:', userToReturn)
-        return userToReturn
       },
     }),
   ],
@@ -88,89 +115,160 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, account }) {
-      console.log('🔐 JWT callback - user:', user, 'account:', account?.provider)
+      console.log('🔐 JWT CALLBACK STARTED')
+      console.log('🔐 JWT: Inputs -', { 
+        hasUser: !!user, 
+        hasToken: !!token,
+        accountProvider: account?.provider,
+        tokenSub: token?.sub
+      })
       
       if (user) {
-        // First time JWT is created (login)
-        const newToken = {
-          ...token,
-          sub: user.id,
-          role: user.role,
-          subscriptionTier: user.subscriptionTier,
-        }
-        console.log('🔐 JWT callback - created token:', newToken)
+        console.log('🆕 JWT: First time login detected, user:', user)
         
-        // For credentials provider, manually create session record
-        if (account?.provider === 'credentials') {
-          try {
-            const sessionToken = `cred_session_${Date.now()}_${user.id}_${Math.random().toString(36).substring(2)}`
-            await prisma.session.create({
-              data: {
-                sessionToken,
-                userId: user.id,
-                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-              },
-            })
-            console.log('✅ Manual session created for credentials user:', user.id, 'token:', sessionToken)
-          } catch (error) {
-            console.error('❌ Failed to create manual session:', error)
+        try {
+          // First time JWT is created (login)
+          const newToken = {
+            ...token,
+            sub: user.id,
+            role: user.role,
+            subscriptionTier: user.subscriptionTier,
           }
+          console.log('🔐 JWT: Created new token:', newToken)
+          
+          // For credentials provider, manually create session record
+          if (account?.provider === 'credentials') {
+            console.log('🔑 JWT: Credentials provider detected, creating manual session...')
+            
+            try {
+              const sessionToken = `cred_session_${Date.now()}_${user.id}_${Math.random().toString(36).substring(2)}`
+              
+              console.log('💾 JWT: Attempting to create session in database...')
+              const sessionRecord = await prisma.session.create({
+                data: {
+                  sessionToken,
+                  userId: user.id,
+                  expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+                },
+              })
+              
+              console.log('✅ JWT: Manual session created successfully:', {
+                sessionId: sessionRecord.id,
+                sessionToken: sessionToken.substring(0, 20) + '...',
+                userId: user.id,
+                expires: sessionRecord.expires
+              })
+            } catch (sessionError: any) {
+              console.error('❌ JWT: Failed to create manual session:', sessionError)
+              console.error('❌ JWT: Session error details:', {
+                message: sessionError?.message || 'Unknown error',
+                code: sessionError?.code || 'Unknown code',
+                userId: user.id
+              })
+            }
+          } else {
+            console.log('🔗 JWT: OAuth provider, skipping manual session creation')
+          }
+          
+          console.log('✅ JWT: Returning new token')
+          return newToken
+        } catch (error) {
+          console.error('❌ JWT: Error in token creation:', error)
+          return token
         }
-        
-        return newToken
       }
       
+      console.log('🔁 JWT: Existing token, no changes needed')
       return token
     },
     async session({ session, token }) {
-      console.log('📱 Session callback - token data:', token)
-      const newSession = {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.sub,
-          role: token.role,
-          subscriptionTier: token.subscriptionTier,
-        },
+      console.log('📱 SESSION CALLBACK STARTED')
+      console.log('📱 SESSION: Inputs -', { 
+        hasSession: !!session,
+        hasToken: !!token,
+        tokenSub: token?.sub,
+        sessionUserEmail: session?.user?.email
+      })
+      
+      try {
+        const newSession = {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.sub,
+            role: token.role,
+            subscriptionTier: token.subscriptionTier,
+          },
+        }
+        console.log('✅ SESSION: Created session object:', newSession)
+        return newSession
+      } catch (error) {
+        console.error('❌ SESSION: Error in session creation:', error)
+        return session
       }
-      console.log('📱 Session callback - created session:', newSession)
-      return newSession
     },
     async signIn({ user, account, profile }) {
-      if (account?.provider === 'google') {
-        try {
-          // Check if user exists in our database
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! },
-          })
-
-          if (!existingUser) {
-            // Create new user with default role and subscription
-            const newUser = await prisma.user.create({
-              data: {
-                email: user.email!,
-                name: user.name,
-                role: 'FREE',
-                subscriptionTier: 'FREE',
-              },
+      console.log('🔐 SIGNIN CALLBACK STARTED')
+      console.log('🔐 SIGNIN: Inputs -', { 
+        hasUser: !!user,
+        userEmail: user?.email,
+        accountProvider: account?.provider,
+        hasProfile: !!profile
+      })
+      
+      try {
+        if (account?.provider === 'google') {
+          console.log('🔗 SIGNIN: Google OAuth provider detected')
+          
+          try {
+            // Check if user exists in our database
+            const existingUser = await prisma.user.findUnique({
+              where: { email: user.email! },
             })
-            
-            // Update the user object to include our custom fields
-            user.id = newUser.id
-            user.role = newUser.role
-            user.subscriptionTier = newUser.subscriptionTier
-          } else {
-            // Update the user object with existing user data
-            user.id = existingUser.id
-            user.role = existingUser.role
-            user.subscriptionTier = existingUser.subscriptionTier
+
+            if (!existingUser) {
+              console.log('🆕 SIGNIN: Creating new Google user')
+              
+              // Create new user with default role and subscription
+              const newUser = await prisma.user.create({
+                data: {
+                  email: user.email!,
+                  name: user.name,
+                  role: 'FREE',
+                  subscriptionTier: 'FREE',
+                },
+              })
+              
+              console.log('✅ SIGNIN: New Google user created:', newUser.id)
+              
+              // Update the user object to include our custom fields
+              user.id = newUser.id
+              user.role = newUser.role
+              user.subscriptionTier = newUser.subscriptionTier
+            } else {
+              console.log('👤 SIGNIN: Existing Google user found:', existingUser.id)
+              
+              // Update the user object with existing user data
+              user.id = existingUser.id
+              user.role = existingUser.role
+              user.subscriptionTier = existingUser.subscriptionTier
+            }
+          } catch (error) {
+            console.error('❌ SIGNIN: Error handling Google sign-in:', error)
+            return false
           }
-        } catch (error) {
-          console.error('Error handling Google sign-in:', error)
-          return false
+        } else if (account?.provider === 'credentials') {
+          console.log('🔑 SIGNIN: Credentials provider - user already verified in authorize()')
+        } else {
+          console.log('❓ SIGNIN: Unknown provider or no account:', account?.provider)
         }
+        
+        console.log('✅ SIGNIN: Callback successful, allowing sign in')
+        return true
+      } catch (error) {
+        console.error('❌ SIGNIN: Callback error:', error)
+        return false
       }
-      return true
     },
     async redirect({ url, baseUrl }) {
       console.log('🔀 Redirect callback - url:', url, 'baseUrl:', baseUrl)

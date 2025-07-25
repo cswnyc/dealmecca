@@ -81,13 +81,28 @@ function LoginContent() {
         }
       }
       
+      console.log('📤 Calling NextAuth signIn...')
+      
       const result = await signIn('credentials', {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
         redirect: false
       })
 
+      console.log('📨 NextAuth signIn completed')
       console.log('🔍 SignIn result:', result)
+      
+      // Additional result analysis
+      if (result) {
+        console.log('📊 SignIn result analysis:', {
+          ok: result.ok,
+          status: result.status,
+          error: result.error,
+          url: result.url
+        })
+      } else {
+        console.log('⚠️ SignIn returned null/undefined')
+      }
 
       if (result?.error) {
         console.error('❌ Login error:', result.error)
