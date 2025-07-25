@@ -3,17 +3,31 @@ import { prisma } from '@/lib/prisma'
 import { compare } from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
+  console.log('🚨 AUTH PIPELINE: POST request received')
+  
   try {
-    const { email, password, step } = await request.json()
+    console.log('🧪 AUTH PIPELINE: Attempting to parse JSON body...')
+    
+    let requestBody = null
+    try {
+      requestBody = await request.json()
+    } catch (jsonError: any) {
+      console.log('⚠️ AUTH PIPELINE: No JSON body or invalid JSON, using defaults')
+      requestBody = {}
+    }
+    
+    const { email, password, step } = requestBody
     
     console.log('🧪 AUTH PIPELINE TEST STARTED')
     console.log('🧪 Test parameters:', { email, step, hasPassword: !!password })
 
-    const results = {
+    const results: any = {
       step,
       email,
       timestamp: new Date().toISOString(),
-      tests: {}
+      tests: {},
+      requestReceived: true,
+      jsonParsed: true
     }
 
     // Step 1: Database Connection Test
@@ -227,6 +241,86 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  // GET endpoint for basic environment and database testing
-  return POST(request)
+  console.log('🚨 AUTH PIPELINE: GET request received')
+  
+  try {
+    console.log('🧪 AUTH PIPELINE: Running basic tests without credentials...')
+    
+    const results: any = {
+      timestamp: new Date().toISOString(),
+      tests: {},
+      method: 'GET',
+      requestReceived: true
+    }
+
+    // Test 1: Environment Variables
+    console.log('🧪 Testing environment variables...')
+    results.tests.environment = {
+      success: true,
+      variables: {
+        NEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
+        NEXTAUTH_URL: !!process.env.NEXTAUTH_URL,
+        DATABASE_URL: !!process.env.DATABASE_URL,
+        NODE_ENV: process.env.NODE_ENV,
+        secretLength: process.env.NEXTAUTH_SECRET?.length || 0,
+        nextAuthUrl: process.env.NEXTAUTH_URL
+      },
+      message: 'Environment variables check complete'
+    }
+    console.log('🔍 Environment test completed')
+
+    // Test 2: Database Connection
+    console.log('🧪 Testing database connection...')
+    try {
+      const { prisma } = await import('@/lib/prisma')
+      const userCount = await prisma.user.count()
+      results.tests.database = {
+        success: true,
+        userCount,
+        message: 'Database connection successful'
+      }
+      console.log('✅ Database test passed:', userCount, 'users found')
+    } catch (dbError: any) {
+      results.tests.database = {
+        success: false,
+        error: dbError.message,
+        message: 'Database connection failed'
+      }
+      console.error('❌ Database test failed:', dbError)
+    }
+
+    // Overall success assessment
+    const allTests = Object.values(results.tests) as any[]
+    const successfulTests = allTests.filter(test => test.success)
+    const failedTests = allTests.filter(test => !test.success)
+    
+    results.summary = {
+      totalTests: allTests.length,
+      successfulTests: successfulTests.length,
+      failedTests: failedTests.length,
+      overallSuccess: failedTests.length === 0,
+      message: failedTests.length === 0 
+        ? 'Basic auth pipeline tests passed' 
+        : `${failedTests.length} tests failed`
+    }
+
+    console.log('🧪 AUTH PIPELINE GET TEST COMPLETED')
+    console.log('📊 Summary:', results.summary)
+
+    return NextResponse.json({
+      success: true,
+      results
+    })
+    
+  } catch (error: any) {
+    console.error('❌ AUTH PIPELINE GET ERROR:', error)
+    
+    return NextResponse.json({
+      success: false,
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      method: 'GET'
+    }, { status: 500 })
+  }
 } 
