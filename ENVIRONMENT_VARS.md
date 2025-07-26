@@ -7,10 +7,10 @@
 # DealMecca Premium Brand Configuration
 NEXT_PUBLIC_APP_NAME="DealMecca"
 NEXT_PUBLIC_BRAND_NAME="DealMecca"
-NEXT_PUBLIC_SITE_URL="https://getmecca.com"
+NEXT_PUBLIC_SITE_URL="https://www.getmecca.com"
 NEXT_PUBLIC_TAGLINE="Intelligence that closes."
 NEXT_PUBLIC_DESCRIPTION="DealMecca is the intelligence hub for media-sales teams."
-NEXT_PUBLIC_DOMAIN="getmecca.com"
+NEXT_PUBLIC_DOMAIN="www.getmecca.com"
 ```
 
 ### Database Configuration
@@ -22,7 +22,7 @@ DATABASE_URL="postgresql://username:password@localhost:5432/dealmecca?schema=pub
 ### NextAuth Configuration
 ```bash
 # NextAuth Configuration
-NEXTAUTH_URL="https://getmecca.com"
+NEXTAUTH_URL="https://www.getmecca.com"
 NEXTAUTH_SECRET="your-nextauth-secret-key-change-this-in-production"
 ```
 
@@ -84,9 +84,9 @@ APP_URL="http://localhost:3000"
 
 ### Production (.env.production)
 ```bash
-NEXT_PUBLIC_SITE_URL="https://getmecca.com"
-NEXTAUTH_URL="https://getmecca.com"
-APP_URL="https://getmecca.com"
+NEXT_PUBLIC_SITE_URL="https://www.getmecca.com"
+NEXTAUTH_URL="https://www.getmecca.com"
+APP_URL="https://www.getmecca.com"
 ```
 
 ## Brand Consistency Notes

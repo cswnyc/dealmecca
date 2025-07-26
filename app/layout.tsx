@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     default: 'DealMecca - Intelligence that closes',
   },
   description: 'DealMecca is the intelligence hub for media-sales teams. We plug your CRM, ad-server, and billing data into one neural engine, flagging the ripest prospects and the riskiest gaps—so reps close faster and managers forecast with surgical accuracy.',
-  metadataBase: new URL('https://getmecca.com'),
+  metadataBase: new URL('https://www.getmecca.com'),
   keywords: [
     'media sales intelligence',
     'sales data platform', 
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'DealMecca - Intelligence that closes',
     description: 'The intelligence hub for media-sales teams. Connect your CRM, ad-server, and billing data into one neural engine for faster deals and surgical forecasting accuracy.',
-    url: 'https://getmecca.com',
+    url: 'https://www.getmecca.com',
     siteName: 'DealMecca',
     images: [
       {
