@@ -103,7 +103,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
+        domain: process.env.NODE_ENV === 'production' ? '.getmecca.com' : undefined,
       },
     },
   },
@@ -126,61 +126,25 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         console.log('🆕 JWT: First time login detected, user:', user)
         
-        try {
-          // First time JWT is created (login)
-          const newToken = {
-            ...token,
-            sub: user.id,
-            role: user.role,
-            subscriptionTier: user.subscriptionTier,
-          }
-          console.log('🔐 JWT: Created new token:', newToken)
-          
-                  // For credentials provider, manually create session record
-        if (account?.provider === 'credentials') {
-          console.log('🔑 JWT: Credentials provider detected, creating manual session...')
-          
-          try {
-            const sessionToken = `cred_session_${Date.now()}_${user.id}_${Math.random().toString(36).substring(2)}`
-            
-            console.log('💾 JWT: Attempting to create session in database...')
-            const sessionRecord = await prisma.session.create({
-              data: {
-                sessionToken,
-                userId: user.id,
-                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-              },
-            })
-            
-            console.log('✅ JWT: Manual session created successfully:', {
-              sessionId: sessionRecord.id,
-              sessionToken: sessionToken.substring(0, 20) + '...',
-              userId: user.id,
-              expires: sessionRecord.expires
-            })
-            
-            // Store session token in JWT for reference
-            ;(newToken as any).sessionToken = sessionToken
-            ;(newToken as any).sessionId = sessionRecord.id
-            
-          } catch (sessionError: any) {
-            console.error('❌ JWT: Failed to create manual session:', sessionError)
-            console.error('❌ JWT: Session error details:', {
-              message: sessionError?.message || 'Unknown error',
-              code: sessionError?.code || 'Unknown code',
-              userId: user.id
-            })
-          }
-        } else {
-          console.log('🔗 JWT: OAuth provider, skipping manual session creation')
+        // For JWT strategy, just store user data in the token
+        // No need for manual database sessions
+        const newToken = {
+          ...token,
+          sub: user.id,
+          role: user.role,
+          subscriptionTier: user.subscriptionTier,
+          email: user.email,
+          name: user.name,
         }
-          
-          console.log('✅ JWT: Returning new token')
-          return newToken
-        } catch (error) {
-          console.error('❌ JWT: Error in token creation:', error)
-          return token
-        }
+        
+        console.log('✅ JWT: Created JWT-only token:', {
+          sub: newToken.sub,
+          role: newToken.role,
+          email: newToken.email,
+          strategy: 'jwt-only'
+        })
+        
+        return newToken
       }
       
       console.log('🔁 JWT: Existing token, no changes needed')
@@ -193,67 +157,35 @@ export const authOptions: NextAuthOptions = {
         hasToken: !!token,
         tokenSub: token?.sub,
         sessionUserEmail: session?.user?.email,
-        hasSessionToken: !!(token as any)?.sessionToken
+        tokenRole: (token as any)?.role
       })
       
-      try {
-        // If we have a manually created session token, verify it's still valid
-        if ((token as any)?.sessionToken) {
-          console.log('🔍 SESSION: Checking manually created session...')
-          
-          try {
-            const dbSession = await prisma.session.findUnique({
-              where: { sessionToken: (token as any).sessionToken },
-              include: { user: true }
-            })
-            
-            if (dbSession && dbSession.expires > new Date()) {
-              console.log('✅ SESSION: Valid database session found:', {
-                sessionId: dbSession.id,
-                userId: dbSession.userId,
-                expires: dbSession.expires,
-                userEmail: dbSession.user.email
-              })
-              
-              // Return session with database user data
-              const newSession = {
-                ...session,
-                user: {
-                  ...session.user,
-                  id: dbSession.user.id,
-                  name: dbSession.user.name,
-                  email: dbSession.user.email,
-                  role: dbSession.user.role,
-                  subscriptionTier: dbSession.user.subscriptionTier,
-                },
-                expires: dbSession.expires.toISOString(),
-              }
-              console.log('✅ SESSION: Returning database-backed session:', newSession)
-              return newSession
-            } else {
-              console.log('⚠️ SESSION: Database session expired or not found')
-            }
-          } catch (dbError) {
-            console.error('❌ SESSION: Database session lookup failed:', dbError)
-          }
-        }
-        
-        // Fallback to JWT-based session
+      if (token?.sub) {
+        // Create session from JWT token data
         const newSession = {
           ...session,
           user: {
-            ...session.user,
             id: token.sub,
-            role: (token as any).role,
-            subscriptionTier: (token as any).subscriptionTier,
+            email: (token as any).email || session.user?.email,
+            name: (token as any).name || session.user?.name,
+            role: (token as any).role || 'FREE',
+            subscriptionTier: (token as any).subscriptionTier || 'FREE',
           },
+          expires: session.expires,
         }
-        console.log('✅ SESSION: Created JWT-based session object:', newSession)
+        
+        console.log('✅ SESSION: Created JWT-based session:', {
+          userId: newSession.user.id,
+          userEmail: newSession.user.email,
+          userRole: newSession.user.role,
+          strategy: 'jwt-only'
+        })
+        
         return newSession
-      } catch (error) {
-        console.error('❌ SESSION: Error in session creation:', error)
-        return session
       }
+      
+      console.log('⚠️ SESSION: No token sub found, returning original session')
+      return session
     },
     async signIn({ user, account, profile }) {
       console.log('🔐 SIGNIN CALLBACK STARTED')
