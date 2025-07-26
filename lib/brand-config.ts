@@ -1,7 +1,7 @@
 export const brandConfig = {
   // Core Brand Identity
   name: 'DealMecca',
-  domain: 'getmecca.com',
+  domain: 'www.getmecca.com',
   taglines: {
     primary: 'Intelligence that closes.',
     secondary: 'Smarter signals. Faster closes.',
