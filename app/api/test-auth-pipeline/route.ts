@@ -208,8 +208,8 @@ export async function POST(request: NextRequest) {
 
     // Overall success assessment
     const allTests = Object.values(results.tests)
-    const successfulTests = allTests.filter(test => test.success)
-    const failedTests = allTests.filter(test => !test.success)
+    const successfulTests = allTests.filter((test: any) => test.success)
+    const failedTests = allTests.filter((test: any) => !test.success)
     
     results.summary = {
       totalTests: allTests.length,
