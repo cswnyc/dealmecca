@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dealmecca-v1.1.0-auth-fix'
+const CACHE_NAME = 'dealmecca-v2.0.0-FORCE-UPDATE'
 const STATIC_CACHE_URLS = [
   '/',
   '/dashboard',
@@ -17,7 +17,7 @@ const API_CACHE_URLS = [
   // These will be cached on-demand instead
 ]
 
-const RUNTIME_CACHE = 'dealmecca-runtime-v1.1-auth-fix'
+const RUNTIME_CACHE = 'dealmecca-runtime-v2.0-FORCE-UPDATE'
 const API_CACHE = 'dealmecca-api-v1.1-auth-fix'
 
 // Install event - cache static assets
