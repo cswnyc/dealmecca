@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { jwtVerify } from 'jose'
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -24,13 +25,32 @@ export async function middleware(req: NextRequest) {
   }
   
   // Get token for authentication using NextAuth
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  const nextAuthToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  
+  // ALSO check for manual authentication (dealmecca-session cookie)
+  let manualToken = null
+  const manualSessionCookie = req.cookies.get('dealmecca-session')?.value
+  
+  if (manualSessionCookie) {
+    try {
+      const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+      const { payload } = await jwtVerify(manualSessionCookie, secret)
+      manualToken = payload
+      console.log('🔍 Manual session verified:', { userId: payload.sub, email: payload.email })
+    } catch (error) {
+      console.log('⚠️ Manual session verification failed:', error)
+    }
+  }
+  
+  // Use either NextAuth token OR manual token
+  const token = nextAuthToken || manualToken
 
   // Debug logging for token resolution
   if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
     console.log('🔍 Middleware token check:', {
       pathname,
       hasToken: !!token,
+      authMethod: nextAuthToken ? 'NextAuth' : manualToken ? 'Manual' : 'None',
       userRole: token?.role || 'none',
       userEmail: token?.email || 'none'
     })
