@@ -40,9 +40,27 @@ function LoginContent() {
     setMessage('')
 
     try {
+      // Get CSRF token first (required for NextAuth credentials provider)
+      console.log('🔐 NEXTAUTH: Getting CSRF token...')
+      const csrfResponse = await fetch('/api/auth/csrf')
+      
+      if (!csrfResponse.ok) {
+        console.log('❌ NEXTAUTH: CSRF fetch failed:', csrfResponse.status)
+        throw new Error(`CSRF token fetch failed: ${csrfResponse.status}`)
+      }
+      
+      const csrfData = await csrfResponse.json()
+      console.log('🔐 NEXTAUTH: CSRF token obtained:', csrfData.csrfToken ? 'Yes' : 'No')
+      
+      if (!csrfData.csrfToken) {
+        console.log('❌ NEXTAUTH: No CSRF token in response')
+        throw new Error('CSRF token not found in response')
+      }
+      
       console.log('📤 NEXTAUTH: Calling signIn() with credentials...')
       console.log('📤 NEXTAUTH: Email:', email.trim().toLowerCase())
       console.log('📤 NEXTAUTH: Password length:', password.length)
+      console.log('📤 NEXTAUTH: CSRF token length:', csrfData.csrfToken?.length || 0)
       console.log('📤 NEXTAUTH: Redirect set to false')
 
       const startTime = Date.now()
@@ -50,6 +68,7 @@ function LoginContent() {
       const result = await signIn('credentials', {
         email: email.trim().toLowerCase(),
         password: password,
+        csrfToken: csrfData.csrfToken,
         redirect: false
       })
 
@@ -134,7 +153,18 @@ function LoginContent() {
       console.error('❌ CRITICAL: Exception in handleSubmit:', error)
       console.error('❌ CRITICAL: Error message:', error?.message)
       console.error('❌ CRITICAL: Error stack:', error?.stack)
-      setError(`Network error: ${error?.message || 'Please try again.'}`)
+      
+      // Provide more specific error messages
+      let errorMessage = 'Network error: Please try again.'
+      if (error?.message?.includes('fetch')) {
+        errorMessage = 'Connection error: Please check your internet connection.'
+      } else if (error?.message?.includes('csrf') || error?.message?.includes('CSRF')) {
+        errorMessage = 'Authentication error: Please refresh the page and try again.'
+      } else if (error?.message) {
+        errorMessage = `Login error: ${error.message}`
+      }
+      
+      setError(errorMessage)
     } finally {
       console.log('🔄 CLEANUP: Setting loading to false')
       setIsLoading(false)
