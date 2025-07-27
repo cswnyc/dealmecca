@@ -96,6 +96,7 @@ self.addEventListener('fetch', (event) => {
   if (authEndpoints.some(endpoint => url.pathname.startsWith(endpoint))) {
     console.log('[SW] Bypassing auth endpoint:', url.pathname)
     // Let auth requests go directly to network - NO CACHING
+    event.respondWith(fetch(request))
     return
   }
 
