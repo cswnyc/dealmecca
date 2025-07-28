@@ -35,7 +35,15 @@ export async function middleware(req: NextRequest) {
     '/api/test-minimal',
     '/api/companies-public',
     '/api/check-env',
-    '/api/disable-sw'
+    '/api/disable-sw',
+    '/api/simple-login',
+    '/api/direct-login',
+    '/api/setup-test-user',
+    '/api/test-basic',
+    '/api/debug-auth',
+    '/api/debug-session',
+    '/api/test-session-creation',
+    '/api/auth-test-flow'
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
@@ -95,7 +103,7 @@ export async function middleware(req: NextRequest) {
     
     // For pages, redirect to login
     const loginUrl = new URL('/login', req.url)
-    loginUrl.searchParams.set('callbackUrl', req.url)
+    loginUrl.searchParams.set('callbackUrl', pathname)
     console.log('🔵 Redirecting to login:', loginUrl.href)
     return NextResponse.redirect(loginUrl)
   }
