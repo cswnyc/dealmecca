@@ -88,13 +88,13 @@ interface CompetitorAnalysis {
 interface EnhancedCompany {
   id: string
   name: string
-  type: string
-  industry: string
-  description: string
-  website: string
-  employeeCount: number
-  headquarters: string
-  revenue: string
+  type?: string
+  industry?: string
+  description?: string
+  website?: string
+  employeeCount?: number
+  headquarters?: string
+  revenue?: string
   logoUrl?: string
   stockSymbol?: string
   foundedYear?: number
@@ -189,14 +189,16 @@ export default function SearchResults({
     }
   }
 
-  const formatEmployeeCount = (count: number) => {
+  const formatEmployeeCount = (count: number | undefined) => {
+    if (!count) return 'N/A'
     if (count >= 1000) {
       return `${(count / 1000).toFixed(1)}k`
     }
     return count.toString()
   }
 
-  const formatRevenue = (revenue: string) => {
+  const formatRevenue = (revenue: string | undefined) => {
+    if (!revenue) return 'N/A'
     return revenue.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 
@@ -285,8 +287,8 @@ export default function SearchResults({
                           )}
                         </h3>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Badge variant="secondary">{company.type.replace('_', ' ')}</Badge>
-                          <span>{company.industry}</span>
+                          {company.type && <Badge variant="secondary">{company.type.replace('_', ' ')}</Badge>}
+                          {company.industry && <span>{company.industry}</span>}
                           {company.headquarters && (
                             <>
                               <span>•</span>
