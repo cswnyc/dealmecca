@@ -45,8 +45,10 @@ export default function SignInPage() {
         const result = await response.json()
         console.log('✅ Login successful:', result.user)
         
-        // Redirect based on user role
-        router.push(result.redirectUrl || '/dashboard')
+        // Use window.location for immediate redirect - more reliable than router.push
+        setTimeout(() => {
+          window.location.href = result.redirectUrl || '/dashboard'
+        }, 100)
         
       } else {
         const errorData = await response.json()
