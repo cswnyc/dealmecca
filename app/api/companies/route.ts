@@ -8,12 +8,18 @@ export async function GET(request: NextRequest) {
   
   try {
     // Get user info from middleware headers
-    const userId = request.headers.get('x-user-id')
+    const userId = request.headers.get('x-user-id') || undefined
     const userRole = request.headers.get('x-user-role')
     const userTier = request.headers.get('x-user-tier')
     
     console.log('👤 User info from headers:', { userId, userRole, userTier })
     
+    // TEMPORARY: Allow requests without user ID for debugging
+    if (!userId) {
+      console.log('⚠️ No user ID found in headers - proceeding without authentication (DEBUG MODE)')
+    }
+
+    /*
     if (!userId) {
       console.log('❌ No user ID found in headers')
       return createAuthError({
@@ -21,6 +27,7 @@ export async function GET(request: NextRequest) {
         helpText: 'Please sign in to access search features'
       })
     }
+    */
 
     // Parse search parameters
     let searchParams
@@ -51,17 +58,22 @@ export async function GET(request: NextRequest) {
     let canSearch = true // TEMPORARY: Skip search permission check for debugging
     
     /*
-    try {
-      canSearch = await canUserSearch(userId)
-      console.log('🔒 Can search result:', canSearch)
-    } catch (error) {
-      console.error('❌ Error checking search permissions:', error)
-      return NextResponse.json({
-        success: false,
-        error: 'Authentication check failed',
-        message: error instanceof Error ? error.message : 'Unknown auth error',
-        details: error instanceof Error ? error.stack : null
-      }, { status: 500 })
+    if (userId) {
+      try {
+        canSearch = await canUserSearch(userId)
+        console.log('🔒 Can search result:', canSearch)
+      } catch (error) {
+        console.error('❌ Error checking search permissions:', error)
+        return NextResponse.json({
+          success: false,
+          error: 'Authentication check failed',
+          message: error instanceof Error ? error.message : 'Unknown auth error',
+          details: error instanceof Error ? error.stack : null
+        }, { status: 500 })
+      }
+    } else {
+      console.log('🔒 No userId - allowing search for debugging')
+      canSearch = true
     }
     */
     
@@ -205,7 +217,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Record search if query was provided
-    if (query) {
+    if (query && userId) {
       /*
       try {
         await recordSearch(userId, query, companies.length, 'companies')

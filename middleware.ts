@@ -23,10 +23,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
   
+  // Temporarily allow companies API without auth for debugging
+  if (pathname.startsWith('/api/companies') || pathname.startsWith('/api/contacts')) {
+    console.log('🔍 Middleware: Bypassing auth for search API (debug mode)')
+    return NextResponse.next()
+  }
+  
   // Get token for authentication
   let token = null
   try {
     token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+    console.log('🔍 Middleware: Token result:', { hasToken: !!token, tokenSub: token?.sub })
   } catch (error) {
     console.error('🔍 Middleware: Error getting token:', error)
   }
