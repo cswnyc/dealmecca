@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Test - No Cache</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; }
+        .result { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .error { background-color: #fee; border-color: #fcc; }
+        .success { background-color: #efe; border-color: #cfc; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input { padding: 8px; width: 200px; border: 1px solid #ddd; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Search Test (No Cache)</h1>
+        <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+        
+        <div>
+            <input type="text" id="searchInput" value="WPP" placeholder="Search term">
+            <button onclick="testSearch()">Test Search</button>
+            <button onclick="testLogin()">Test Login</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Add timestamp to prevent caching
+        document.getElementById('timestamp').textContent = new Date().toISOString();
+        
+        async function testLogin() {
+            showResult('🔑 Testing login...', 'info');
+            try {
+                const response = await fetch('/api/direct-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'admin@dealmecca.com',
+                        password: 'AdminPass123!'
+                    })
+                });
+                
+                const data = await response.text();
+                showResult(`✅ Login response: ${response.status} - ${data}`, 'success');
+            } catch (error) {
+                showResult(`❌ Login error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testSearch() {
+            const query = document.getElementById('searchInput').value;
+            showResult(`🔍 Testing search for "${query}"...`, 'info');
+            
+            try {
+                const response = await fetch(`/api/companies?q=${encodeURIComponent(query)}&limit=3`, {
+                    credentials: 'include',
+                    cache: 'no-store' // Force no caching
+                });
+                
+                const data = await response.json();
+                const status = response.status;
+                
+                if (status === 401) {
+                    showResult(`🔐 Authentication required (${status}): ${data.message}`, 'info');
+                } else if (status === 200) {
+                    showResult(`✅ Search successful (${status}): Found ${data.companies?.length || 0} companies`, 'success');
+                } else {
+                    showResult(`⚠️ Unexpected status (${status}): ${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Search error: ${error.message}`, 'error');
+            }
+        }
+        
+        function showResult(message, type) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.insertBefore(div, results.firstChild);
+        }
+        
+        // Auto-test on load
+        setTimeout(() => {
+            showResult('🚀 Page loaded. Click "Test Login" first, then "Test Search"', 'info');
+        }, 100);
+    </script>
+</body>
+</html> 
