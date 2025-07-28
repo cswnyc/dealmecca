@@ -61,7 +61,11 @@ function LoginContent() {
         const callbackUrl = searchParams.get('callbackUrl') || result.redirectUrl || '/dashboard'
         
         console.log('🔄 Redirecting to:', callbackUrl)
-        router.push(callbackUrl)
+        
+        // Use window.location for immediate redirect - more reliable than router.push
+        setTimeout(() => {
+          window.location.href = callbackUrl
+        }, 100)
         
       } else {
         const errorData = await response.json()
