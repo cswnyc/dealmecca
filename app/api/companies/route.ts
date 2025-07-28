@@ -5,12 +5,17 @@ import { createAuthError, createSearchLimitError, createInternalError } from '@/
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('🔍 Companies API called')
+    
     // Get user info from middleware headers
     const userId = request.headers.get('x-user-id')
     const userRole = request.headers.get('x-user-role')
     const userTier = request.headers.get('x-user-tier')
     
+    console.log('👤 User info:', { userId, userRole, userTier })
+    
     if (!userId) {
+      console.log('❌ No user ID found')
       return createAuthError()
     }
 
@@ -24,8 +29,15 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
 
+    console.log('📊 Search params:', { query, type, industry, page, limit })
+
     // Check if user can search
-    if (!(await canUserSearch(userId))) {
+    console.log('🔒 Checking search permissions...')
+    const canSearch = await canUserSearch(userId)
+    console.log('🔒 Can search:', canSearch)
+    
+    if (!canSearch) {
+      console.log('❌ Search limit exceeded')
       // Get user details for limit error
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -43,41 +55,18 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    console.log('🔍 Building search query...')
+    
     // Build where clause
     const where: any = {}
 
-    // For SQLite compatibility, use raw SQL for text search
+    // Add text search using Prisma (PostgreSQL compatible)
     if (query && query.length > 0) {
-      const searchResults = await prisma.$queryRaw`
-        SELECT * FROM companies 
-        WHERE name LIKE ${`%${query}%`} 
-           OR description LIKE ${`%${query}%`}
-           OR industry LIKE ${`%${query}%`}
-        ORDER BY name ASC
-        LIMIT ${limit}
-        OFFSET ${(page - 1) * limit}
-      ` as any[]
-      
-      // Count total results
-      const countResult = await prisma.$queryRaw`
-        SELECT COUNT(*) as count FROM companies 
-        WHERE name LIKE ${`%${query}%`} 
-           OR description LIKE ${`%${query}%`}
-           OR industry LIKE ${`%${query}%`}
-      ` as any[]
-
-      const total = countResult[0]?.count || 0
-
-      // Record search
-      await recordSearch(userId, query, searchResults.length, 'companies')
-
-      return NextResponse.json({
-        companies: searchResults,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      })
+      where.OR = [
+        { name: { contains: query, mode: 'insensitive' } },
+        { description: { contains: query, mode: 'insensitive' } },
+        { industry: { contains: query, mode: 'insensitive' } }
+      ]
     }
 
     if (industry) {
@@ -97,34 +86,39 @@ export async function GET(request: NextRequest) {
     }
 
     if (headquarters) {
-      where.headquarters = { equals: headquarters }
+      where.headquarters = { contains: headquarters, mode: 'insensitive' }
     }
 
     if (type) {
-      where.type = { equals: type }
+      where.companyType = { equals: type }
     }
 
-    // Execute query with pagination
+    console.log('🔍 Search where clause:', JSON.stringify(where, null, 2))
+    console.log('📊 Executing database query...')
+
+    // Execute query with pagination using Prisma
     const [companies, total] = await Promise.all([
       prisma.company.findMany({
         where,
         include: {
-      _count: {
+          _count: {
             select: { contacts: true }
-      },
+          },
           contacts: {
-        where: { isDecisionMaker: true },
-        take: 3,
-        orderBy: { name: 'asc' },
-        select: {
-          id: true,
-          name: true,
-          title: true,
-          email: true,
-          isDecisionMaker: true,
-          department: true,
+            where: { isDecisionMaker: true },
+            take: 3,
+            orderBy: { firstName: 'asc' },
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              fullName: true,
+              title: true,
+              email: true,
+              isDecisionMaker: true,
+              department: true,
             }
-      }
+          }
         },
         skip: (page - 1) * limit,
         take: limit,
@@ -133,25 +127,36 @@ export async function GET(request: NextRequest) {
       prisma.company.count({ where })
     ])
 
+    console.log('✅ Query successful:', { companiesFound: companies.length, total })
+
     // Record search if query was provided
     if (query) {
+      console.log('📝 Recording search...')
       await recordSearch(userId, query, companies.length, 'companies')
+      console.log('✅ Search recorded')
     }
 
+    console.log('🎉 Returning response')
     return NextResponse.json({
       companies,
       total,
-        page,
-        limit,
+      page,
+      limit,
       totalPages: Math.ceil(total / limit)
     })
 
   } catch (error) {
-    console.error('Companies API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('❌ Companies API error:', error)
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
+    // Return detailed error information for debugging
+    return NextResponse.json({
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      details: error instanceof Error ? error.stack : 'No details available',
+      timestamp: new Date().toISOString()
+    }, { status: 500 })
   }
 }
 

@@ -71,7 +71,9 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
   const fetchMetrics = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/dashboard/metrics?period=${period}`)
+      const response = await fetch(`/api/dashboard/metrics?period=${period}`, {
+        credentials: 'include'
+      })
       
       if (!response.ok) {
         throw new Error('Failed to fetch metrics')

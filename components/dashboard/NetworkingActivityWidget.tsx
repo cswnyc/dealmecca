@@ -78,7 +78,9 @@ export function NetworkingActivityWidget({
   const fetchNetworkingData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/networking/activity?limit=20');
+      const response = await fetch('/api/networking/activity?limit=20', {
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch networking activities');

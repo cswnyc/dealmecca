@@ -271,7 +271,9 @@ export default function MobileSearch({
     if (!searchTerm || !isOnline) return
 
     try {
-      const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(searchTerm)}&limit=5`)
+      const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(searchTerm)}&limit=5`, {
+        credentials: 'include'
+      })
       if (response.ok) {
         const data = await response.json()
         setSuggestions(data.suggestions?.map((s: any) => s.query) || [])

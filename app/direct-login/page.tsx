@@ -64,7 +64,8 @@ export default function DirectLoginPage() {
         <CardContent className="space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
             <strong>Test Credentials:</strong><br/>
-            admin@dealmecca.com / AdminPass123!<br/>
+            admin@dealmecca.com / 
+            AdminPass123!<br/>
             test@dealmecca.com / TestPass123!
           </div>
 

@@ -106,7 +106,9 @@ export default function EnhancedSearchPage() {
 
   const loadSavedSearches = async () => {
     try {
-      const response = await fetch('/api/saved-searches')
+      const response = await fetch('/api/saved-searches', {
+        credentials: 'include'
+      })
       if (response.ok) {
         const data = await response.json()
         setSavedSearches(data.savedSearches)
@@ -118,7 +120,9 @@ export default function EnhancedSearchPage() {
 
   const loadRecentSearches = async () => {
     try {
-      const response = await fetch('/api/search/track?limit=5')
+      const response = await fetch('/api/search/track?limit=5', {
+        credentials: 'include'
+      })
       if (response.ok) {
         const data = await response.json()
         setRecentSearches(data.searches.map((s: any) => s.query))
@@ -185,7 +189,9 @@ export default function EnhancedSearchPage() {
         params.append('mediaSpend', filters.mediaSpend)
       }
 
-      const response = await fetch(`/api/companies?${params}`)
+      const response = await fetch(`/api/companies?${params}`, {
+        credentials: 'include'
+      })
       const data = await response.json()
 
       if (response.ok) {
@@ -251,6 +257,7 @@ export default function EnhancedSearchPage() {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           name,
           query,
