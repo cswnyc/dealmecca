@@ -4,22 +4,37 @@ import { recordSearch, canUserSearch } from '@/lib/auth'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
 
 export async function GET(request: NextRequest) {
+  console.log('🔍 Companies API called - Start')
+  
   try {
-    console.log('🔍 Companies API called')
-    
     // Get user info from middleware headers
     const userId = request.headers.get('x-user-id')
     const userRole = request.headers.get('x-user-role')
     const userTier = request.headers.get('x-user-tier')
     
-    console.log('👤 User info:', { userId, userRole, userTier })
+    console.log('👤 User info from headers:', { userId, userRole, userTier })
     
     if (!userId) {
-      console.log('❌ No user ID found')
-      return createAuthError()
+      console.log('❌ No user ID found in headers')
+      return createAuthError({
+        message: 'No user authentication found',
+        helpText: 'Please sign in to access search features'
+      })
     }
 
-    const { searchParams } = new URL(request.url)
+    // Parse search parameters
+    let searchParams
+    try {
+      searchParams = new URL(request.url).searchParams
+    } catch (error) {
+      console.error('❌ Error parsing URL:', error)
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid request URL',
+        message: error instanceof Error ? error.message : 'URL parsing failed'
+      }, { status: 400 })
+    }
+
     const query = searchParams.get('q') || ''
     const type = searchParams.get('type')
     const industry = searchParams.get('industry')
@@ -29,77 +44,102 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
 
-    console.log('📊 Search params:', { query, type, industry, page, limit })
+    console.log('📊 Search params parsed:', { query, type, industry, page, limit })
 
     // Check if user can search
-    console.log('🔒 Checking search permissions...')
-    const canSearch = await canUserSearch(userId)
-    console.log('🔒 Can search:', canSearch)
+    console.log('🔒 Checking search permissions for user:', userId)
+    let canSearch
+    try {
+      canSearch = await canUserSearch(userId)
+      console.log('🔒 Can search result:', canSearch)
+    } catch (error) {
+      console.error('❌ Error checking search permissions:', error)
+      return NextResponse.json({
+        success: false,
+        error: 'Authentication check failed',
+        message: error instanceof Error ? error.message : 'Unknown auth error',
+        details: error instanceof Error ? error.stack : null
+      }, { status: 500 })
+    }
     
     if (!canSearch) {
-      console.log('❌ Search limit exceeded')
-      // Get user details for limit error
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { searchesUsed: true, subscriptionTier: true, searchesResetAt: true }
-      })
-      
-      const searchLimit = user?.subscriptionTier === 'FREE' ? 10 : 100
-      const resetDate = user?.searchesResetAt ? new Date(user.searchesResetAt).toLocaleDateString() : undefined
-      
-      return createSearchLimitError({
-        currentUsage: user?.searchesUsed || 0,
-        limit: searchLimit,
-        tier: userTier || 'FREE',
-        resetDate
-      })
+      console.log('❌ Search limit exceeded for user:', userId)
+      try {
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { searchesUsed: true, subscriptionTier: true, searchesResetAt: true }
+        })
+        
+        const searchLimit = user?.subscriptionTier === 'FREE' ? 10 : 100
+        const resetDate = user?.searchesResetAt ? new Date(user.searchesResetAt).toLocaleDateString() : undefined
+        
+        return createSearchLimitError({
+          currentUsage: user?.searchesUsed || 0,
+          limit: searchLimit,
+          tier: userTier || 'FREE',
+          resetDate
+        })
+      } catch (error) {
+        console.error('❌ Error getting user search limits:', error)
+        return NextResponse.json({
+          success: false,
+          error: 'Failed to check search limits',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }, { status: 500 })
+      }
     }
 
     console.log('🔍 Building search query...')
     
-    // Build where clause with simpler query approach
+    // Build where clause with error handling
     let where: any = {}
+    try {
+      if (query && query.length > 0) {
+        where = {
+          OR: [
+            { name: { startsWith: query, mode: 'insensitive' } },
+            { name: { endsWith: query, mode: 'insensitive' } },
+            { description: { startsWith: query, mode: 'insensitive' } },
+          ]
+        }
+      }
 
-    // Add text search using simpler Prisma syntax
-    if (query && query.length > 0) {
-      // Use simpler text search that's more compatible
-      where = {
-        OR: [
-          { name: { startsWith: query, mode: 'insensitive' } },
-          { name: { endsWith: query, mode: 'insensitive' } },
-          { description: { startsWith: query, mode: 'insensitive' } },
+      // Add additional filters
+      if (industry) {
+        where.industry = industry
+      }
+
+      if (minEmployees) {
+        where.employeeCount = {
+          gte: parseInt(minEmployees)
+        }
+      }
+
+      if (maxEmployees) {
+        where.employeeCount = {
+          ...where.employeeCount,
+          lte: parseInt(maxEmployees)
+        }
+      }
+
+      if (headquarters) {
+        where.OR = [
+          ...(where.OR || []),
+          { city: { startsWith: headquarters, mode: 'insensitive' } },
+          { state: { startsWith: headquarters, mode: 'insensitive' } },
+          { country: { startsWith: headquarters, mode: 'insensitive' } }
         ]
       }
-    }
 
-    // Add additional filters
-    if (industry) {
-      where.industry = industry
+      console.log('📊 Query where clause built:', JSON.stringify(where, null, 2))
+    } catch (error) {
+      console.error('❌ Error building query where clause:', error)
+      return NextResponse.json({
+        success: false,
+        error: 'Query building failed',
+        message: error instanceof Error ? error.message : 'Unknown query error'
+      }, { status: 500 })
     }
-
-    if (minEmployees) {
-      where.employeeCount = {
-        gte: parseInt(minEmployees)
-      }
-    }
-
-    if (maxEmployees) {
-      where.employeeCount = {
-        ...where.employeeCount,
-        lte: parseInt(maxEmployees)
-      }
-    }
-
-    if (headquarters) {
-      where.OR = [
-        ...(where.OR || []),
-        { city: { startsWith: headquarters, mode: 'insensitive' } },
-        { state: { startsWith: headquarters, mode: 'insensitive' } },
-        { country: { startsWith: headquarters, mode: 'insensitive' } }
-      ]
-    }
-
-    console.log('📊 Query where clause:', JSON.stringify(where, null, 2))
 
     // Get total count with error handling
     let totalCount = 0
@@ -108,13 +148,16 @@ export async function GET(request: NextRequest) {
       console.log('📊 Total companies found:', totalCount)
     } catch (countError) {
       console.error('❌ Count query error:', countError)
-      // Fallback: try basic count without filters
       try {
         totalCount = await prisma.company.count()
         console.log('📊 Fallback total count:', totalCount)
       } catch (fallbackError) {
         console.error('❌ Fallback count error:', fallbackError)
-        totalCount = 0
+        return NextResponse.json({
+          success: false,
+          error: 'Database count query failed',
+          message: fallbackError instanceof Error ? fallbackError.message : 'Count query error'
+        }, { status: 500 })
       }
     }
 
@@ -146,13 +189,13 @@ export async function GET(request: NextRequest) {
     } catch (queryError) {
       console.error('❌ Companies query error:', queryError)
       
-      // Return error with details
       return NextResponse.json({
         success: false,
         error: 'Database query failed',
         message: queryError instanceof Error ? queryError.message : 'Unknown query error',
         details: {
           query: where,
+          stack: queryError instanceof Error ? queryError.stack : null,
           timestamp: new Date().toISOString()
         }
       }, { status: 500 })
@@ -160,12 +203,16 @@ export async function GET(request: NextRequest) {
 
     // Record search if query was provided
     if (query) {
-      console.log('📝 Recording search...')
-      await recordSearch(userId, query, companies.length, 'companies')
-      console.log('✅ Search recorded')
+      try {
+        await recordSearch(userId, query, companies.length, 'companies')
+        console.log('✅ Search recorded successfully')
+      } catch (error) {
+        console.error('⚠️ Failed to record search (non-critical):', error)
+        // Don't fail the request if search recording fails
+      }
     }
 
-    console.log('🎉 Returning response')
+    console.log('✅ Companies API request completed successfully')
     return NextResponse.json({
       companies,
       total: totalCount,
@@ -175,16 +222,17 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Companies API error:', error)
+    console.error('❌ Unhandled error in companies API:', error)
     console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     
-    // Return detailed error information for debugging
     return NextResponse.json({
       success: false,
       error: 'Internal server error',
       message: error instanceof Error ? error.message : 'Unknown error',
-      details: error instanceof Error ? error.stack : 'No details available',
-      timestamp: new Date().toISOString()
+      details: {
+        timestamp: new Date().toISOString(),
+        stack: error instanceof Error ? error.stack : null
+      }
     }, { status: 500 })
   }
 }
