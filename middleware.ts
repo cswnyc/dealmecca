@@ -79,7 +79,9 @@ export async function middleware(req: NextRequest) {
     '/api/test-database',     // Temporary for testing database connectivity
     '/api/health-check',      // Temporary for basic API health check
     '/api/disable-sw',        // Temporary for disabling service worker during debug
-    '/api/test-search-debug'  // Temporary for debugging search issues
+    '/api/test-search-debug', // Temporary for debugging search issues
+    '/api/test-simple',       // Simple bypass test
+    '/api/companies-no-auth'  // Companies search without auth for testing
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
