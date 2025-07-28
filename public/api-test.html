@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test Results</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testEndpoints() {
+            const endpoints = [
+                '/api/health',
+                '/api/debug-simple', 
+                '/api/companies',
+                '/api/session-status',
+                '/api/direct-login'
+            ];
+            
+            const results = document.getElementById('results');
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint);
+                    const text = await response.text();
+                    
+                    results.innerHTML += `
+                        <div>
+                            <strong>${endpoint}</strong> - Status: ${response.status}<br>
+                            Response: ${text.substring(0, 200)}...<br><br>
+                        </div>
+                    `;
+                } catch (error) {
+                    results.innerHTML += `
+                        <div>
+                            <strong>${endpoint}</strong> - Error: ${error.message}<br><br>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        testEndpoints();
+    </script>
+</body>
+</html> 
