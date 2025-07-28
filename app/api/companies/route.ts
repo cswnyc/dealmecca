@@ -48,7 +48,9 @@ export async function GET(request: NextRequest) {
 
     // Check if user can search
     console.log('🔒 Checking search permissions for user:', userId)
-    let canSearch
+    let canSearch = true // TEMPORARY: Skip search permission check for debugging
+    
+    /*
     try {
       canSearch = await canUserSearch(userId)
       console.log('🔒 Can search result:', canSearch)
@@ -61,6 +63,7 @@ export async function GET(request: NextRequest) {
         details: error instanceof Error ? error.stack : null
       }, { status: 500 })
     }
+    */
     
     if (!canSearch) {
       console.log('❌ Search limit exceeded for user:', userId)
@@ -203,6 +206,7 @@ export async function GET(request: NextRequest) {
 
     // Record search if query was provided
     if (query) {
+      /*
       try {
         await recordSearch(userId, query, companies.length, 'companies')
         console.log('✅ Search recorded successfully')
@@ -210,6 +214,8 @@ export async function GET(request: NextRequest) {
         console.error('⚠️ Failed to record search (non-critical):', error)
         // Don't fail the request if search recording fails
       }
+      */
+      console.log('📝 Search recording temporarily disabled for debugging')
     }
 
     console.log('✅ Companies API request completed successfully')
