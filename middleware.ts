@@ -44,7 +44,8 @@ export async function middleware(req: NextRequest) {
     '/api/debug-session',
     '/api/test-session-creation',
     '/api/auth-test-flow',
-    '/api/test-nextauth-flow'
+    '/api/test-nextauth-flow',
+    '/api/auth-login'
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
