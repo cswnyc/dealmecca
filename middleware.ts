@@ -81,7 +81,8 @@ export async function middleware(req: NextRequest) {
     '/api/disable-sw',        // Temporary for disabling service worker during debug
     '/api/test-search-debug', // Temporary for debugging search issues
     '/api/test-simple',       // Simple bypass test
-    '/api/companies-no-auth'  // Companies search without auth for testing
+    '/api/companies-no-auth', // Companies search without auth for testing
+    '/api/debug-simple'       // Simple diagnostic endpoint
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
