@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Search Test - No Cache</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .result { margin: 15px 0; padding: 15px; border-radius: 8px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 12px 24px; margin: 8px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        input { padding: 10px; width: 250px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        .timestamp { font-size: 12px; color: #666; }
+        h1 { color: #333; }
+        .status { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 DealMecca Search Test</h1>
+        <p class="timestamp">Test Page Generated: <span id="timestamp"></span></p>
+        
+        <div style="margin: 20px 0;">
+            <input type="text" id="searchQuery" value="WPP" placeholder="Search query">
+            <button onclick="performFullTest()">🚀 Full Test</button>
+            <button onclick="testLogin()">🔐 Login Only</button>
+            <button onclick="testSearch()">🔍 Search Only</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Set timestamp to prevent caching
+        document.getElementById('timestamp').textContent = new Date().toISOString();
+        
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `
+                <div class="status">${new Date().toLocaleTimeString()}</div>
+                <div>${message}</div>
+            `;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        async function testLogin() {
+            addResult('🔑 Testing authentication...', 'info');
+            try {
+                const response = await fetch('/api/direct-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    cache: 'no-store',
+                    body: JSON.stringify({
+                        email: 'admin@dealmecca.com',
+                        password: 'AdminPass123!'
+                    })
+                });
+                
+                if (response.status === 200) {
+                    addResult('✅ Login successful! Session cookies set.', 'success');
+                    return true;
+                } else {
+                    const text = await response.text();
+                    addResult(`⚠️ Login response: ${response.status} - ${text}`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                addResult(`❌ Login failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        async function testSearch() {
+            const query = document.getElementById('searchQuery').value;
+            addResult(`🔍 Testing search for "${query}" with credentials...`, 'info');
+            
+            try {
+                const response = await fetch(`/api/companies?q=${encodeURIComponent(query)}&limit=3`, {
+                    credentials: 'include',
+                    cache: 'no-store'
+                });
+                
+                const data = await response.json();
+                
+                if (response.status === 401) {
+                    addResult(`🔐 Authentication required (401): Please login first.`, 'info');
+                    return false;
+                } else if (response.status === 200) {
+                    const count = data.companies?.length || 0;
+                    addResult(`✅ Search successful! Found ${count} companies. Backend is working perfectly!`, 'success');
+                    if (count > 0) {
+                        addResult(`📊 Sample result: ${data.companies[0].name} (${data.companies[0].industry || 'No industry'})`, 'info');
+                    }
+                    return true;
+                } else {
+                    addResult(`⚠️ Unexpected response (${response.status}): ${JSON.stringify(data, null, 2)}`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                addResult(`❌ Search failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        async function performFullTest() {
+            addResult('🚀 Starting full authentication and search test...', 'info');
+            
+            // Clear previous results
+            document.getElementById('results').innerHTML = '';
+            
+            // Step 1: Login
+            const loginSuccess = await testLogin();
+            
+            if (loginSuccess) {
+                // Step 2: Search
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+                const searchSuccess = await testSearch();
+                
+                if (searchSuccess) {
+                    addResult('🎉 COMPLETE SUCCESS! Both authentication and search are working perfectly. The issue is browser caching on the main search page.', 'success');
+                    addResult('💡 Solution: Clear browser cache or use incognito mode on the main search page.', 'info');
+                }
+            } else {
+                addResult('🔧 Login failed. Please check authentication system.', 'error');
+            }
+        }
+        
+        // Auto-start test after page loads
+        window.addEventListener('load', () => {
+            setTimeout(performFullTest, 500);
+        });
+    </script>
+</body>
+</html> 
