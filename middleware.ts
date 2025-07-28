@@ -72,17 +72,39 @@ export async function middleware(req: NextRequest) {
   
   // Get NextAuth token
   console.log('🔐 Checking authentication token...')
-  const token = await getToken({ 
+  
+  // Try NextAuth's getToken first
+  let token = await getToken({ 
     req, 
     secret: process.env.NEXTAUTH_SECRET,
     cookieName: 'next-auth.session-token'
   })
   
+  // If NextAuth token doesn't work, try manually decoding our JWT
+  if (!token) {
+    console.log('🔐 NextAuth getToken failed, trying manual JWT decode...')
+    const sessionCookie = req.cookies.get('next-auth.session-token')
+    
+    if (sessionCookie) {
+      try {
+        const { jwtVerify } = await import('jose')
+        const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+        
+        const { payload } = await jwtVerify(sessionCookie.value, secret)
+        token = payload as any
+        console.log('✅ Manual JWT decode successful')
+      } catch (jwtError) {
+        console.log('❌ Manual JWT decode failed:', jwtError)
+      }
+    }
+  }
+  
   console.log('🔐 Token result:', {
     hasToken: !!token,
     userId: token?.sub,
     email: token?.email,
-    role: (token as any)?.role
+    role: (token as any)?.role,
+    method: token ? 'decoded' : 'none'
   })
   
   // If no token and accessing protected route, redirect to login
