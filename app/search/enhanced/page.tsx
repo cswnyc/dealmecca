@@ -36,47 +36,47 @@ interface SavedSearch {
   lastRun: string
 }
 
-interface EnhancedCompany {
+interface EnhancedSearchCompany {
   id: string
   name: string
-  type: string
-  industry: string
-  description: string
-  website: string
-  employeeCount: number
-  headquarters: string
-  revenue: string
+  type?: string
+  industry?: string
+  description?: string
+  website?: string
+  employeeCount?: number
+  headquarters?: string
+  revenue?: string
   logoUrl?: string
   stockSymbol?: string
   foundedYear?: number
   
   // AI-powered insights
-  aiSummary: string
-  insights: any[]
+  aiSummary?: string
+  insights?: any[]
   
   // Key contacts with enhanced data
-  keyContacts: any[]
+  keyContacts?: any[]
   
   // Connection intelligence
-  connectionPath: any
+  connectionPath?: any
   
   // Media intelligence
-  mediaStrategy: any
+  mediaStrategy?: any
   
   // Competitive analysis
-  competitorAnalysis: any
+  competitorAnalysis?: any
   
   // Engagement metrics
-  lastUpdated: string
-  totalContacts: number
-  recentActivity: string
+  lastUpdated?: string
+  totalContacts?: number
+  recentActivity?: string
 }
 
 export default function EnhancedSearchPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [companies, setCompanies] = useState<EnhancedCompany[]>([])
+  const [companies, setCompanies] = useState<EnhancedSearchCompany[]>([])
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([])
   const [favorites, setFavorites] = useState<string[]>([])
@@ -285,7 +285,7 @@ export default function EnhancedSearchPage() {
     }
   }
 
-  const handleCompanyClick = (company: EnhancedCompany) => {
+  const handleCompanyClick = (company: EnhancedSearchCompany) => {
     // TODO: Navigate to company details page
     console.log('Company clicked:', company.name)
   }
@@ -308,11 +308,18 @@ export default function EnhancedSearchPage() {
     console.log('Insight clicked:', insight.title)
   }
 
+  // Helper function to safely format company type
+  const formatCompanyType = (type: string | undefined): string => {
+    if (!type) return 'company'
+    return type.toLowerCase().replace('_', ' ')
+  }
+
   // Mock data generation functions
   const generateMockAISummary = (company: any) => {
+    const companyType = formatCompanyType(company.type)
     const summaries = [
-      `${company.name} is a leading ${company.type.toLowerCase().replace('_', ' ')} in the ${company.industry} sector, well-positioned for media partnerships with an estimated annual budget of ${getEstimatedBudget(company.employeeCount)}. Recent market analysis suggests they're actively expanding their digital presence.`,
-      `This ${company.type.toLowerCase().replace('_', ' ')} company shows strong growth potential with ${company.employeeCount} employees and increasing market share in ${company.industry}. Their media strategy focuses on digital channels with significant investment in programmatic advertising.`,
+      `${company.name} is a leading ${companyType} in the ${company.industry || 'business'} sector, well-positioned for media partnerships with an estimated annual budget of ${getEstimatedBudget(company.employeeCount || 0)}. Recent market analysis suggests they're actively expanding their digital presence.`,
+      `This ${companyType} company shows strong growth potential with ${company.employeeCount || 'N/A'} employees and increasing market share in ${company.industry || 'their market'}. Their media strategy focuses on digital channels with significant investment in programmatic advertising.`,
       `${company.name} represents a prime opportunity for media sales with their recent expansion and focus on brand awareness. Industry analysis indicates they're in a growth phase with increased marketing spend expected.`
     ]
     return summaries[Math.floor(Math.random() * summaries.length)]
@@ -486,7 +493,7 @@ export default function EnhancedSearchPage() {
           {/* Search Results */}
           {companies.length > 0 && (
             <SearchResults
-              companies={companies}
+              companies={companies as any}
               loading={loading}
               pagination={pagination}
               onPageChange={handlePageChange}
