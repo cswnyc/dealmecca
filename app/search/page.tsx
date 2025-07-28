@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { 
   Search, 
   Users, 
@@ -17,7 +18,8 @@ import {
   MapPin,
   TrendingUp,
   AlertCircle,
-  Target
+  Target,
+  Star
 } from 'lucide-react'
 import PageLayout from '@/components/navigation/PageLayout'
 
@@ -33,8 +35,8 @@ interface Company {
   revenue?: string
   contacts?: Array<{
     id: string
-    firstName: string
-    lastName: string
+    firstName?: string
+    lastName?: string
     fullName?: string
     title?: string
     email?: string
@@ -43,7 +45,7 @@ interface Company {
   }>
   _count?: {
     contacts: number
-  }
+  } | null
 }
 
 interface Contact {
@@ -186,19 +188,19 @@ export default function SearchPage() {
     })
   }
 
-  // Helper function to safely format text with underscores
-  const formatText = (text: string | undefined | null): string => {
-    if (!text) return 'N/A'
-    return text.replace(/_/g, ' ')
+  // Safe helper to get contact count (copying organizations page pattern)
+  const getContactCount = (company: Company) => {
+    if (company._count && typeof company._count === 'object' && company._count.contacts !== undefined) {
+      return company._count.contacts
+    }
+    if (company.contacts && Array.isArray(company.contacts)) {
+      return company.contacts.length
+    }
+    return 0
   }
 
-  // Helper function to get contact count safely
-  const getContactCount = (company: Company): number => {
-    return company._count?.contacts || company.contacts?.length || 0
-  }
-
-  // Helper function to get full name safely
-  const getFullName = (contact: Contact): string => {
+  // Safe helper to get full name (copying organizations page pattern)  
+  const getFullName = (contact: Contact) => {
     if (contact.fullName) return contact.fullName
     if (contact.firstName || contact.lastName) {
       return `${contact.firstName || ''} ${contact.lastName || ''}`.trim()
@@ -408,7 +410,7 @@ export default function SearchPage() {
           </div>
         )}
 
-        {/* Results */}
+        {/* Results - Using Working Organizations Pattern */}
         {searchType === 'companies' ? (
           <div className="space-y-4">
             {companies.map((company) => (
@@ -416,14 +418,19 @@ export default function SearchPage() {
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1">{company.name}</h3>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1 flex items-center">
+                        {company.name}
+                        {/* Add verified indicator like organizations page */}
+                        <Star className="h-4 w-4 ml-2 text-yellow-500 fill-current" />
+                      </h3>
                       <div className="flex items-center gap-4 text-sm text-gray-600">
-                        {company.type && (
-                          <span className="bg-sky-100 text-sky-800 px-2 py-1 rounded-full text-xs font-medium">
-                            {formatText(company.type)}
-                          </span>
+                        {/* Using simple Badge rendering like organizations page */}
+                        {company.industry && (
+                          <Badge variant="secondary">{company.industry}</Badge>
                         )}
-                        {company.industry && <span>{formatText(company.industry)}</span>}
+                        {company.type && (
+                          <Badge variant="outline">{company.type}</Badge>
+                        )}
                         {company.headquarters && (
                           <span className="flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
@@ -463,8 +470,8 @@ export default function SearchPage() {
                     </div>
                   </div>
                   
-                  {/* Top Contacts */}
-                  {company.contacts && company.contacts.length > 0 && (
+                  {/* Top Contacts - Safely checking array */}
+                  {company.contacts && Array.isArray(company.contacts) && company.contacts.length > 0 && (
                     <div className="mt-4 pt-4 border-t">
                       <p className="text-sm font-medium text-gray-900 mb-2">Key Contacts:</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -499,11 +506,11 @@ export default function SearchPage() {
                       <p className="text-gray-600 mb-2">{contact.title || 'N/A'}</p>
                       <div className="flex items-center gap-4 text-sm text-gray-600">
                         {contact.company && (
-                          <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium">
-                            {contact.company.name}
-                          </span>
+                          <Badge variant="secondary">{contact.company.name}</Badge>
                         )}
-                        {contact.company?.industry && <span>{formatText(contact.company.industry)}</span>}
+                        {contact.company?.industry && (
+                          <Badge variant="outline">{contact.company.industry}</Badge>
+                        )}
                         {contact.isDecisionMaker && (
                           <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
                             Decision Maker
@@ -534,11 +541,11 @@ export default function SearchPage() {
                     {contact.department && (
                       <span className="flex items-center gap-1">
                         <Users className="w-3 h-3" />
-                        {formatText(contact.department)}
+                        {contact.department}
                       </span>
                     )}
                     {contact.seniority && (
-                      <span className="text-gray-600">{formatText(contact.seniority)}</span>
+                      <span className="text-gray-600">{contact.seniority}</span>
                     )}
                   </div>
                 </CardContent>
