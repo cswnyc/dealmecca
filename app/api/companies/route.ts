@@ -4,9 +4,20 @@ import { recordSearch, canUserSearch } from '@/lib/auth'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
 
 export async function GET(request: NextRequest) {
-  console.log('🔍 Companies API called - Start')
+  console.log('🚀 === COMPANIES API START ===')
+  console.log('🚀 Request URL:', request.url)
+  console.log('🚀 Request method:', request.method)
+  
+  // STEP 1: Test simple response first
+  const testMode = request.nextUrl.searchParams.get('test')
+  if (testMode === 'simple') {
+    console.log('🧪 Simple test mode - returning basic response')
+    return NextResponse.json({ success: true, message: 'Simple test works', timestamp: new Date().toISOString() })
+  }
   
   try {
+    console.log('🚀 Step 1: Extracting headers')
+    
     // Get user info from middleware headers
     const userId = request.headers.get('x-user-id') || undefined
     const userRole = request.headers.get('x-user-role')
@@ -19,20 +30,13 @@ export async function GET(request: NextRequest) {
       console.log('⚠️ No user ID found in headers - proceeding without authentication (DEBUG MODE)')
     }
 
-    /*
-    if (!userId) {
-      console.log('❌ No user ID found in headers')
-      return createAuthError({
-        message: 'No user authentication found',
-        helpText: 'Please sign in to access search features'
-      })
-    }
-    */
-
+    console.log('🚀 Step 2: Parsing URL parameters')
+    
     // Parse search parameters
     let searchParams
     try {
       searchParams = new URL(request.url).searchParams
+      console.log('✅ URL parsing successful')
     } catch (error) {
       console.error('❌ Error parsing URL:', error)
       return NextResponse.json({
@@ -53,99 +57,34 @@ export async function GET(request: NextRequest) {
 
     console.log('📊 Search params parsed:', { query, type, industry, page, limit })
 
-    // Check if user can search
-    console.log('🔒 Checking search permissions for user:', userId)
-    let canSearch = true // TEMPORARY: Skip search permission check for debugging
+    console.log('🚀 Step 3: Database connection test')
     
-    /*
-    if (userId) {
-      try {
-        canSearch = await canUserSearch(userId)
-        console.log('🔒 Can search result:', canSearch)
-      } catch (error) {
-        console.error('❌ Error checking search permissions:', error)
-        return NextResponse.json({
-          success: false,
-          error: 'Authentication check failed',
-          message: error instanceof Error ? error.message : 'Unknown auth error',
-          details: error instanceof Error ? error.stack : null
-        }, { status: 500 })
-      }
-    } else {
-      console.log('🔒 No userId - allowing search for debugging')
-      canSearch = true
-    }
-    */
-    
-    if (!canSearch) {
-      console.log('❌ Search limit exceeded for user:', userId)
-      try {
-        const user = await prisma.user.findUnique({
-          where: { id: userId },
-          select: { searchesUsed: true, subscriptionTier: true, searchesResetAt: true }
-        })
-        
-        const searchLimit = user?.subscriptionTier === 'FREE' ? 10 : 100
-        const resetDate = user?.searchesResetAt ? new Date(user.searchesResetAt).toLocaleDateString() : undefined
-        
-        return createSearchLimitError({
-          currentUsage: user?.searchesUsed || 0,
-          limit: searchLimit,
-          tier: userTier || 'FREE',
-          resetDate
-        })
-      } catch (error) {
-        console.error('❌ Error getting user search limits:', error)
-        return NextResponse.json({
-          success: false,
-          error: 'Failed to check search limits',
-          message: error instanceof Error ? error.message : 'Unknown error'
-        }, { status: 500 })
-      }
+    // Test basic database connection before anything else
+    try {
+      const healthCheck = await prisma.$queryRaw`SELECT 1 as test`
+      console.log('✅ Database connection successful:', healthCheck)
+    } catch (dbError) {
+      console.error('❌ Database connection failed:', dbError)
+      return NextResponse.json({
+        success: false,
+        error: 'Database connection failed',
+        message: dbError instanceof Error ? dbError.message : 'Unknown database error'
+      }, { status: 500 })
     }
 
-    console.log('🔍 Building search query...')
+    console.log('🚀 Step 4: Building query (simplified)')
     
     // Build where clause with error handling
     let where: any = {}
     try {
       if (query && query.length > 0) {
         where = {
-          OR: [
-            { name: { startsWith: query, mode: 'insensitive' } },
-            { name: { endsWith: query, mode: 'insensitive' } },
-            { description: { startsWith: query, mode: 'insensitive' } },
-          ]
+          name: {
+            startsWith: query,
+            mode: 'insensitive'
+          }
         }
       }
-
-      // Add additional filters
-      if (industry) {
-        where.industry = industry
-      }
-
-      if (minEmployees) {
-        where.employeeCount = {
-          gte: parseInt(minEmployees)
-        }
-      }
-
-      if (maxEmployees) {
-        where.employeeCount = {
-          ...where.employeeCount,
-          lte: parseInt(maxEmployees)
-        }
-      }
-
-      if (headquarters) {
-        where.OR = [
-          ...(where.OR || []),
-          { city: { startsWith: headquarters, mode: 'insensitive' } },
-          { state: { startsWith: headquarters, mode: 'insensitive' } },
-          { country: { startsWith: headquarters, mode: 'insensitive' } }
-        ]
-      }
-
       console.log('📊 Query where clause built:', JSON.stringify(where, null, 2))
     } catch (error) {
       console.error('❌ Error building query where clause:', error)
@@ -156,6 +95,8 @@ export async function GET(request: NextRequest) {
       }, { status: 500 })
     }
 
+    console.log('🚀 Step 5: Executing count query')
+    
     // Get total count with error handling
     let totalCount = 0
     try {
@@ -163,19 +104,16 @@ export async function GET(request: NextRequest) {
       console.log('📊 Total companies found:', totalCount)
     } catch (countError) {
       console.error('❌ Count query error:', countError)
-      try {
-        totalCount = await prisma.company.count()
-        console.log('📊 Fallback total count:', totalCount)
-      } catch (fallbackError) {
-        console.error('❌ Fallback count error:', fallbackError)
-        return NextResponse.json({
-          success: false,
-          error: 'Database count query failed',
-          message: fallbackError instanceof Error ? fallbackError.message : 'Count query error'
-        }, { status: 500 })
-      }
+      return NextResponse.json({
+        success: false,
+        error: 'Database count query failed',
+        message: countError instanceof Error ? countError.message : 'Count query error',
+        stack: countError instanceof Error ? countError.stack : null
+      }, { status: 500 })
     }
 
+    console.log('🚀 Step 6: Executing main query')
+    
     // Get companies with error handling
     let companies = []
     try {
@@ -185,14 +123,7 @@ export async function GET(request: NextRequest) {
           id: true,
           name: true,
           description: true,
-          website: true,
-          logoUrl: true,
           industry: true,
-          employeeCount: true,
-          city: true,
-          state: true,
-          country: true,
-          companyType: true,
         },
         take: limit,
         skip: (page - 1) * limit,
@@ -203,53 +134,57 @@ export async function GET(request: NextRequest) {
       console.log('✅ Companies query successful, found:', companies.length)
     } catch (queryError) {
       console.error('❌ Companies query error:', queryError)
+      console.error('❌ Query error stack:', queryError instanceof Error ? queryError.stack : 'No stack')
       
       return NextResponse.json({
         success: false,
         error: 'Database query failed',
         message: queryError instanceof Error ? queryError.message : 'Unknown query error',
+        stack: queryError instanceof Error ? queryError.stack : null,
         details: {
           query: where,
-          stack: queryError instanceof Error ? queryError.stack : null,
           timestamp: new Date().toISOString()
         }
       }, { status: 500 })
     }
 
-    // Record search if query was provided
-    if (query && userId) {
-      /*
-      try {
-        await recordSearch(userId, query, companies.length, 'companies')
-        console.log('✅ Search recorded successfully')
-      } catch (error) {
-        console.error('⚠️ Failed to record search (non-critical):', error)
-        // Don't fail the request if search recording fails
-      }
-      */
-      console.log('📝 Search recording temporarily disabled for debugging')
-    }
-
-    console.log('✅ Companies API request completed successfully')
-    return NextResponse.json({
+    console.log('🚀 Step 7: Preparing response')
+    
+    const response = {
       companies,
       total: totalCount,
       page,
       limit,
-      totalPages: Math.ceil(totalCount / limit)
-    })
+      totalPages: Math.ceil(totalCount / limit),
+      debug: {
+        userId: userId || 'none',
+        queryLength: query.length,
+        timestamp: new Date().toISOString()
+      }
+    }
+
+    console.log('✅ Companies API request completed successfully')
+    console.log('🚀 === COMPANIES API END ===')
+    
+    return NextResponse.json(response)
 
   } catch (error) {
-    console.error('❌ Unhandled error in companies API:', error)
+    console.error('❌ === UNHANDLED ERROR IN COMPANIES API ===')
+    console.error('❌ Error:', error)
+    console.error('❌ Error name:', error instanceof Error ? error.name : 'Unknown')
+    console.error('❌ Error message:', error instanceof Error ? error.message : 'Unknown')
     console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    console.error('❌ Error constructor:', error instanceof Error ? error.constructor.name : 'Unknown')
     
     return NextResponse.json({
       success: false,
       error: 'Internal server error',
       message: error instanceof Error ? error.message : 'Unknown error',
+      name: error instanceof Error ? error.name : 'Unknown',
+      stack: error instanceof Error ? error.stack : null,
       details: {
         timestamp: new Date().toISOString(),
-        stack: error instanceof Error ? error.stack : null
+        constructor: error instanceof Error ? error.constructor.name : 'Unknown'
       }
     }, { status: 500 })
   }
