@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get('q') || ''
     const title = searchParams.get('title')
     const department = searchParams.get('department')
+    const company = searchParams.get('company')
+    const seniority = searchParams.get('seniority')
     const isDecisionMaker = searchParams.get('isDecisionMaker')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -41,36 +43,71 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Build where clause
-    const where: any = {}
+    console.log('🔍 Building contacts search query...')
+    
+    // Build where clause with simpler query approach
+    let where: any = {}
 
-    // Add text search using Prisma (PostgreSQL compatible)
+    // Add text search using simpler Prisma syntax
     if (query && query.length > 0) {
-      where.OR = [
-        { fullName: { contains: query, mode: 'insensitive' } },
-        { firstName: { contains: query, mode: 'insensitive' } },
-        { lastName: { contains: query, mode: 'insensitive' } },
-        { title: { contains: query, mode: 'insensitive' } },
-        { department: { contains: query, mode: 'insensitive' } },
-        { company: { name: { contains: query, mode: 'insensitive' } } }
-      ]
+      // Use simpler text search that's more compatible
+      where = {
+        OR: [
+          { firstName: { startsWith: query, mode: 'insensitive' } },
+          { lastName: { startsWith: query, mode: 'insensitive' } },
+          { fullName: { startsWith: query, mode: 'insensitive' } },
+          { title: { startsWith: query, mode: 'insensitive' } },
+          { department: { startsWith: query, mode: 'insensitive' } },
+        ]
+      }
     }
 
+    // Add additional filters
     if (title) {
-      where.title = { contains: title, mode: 'insensitive' }
+      where.title = { startsWith: title, mode: 'insensitive' }
     }
 
     if (department) {
-      where.department = { equals: department }
+      where.department = { startsWith: department, mode: 'insensitive' }
     }
 
-    if (isDecisionMaker !== null) {
+    if (company) {
+      where.company = {
+        name: { startsWith: company, mode: 'insensitive' }
+      }
+    }
+
+    if (seniority) {
+      where.seniority = seniority
+    }
+
+    if (isDecisionMaker !== undefined) {
       where.isDecisionMaker = isDecisionMaker === 'true'
     }
 
-    // Execute query with pagination using Prisma
-    const [contacts, total] = await Promise.all([
-      prisma.contact.findMany({
+    console.log('📊 Contacts query where clause:', JSON.stringify(where, null, 2))
+
+    // Get total count with error handling
+    let totalCount = 0
+    try {
+      totalCount = await prisma.contact.count({ where })
+      console.log('📊 Total contacts found:', totalCount)
+    } catch (countError) {
+      console.error('❌ Count query error:', countError)
+      // Fallback: try basic count without filters
+      try {
+        totalCount = await prisma.contact.count()
+        console.log('📊 Fallback total count:', totalCount)
+      } catch (fallbackError) {
+        console.error('❌ Fallback count error:', fallbackError)
+        totalCount = 0
+      }
+    }
+
+    // Get contacts with error handling
+    let contacts = []
+    try {
+      contacts = await prisma.contact.findMany({
         where,
         include: {
           company: {
@@ -78,15 +115,31 @@ export async function GET(request: NextRequest) {
               id: true,
               name: true,
               industry: true,
+              companyType: true
             }
           }
         },
-        skip: (page - 1) * limit,
         take: limit,
-        orderBy: { firstName: 'asc' }
-      }),
-      prisma.contact.count({ where })
-    ])
+        skip: (page - 1) * limit,
+        orderBy: {
+          firstName: 'asc'
+        }
+      })
+      console.log('✅ Contacts query successful, found:', contacts.length)
+    } catch (queryError) {
+      console.error('❌ Contacts query error:', queryError)
+      
+      // Return error with details
+      return NextResponse.json({
+        success: false,
+        error: 'Database query failed',
+        message: queryError instanceof Error ? queryError.message : 'Unknown query error',
+        details: {
+          query: where,
+          timestamp: new Date().toISOString()
+        }
+      }, { status: 500 })
+    }
 
     // Record search if query was provided
     if (query) {
@@ -95,10 +148,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       contacts,
-      total,
+      total: totalCount,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(totalCount / limit)
     })
 
   } catch (error) {

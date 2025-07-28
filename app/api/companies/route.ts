@@ -57,20 +57,24 @@ export async function GET(request: NextRequest) {
 
     console.log('🔍 Building search query...')
     
-    // Build where clause
-    const where: any = {}
+    // Build where clause with simpler query approach
+    let where: any = {}
 
-    // Add text search using Prisma (PostgreSQL compatible)
+    // Add text search using simpler Prisma syntax
     if (query && query.length > 0) {
-      where.OR = [
-        { name: { contains: query, mode: 'insensitive' } },
-        { description: { contains: query, mode: 'insensitive' } },
-        { industry: { contains: query, mode: 'insensitive' } }
-      ]
+      // Use simpler text search that's more compatible
+      where = {
+        OR: [
+          { name: { startsWith: query, mode: 'insensitive' } },
+          { name: { endsWith: query, mode: 'insensitive' } },
+          { description: { startsWith: query, mode: 'insensitive' } },
+        ]
+      }
     }
 
+    // Add additional filters
     if (industry) {
-      where.industry = { equals: industry }
+      where.industry = industry
     }
 
     if (minEmployees) {
@@ -81,53 +85,78 @@ export async function GET(request: NextRequest) {
 
     if (maxEmployees) {
       where.employeeCount = {
+        ...where.employeeCount,
         lte: parseInt(maxEmployees)
       }
     }
 
     if (headquarters) {
-      where.headquarters = { contains: headquarters, mode: 'insensitive' }
+      where.OR = [
+        ...(where.OR || []),
+        { city: { startsWith: headquarters, mode: 'insensitive' } },
+        { state: { startsWith: headquarters, mode: 'insensitive' } },
+        { country: { startsWith: headquarters, mode: 'insensitive' } }
+      ]
     }
 
-    if (type) {
-      where.companyType = { equals: type }
+    console.log('📊 Query where clause:', JSON.stringify(where, null, 2))
+
+    // Get total count with error handling
+    let totalCount = 0
+    try {
+      totalCount = await prisma.company.count({ where })
+      console.log('📊 Total companies found:', totalCount)
+    } catch (countError) {
+      console.error('❌ Count query error:', countError)
+      // Fallback: try basic count without filters
+      try {
+        totalCount = await prisma.company.count()
+        console.log('📊 Fallback total count:', totalCount)
+      } catch (fallbackError) {
+        console.error('❌ Fallback count error:', fallbackError)
+        totalCount = 0
+      }
     }
 
-    console.log('🔍 Search where clause:', JSON.stringify(where, null, 2))
-    console.log('📊 Executing database query...')
-
-    // Execute query with pagination using Prisma
-    const [companies, total] = await Promise.all([
-      prisma.company.findMany({
+    // Get companies with error handling
+    let companies = []
+    try {
+      companies = await prisma.company.findMany({
         where,
-        include: {
-          _count: {
-            select: { contacts: true }
-          },
-          contacts: {
-            where: { isDecisionMaker: true },
-            take: 3,
-            orderBy: { firstName: 'asc' },
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              fullName: true,
-              title: true,
-              email: true,
-              isDecisionMaker: true,
-              department: true,
-            }
-          }
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          website: true,
+          logoUrl: true,
+          industry: true,
+          employeeCount: true,
+          city: true,
+          state: true,
+          country: true,
+          companyType: true,
         },
-        skip: (page - 1) * limit,
         take: limit,
-        orderBy: { name: 'asc' }
-      }),
-      prisma.company.count({ where })
-    ])
-
-    console.log('✅ Query successful:', { companiesFound: companies.length, total })
+        skip: (page - 1) * limit,
+        orderBy: {
+          name: 'asc'
+        }
+      })
+      console.log('✅ Companies query successful, found:', companies.length)
+    } catch (queryError) {
+      console.error('❌ Companies query error:', queryError)
+      
+      // Return error with details
+      return NextResponse.json({
+        success: false,
+        error: 'Database query failed',
+        message: queryError instanceof Error ? queryError.message : 'Unknown query error',
+        details: {
+          query: where,
+          timestamp: new Date().toISOString()
+        }
+      }, { status: 500 })
+    }
 
     // Record search if query was provided
     if (query) {
@@ -139,10 +168,10 @@ export async function GET(request: NextRequest) {
     console.log('🎉 Returning response')
     return NextResponse.json({
       companies,
-      total,
+      total: totalCount,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(totalCount / limit)
     })
 
   } catch (error) {
