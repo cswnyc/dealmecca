@@ -76,7 +76,9 @@ export default function UpcomingEventsWidget({
   const fetchUpcomingEvents = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/dashboard/upcoming-events?limit=${maxEvents}`)
+      const response = await fetch(`/api/dashboard/upcoming-events?limit=${maxEvents}`, {
+        credentials: 'include'
+      })
       
       if (!response.ok) {
         throw new Error('Failed to fetch upcoming events')

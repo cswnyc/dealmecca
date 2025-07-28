@@ -57,7 +57,9 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
   const fetchSearchUsage = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/dashboard/search-usage')
+      const response = await fetch('/api/dashboard/search-usage', {
+        credentials: 'include'
+      })
       
       if (!response.ok) {
         throw new Error('Failed to fetch search usage data')

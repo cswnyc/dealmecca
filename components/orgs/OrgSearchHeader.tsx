@@ -60,7 +60,9 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
 
   const fetchSuggestions = async (searchQuery: string) => {
     try {
-      const response = await fetch(`/api/orgs/search/suggestions?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`/api/orgs/search/suggestions?q=${encodeURIComponent(searchQuery)}`, {
+      credentials: 'include'
+    });
       const data = await response.json();
       setSuggestions(data);
       setShowSuggestions(true);

@@ -33,7 +33,9 @@ interface Company {
   revenue: string
   contacts: Array<{
     id: string
-    name: string
+    firstName: string
+    lastName: string
+    fullName: string
     title: string
     email: string
     isDecisionMaker: boolean
@@ -46,7 +48,9 @@ interface Company {
 
 interface Contact {
   id: string
-  name: string
+  firstName: string
+  lastName: string
+  fullName: string
   title: string
   email: string
   phone: string
@@ -121,7 +125,9 @@ export default function SearchPage() {
       })
 
       const endpoint = searchType === 'companies' ? '/api/companies' : '/api/contacts'
-      const response = await fetch(`${endpoint}?${params}`)
+      const response = await fetch(`${endpoint}?${params}`, {
+        credentials: 'include'
+      })
       const data = await response.json()
 
       if (response.ok) {
@@ -432,7 +438,7 @@ export default function SearchPage() {
                       {company.contacts.slice(0, 2).map((contact) => (
                         <div key={contact.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                           <div>
-                            <p className="font-medium text-sm">{contact.name}</p>
+                            <p className="font-medium text-sm">{contact.fullName || `${contact.firstName} ${contact.lastName}`.trim()}</p>
                             <p className="text-xs text-gray-600">{contact.title}</p>
                           </div>
                           {contact.isDecisionMaker && (
@@ -456,7 +462,7 @@ export default function SearchPage() {
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1">{contact.name}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-1">{contact.fullName || `${contact.firstName} ${contact.lastName}`.trim()}</h3>
                     <p className="text-gray-600 mb-2">{contact.title}</p>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium">

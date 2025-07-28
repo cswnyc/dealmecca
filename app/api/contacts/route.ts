@@ -44,46 +44,20 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const where: any = {}
 
-    // For SQLite compatibility, use raw SQL for text search
+    // Add text search using Prisma (PostgreSQL compatible)
     if (query && query.length > 0) {
-      const searchResults = await prisma.$queryRaw`
-        SELECT c.*, comp.name as companyName FROM contacts c
-        LEFT JOIN companies comp ON c.companyId = comp.id
-        WHERE c.name LIKE ${`%${query}%`} 
-           OR c.title LIKE ${`%${query}%`}
-           OR c.department LIKE ${`%${query}%`}
-           OR comp.name LIKE ${`%${query}%`}
-        ORDER BY c.name ASC
-        LIMIT ${limit}
-        OFFSET ${(page - 1) * limit}
-      ` as any[]
-      
-      // Count total results
-      const countResult = await prisma.$queryRaw`
-        SELECT COUNT(*) as count FROM contacts c
-        LEFT JOIN companies comp ON c.companyId = comp.id
-        WHERE c.name LIKE ${`%${query}%`} 
-           OR c.title LIKE ${`%${query}%`}
-           OR c.department LIKE ${`%${query}%`}
-           OR comp.name LIKE ${`%${query}%`}
-      ` as any[]
-
-      const total = countResult[0]?.count || 0
-
-      // Record search
-      await recordSearch(userId, query, searchResults.length, 'contacts')
-
-      return NextResponse.json({
-        contacts: searchResults,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      })
+      where.OR = [
+        { fullName: { contains: query, mode: 'insensitive' } },
+        { firstName: { contains: query, mode: 'insensitive' } },
+        { lastName: { contains: query, mode: 'insensitive' } },
+        { title: { contains: query, mode: 'insensitive' } },
+        { department: { contains: query, mode: 'insensitive' } },
+        { company: { name: { contains: query, mode: 'insensitive' } } }
+      ]
     }
 
     if (title) {
-      where.title = { equals: title }
+      where.title = { contains: title, mode: 'insensitive' }
     }
 
     if (department) {
@@ -94,7 +68,7 @@ export async function GET(request: NextRequest) {
       where.isDecisionMaker = isDecisionMaker === 'true'
     }
 
-    // Execute query with pagination
+    // Execute query with pagination using Prisma
     const [contacts, total] = await Promise.all([
       prisma.contact.findMany({
         where,
@@ -109,7 +83,7 @@ export async function GET(request: NextRequest) {
         },
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { name: 'asc' }
+        orderBy: { firstName: 'asc' }
       }),
       prisma.contact.count({ where })
     ])
@@ -122,17 +96,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       contacts,
       total,
-        page,
-        limit,
+      page,
+      limit,
       totalPages: Math.ceil(total / limit)
     })
 
   } catch (error) {
-    console.error('Contacts API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('❌ Contacts API error:', error)
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
+    // Return detailed error information for debugging
+    return NextResponse.json({
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      details: error instanceof Error ? error.stack : 'No details available',
+      timestamp: new Date().toISOString()
+    }, { status: 500 })
   }
 }
 

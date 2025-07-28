@@ -103,7 +103,8 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' ? '.getmecca.com' : undefined,
+        // Don't set domain for Vercel deployments to allow it to work on any domain
+        domain: undefined,
       },
     },
   },
