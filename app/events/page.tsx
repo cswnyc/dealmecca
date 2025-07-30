@@ -140,17 +140,6 @@ export default function EventsPage() {
     'London, UK', 'Paris, France', 'Berlin, Germany', 'Toronto, Canada'
   ]
 
-  // Load events
-  useEffect(() => {
-    if (status === 'loading') return
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-      return
-    }
-    
-    loadEvents()
-  }, [status, filters, router])
-
   const loadEvents = async () => {
     try {
       setLoading(true)
@@ -192,6 +181,11 @@ export default function EventsPage() {
       setLoading(false)
     }
   }
+
+  // Load events immediately like the working orgs page
+  useEffect(() => {
+    loadEvents()
+  }, []) // Run once on mount, just like the working orgs page
 
   const handleAttendanceUpdate = async (eventId: string, status: string, isGoing: boolean) => {
     try {

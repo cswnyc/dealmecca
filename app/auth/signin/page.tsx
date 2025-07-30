@@ -45,10 +45,12 @@ export default function SignInPage() {
         const result = await response.json()
         console.log('✅ Login successful:', result.user)
         
-        // Use window.location for immediate redirect - more reliable than router.push
-        setTimeout(() => {
-          window.location.href = result.redirectUrl || '/dashboard'
-        }, 100)
+        const redirectUrl = result.redirectUrl || '/dashboard-test'
+        console.log('🔄 Redirecting to:', redirectUrl)
+        console.log('🔄 Using window.location for reliable redirect...')
+        
+        // Use window.location for immediate, reliable redirect
+        window.location.href = redirectUrl
         
       } else {
         const errorData = await response.json()

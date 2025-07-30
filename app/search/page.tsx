@@ -67,19 +67,10 @@ export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchType, setSearchType] = useState<'companies' | 'contacts'>('companies')
 
-  // Authentication check
+  // Load data immediately like the working orgs page
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    }
-  }, [status, router])
-
-  // Initial data load - copy the working pattern from orgs page
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchInitialData()
-    }
-  }, [status])
+    fetchInitialData()
+  }, [])
 
   // Search filtering - copy the working pattern from orgs page
   useEffect(() => {

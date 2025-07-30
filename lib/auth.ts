@@ -95,6 +95,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 24 hours
   },
+  // Fixed cookie configuration for custom domain
   cookies: {
     sessionToken: {
       name: `next-auth.session-token`,
@@ -102,15 +103,36 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        // Don't set domain for Vercel deployments to allow it to work on any domain
-        domain: undefined,
-      },
+        secure: true, // Always secure for production custom domain
+        domain: '.getmecca.com' // Include subdomain for custom domain
+      }
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: {
+        httpOnly: false,
+        sameSite: 'lax',
+        path: '/',
+        secure: true,
+        domain: '.getmecca.com'
+      }
+    },
+    csrfToken: {
+      name: `next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true,
+        domain: '.getmecca.com'
+      }
     },
   },
-  useSecureCookies: process.env.NODE_ENV === 'production',
+  useSecureCookies: true, // Always true for custom domain
+  // Add debug logging for development
+  debug: process.env.NODE_ENV === 'development',
   pages: {
-    signIn: '/login',
+    signIn: '/auth/signin',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
   },
@@ -254,18 +276,23 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       console.log('🔀 Redirect callback - url:', url, 'baseUrl:', baseUrl)
       
-      // If it's a relative URL, prepend the base URL
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`
+      // If it's a relative URL, make it absolute
+      if (url.startsWith("/")) {
+        const fullUrl = `${baseUrl}${url}`;
+        console.log('Relative URL redirect:', fullUrl);
+        return fullUrl;
       }
       
-      // If it's the same origin, allow it
+      // If it's an absolute URL from the same origin, allow it
       if (new URL(url).origin === baseUrl) {
-        return url
+        console.log('Same origin redirect:', url);
+        return url;
       }
       
-      // Default to dashboard
-      return `${baseUrl}/dashboard`
+      // Default redirect to dashboard for successful logins
+      const dashboardUrl = `${baseUrl}/dashboard`;
+      console.log('Default redirect to dashboard:', dashboardUrl);
+      return dashboardUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

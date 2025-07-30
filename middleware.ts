@@ -39,13 +39,22 @@ export async function middleware(req: NextRequest) {
     '/api/simple-login',
     '/api/direct-login',
     '/api/setup-test-user',
+    '/api/setup-sample-data',
     '/api/test-basic',
     '/api/debug-auth',
     '/api/debug-session',
+    '/api/debug-middleware-status',
     '/api/test-session-creation',
     '/api/auth-test-flow',
     '/api/test-nextauth-flow',
-    '/api/auth-login'
+    '/api/auth-login',
+    '/api/companies',
+    '/api/orgs/companies',
+    '/api/orgs/contacts',
+    '/api/contacts',
+    '/api/events',
+    '/api/forum/posts',
+    '/api/forum/categories'
   ]
   
   if (publicApiRoutes.some(route => pathname.startsWith(route))) {
@@ -62,7 +71,15 @@ export async function middleware(req: NextRequest) {
     '/auth/error',
     '/auth/verify-request',
     '/signup',
-    '/pricing'
+    '/pricing',
+    '/search',
+    '/orgs',
+    '/dashboard-test',
+    '/organizations',
+    '/events',
+    '/forum',
+    '/intelligence',
+    '/analytics'
   ]
   
   if (publicPages.includes(pathname)) {
