@@ -24,7 +24,7 @@ export default function BreadcrumbNavigation({
   items,
   className,
   showHomeIcon = true,
-  homeHref = '/dashboard',
+  homeHref = '/dashboard-test',
   separator
 }: BreadcrumbNavigationProps) {
   const pathname = usePathname()

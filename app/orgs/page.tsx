@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Building2, Users, Search } from 'lucide-react';
+import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle } from 'lucide-react';
 import PageLayout from '@/components/navigation/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,25 @@ interface Company {
   };
 }
 
+interface UserSession {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  subscriptionTier: string;
+}
+
+interface BulkUploadResult {
+  success: boolean;
+  imported: number;
+  failed: number;
+  errors: Array<{
+    row: number;
+    contact: string;
+    error: string;
+  }>;
+}
+
 export default function OrgsPage() {
   const { data: session, status } = useSession();
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -28,6 +47,34 @@ export default function OrgsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Admin and bulk upload state
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<BulkUploadResult | null>(null);
+
+  // Check user session and admin status
+  useEffect(() => {
+    async function checkSession() {
+      try {
+        const response = await fetch('/api/session-status');
+        if (response.ok) {
+          const sessionData = await response.json();
+          const activeToken = sessionData.activeToken;
+          if (activeToken) {
+            setUserSession(activeToken);
+            setIsAdmin(activeToken.role === 'ADMIN');
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check session:', error);
+      }
+    }
+    
+    checkSession();
+  }, []);
 
   useEffect(() => {
     async function fetchCompanies() {
@@ -67,6 +114,72 @@ export default function OrgsPage() {
       setFilteredCompanies(filtered);
     }
   }, [searchQuery, companies]);
+
+  // Handle file upload
+  const handleFileUpload = async () => {
+    if (!uploadFile || !isAdmin) return;
+
+    setUploading(true);
+    setUploadResult(null);
+
+    try {
+      // Parse CSV file
+      const text = await uploadFile.text();
+      const lines = text.split('\n').filter(line => line.trim());
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      const contacts = lines.slice(1).map((line, index) => {
+        const values = line.split(',').map(v => v.trim());
+        return {
+          id: `temp-${index}`,
+          firstName: values[0] || '',
+          lastName: values[1] || '',
+          title: values[2] || '',
+          email: values[3] || '',
+          phone: values[4] || '',
+          linkedinUrl: values[5] || '',
+          department: values[6] || '',
+          company: values[7] || '',
+          companyId: companies.find(c => c.name.toLowerCase() === (values[7] || '').toLowerCase())?.id || '',
+          isValid: !!(values[0] && values[1] && values[2] && values[7])
+        };
+      }).filter(contact => contact.isValid);
+
+      // Send to bulk import API
+      const response = await fetch('/api/admin/contacts/bulk-import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contacts }),
+      });
+
+      const result = await response.json();
+      setUploadResult(result);
+      
+      if (result.success) {
+        // Clear the file input
+        setUploadFile(null);
+        // Refresh companies data to show updated contact counts
+        const companiesResponse = await fetch('/api/orgs/companies?limit=20');
+        if (companiesResponse.ok) {
+          const companiesData = await companiesResponse.json();
+          setCompanies(companiesData.companies || []);
+          setFilteredCompanies(companiesData.companies || []);
+        }
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadResult({
+        success: false,
+        imported: 0,
+        failed: 0,
+        errors: [{ row: 0, contact: '', error: 'Failed to process file' }]
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (status === 'loading') {
     return (
@@ -163,6 +276,69 @@ export default function OrgsPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Admin Bulk Upload Section */}
+        {isAdmin && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Bulk Upload Contacts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+                />
+                <Button
+                  onClick={handleFileUpload}
+                  disabled={!uploadFile || uploading}
+                  className="flex items-center space-x-2"
+                >
+                  {uploading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4" />
+                      <span>Upload CSV</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+              {uploadResult && (
+                <div className="mt-4 p-3 border rounded-lg">
+                  {uploadResult.success ? (
+                    <div className="flex items-center text-green-600">
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                      <span>{uploadResult.imported} contacts imported successfully!</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-red-600">
+                      <XCircle className="h-5 w-5 mr-2" />
+                      <span>{uploadResult.failed} contacts failed to import.</span>
+                      {uploadResult.errors.length > 0 && (
+                        <ul className="mt-2 text-sm">
+                          {uploadResult.errors.map((error, index) => (
+                            <li key={index}>
+                              Row {error.row + 1}: {error.contact} - {error.error}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Companies List */}
         <Card>

@@ -25,7 +25,7 @@ export default function BackToDashboardButton({
   const router = useRouter()
 
   const handleBackToDashboard = () => {
-    router.push('/dashboard')
+    window.location.href = '/dashboard-test'
   }
 
   return (
@@ -56,7 +56,7 @@ export function HomeDashboardButton({
   const router = useRouter()
 
   const handleGoToDashboard = () => {
-    router.push('/dashboard')
+    window.location.href = '/dashboard-test'
   }
 
   return (

@@ -1,0 +1,6 @@
+firstName,lastName,title,email,phone,linkedinUrl,department,company
+Sarah,Johnson,Creative Director,sarah.johnson@wpp.com,+1-555-0101,https://linkedin.com/in/sarahjohnson,CREATIVE,WPP Group
+Michael,Chen,VP of Strategy,michael.chen@omnicom.com,+1-555-0102,https://linkedin.com/in/michaelchen,STRATEGY,Omnicom Group
+Emily,Rodriguez,Account Manager,emily.rodriguez@publicis.com,+1-555-0103,https://linkedin.com/in/emilyrodriguez,ACCOUNT_MANAGEMENT,Publicis Groupe
+David,Thompson,Data Analyst,david.thompson@ipg.com,+1-555-0104,https://linkedin.com/in/davidthompson,ANALYTICS,Interpublic Group
+Jessica,Kim,Brand Manager,jessica.kim@dentsu.com,+1-555-0105,https://linkedin.com/in/jessicakim,MARKETING,Dentsu Group 
