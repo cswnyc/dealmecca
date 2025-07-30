@@ -181,11 +181,11 @@ function LoginContent() {
                 className="w-full text-left text-xs text-blue-600 hover:text-blue-800 py-1 px-2 bg-white rounded border border-blue-200 hover:border-blue-300 transition-colors"
                 onClick={() => {
                   setEmail('pro@dealmecca.pro')
-                  setPassword('password123')
+                  setPassword('test123')
                 }}
                 disabled={isLoading}
               >
-                👤 Pro User: pro@dealmecca.pro / password123
+                👤 Pro User: pro@dealmecca.pro / test123
               </button>
             </div>
           </div>
