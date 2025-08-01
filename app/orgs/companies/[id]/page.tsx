@@ -243,15 +243,22 @@ export default function CompanyProfilePage() {
                 {company.contacts && company.contacts.length > 0 ? (
                   <div className="space-y-4">
                     {company.contacts.map((contact: any) => (
-                      <div key={contact.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={contact.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
                         <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
                             {contact.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                           </div>
-                          <div>
-                            <h4 className="font-semibold">{contact.fullName}</h4>
-                            <p className="text-sm text-gray-600">{contact.title}</p>
-                            <div className="flex items-center space-x-2 mt-1">
+                          <div className="flex-1">
+                            <Link href={`/contacts/${contact.id}`}>
+                              <h4 className="font-semibold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer">
+                                {contact.fullName}
+                              </h4>
+                            </Link>
+                            <p className="text-sm text-gray-600 mb-1">{contact.title}</p>
+                            {contact.email && (
+                              <p className="text-sm text-gray-500">{contact.email}</p>
+                            )}
+                            <div className="flex items-center space-x-2 mt-2">
                               <Badge className="text-xs">
                                 {contact.seniority.replace(/_/g, ' ')}
                               </Badge>
@@ -260,19 +267,32 @@ export default function CompanyProfilePage() {
                                   {contact.department.replace(/_/g, ' ')}
                                 </Badge>
                               )}
+                              {contact.verified && (
+                                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                  <Shield className="w-3 h-3 mr-1" />
+                                  Verified
+                                </Badge>
+                              )}
                             </div>
                           </div>
                         </div>
                         <div className="flex space-x-2">
                           {contact.email && (
                             <Button variant="ghost" size="sm" asChild>
-                              <a href={`mailto:${contact.email}`}>
+                              <a href={`mailto:${contact.email}`} title="Send Email">
                                 <Mail className="w-4 h-4" />
                               </a>
                             </Button>
                           )}
+                          {contact.phone && (
+                            <Button variant="ghost" size="sm" asChild>
+                              <a href={`tel:${contact.phone}`} title="Call">
+                                <Phone className="w-4 h-4" />
+                              </a>
+                            </Button>
+                          )}
                           <Button variant="outline" size="sm" asChild>
-                            <Link href={`/orgs/contacts/${contact.id}`}>
+                            <Link href={`/contacts/${contact.id}`}>
                               View Profile
                             </Link>
                           </Button>

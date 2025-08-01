@@ -178,7 +178,7 @@ function ContactCard({ contact, viewMode }: { contact: Contact; viewMode: 'grid'
               {/* Contact Info */}
               <div className="flex-1 min-w-0 text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
-                  <Link href={`/orgs/contacts/${contact.id}`} className="group">
+                  <Link href={`/contacts/${contact.id}`} className="group">
                     <h3 className="font-semibold text-lg truncate group-hover:text-blue-600 group-hover:underline">
                       {contact.fullName}
                     </h3>
@@ -238,9 +238,9 @@ function ContactCard({ contact, viewMode }: { contact: Contact; viewMode: 'grid'
                 className="w-full sm:w-auto min-h-[44px]"
                 asChild
               >
-                <Link href={`/orgs/contacts/${contact.id}`}>
+                <Link href={`/contacts/${contact.id}`}>
                   <User className="w-4 h-4 mr-2" />
-                  View
+                  View Profile
                 </Link>
               </Button>
               
@@ -276,9 +276,11 @@ function ContactCard({ contact, viewMode }: { contact: Contact; viewMode: 'grid'
             
             {/* Name & Title */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-lg truncate">
-                {contact.fullName}
-              </h3>
+              <Link href={`/contacts/${contact.id}`} className="group">
+                <h3 className="font-semibold text-lg truncate group-hover:text-blue-600 group-hover:underline cursor-pointer">
+                  {contact.fullName}
+                </h3>
+              </Link>
               <p className="text-sm text-gray-600 truncate">
                 {contact.title}
               </p>
