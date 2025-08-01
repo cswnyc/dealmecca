@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Debug - DealMecca</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .status-good { color: #059669; }
+        .status-bad { color: #dc2626; }
+        .code { background: #f3f4f6; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+        button { background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563eb; }
+        .refresh { background: #6b7280; }
+        .login { background: #059669; }
+        .manual { background: #7c3aed; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Session Debug - DealMecca</h1>
+        <p><strong>Production Server Debug:</strong> This page bypasses middleware and shows your current session status.</p>
+        
+        <div class="grid">
+            <!-- Session Info -->
+            <div class="card">
+                <h2>🔐 Session Status</h2>
+                <div id="sessionInfo">Loading...</div>
+            </div>
+            
+            <!-- Cookies -->
+            <div class="card">
+                <h2>🍪 Cookies</h2>
+                <div id="cookieInfo">Loading...</div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="card">
+                <h2>🔧 Actions</h2>
+                <button onclick="checkSession()">🔄 Refresh Status</button>
+                <button class="login" onclick="window.location.href='/auth/signin'">🔑 Regular Login</button>
+                <button class="manual" onclick="tryManualLogin()">⚡ Try Manual Login</button>
+                <button class="refresh" onclick="window.location.reload()">↻ Reload Page</button>
+            </div>
+            
+            <!-- Diagnosis -->
+            <div class="card">
+                <h2>🩺 Diagnosis</h2>
+                <div id="diagnosis">Analyzing...</div>
+            </div>
+        </div>
+        
+        <!-- Raw Data -->
+        <div class="card">
+            <h3>📊 Raw Data</h3>
+            <pre id="rawData" class="code">Loading raw session data...</pre>
+        </div>
+    </div>
+
+    <script>
+        let sessionData = null;
+        let cookieData = null;
+
+        function parseCookies() {
+            const cookies = document.cookie;
+            const cookieObj = {};
+            cookies.split(';').forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name && value) cookieObj[name] = value;
+            });
+
+            return {
+                raw: cookies,
+                parsed: cookieObj,
+                hasSessionToken: cookies.includes('next-auth.session-token'),
+                hasCallbackUrl: cookies.includes('next-auth.callback-url'),
+                hasCSRFToken: cookies.includes('next-auth.csrf-token'),
+                count: Object.keys(cookieObj).length
+            };
+        }
+
+        async function checkSession() {
+            console.log('🔍 Checking session...');
+            
+            // Update cookies
+            cookieData = parseCookies();
+            updateCookieDisplay();
+            
+            // Check session via NextAuth API
+            try {
+                const response = await fetch('/api/auth/session');
+                sessionData = await response.json();
+                updateSessionDisplay();
+                updateDiagnosis();
+                updateRawData();
+            } catch (error) {
+                console.error('Session check failed:', error);
+                document.getElementById('sessionInfo').innerHTML = `
+                    <div class="status-bad">❌ Failed to check session</div>
+                    <div>Error: ${error.message}</div>
+                `;
+            }
+        }
+
+        function updateSessionDisplay() {
+            const hasSession = sessionData && sessionData.user;
+            const html = hasSession ? `
+                <div class="status-good">✅ Session Active</div>
+                <div><strong>Email:</strong> ${sessionData.user.email || 'N/A'}</div>
+                <div><strong>Role:</strong> <span class="code">${sessionData.user.role || 'N/A'}</span></div>
+                <div><strong>ID:</strong> ${sessionData.user.id || 'N/A'}</div>
+                <div><strong>Expires:</strong> ${sessionData.expires || 'N/A'}</div>
+            ` : `
+                <div class="status-bad">❌ No Active Session</div>
+                <div>You are not logged in or session has expired</div>
+            `;
+            
+            document.getElementById('sessionInfo').innerHTML = html;
+        }
+
+        function updateCookieDisplay() {
+            const html = `
+                <div><strong>Total Cookies:</strong> ${cookieData.count}</div>
+                <div><strong>Session Token:</strong> <span class="${cookieData.hasSessionToken ? 'status-good' : 'status-bad'}">
+                    ${cookieData.hasSessionToken ? '✅ Present' : '❌ Missing'}
+                </span></div>
+                <div><strong>Callback URL:</strong> <span class="${cookieData.hasCallbackUrl ? 'status-good' : 'status-bad'}">
+                    ${cookieData.hasCallbackUrl ? '✅ Present' : '❌ Missing'}
+                </span></div>
+                <div><strong>CSRF Token:</strong> <span class="${cookieData.hasCSRFToken ? 'status-good' : 'status-bad'}">
+                    ${cookieData.hasCSRFToken ? '✅ Present' : '❌ Missing'}
+                </span></div>
+            `;
+            
+            document.getElementById('cookieInfo').innerHTML = html;
+        }
+
+        function updateDiagnosis() {
+            const hasSession = sessionData && sessionData.user;
+            const hasSessionCookie = cookieData.hasSessionToken;
+            const userRole = sessionData?.user?.role;
+            
+            let diagnosis = '';
+            let recommendation = '';
+
+            if (!hasSession && !hasSessionCookie) {
+                diagnosis = '❌ Complete Session Failure';
+                recommendation = 'No session or cookies found. You need to login first.';
+            } else if (!hasSession && hasSessionCookie) {
+                diagnosis = '⚠️ Cookie Present but Session Invalid';
+                recommendation = 'Session cookie exists but NextAuth cannot read it. Try manual login.';
+            } else if (hasSession && userRole !== 'ADMIN' && userRole !== 'PRO') {
+                diagnosis = '⚠️ Session Valid but Insufficient Role';
+                recommendation = `Your role is "${userRole}" but you need ADMIN or PRO role for admin access.`;
+            } else if (hasSession && (userRole === 'ADMIN' || userRole === 'PRO')) {
+                diagnosis = '✅ Session Valid - Admin Access Should Work';
+                recommendation = 'You have a valid session with the correct role. Try accessing /admin now.';
+            } else {
+                diagnosis = '❓ Unknown Issue';
+                recommendation = 'Session state is unclear. Try refreshing or manual login.';
+            }
+
+            document.getElementById('diagnosis').innerHTML = `
+                <div><strong>Status:</strong> ${diagnosis}</div>
+                <div><strong>Recommendation:</strong> ${recommendation}</div>
+                ${hasSession && (userRole === 'ADMIN' || userRole === 'PRO') ? `
+                    <div style="margin-top: 10px;">
+                        <button onclick="window.location.href='/admin'" style="background: #059669;">
+                            🚀 Try Admin Dashboard Now
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function updateRawData() {
+            const data = {
+                session: sessionData,
+                cookies: cookieData,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                domain: window.location.hostname
+            };
+            
+            document.getElementById('rawData').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function tryManualLogin() {
+            const email = prompt('Enter email:', 'pro@dealmecca.pro');
+            const password = prompt('Enter password:', 'test123');
+            
+            if (!email || !password) return;
+            
+            try {
+                const response = await fetch('/api/manual-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('✅ Manual login successful! Redirecting to admin...');
+                    window.location.href = '/admin';
+                } else {
+                    alert(`❌ Manual login failed: ${result.error}`);
+                }
+            } catch (error) {
+                alert(`❌ Manual login error: ${error.message}`);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSession();
+        });
+    </script>
+</body>
+</html>
