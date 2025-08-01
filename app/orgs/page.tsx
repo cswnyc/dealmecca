@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle } from 'lucide-react';
+import Link from 'next/link';
 import PageLayout from '@/components/navigation/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -381,7 +382,11 @@ export default function OrgsPage() {
                         <Building2 className="h-5 w-5 text-sky-600" />
                       </div>
                       <div>
-                        <h3 className="font-medium">{company.name}</h3>
+                        <Link href={`/orgs/companies/${company.id}`} className="group">
+                          <h3 className="font-medium group-hover:text-blue-600 group-hover:underline cursor-pointer transition-colors">
+                            {company.name}
+                          </h3>
+                        </Link>
                         <p className="text-sm text-gray-600">
                           {company.industry} • {company.city}, {company.state}
                         </p>
