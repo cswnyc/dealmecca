@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -146,6 +146,8 @@ const faqs = [
     answer: 'Team plans include up to 5 users. Need more? Contact us for custom enterprise pricing.',
   },
 ]
+
+import { SessionDebugComponent } from './debug';
 
 export default function PricingPage() {
   const [billingInterval, setBillingInterval] = useState<'monthly' | 'annual'>('monthly')
@@ -443,6 +445,7 @@ export default function PricingPage() {
           </Button>
         </div>
       </div>
+      <SessionDebugComponent />
     </div>
   )
 } 

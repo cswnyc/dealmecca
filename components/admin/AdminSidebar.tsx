@@ -39,8 +39,24 @@ const navigationItems: NavigationItem[] = [
   },
   {
     name: 'Companies',
-    href: '/admin/orgs/companies',
-    icon: Building2
+    icon: Building2,
+    subItems: [
+      {
+        name: 'All Companies',
+        href: '/admin/orgs/companies',
+        icon: Building2
+      },
+      {
+        name: 'Add Company',
+        href: '/admin/orgs/companies/create',
+        icon: Plus
+      },
+      {
+        name: 'Bulk Upload',
+        href: '/admin/bulk-upload',
+        icon: Upload
+      }
+    ]
   },
   {
     name: 'Contacts',
@@ -98,7 +114,7 @@ const navigationItems: NavigationItem[] = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['Contacts', 'Events']); // Default expand Contacts and Events
+  const [expandedItems, setExpandedItems] = useState<string[]>(['Companies', 'Contacts', 'Events']); // Default expand Companies, Contacts and Events
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems(prev => 

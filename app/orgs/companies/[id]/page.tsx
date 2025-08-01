@@ -249,7 +249,9 @@ export default function CompanyProfilePage() {
                             {contact.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                           </div>
                           <div>
-                            <h4 className="font-semibold">{contact.fullName}</h4>
+                            <Link href={`/contacts/${contact.id}`} className="group">
+                              <h4 className="font-semibold group-hover:text-blue-600 group-hover:underline cursor-pointer">{contact.fullName}</h4>
+                            </Link>
                             <p className="text-sm text-gray-600">{contact.title}</p>
                             <div className="flex items-center space-x-2 mt-1">
                               <Badge className="text-xs">
@@ -272,7 +274,7 @@ export default function CompanyProfilePage() {
                             </Button>
                           )}
                           <Button variant="outline" size="sm" asChild>
-                            <Link href={`/orgs/contacts/${contact.id}`}>
+                            <Link href={`/contacts/${contact.id}`}>
                               View Profile
                             </Link>
                           </Button>

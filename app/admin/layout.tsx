@@ -9,12 +9,30 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  console.log('🔵 ADMIN LAYOUT: Starting session check...');
+  
   const session = await getServerSession(authOptions);
+  
+  console.log('🔵 ADMIN LAYOUT: Session result:', {
+    hasSession: !!session,
+    userId: session?.user?.id,
+    email: session?.user?.email,
+    role: session?.user?.role,
+    expires: session?.expires
+  });
 
-  // Check if user is admin
-  if (!session || session.user.role !== 'ADMIN') {
+  // Check if user is admin (temporarily allow PRO users)
+  if (!session) {
+    console.log('❌ ADMIN LAYOUT: No session found - redirecting to login');
     redirect('/auth/signin?callbackUrl=/admin');
   }
+  
+  if (session.user.role !== 'ADMIN' && session.user.role !== 'PRO') {
+    console.log('❌ ADMIN LAYOUT: Insufficient role:', session.user.role, '- redirecting to login');
+    redirect('/auth/signin?callbackUrl=/admin');
+  }
+  
+  console.log('✅ ADMIN LAYOUT: Access granted for role:', session.user.role);
 
   // Convert user object to match AdminHeader expected types
   const user = {

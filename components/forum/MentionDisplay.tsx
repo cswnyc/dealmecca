@@ -110,7 +110,7 @@ export function MentionDisplayReact({
           return (
             <Link
               key={index}
-              href={`/orgs/contacts/${id}`}
+              href={`/contacts/${id}`}
               className="inline-flex items-center space-x-1 px-2 py-1 rounded-md text-sm font-medium bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 transition-colors no-underline"
             >
               {showIcons && <User className="w-3 h-3" />}

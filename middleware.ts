@@ -39,6 +39,9 @@ export async function middleware(req: NextRequest) {
     '/api/simple-login',
     '/api/direct-login',
     '/api/setup-test-user',
+    '/api/create-admin',
+    '/api/manual-login',
+    '/api/session-debug',
     '/api/setup-sample-data',
     '/api/test-basic',
     '/api/debug-auth',
@@ -79,7 +82,10 @@ export async function middleware(req: NextRequest) {
     '/events',
     '/forum',
     '/intelligence',
-    '/analytics'
+    '/analytics',
+    '/manual-login',
+    '/debug-admin',
+    '/session-status'
   ]
   
   if (publicPages.includes(pathname)) {

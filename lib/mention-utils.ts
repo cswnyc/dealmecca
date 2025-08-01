@@ -132,7 +132,7 @@ export function formatMentionsForDisplay(text: string): string {
   // Replace contact mentions with clickable links
   formattedText = formattedText.replace(
     MENTION_PATTERNS.contact,
-    '<a href="/orgs/contacts/$2" class="mention mention-contact" data-mention-type="contact" data-mention-id="$2">@$1</a>'
+    '<a href="/contacts/$2" class="mention mention-contact" data-mention-type="contact" data-mention-id="$2">@$1</a>'
   );
   
   return formattedText;
