@@ -40,7 +40,9 @@ export default function CompanyProfilePage() {
 
   const fetchCompany = async () => {
     try {
-      const response = await fetch(`/api/orgs/companies/${params.id}`);
+      const response = await fetch(`/api/orgs/companies/${params.id}`, {
+        credentials: 'include'
+      });
       const data = await response.json();
       setCompany(data.company);
       
@@ -60,7 +62,9 @@ export default function CompanyProfilePage() {
     
     try {
       setEventsLoading(true);
-      const response = await fetch(`/api/orgs/companies/${params.id}/events`);
+      const response = await fetch(`/api/orgs/companies/${params.id}/events`, {
+        credentials: 'include'
+      });
       const data = await response.json();
       setEvents(data.events || []);
     } catch (error) {

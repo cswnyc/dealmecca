@@ -52,9 +52,6 @@ export async function middleware(req: NextRequest) {
     '/api/test-nextauth-flow',
     '/api/auth-login',
     '/api/companies',
-    '/api/orgs/companies',
-    '/api/orgs/contacts',
-    '/api/contacts',
     '/api/events',
     '/api/forum/posts',
     '/api/forum/categories'
@@ -118,6 +115,24 @@ export async function middleware(req: NextRequest) {
         console.log('✅ Manual JWT decode successful')
       } catch (jwtError) {
         console.log('❌ Manual JWT decode failed:', jwtError)
+      }
+    }
+  }
+  
+  // ALSO check for manual authentication (dealmecca-session cookie)
+  if (!token) {
+    console.log('🔐 Checking for dealmecca-session cookie...')
+    const manualSessionCookie = req.cookies.get('dealmecca-session')?.value
+    
+    if (manualSessionCookie) {
+      try {
+        const { jwtVerify } = await import('jose')
+        const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+        const { payload } = await jwtVerify(manualSessionCookie, secret)
+        token = payload as any
+        console.log('✅ Manual session verified:', { userId: payload.sub, email: payload.email })
+      } catch (error) {
+        console.log('⚠️ Manual session verification failed:', error)
       }
     }
   }
