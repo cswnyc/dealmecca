@@ -60,7 +60,9 @@ export default function OrgsPage() {
   useEffect(() => {
     async function checkSession() {
       try {
-        const response = await fetch('/api/session-status');
+        const response = await fetch('/api/session-status', {
+          credentials: 'include'
+        });
         if (response.ok) {
           const sessionData = await response.json();
           const activeToken = sessionData.activeToken;
@@ -81,7 +83,9 @@ export default function OrgsPage() {
     async function fetchCompanies() {
       try {
         setLoading(true);
-        const response = await fetch('/api/orgs/companies?limit=20');
+        const response = await fetch('/api/orgs/companies?limit=20', {
+          credentials: 'include'
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch companies');
         }
@@ -162,7 +166,9 @@ export default function OrgsPage() {
         // Clear the file input
         setUploadFile(null);
         // Refresh companies data to show updated contact counts
-        const companiesResponse = await fetch('/api/orgs/companies?limit=20');
+        const companiesResponse = await fetch('/api/orgs/companies?limit=20', {
+          credentials: 'include'
+        });
         if (companiesResponse.ok) {
           const companiesData = await companiesResponse.json();
           setCompanies(companiesData.companies || []);

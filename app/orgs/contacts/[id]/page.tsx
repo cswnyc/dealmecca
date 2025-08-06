@@ -70,7 +70,9 @@ export default function ContactProfilePage() {
 
   const fetchContact = async () => {
     try {
-      const response = await fetch(`/api/contacts/${params.id}`);
+      const response = await fetch(`/api/contacts/${params.id}`, {
+        credentials: 'include'
+      });
       const data = await response.json();
       
       if (response.ok) {
