@@ -95,7 +95,7 @@ export default async function DebugAdminPage() {
       <div className="mt-8 bg-gray-50 p-6 rounded-lg">
         <h3 className="font-semibold mb-2">Raw Header Data:</h3>
         <pre className="text-xs overflow-auto bg-white p-4 rounded border">
-          {JSON.stringify({ userId, userEmail, userRole, userTier }, null, 2)}
+          {JSON.stringify({ userId, userEmail, userRole }, null, 2)}
         </pre>
       </div>
     </div>
