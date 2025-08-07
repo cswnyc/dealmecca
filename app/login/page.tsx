@@ -58,7 +58,7 @@ function LoginContent() {
         console.log('✅ Login successful:', result.user)
         
         // Get callback URL from search params or use default redirect
-        const callbackUrl = searchParams.get('callbackUrl') || result.redirectUrl || '/dashboard-test'
+        const callbackUrl = searchParams.get('callbackUrl') || result.redirectUrl || '/admin'
         
         console.log('🔄 Redirecting to:', callbackUrl)
         console.log('🔄 Using window.location for reliable redirect...')
