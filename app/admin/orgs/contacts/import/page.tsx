@@ -81,7 +81,9 @@ export default function ContactImportPage() {
         </Card>
 
         {/* Import Component */}
-        <ContactCSVImport />
+        <Suspense fallback={<LoadingSkeleton />}>
+          <ContactCSVImport />
+        </Suspense>
       </div>
     </Suspense>
   );
