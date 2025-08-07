@@ -84,13 +84,14 @@ export async function POST(request: NextRequest) {
     })
     
     // Set NextAuth-compatible session cookie
+    const isProduction = process.env.NODE_ENV === 'production'
     const cookieOptions = {
       httpOnly: true,
-      secure: true, // Always secure for production custom domain
+      secure: isProduction, // Only secure in production
       sameSite: 'lax' as const,
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: '/',
-      domain: '.getmecca.com' // Fix: Add domain for custom domain compatibility
+      ...(isProduction && { domain: '.getmecca.com' }) // Only set domain in production
     }
     
     response.cookies.set('next-auth.session-token', token, cookieOptions)
@@ -99,11 +100,11 @@ export async function POST(request: NextRequest) {
     const csrfToken = Math.random().toString(36).substring(2) + Date.now().toString(36)
     response.cookies.set('next-auth.csrf-token', csrfToken, {
       httpOnly: true,
-      secure: true, // Always secure for production custom domain
+      secure: isProduction, // Only secure in production
       sameSite: 'lax' as const,
       maxAge: 60 * 60, // 1 hour
       path: '/',
-      domain: '.getmecca.com' // Fix: Add domain for custom domain compatibility
+      ...(isProduction && { domain: '.getmecca.com' }) // Only set domain in production
     })
     
     console.log('✅ Session cookies set successfully')

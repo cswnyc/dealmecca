@@ -97,17 +97,42 @@ export const authOptions: NextAuthOptions = {
   },
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    // Custom decode function to handle our JWT tokens
+    encode: async ({ token, secret }) => {
+      // Use our custom JWT encoding to match what we create in auth-login
+      const { SignJWT } = await import('jose')
+      const secretKey = new TextEncoder().encode(secret)
+      
+      const jwt = await new SignJWT(token)
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setExpirationTime('30d')
+        .sign(secretKey)
+      
+      return jwt
+    },
+    decode: async ({ token, secret }) => {
+      try {
+        const { jwtVerify } = await import('jose')
+        const secretKey = new TextEncoder().encode(secret)
+        const { payload } = await jwtVerify(token, secretKey)
+        return payload
+      } catch (error) {
+        console.log('JWT decode error:', error)
+        return null
+      }
+    }
   },
-  // Fixed cookie configuration for custom domain
-  cookies: {
+  // Environment-aware cookie configuration
+  cookies: process.env.NODE_ENV === 'production' ? {
     sessionToken: {
       name: `next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true, // Always secure for production custom domain
-        domain: '.getmecca.com' // Include subdomain for custom domain
+        secure: true,
+        domain: '.getmecca.com'
       }
     },
     callbackUrl: {
@@ -130,8 +155,8 @@ export const authOptions: NextAuthOptions = {
         domain: '.getmecca.com'
       }
     },
-  },
-  useSecureCookies: true, // Always true for custom domain
+  } : undefined, // Use defaults for development
+  useSecureCookies: process.env.NODE_ENV === 'production',
   // Add debug logging for development
   debug: process.env.NODE_ENV === 'development',
   pages: {
