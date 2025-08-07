@@ -374,6 +374,13 @@ function ContactCard({ contact, viewMode }: { contact: Contact; viewMode: 'grid'
                 </a>
               </Button>
             )}
+            {contact.phone && (
+              <Button variant="outline" size="sm" asChild>
+                <a href={`tel:${contact.phone}`}>
+                  <Phone className="w-3 h-3" />
+                </a>
+              </Button>
+            )}
             {contact.linkedinUrl && (
               <Button variant="outline" size="sm" asChild>
                 <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer">
