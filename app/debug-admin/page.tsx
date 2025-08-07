@@ -5,7 +5,7 @@ export default async function DebugAdminPage() {
   console.log('🔍 DEBUG ADMIN: Page loading...');
   
   // Get user info from middleware headers
-  const headersList = headers();
+  const headersList = await headers();
   const userId = headersList.get('x-user-id');
   const userEmail = headersList.get('x-user-email');
   const userRole = headersList.get('x-user-role');

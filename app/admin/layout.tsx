@@ -11,7 +11,7 @@ export default async function AdminLayout({
   console.log('🔵 ADMIN LAYOUT: Starting session check...');
   
   // Get user info from middleware headers (which successfully decodes our JWT)
-  const headersList = headers();
+  const headersList = await headers();
   const userId = headersList.get('x-user-id');
   const userEmail = headersList.get('x-user-email');
   const userRole = headersList.get('x-user-role');
