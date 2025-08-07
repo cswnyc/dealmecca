@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 
@@ -11,35 +10,40 @@ export default async function AdminLayout({
 }) {
   console.log('🔵 ADMIN LAYOUT: Starting session check...');
   
-  const session = await getServerSession(authOptions);
+  // Get user info from middleware headers (which successfully decodes our JWT)
+  const headersList = headers();
+  const userId = headersList.get('x-user-id');
+  const userEmail = headersList.get('x-user-email');
+  const userRole = headersList.get('x-user-role');
+  const userTier = headersList.get('x-user-tier');
   
-  console.log('🔵 ADMIN LAYOUT: Session result:', {
-    hasSession: !!session,
-    userId: session?.user?.id,
-    email: session?.user?.email,
-    role: session?.user?.role,
-    expires: session?.expires
+  console.log('🔵 ADMIN LAYOUT: Headers result:', {
+    hasUserId: !!userId,
+    userId: userId,
+    email: userEmail,
+    role: userRole,
+    tier: userTier
   });
 
-  // Check if user is admin (temporarily allow PRO users)
-  if (!session) {
-    console.log('❌ ADMIN LAYOUT: No session found - redirecting to login');
+  // Check if user is authenticated via middleware
+  if (!userId || !userRole) {
+    console.log('❌ ADMIN LAYOUT: No authentication headers found - redirecting to login');
     redirect('/auth/signin?callbackUrl=/admin');
   }
   
-  if (session.user.role !== 'ADMIN' && session.user.role !== 'PRO') {
-    console.log('❌ ADMIN LAYOUT: Insufficient role:', session.user.role, '- redirecting to login');
+  if (userRole !== 'ADMIN' && userRole !== 'PRO') {
+    console.log('❌ ADMIN LAYOUT: Insufficient role:', userRole, '- redirecting to login');
     redirect('/auth/signin?callbackUrl=/admin');
   }
   
-  console.log('✅ ADMIN LAYOUT: Access granted for role:', session.user.role);
+  console.log('✅ ADMIN LAYOUT: Access granted for role:', userRole);
 
-  // Convert user object to match AdminHeader expected types
+  // Convert header values to user object
   const user = {
-    id: session.user.id,
-    name: session.user.name || undefined,
-    email: session.user.email || undefined,
-    role: session.user.role,
+    id: userId,
+    name: userEmail?.split('@')[0] || undefined, // Extract name from email
+    email: userEmail || undefined,
+    role: userRole,
   };
 
   return (

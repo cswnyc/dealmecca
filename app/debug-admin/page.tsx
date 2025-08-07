@@ -1,29 +1,32 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export default async function DebugAdminPage() {
   console.log('🔍 DEBUG ADMIN: Page loading...');
   
-  const session = await getServerSession(authOptions);
+  // Get user info from middleware headers
+  const headersList = headers();
+  const userId = headersList.get('x-user-id');
+  const userEmail = headersList.get('x-user-email');
+  const userRole = headersList.get('x-user-role');
   
-  console.log('🔍 DEBUG ADMIN: Session check result:', {
-    hasSession: !!session,
-    userId: session?.user?.id,
-    email: session?.user?.email,
-    role: session?.user?.role
+  console.log('🔍 DEBUG ADMIN: Header check result:', {
+    hasUserId: !!userId,
+    userId: userId,
+    email: userEmail,
+    role: userRole
   });
 
   // Check if user should have admin access
-  const hasAccess = session && (session.user.role === 'ADMIN' || session.user.role === 'PRO');
+  const hasAccess = userId && userRole && (userRole === 'ADMIN' || userRole === 'PRO');
   
-  if (!session) {
-    console.log('❌ DEBUG ADMIN: No session - redirecting to login');
+  if (!userId || !userRole) {
+    console.log('❌ DEBUG ADMIN: No authentication headers - redirecting to login');
     redirect('/auth/signin?callbackUrl=/debug-admin');
   }
   
   if (!hasAccess) {
-    console.log('❌ DEBUG ADMIN: No admin access - user role:', session.user.role);
+    console.log('❌ DEBUG ADMIN: No admin access - user role:', userRole);
     redirect('/dashboard');
   }
   
