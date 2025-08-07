@@ -42,10 +42,10 @@ export default async function DebugAdminPage() {
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4 text-green-600">✅ Session Active</h2>
           <div className="space-y-2 text-sm">
-            <div><strong>User ID:</strong> {session.user.id}</div>
-            <div><strong>Email:</strong> {session.user.email}</div>
-            <div><strong>Name:</strong> {session.user.name || 'N/A'}</div>
-            <div><strong>Role:</strong> <span className="font-mono bg-gray-100 px-2 py-1 rounded">{session.user.role}</span></div>
+            <div><strong>User ID:</strong> {userId}</div>
+            <div><strong>Email:</strong> {userEmail}</div>
+            <div><strong>Name:</strong> {userEmail?.split('@')[0] || 'N/A'}</div>
+            <div><strong>Role:</strong> <span className="font-mono bg-gray-100 px-2 py-1 rounded">{userRole}</span></div>
             <div><strong>Expires:</strong> {session.expires}</div>
           </div>
         </div>
