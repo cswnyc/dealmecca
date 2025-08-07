@@ -103,7 +103,7 @@ export const authOptions: NextAuthOptions = {
       const { SignJWT } = await import('jose')
       const secretKey = new TextEncoder().encode(typeof secret === 'string' ? secret : secret?.toString() || 'fallback-secret')
       
-      const jwt = await new SignJWT(token)
+      const jwt = await new SignJWT(token || {})
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .setExpirationTime('30d')
@@ -115,7 +115,7 @@ export const authOptions: NextAuthOptions = {
       try {
         const { jwtVerify } = await import('jose')
         const secretKey = new TextEncoder().encode(typeof secret === 'string' ? secret : secret?.toString() || 'fallback-secret')
-        const { payload } = await jwtVerify(token, secretKey)
+        const { payload } = await jwtVerify(token || '', secretKey)
         return payload
       } catch (error) {
         console.log('JWT decode error:', error)
