@@ -46,7 +46,7 @@ export default async function DebugAdminPage() {
             <div><strong>Email:</strong> {userEmail}</div>
             <div><strong>Name:</strong> {userEmail?.split('@')[0] || 'N/A'}</div>
             <div><strong>Role:</strong> <span className="font-mono bg-gray-100 px-2 py-1 rounded">{userRole}</span></div>
-            <div><strong>Expires:</strong> {session.expires}</div>
+            <div><strong>Expires:</strong> N/A (Header-based auth)</div>
           </div>
         </div>
         
@@ -55,7 +55,7 @@ export default async function DebugAdminPage() {
           <h2 className="text-xl font-semibold mb-4 text-blue-600">🔐 Access Check</h2>
           <div className="space-y-2 text-sm">
             <div><strong>Has Session:</strong> <span className="text-green-600">✅ Yes</span></div>
-            <div><strong>Role Check:</strong> <span className="text-green-600">✅ {session.user.role} (Allowed)</span></div>
+            <div><strong>Role Check:</strong> <span className="text-green-600">✅ {userRole} (Allowed)</span></div>
             <div><strong>Admin Access:</strong> <span className="text-green-600">✅ Granted</span></div>
             <div><strong>Layout Check:</strong> <span className="text-green-600">✅ Passed</span></div>
           </div>
