@@ -18,6 +18,21 @@ function LoadingSkeleton() {
 }
 
 export default function ContactImportPage() {
+  // Temporarily disabled due to client component build issues
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">Contact Import</h1>
+          <p className="text-gray-600 mt-2">This feature is temporarily disabled for maintenance.</p>
+          <p className="text-sm text-gray-500 mt-4">Please check back soon.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ContactImportPageOLD() {
   return (
     <Suspense fallback={<LoadingSkeleton />}>
       <div className="max-w-6xl mx-auto space-y-6">
