@@ -101,7 +101,7 @@ export const authOptions: NextAuthOptions = {
     encode: async ({ token, secret }) => {
       // Use our custom JWT encoding to match what we create in auth-login
       const { SignJWT } = await import('jose')
-      const secretKey = new TextEncoder().encode(secret)
+      const secretKey = new TextEncoder().encode(typeof secret === 'string' ? secret : secret?.toString() || 'fallback-secret')
       
       const jwt = await new SignJWT(token)
         .setProtectedHeader({ alg: 'HS256' })
@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
     decode: async ({ token, secret }) => {
       try {
         const { jwtVerify } = await import('jose')
-        const secretKey = new TextEncoder().encode(secret)
+        const secretKey = new TextEncoder().encode(typeof secret === 'string' ? secret : secret?.toString() || 'fallback-secret')
         const { payload } = await jwtVerify(token, secretKey)
         return payload
       } catch (error) {
