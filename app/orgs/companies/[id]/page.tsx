@@ -18,7 +18,8 @@ import {
   ChevronRight,
   ArrowLeft,
   Calendar,
-  MessageSquare
+  MessageSquare,
+  LinkedinIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { CompanyActivityFeed } from '@/components/forum/CompanyActivityFeed';
@@ -274,6 +275,20 @@ export default function CompanyProfilePage() {
                             <Button variant="ghost" size="sm" asChild>
                               <a href={`mailto:${contact.email}`}>
                                 <Mail className="w-4 h-4" />
+                              </a>
+                            </Button>
+                          )}
+                          {contact.phone && (
+                            <Button variant="ghost" size="sm" asChild>
+                              <a href={`tel:${contact.phone}`}>
+                                <Phone className="w-4 h-4" />
+                              </a>
+                            </Button>
+                          )}
+                          {contact.linkedinUrl && (
+                            <Button variant="ghost" size="sm" asChild>
+                              <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                                <LinkedinIcon className="w-4 h-4" />
                               </a>
                             </Button>
                           )}
