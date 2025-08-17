@@ -304,9 +304,12 @@ export default function BulkImportPage() {
       estimatedTimeRemaining: totalOperations * 50 // Rough estimate
     });
     
+    // Declare progressInterval outside try block
+    let progressInterval: NodeJS.Timeout | null = null;
+    
     try {
       // Simulate progress updates
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setImportProgress(prev => {
           if (prev.status !== 'processing') return prev;
           
@@ -354,7 +357,7 @@ export default function BulkImportPage() {
         }),
       });
 
-      clearInterval(progressInterval);
+      if (progressInterval) clearInterval(progressInterval);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -418,7 +421,7 @@ export default function BulkImportPage() {
         setCurrentStep('preview');
       }
     } catch (error) {
-      clearInterval(progressInterval);
+      if (progressInterval) clearInterval(progressInterval);
       console.error('Import error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Import failed. Please try again.';
       setError(errorMessage);
