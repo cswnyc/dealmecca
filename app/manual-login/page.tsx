@@ -20,17 +20,43 @@ export default function ManualLoginPage() {
       const response = await fetch('/api/manual-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email: 'pro@dealmecca.pro' }) // Simplified - no password needed
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('✅ Login successful! Redirecting to admin...');
-        // Redirect to admin after successful login
+        setMessage('✅ Login successful! Redirecting to admin contacts...');
+        // Redirect to admin contacts page
         setTimeout(() => {
-          window.location.href = '/admin';
+          window.location.href = '/admin/orgs/contacts';
         }, 1000);
+      } else {
+        setMessage(`❌ ${data.error || 'Login failed'}`);
+      }
+    } catch (error) {
+      setMessage('❌ Network error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickLogin = async () => {
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/manual-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'pro@dealmecca.pro' })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage('✅ Login successful! Redirecting...');
+        window.location.href = '/admin/orgs/contacts';
       } else {
         setMessage(`❌ ${data.error || 'Login failed'}`);
       }
@@ -91,11 +117,24 @@ export default function ManualLoginPage() {
             )}
           </form>
           
-          <div className="mt-6 p-4 bg-blue-50 rounded text-sm">
+          <div className="mt-6 p-4 bg-green-50 rounded text-center">
+            <h3 className="font-medium text-green-900 mb-3">Quick Access</h3>
+            <Button 
+              onClick={handleQuickLogin}
+              disabled={loading}
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              🚀 Login as Admin & Go to Contacts
+            </Button>
+            <p className="text-xs text-green-600 mt-2">
+              Bypasses form issues - Click this to access admin contacts directly
+            </p>
+          </div>
+          
+          <div className="mt-4 p-4 bg-blue-50 rounded text-sm">
             <h3 className="font-medium text-blue-900 mb-2">Test Credentials:</h3>
             <div className="text-blue-700">
               <div><strong>Email:</strong> pro@dealmecca.pro</div>
-              <div><strong>Password:</strong> test123</div>
               <div><strong>Role:</strong> PRO (has admin access)</div>
             </div>
           </div>
