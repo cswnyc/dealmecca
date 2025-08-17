@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { recordSearch, canUserSearch } from '@/lib/auth'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
+import type { Prisma } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -48,32 +49,29 @@ export async function GET(request: NextRequest) {
     // Build where clause with simpler query approach
     let where: any = {}
 
-    // Add text search using simpler Prisma syntax
-    if (query && query.length > 0) {
-      // Use simpler text search that's more compatible
-      where = {
-        OR: [
-          { firstName: { startsWith: query, mode: 'insensitive' } },
-          { lastName: { startsWith: query, mode: 'insensitive' } },
-          { fullName: { startsWith: query, mode: 'insensitive' } },
-          { title: { startsWith: query, mode: 'insensitive' } },
-          { department: { startsWith: query, mode: 'insensitive' } },
-        ]
-      }
+    // Add text search - copy exact pattern from working admin route
+    if (query && query.trim().length > 0) {
+      where.OR = [
+        { fullName: { contains: query, mode: 'insensitive' as const } },
+        { firstName: { contains: query, mode: 'insensitive' as const } },
+        { lastName: { contains: query, mode: 'insensitive' as const } },
+        { title: { contains: query, mode: 'insensitive' as const } },
+        { email: { contains: query, mode: 'insensitive' as const } },
+      ]
     }
 
     // Add additional filters
     if (title) {
-      where.title = { startsWith: title, mode: 'insensitive' }
+      where.title = { contains: title, mode: 'insensitive' as const }
     }
 
     if (department) {
-      where.department = { startsWith: department, mode: 'insensitive' }
+      where.department = { contains: department, mode: 'insensitive' as const }
     }
 
     if (company) {
       where.company = {
-        name: { startsWith: company, mode: 'insensitive' }
+        name: { contains: company, mode: 'insensitive' as const }
       }
     }
 
@@ -81,7 +79,7 @@ export async function GET(request: NextRequest) {
       where.seniority = seniority
     }
 
-    if (isDecisionMaker !== undefined) {
+    if (isDecisionMaker) {
       where.isDecisionMaker = isDecisionMaker === 'true'
     }
 
