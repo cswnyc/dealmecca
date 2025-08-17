@@ -38,6 +38,11 @@ const navigationItems: NavigationItem[] = [
     icon: BarChart3
   },
   {
+    name: 'Bulk Import',
+    href: '/admin/bulk-import',
+    icon: Upload
+  },
+  {
     name: 'Companies',
     icon: Building2,
     subItems: [
@@ -176,13 +181,31 @@ export function AdminSidebar() {
                 <Link
                   href={item.href!}
                   className={`flex items-center px-6 py-3 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    item.name === 'Bulk Import'
+                      ? isActive
+                        ? 'bg-green-50 text-green-700 border-r-2 border-green-700'
+                        : 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
+                      : isActive
+                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
                   <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span>{item.name}</span>
+                      {item.name === 'Bulk Import' && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                          New
+                        </span>
+                      )}
+                    </div>
+                    {item.name === 'Bulk Import' && (
+                      <p className="text-xs text-green-600 mt-0.5">
+                        Scale to 5000+ companies
+                      </p>
+                    )}
+                  </div>
                 </Link>
               )}
 
@@ -214,6 +237,33 @@ export function AdminSidebar() {
           );
         })}
       </nav>
+
+      {/* Data Scale Progress Widget */}
+      <div className="mt-8 mx-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
+        <h3 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
+          <BarChart3 className="w-4 h-4 mr-2 text-blue-500" />
+          Data Scale Target
+        </h3>
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-700">Current:</span>
+            <span className="font-medium text-gray-900">17 companies</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-700">Goal:</span>
+            <span className="font-medium text-green-700">5,000+ companies</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all duration-300" 
+              style={{width: '0.34%'}}
+            ></div>
+          </div>
+          <p className="text-xs text-gray-600 mt-2">
+            <span className="font-medium text-green-600">Use bulk import</span> to scale rapidly
+          </p>
+        </div>
+      </div>
     </div>
   );
 } 
