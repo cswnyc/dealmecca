@@ -86,24 +86,24 @@ export async function POST(request: NextRequest) {
       });
 
       // Sort by quality score descending
-      contactProfiles.sort((a, b) => b.qualityScore - a.qualityScore);
+      contactProfiles.sort((a: any, b: any) => b.qualityScore - a.qualityScore);
 
       results.details.contactProfiles = contactProfiles;
       
       // Statistics
       results.details.statistics = {
-        highValueContacts: contactProfiles.filter(c => c.qualityScore >= 70).length,
-        targetRoleContacts: contactProfiles.filter(c => c.isTargetRole).length,
-        cLevelContacts: contactProfiles.filter(c => 
+        highValueContacts: contactProfiles.filter((c: any) => c.qualityScore >= 70).length,
+        targetRoleContacts: contactProfiles.filter((c: any) => c.isTargetRole).length,
+        cLevelContacts: contactProfiles.filter((c: any) => 
           c.title?.toLowerCase().includes('cmo') || 
           c.title?.toLowerCase().includes('chief')
         ).length,
-        contactsWithEmail: contactProfiles.filter(c => c.profile.reasons.some(r => r.includes('email'))).length,
+        contactsWithEmail: contactProfiles.filter((c: any) => c.profile.reasons.some((r: any) => r.includes('email'))).length,
         averageQualityScore: Math.round(
-          contactProfiles.reduce((sum, c) => sum + c.qualityScore, 0) / contactProfiles.length
+          contactProfiles.reduce((sum: number, c: any) => sum + c.qualityScore, 0) / contactProfiles.length
         ),
         averageConfidence: Math.round(
-          contactProfiles.reduce((sum, c) => sum + c.confidence, 0) / contactProfiles.length
+          contactProfiles.reduce((sum: number, c: any) => sum + c.confidence, 0) / contactProfiles.length
         )
       };
     }

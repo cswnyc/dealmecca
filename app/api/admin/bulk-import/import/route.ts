@@ -59,12 +59,13 @@ export async function POST(request: NextRequest) {
       
       for (const companyData of batch) {
         try {
-          // Check for existing company by name or domain
+          // Check for existing company by name or website
           const existingCompany = await prisma.company.findFirst({
             where: {
               OR: [
                 { name: { equals: companyData.name, mode: 'insensitive' } },
-                ...(companyData.domain ? [{ domain: companyData.domain }] : [])
+                ...(companyData.website ? [{ website: companyData.website }] : []),
+                ...(companyData.domain ? [{ website: companyData.domain }] : [])
               ]
             }
           });
@@ -93,6 +94,9 @@ export async function POST(request: NextRequest) {
             if (companyData.website && companyData.website !== existingCompany.website) {
               updateData.website = companyData.website;
             }
+            if (companyData.domain && companyData.domain !== existingCompany.website) {
+              updateData.website = companyData.domain; // Map domain to website field
+            }
             if (companyData.type && companyData.type !== existingCompany.companyType) {
               updateData.companyType = companyData.type;
             }
@@ -112,17 +116,16 @@ export async function POST(request: NextRequest) {
 
           } else {
             // Create new company
-            const newCompany =             await prisma.company.create({
+            const newCompany = await prisma.company.create({
               data: {
                 name: companyData.name,
                 slug: companyData.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''),
-                domain: companyData.domain,
+                website: companyData.website || companyData.domain, // Map domain to website field
                 industry: companyData.industry,
                 employeeCount: companyData.employeeCount,
                 revenue: companyData.revenue,
                 headquarters: companyData.headquarters,
                 description: companyData.description,
-                website: companyData.website,
                 companyType: companyData.type || 'BRAND',
                 dataQuality: 'BASIC',
                 verified: false

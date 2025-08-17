@@ -35,7 +35,7 @@ export class FileParser {
             const parsed = this.processRawData(results.data);
             resolve(parsed);
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Papa parse error:', error);
             reject(error);
           }
@@ -123,7 +123,8 @@ export class FileParser {
           row: index + 1,
           field: 'general',
           value: JSON.stringify(row),
-          message: error instanceof Error ? error.message : 'Unknown parsing error'
+          message: error instanceof Error ? error.message : 'Unknown parsing error',
+          severity: 'error'
         });
       }
     });
@@ -134,7 +135,15 @@ export class FileParser {
       companies,
       contacts,
       errors,
-      preview: rawData.slice(0, 5) // First 5 rows for preview
+      preview: rawData.slice(0, 5), // First 5 rows for preview
+      metadata: {
+        totalRows: rawData.length,
+        validRows: rawData.length - errors.length,
+        duplicates: 0, // TODO: Implement duplicate detection
+        fileSize: 0, // TODO: Pass file size from calling function
+        fileName: 'unknown', // TODO: Pass file name from calling function
+        parseTime: Date.now() // Rough timestamp
+      }
     };
   }
 
