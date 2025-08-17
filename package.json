@@ -51,6 +51,7 @@
     "@types/node": "^22.9.0",
     "@types/papaparse": "^5.3.16",
     "@types/react": "^18.3.12",
+    "@types/xlsx": "^0.0.35",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.0.0",
     "tsx": "^4.20.3",
