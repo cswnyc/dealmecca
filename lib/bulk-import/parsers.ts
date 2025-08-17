@@ -1,7 +1,7 @@
 // 🚀 DealMecca Bulk Import File Parsers
 // Smart parsing for CSV, Excel, and JSON files with media seller role focus
 
-import * as Papa from 'papaparse';
+import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { ParsedData, BulkImportCompany, BulkImportContact, ImportError } from '@/lib/types/bulk-import';
 
