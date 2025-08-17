@@ -353,25 +353,40 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
+          <Card className="hover:shadow-lg transition-all border-2 border-green-200 bg-gradient-to-br from-green-50 to-blue-50">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Database className="h-5 w-5 text-purple-600" />
-                <span>Data Import</span>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Upload className="h-5 w-5 text-green-600" />
+                  <span className="text-green-800">Bulk Import</span>
+                </div>
+                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                  New
+                </Badge>
               </CardTitle>
-              <CardDescription>
-                Bulk import and export organizational data from external sources
+              <CardDescription className="text-green-700">
+                🚀 Scale from 17 to 5000+ companies with intelligent media seller targeting
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <Link href="/admin/orgs/import">
-                <Button className="w-full">
-                  Import Data
+            <CardContent className="space-y-3">
+              <Link href="/admin/bulk-import">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Start Bulk Import
                 </Button>
               </Link>
-              <Button variant="outline" className="w-full">
-                Export Data
-              </Button>
+              <div className="bg-white rounded-lg p-3 border border-green-200">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-green-700 font-medium">Scaling Progress</span>
+                  <span className="text-green-600">17 → 5,000+</span>
+                </div>
+                <div className="w-full bg-green-100 rounded-full h-2">
+                  <div className="bg-green-500 h-2 rounded-full" style={{width: '0.34%'}}></div>
+                </div>
+                <p className="text-xs text-green-600 mt-2">
+                  ⚡ CSV, Excel & JSON supported • 📊 Media seller intelligence
+                </p>
+              </div>
             </CardContent>
           </Card>
 
