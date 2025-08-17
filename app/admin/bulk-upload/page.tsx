@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import Papa from 'papaparse';
+import * as Papa from 'papaparse';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -223,9 +223,12 @@ export default function BulkUploadPage() {
     setIsProcessing(true);
     setProcessingProgress(0);
 
+    // Declare progressInterval outside try block
+    let progressInterval: NodeJS.Timeout | null = null;
+
     try {
       // Simulate progress updates
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setProcessingProgress(prev => Math.min(prev + 10, 90));
       }, 200);
 
@@ -235,7 +238,7 @@ export default function BulkUploadPage() {
         body: JSON.stringify({ companies: csvData })
       });
 
-      clearInterval(progressInterval);
+      if (progressInterval) clearInterval(progressInterval);
       setProcessingProgress(100);
 
       const result = await response.json();
@@ -248,6 +251,7 @@ export default function BulkUploadPage() {
         }, 5000);
       }
     } catch (error) {
+      if (progressInterval) clearInterval(progressInterval);
       console.error('Upload error:', error);
       setUploadResult({
         success: 0,
