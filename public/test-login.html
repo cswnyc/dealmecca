@@ -1,249 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DealMecca Login Test</title>
+    <title>DealMecca Admin Login - Test</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .section {
-            margin: 30px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 8px;
-        }
-        .credentials {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .credential-card {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            min-width: 200px;
-        }
-        .credential-card h3 {
-            margin: 0 0 10px 0;
-            color: #2563eb;
-        }
-        .credential-card p {
-            margin: 5px 0;
-            font-family: monospace;
-        }
-        .button {
-            background: #2563eb;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 10px 0;
-        }
-        .button:hover {
-            background: #1d4ed8;
-        }
-        .status {
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-        .success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #10b981;
-        }
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #ef4444;
-        }
-        .info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #3b82f6;
-        }
-        .test-results {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        code {
-            background: #f3f4f6;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 100px auto; padding: 20px; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔐 DealMecca Login Test</h1>
-        
-        <div class="section">
-            <h2>📋 Available Test Credentials</h2>
-            <div class="credentials">
-                <div class="credential-card">
-                    <h3>👨‍💼 Admin User</h3>
-                    <p><strong>Email:</strong> admin@dealmecca.pro</p>
-                    <p><strong>Password:</strong> password123</p>
-                    <p><strong>Role:</strong> ADMIN</p>
-                    <p><strong>Tier:</strong> TEAM</p>
-                </div>
-                <div class="credential-card">
-                    <h3>👤 Pro User</h3>
-                    <p><strong>Email:</strong> pro@dealmecca.pro</p>
-                    <p><strong>Password:</strong> password123</p>
-                    <p><strong>Role:</strong> PRO</p>
-                    <p><strong>Tier:</strong> PRO</p>
-                </div>
-                <div class="credential-card">
-                    <h3>👥 Free User</h3>
-                    <p><strong>Email:</strong> free@dealmecca.pro</p>
-                    <p><strong>Password:</strong> password123</p>
-                    <p><strong>Role:</strong> FREE</p>
-                    <p><strong>Tier:</strong> FREE</p>
-                </div>
-            </div>
+    <h2>🚀 DealMecca Admin Login</h2>
+    <p>Quick login for testing the bulk import system</p>
+    
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="pro@dealmecca.pro" required>
         </div>
-
-        <div class="section">
-            <h2>🚀 Quick Tests</h2>
-            <a href="http://localhost:3000/auth/signin" class="button">Go to Login Page</a>
-            <a href="http://localhost:3000/dashboard" class="button">Go to Dashboard</a>
-            <a href="http://localhost:5555" class="button">Open Prisma Studio</a>
-            <button onclick="testSession()" class="button">Test Current Session</button>
-        </div>
-
-        <div class="section">
-            <h2>🔍 Session Status</h2>
-            <div id="session-status">
-                <button onclick="checkSession()" class="button">Check Session</button>
-                <div id="session-result"></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>📝 Login Steps</h2>
-            <ol>
-                <li>Click <strong>"Go to Login Page"</strong> above</li>
-                <li>Enter one of the test credentials from above</li>
-                <li>Click <strong>"Sign In"</strong></li>
-                <li>You should be redirected to the dashboard</li>
-                <li>Come back here and click <strong>"Test Current Session"</strong></li>
-            </ol>
-        </div>
-
-        <div class="section">
-            <h2>🛠️ Troubleshooting</h2>
-            <div class="test-results">
-                <h3>Common Issues:</h3>
-                <ul>
-                    <li><strong>Page not loading:</strong> Make sure server is running on <code>http://localhost:3000</code></li>
-                    <li><strong>Login form not working:</strong> Check browser console for errors (F12)</li>
-                    <li><strong>Session not persisting:</strong> Clear browser cookies and try again</li>
-                    <li><strong>Redirect issues:</strong> Make sure NEXTAUTH_URL is set correctly</li>
-                </ul>
-                
-                <h3>Debug Information:</h3>
-                <button onclick="runDiagnostics()" class="button">Run Diagnostics</button>
-                <div id="diagnostics-result"></div>
-            </div>
-        </div>
-    </div>
-
+        <button type="submit">Login as Admin</button>
+    </form>
+    
+    <div id="result"></div>
+    
     <script>
-        async function checkSession() {
-            const resultDiv = document.getElementById('session-result');
-            resultDiv.innerHTML = '<p>Checking session...</p>';
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const resultDiv = document.getElementById('result');
             
             try {
-                const response = await fetch('/api/auth/session');
+                const response = await fetch('/api/manual-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
                 const data = await response.json();
                 
-                if (data.user) {
+                if (data.success) {
                     resultDiv.innerHTML = `
-                        <div class="status success">
-                            <h3>✅ You are logged in!</h3>
-                            <p><strong>Name:</strong> ${data.user.name}</p>
-                            <p><strong>Email:</strong> ${data.user.email}</p>
-                            <p><strong>Role:</strong> ${data.user.role}</p>
-                            <p><strong>Subscription:</strong> ${data.user.subscriptionTier}</p>
+                        <div class="success">
+                            <strong>✅ Login Successful!</strong><br>
+                            Welcome ${data.user.name} (${data.user.role})<br><br>
+                            <a href="/admin" style="color: #007bff;">→ Go to Admin Dashboard</a><br>
+                            <a href="/admin/bulk-import" style="color: #28a745; font-weight: bold;">🚀 Go to Bulk Import</a>
                         </div>
                     `;
                 } else {
                     resultDiv.innerHTML = `
-                        <div class="status error">
-                            <h3>❌ Not logged in</h3>
-                            <p>Please log in using the credentials above.</p>
+                        <div class="error">
+                            <strong>❌ Login Failed</strong><br>
+                            ${data.error}
                         </div>
                     `;
                 }
             } catch (error) {
                 resultDiv.innerHTML = `
-                    <div class="status error">
-                        <h3>❌ Error checking session</h3>
-                        <p>Error: ${error.message}</p>
+                    <div class="error">
+                        <strong>❌ Error</strong><br>
+                        ${error.message}
                     </div>
                 `;
             }
-        }
-
-        async function testSession() {
-            await checkSession();
-        }
-
-        async function runDiagnostics() {
-            const resultDiv = document.getElementById('diagnostics-result');
-            resultDiv.innerHTML = '<p>Running diagnostics...</p>';
-            
-            const tests = [
-                { name: 'Server Health', url: '/api/auth/session' },
-                { name: 'CSRF Token', url: '/api/auth/csrf' },
-                { name: 'Auth Providers', url: '/api/auth/providers' },
-                { name: 'Homepage', url: '/' },
-                { name: 'Dashboard', url: '/dashboard' }
-            ];
-            
-            let diagnosticsHtml = '<h4>System Status:</h4>';
-            
-            for (const test of tests) {
-                try {
-                    const response = await fetch(test.url);
-                    const status = response.ok ? '✅' : '❌';
-                    diagnosticsHtml += `<p>${status} ${test.name}: ${response.status}</p>`;
-                } catch (error) {
-                    diagnosticsHtml += `<p>❌ ${test.name}: Error - ${error.message}</p>`;
-                }
-            }
-            
-            resultDiv.innerHTML = diagnosticsHtml;
-        }
-
-        // Auto-check session on page load
-        window.onload = function() {
-            checkSession();
-        };
+        });
     </script>
 </body>
-</html> 
+</html>
