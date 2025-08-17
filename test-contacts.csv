@@ -1,6 +1,0 @@
-firstName,lastName,title,email,phone,company,linkedinUrl,department
-John,Doe,VP Marketing,john.doe@example.com,+1-555-0101,TechCorp,https://linkedin.com/in/john-doe,MARKETING
-Jane,Smith,Senior Developer,jane.smith@example.com,+1-555-0102,DevCorp,https://linkedin.com/in/jane-smith,ENGINEERING
-Bob,Johnson,Sales Manager,bob.johnson@example.com,+1-555-0103,SalesCorp,https://linkedin.com/in/bob-johnson,SALES
-Alice,Brown,Product Manager,alice.brown@example.com,+1-555-0104,ProductCorp,https://linkedin.com/in/alice-brown,PRODUCT
-Mike,Wilson,CTO,mike.wilson@example.com,+1-555-0105,TechStart,https://linkedin.com/in/mike-wilson,ENGINEERING
