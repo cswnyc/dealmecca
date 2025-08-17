@@ -21,7 +21,8 @@ export class DataValidator {
           row: index + 1,
           field: 'companyName',
           value: company.name || '',
-          message: 'Company name is required'
+          message: 'Company name is required',
+          severity: 'error'
         });
       }
 
@@ -32,7 +33,8 @@ export class DataValidator {
           row: index + 1,
           field: 'companyName',
           value: company.name,
-          message: 'Duplicate company name found'
+          message: 'Duplicate company name found',
+          severity: 'error'
         });
       } else if (normalizedName) {
         seenNames.add(normalizedName);
@@ -45,8 +47,9 @@ export class DataValidator {
             row: index + 1,
             field: 'domain',
             value: company.domain,
-            message: 'Invalid domain format (e.g., company.com)'
-          });
+                      message: 'Invalid domain format (e.g., company.com)',
+          severity: 'error'
+        });
         } else {
           const normalizedDomain = company.domain.toLowerCase().trim();
           if (seenDomains.has(normalizedDomain)) {
@@ -54,8 +57,9 @@ export class DataValidator {
               row: index + 1,
               field: 'domain',
               value: company.domain,
-              message: 'Duplicate domain found'
-            });
+                          message: 'Duplicate domain found',
+            severity: 'error'
+          });
           } else {
             seenDomains.add(normalizedDomain);
           }
@@ -69,8 +73,9 @@ export class DataValidator {
             row: index + 1,
             field: 'employeeCount',
             value: company.employeeCount.toString(),
-            message: 'Employee count must be between 1 and 10,000,000'
-          });
+                      message: 'Employee count must be between 1 and 10,000,000',
+          severity: 'error'
+        });
         }
       }
 
@@ -80,8 +85,9 @@ export class DataValidator {
           row: index + 1,
           field: 'website',
           value: company.website,
-          message: 'Invalid website URL format'
-        });
+                  message: 'Invalid website URL format',
+        severity: 'error'
+      });
       }
 
       // Company type validation
@@ -90,8 +96,9 @@ export class DataValidator {
           row: index + 1,
           field: 'type',
           value: company.type,
-          message: 'Company type must be BRAND, AGENCY, or VENDOR'
-        });
+                  message: 'Company type must be BRAND, AGENCY, or VENDOR',
+        severity: 'error'
+      });
       }
 
       // Revenue format validation
@@ -100,8 +107,9 @@ export class DataValidator {
           row: index + 1,
           field: 'revenue',
           value: company.revenue,
-          message: 'Invalid revenue format (use formats like $1M, $500K, $1.5B)'
-        });
+                  message: 'Invalid revenue format (use formats like $1M, $500K, $1.5B)',
+        severity: 'error'
+      });
       }
     });
 
@@ -123,8 +131,9 @@ export class DataValidator {
           row: index + 1,
           field: 'name',
           value: `${contact.firstName || ''} ${contact.lastName || ''}`.trim(),
-          message: 'Either first name or last name is required'
-        });
+                  message: 'Either first name or last name is required',
+        severity: 'error'
+      });
       }
 
       if (!contact.companyName || contact.companyName.trim() === '') {
@@ -132,8 +141,9 @@ export class DataValidator {
           row: index + 1,
           field: 'companyName',
           value: contact.companyName || '',
-          message: 'Company name is required for contacts'
-        });
+                  message: 'Company name is required for contacts',
+        severity: 'error'
+      });
       }
 
       if (!contact.title || contact.title.trim() === '') {
@@ -141,8 +151,9 @@ export class DataValidator {
           row: index + 1,
           field: 'title',
           value: contact.title || '',
-          message: 'Job title is required for media seller targeting'
-        });
+                  message: 'Job title is required for media seller targeting',
+        severity: 'error'
+      });
       }
 
       // Email validation and duplicate check
@@ -152,8 +163,9 @@ export class DataValidator {
             row: index + 1,
             field: 'email',
             value: contact.email,
-            message: 'Invalid email format'
-          });
+                      message: 'Invalid email format',
+          severity: 'error'
+        });
         } else {
           const normalizedEmail = contact.email.toLowerCase().trim();
           if (seenEmails.has(normalizedEmail)) {
@@ -161,8 +173,9 @@ export class DataValidator {
               row: index + 1,
               field: 'email',
               value: contact.email,
-              message: 'Duplicate email address found'
-            });
+                          message: 'Duplicate email address found',
+            severity: 'error'
+          });
           } else {
             seenEmails.add(normalizedEmail);
           }
@@ -175,8 +188,9 @@ export class DataValidator {
           row: index + 1,
           field: 'phone',
           value: contact.phone,
-          message: 'Invalid phone format (use formats like +1-555-123-4567, (555) 123-4567)'
-        });
+                  message: 'Invalid phone format (use formats like +1-555-123-4567, (555) 123-4567)',
+        severity: 'error'
+      });
       }
 
       // LinkedIn URL validation
@@ -185,8 +199,9 @@ export class DataValidator {
           row: index + 1,
           field: 'linkedinUrl',
           value: contact.linkedinUrl,
-          message: 'Invalid LinkedIn URL format (must be linkedin.com/in/profile)'
-        });
+                  message: 'Invalid LinkedIn URL format (must be linkedin.com/in/profile)',
+        severity: 'error'
+      });
       }
 
       // Seniority validation
@@ -195,8 +210,9 @@ export class DataValidator {
           row: index + 1,
           field: 'seniority',
           value: contact.seniority,
-          message: 'Invalid seniority level'
-        });
+                  message: 'Invalid seniority level',
+        severity: 'error'
+      });
       }
 
       // Budget authority validation
@@ -205,8 +221,9 @@ export class DataValidator {
           row: index + 1,
           field: 'budgetAuthority',
           value: contact.budgetAuthority,
-          message: 'Invalid budget authority level'
-        });
+                  message: 'Invalid budget authority level',
+        severity: 'error'
+      });
       }
 
       // Media role validation with detailed feedback
@@ -218,8 +235,9 @@ export class DataValidator {
             row: index + 1,
             field: 'title',
             value: contact.title,
-            message: `Title "${contact.title}" may not be a target media seller role (relevance: ${roleScore}%). Consider reviewing for targeting effectiveness.`
-          });
+                      message: `Title "${contact.title}" may not be a target media seller role (relevance: ${roleScore}%). Consider reviewing for targeting effectiveness.`,
+          severity: 'warning'
+        });
         }
       }
     });
@@ -246,8 +264,9 @@ export class DataValidator {
           row: index + 1,
           field: 'companyName',
           value: contact.companyName,
-          message: `Company "${contact.companyName}" not found in companies list`
-        });
+                  message: `Company "${contact.companyName}" not found in companies list`,
+        severity: 'warning'
+      });
       }
     });
 
