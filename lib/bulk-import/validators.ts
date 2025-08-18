@@ -305,7 +305,7 @@ export class DataValidator {
       'VP': 15,
       'DIRECTOR': 12,
       'MANAGER': 8,
-      'ASSOCIATE': 5,
+      'SPECIALIST': 5,
       'COORDINATOR': 2
     };
     const seniorityScore = seniorityBonus[contact.seniority || 'COORDINATOR'] || 0;
