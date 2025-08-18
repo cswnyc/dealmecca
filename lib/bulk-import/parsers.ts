@@ -84,7 +84,7 @@ export class FileParser {
             const company: BulkImportCompany = {
               name: mappedRow.companyName,
               domain: mappedRow.domain || this.inferDomain(mappedRow.companyName),
-              industry: mappedRow.industry,
+              industry: this.mapIndustryValue(mappedRow.industry),
               employeeCount: mappedRow.employeeCount,
               revenue: mappedRow.revenue,
               headquarters: mappedRow.headquarters,
@@ -104,7 +104,7 @@ export class FileParser {
             email: mappedRow.email,
             phone: mappedRow.phone,
             title: mappedRow.title || mappedRow.role || '',
-            department: mappedRow.department,
+            department: this.mapDepartmentValue(mappedRow.department),
             linkedinUrl: mappedRow.linkedinUrl || mappedRow.linkedin,
             companyName: mappedRow.companyName,
             verified: false,
@@ -208,6 +208,103 @@ export class FileParser {
     }
 
     return 'ADVERTISER'; // Default to advertiser (brand)
+  }
+
+  // =============================================================================
+  // ENUM MAPPING FUNCTIONS
+  // =============================================================================
+
+  private static mapIndustryValue(inputIndustry?: string): string | null {
+    if (!inputIndustry) return null;
+    
+    const industryMappings: Record<string, string> = {
+      // Common CSV values → Prisma enum values
+      'advertising': 'ENTERTAINMENT_MEDIA',
+      'media agency': 'ENTERTAINMENT_MEDIA', 
+      'media': 'ENTERTAINMENT_MEDIA',
+      'marketing': 'ENTERTAINMENT_MEDIA',
+      'automotive': 'AUTOMOTIVE',
+      'technology': 'TECHNOLOGY',
+      'tech': 'TECHNOLOGY',
+      'software': 'TECHNOLOGY',
+      'healthcare': 'HEALTHCARE_PHARMA',
+      'pharma': 'HEALTHCARE_PHARMA',
+      'pharmaceutical': 'HEALTHCARE_PHARMA',
+      'finance': 'FINANCIAL_SERVICES',
+      'financial': 'FINANCIAL_SERVICES',
+      'banking': 'FINANCIAL_SERVICES',
+      'retail': 'RETAIL_ECOMMERCE',
+      'ecommerce': 'RETAIL_ECOMMERCE',
+      'e-commerce': 'RETAIL_ECOMMERCE',
+      'food': 'CPG_FOOD_BEVERAGE',
+      'beverage': 'CPG_FOOD_BEVERAGE',
+      'cpg': 'CPG_FOOD_BEVERAGE',
+      'personal care': 'CPG_PERSONAL_CARE',
+      'beauty': 'FASHION_BEAUTY',
+      'fashion': 'FASHION_BEAUTY',
+      'travel': 'TRAVEL_HOSPITALITY',
+      'hospitality': 'TRAVEL_HOSPITALITY',
+      'telecom': 'TELECOM',
+      'telecommunications': 'TELECOM',
+      'energy': 'ENERGY',
+      'education': 'EDUCATION',
+      'real estate': 'REAL_ESTATE',
+      'gaming': 'GAMING',
+      'insurance': 'INSURANCE',
+      'nonprofit': 'NONPROFIT',
+      'government': 'GOVERNMENT_NONPROFIT',
+      'b2b': 'B2B_SERVICES',
+      'professional services': 'PROFESSIONAL_SERVICES',
+      'logistics': 'LOGISTICS'
+    };
+
+    const normalized = inputIndustry.toLowerCase().trim();
+    return industryMappings[normalized] || null;
+  }
+
+  private static mapDepartmentValue(inputDepartment?: string): string | null {
+    if (!inputDepartment) return null;
+    
+    const departmentMappings: Record<string, string> = {
+      // Common CSV values → Prisma enum values
+      'marketing': 'MARKETING',
+      'media planning': 'MEDIA_PLANNING',
+      'media buying': 'MEDIA_BUYING',
+      'digital marketing': 'DIGITAL_MARKETING',
+      'programmatic': 'PROGRAMMATIC',
+      'social media': 'SOCIAL_MEDIA',
+      'social': 'SOCIAL_MEDIA',
+      'search marketing': 'SEARCH_MARKETING',
+      'search': 'SEARCH_MARKETING',
+      'strategy': 'STRATEGY_PLANNING',
+      'strategy planning': 'STRATEGY_PLANNING',
+      'analytics': 'ANALYTICS_INSIGHTS',
+      'insights': 'ANALYTICS_INSIGHTS',
+      'data analytics': 'ANALYTICS_INSIGHTS',
+      'creative': 'CREATIVE_SERVICES',
+      'creative services': 'CREATIVE_SERVICES',
+      'account management': 'ACCOUNT_MANAGEMENT',
+      'account': 'ACCOUNT_MANAGEMENT',
+      'business development': 'BUSINESS_DEVELOPMENT',
+      'biz dev': 'BUSINESS_DEVELOPMENT',
+      'operations': 'OPERATIONS',
+      'ops': 'OPERATIONS',
+      'technology': 'TECHNOLOGY',
+      'tech': 'TECHNOLOGY',
+      'it': 'TECHNOLOGY',
+      'finance': 'FINANCE',
+      'leadership': 'LEADERSHIP',
+      'management': 'LEADERSHIP',
+      'human resources': 'HUMAN_RESOURCES',
+      'hr': 'HUMAN_RESOURCES',
+      'sales': 'SALES',
+      'product': 'PRODUCT',
+      'data science': 'DATA_SCIENCE',
+      'data': 'DATA_SCIENCE'
+    };
+
+    const normalized = inputDepartment.toLowerCase().trim();
+    return departmentMappings[normalized] || null;
   }
 
   // =============================================================================
