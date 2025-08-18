@@ -191,7 +191,7 @@ export class FileParser {
       .replace(/\s+/g, '') + '.com';
   }
 
-  private static inferCompanyType(companyName: string, industry?: string): 'BRAND' | 'AGENCY' | 'VENDOR' {
+  private static inferCompanyType(companyName: string, industry?: string): 'ADVERTISER' | 'AGENCY' | 'TECH_VENDOR' {
     const name = companyName.toLowerCase();
     const ind = industry?.toLowerCase() || '';
 
@@ -204,10 +204,10 @@ export class FileParser {
     // Tech/vendor keywords  
     if (name.includes('tech') || name.includes('software') || name.includes('platform') ||
         ind.includes('technology') || ind.includes('software')) {
-      return 'VENDOR';
+      return 'TECH_VENDOR';
     }
 
-    return 'BRAND'; // Default
+    return 'ADVERTISER'; // Default to advertiser (brand)
   }
 
   // =============================================================================
