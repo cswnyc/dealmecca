@@ -214,9 +214,9 @@ export class FileParser {
   // ENUM MAPPING FUNCTIONS
   // =============================================================================
 
-  private static mapIndustryValue(inputIndustry?: string): string | null {
+  private static mapIndustryValue(inputIndustry?: string): string | undefined {
     console.log('🔍 mapIndustryValue called with:', inputIndustry);
-    if (!inputIndustry) return null;
+    if (!inputIndustry) return undefined;
     
     const industryMappings: Record<string, string> = {
       // Common CSV values → Prisma enum values
@@ -260,14 +260,14 @@ export class FileParser {
     };
 
     const normalized = inputIndustry.toLowerCase().trim();
-    const result = industryMappings[normalized] || null;
+    const result = industryMappings[normalized] || undefined;
     console.log(`🔍 Industry mapping: "${inputIndustry}" → "${result}"`);
     return result;
   }
 
-  private static mapDepartmentValue(inputDepartment?: string): string | null {
+  private static mapDepartmentValue(inputDepartment?: string): string | undefined {
     console.log('🔍 mapDepartmentValue called with:', inputDepartment);
-    if (!inputDepartment) return null;
+    if (!inputDepartment) return undefined;
     
     const departmentMappings: Record<string, string> = {
       // Common CSV values → Prisma enum values
@@ -308,7 +308,7 @@ export class FileParser {
     };
 
     const normalized = inputDepartment.toLowerCase().trim();
-    const result = departmentMappings[normalized] || null;
+    const result = departmentMappings[normalized] || undefined;
     console.log(`🔍 Department mapping: "${inputDepartment}" → "${result}"`);
     return result;
   }
