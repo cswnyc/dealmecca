@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
       
       for (const companyData of batch) {
         try {
+          console.log(`🏢 Processing company: ${companyData.name}`);
+          
           // Check for existing company by name or website
           const existingCompany = await prisma.company.findFirst({
             where: {
@@ -126,7 +128,7 @@ export async function POST(request: NextRequest) {
                 revenue: companyData.revenue,
                 headquarters: companyData.headquarters,
                 description: companyData.description,
-                companyType: companyData.type || 'BRAND',
+                companyType: companyData.type || 'ADVERTISER', // Use valid enum value
                 dataQuality: 'BASIC',
                 verified: false
               }
@@ -140,6 +142,8 @@ export async function POST(request: NextRequest) {
           const errorMsg = `Company "${companyData.name}": ${error instanceof Error ? error.message : 'Unknown error'}`;
           results.errors.push(errorMsg);
           console.error('❌ Company error:', errorMsg);
+          console.error('🔍 Company data:', companyData);
+          console.error('🔍 Full error:', error);
         }
       }
     }
