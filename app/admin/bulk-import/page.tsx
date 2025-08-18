@@ -454,7 +454,7 @@ export default function BulkImportPage() {
 
   // Navigate to view imported data
   const handleViewData = useCallback(() => {
-    router.push('/admin/companies');
+    router.push('/admin/orgs/companies');
   }, [router]);
 
   return (
