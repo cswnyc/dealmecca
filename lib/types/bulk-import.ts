@@ -32,7 +32,7 @@ export interface BulkImportCompany {
   headquarters?: string;
   description?: string;
   website?: string;
-  type?: 'BRAND' | 'AGENCY' | 'VENDOR' | 'MEDIA_HOLDING_COMPANY';
+  type?: 'ADVERTISER' | 'AGENCY' | 'TECH_VENDOR' | 'MEDIA_HOLDING_COMPANY';
   // Agency-specific fields
   agencyType?: 'FULL_SERVICE' | 'MEDIA_AGENCY' | 'CREATIVE_AGENCY' | 'DIGITAL_AGENCY' | 'PR_AGENCY';
   clientFocus?: 'ENTERPRISE' | 'MID_MARKET' | 'SMB' | 'STARTUP';
