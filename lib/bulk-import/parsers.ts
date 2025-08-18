@@ -215,6 +215,7 @@ export class FileParser {
   // =============================================================================
 
   private static mapIndustryValue(inputIndustry?: string): string | null {
+    console.log('🔍 mapIndustryValue called with:', inputIndustry);
     if (!inputIndustry) return null;
     
     const industryMappings: Record<string, string> = {
@@ -259,10 +260,13 @@ export class FileParser {
     };
 
     const normalized = inputIndustry.toLowerCase().trim();
-    return industryMappings[normalized] || null;
+    const result = industryMappings[normalized] || null;
+    console.log(`🔍 Industry mapping: "${inputIndustry}" → "${result}"`);
+    return result;
   }
 
   private static mapDepartmentValue(inputDepartment?: string): string | null {
+    console.log('🔍 mapDepartmentValue called with:', inputDepartment);
     if (!inputDepartment) return null;
     
     const departmentMappings: Record<string, string> = {
@@ -304,14 +308,16 @@ export class FileParser {
     };
 
     const normalized = inputDepartment.toLowerCase().trim();
-    return departmentMappings[normalized] || null;
+    const result = departmentMappings[normalized] || null;
+    console.log(`🔍 Department mapping: "${inputDepartment}" → "${result}"`);
+    return result;
   }
 
   // =============================================================================
   // MEDIA SELLER ROLE INTELLIGENCE
   // =============================================================================
 
-  private static inferSeniority(title: string): 'C_LEVEL' | 'VP' | 'DIRECTOR' | 'MANAGER' | 'ASSOCIATE' | 'COORDINATOR' {
+  private static inferSeniority(title: string): 'C_LEVEL' | 'VP' | 'DIRECTOR' | 'MANAGER' | 'SPECIALIST' | 'COORDINATOR' {
     const t = title.toLowerCase();
     
     if (t.includes('cmo') || t.includes('chief') || t.includes('ceo') || t.includes('president')) {
@@ -327,7 +333,7 @@ export class FileParser {
       return 'MANAGER';
     }
     if (t.includes('associate') || t.includes('specialist')) {
-      return 'ASSOCIATE';
+      return 'SPECIALIST';
     }
     return 'COORDINATOR';
   }

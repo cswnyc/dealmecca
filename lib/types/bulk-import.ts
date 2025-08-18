@@ -16,7 +16,7 @@ export interface BulkImportContact {
   companyName: string;
   verified?: boolean;
   // Media-specific fields
-  seniority?: 'C_LEVEL' | 'VP' | 'DIRECTOR' | 'MANAGER' | 'ASSOCIATE' | 'COORDINATOR';
+  seniority?: 'C_LEVEL' | 'VP' | 'DIRECTOR' | 'MANAGER' | 'SPECIALIST' | 'COORDINATOR';
   specializations?: string[]; // e.g., ['Programmatic', 'Social Media', 'Search']
   budgetAuthority?: 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
   decisionMaking?: boolean;
