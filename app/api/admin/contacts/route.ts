@@ -181,8 +181,8 @@ export async function POST(request: NextRequest) {
         phone: data.phone || null,
         linkedinUrl: data.linkedinUrl || null,
         personalEmail: data.personalEmail || null,
-        department: mapDepartmentValue(data.department),
-        seniority: mapSeniorityValue(data.seniority) || 'SPECIALIST', // Always provide a valid fallback
+        department: mapDepartmentValue(data.department) as any,
+        seniority: (mapSeniorityValue(data.seniority) || 'SPECIALIST') as any, // Always provide a valid fallback
         isDecisionMaker: data.isDecisionMaker || false,
         preferredContact: data.preferredContact || null,
         verified: data.verified || false,
