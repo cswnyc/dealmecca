@@ -265,8 +265,8 @@ export async function POST(request: NextRequest) {
         phone,
         linkedinUrl,
         isDecisionMaker,
-        department: mapDepartmentValue(department),
-        seniority: mapSeniorityValue(seniority) || 'SPECIALIST', // Use valid enum value
+        department: mapDepartmentValue(department) as any,
+        seniority: (mapSeniorityValue(seniority) || 'SPECIALIST') as any, // Use valid enum value
         dataQuality: 'BASIC', // Set default data quality
         isActive: true, // Set default active status
         verified: false // Set default verification status
