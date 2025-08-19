@@ -5,6 +5,69 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { Prisma } from '@prisma/client';
 
+// Enum mapping functions
+function mapDepartmentValue(inputDepartment?: string): string | undefined {
+  if (!inputDepartment) return undefined;
+  
+  const departmentMappings: Record<string, string> = {
+    'media planning': 'MEDIA_PLANNING',
+    'media buying': 'MEDIA_BUYING', 
+    'digital marketing': 'DIGITAL_MARKETING',
+    'programmatic': 'PROGRAMMATIC',
+    'social media': 'SOCIAL_MEDIA',
+    'search marketing': 'SEARCH_MARKETING',
+    'strategy planning': 'STRATEGY_PLANNING',
+    'strategy': 'STRATEGY_PLANNING',
+    'analytics insights': 'ANALYTICS_INSIGHTS',
+    'analytics': 'ANALYTICS_INSIGHTS',
+    'creative services': 'CREATIVE_SERVICES',
+    'creative': 'CREATIVE_SERVICES',
+    'account management': 'ACCOUNT_MANAGEMENT',
+    'account': 'ACCOUNT_MANAGEMENT',
+    'business development': 'BUSINESS_DEVELOPMENT',
+    'operations': 'OPERATIONS',
+    'technology': 'TECHNOLOGY',
+    'tech': 'TECHNOLOGY',
+    'finance': 'FINANCE',
+    'leadership': 'LEADERSHIP',
+    'marketing': 'DIGITAL_MARKETING'
+  };
+  
+  const normalized = inputDepartment.toLowerCase().trim();
+  return departmentMappings[normalized] || undefined;
+}
+
+function mapSeniorityValue(inputSeniority?: string): string | undefined {
+  if (!inputSeniority) return undefined;
+  
+  const seniorityMappings: Record<string, string> = {
+    'intern': 'INTERN',
+    'coordinator': 'COORDINATOR',
+    'specialist': 'SPECIALIST',
+    'senior specialist': 'SENIOR_SPECIALIST',
+    'manager': 'MANAGER',
+    'senior manager': 'SENIOR_MANAGER',
+    'director': 'DIRECTOR',
+    'senior director': 'SENIOR_DIRECTOR',
+    'vp': 'VP',
+    'vice president': 'VP',
+    'svp': 'SVP',
+    'evp': 'EVP',
+    'c level': 'C_LEVEL',
+    'c-level': 'C_LEVEL',
+    'ceo': 'C_LEVEL',
+    'cmo': 'C_LEVEL',
+    'cfo': 'C_LEVEL',
+    'founder owner': 'FOUNDER_OWNER',
+    'founder': 'FOUNDER_OWNER',
+    'owner': 'FOUNDER_OWNER',
+    'unknown': 'SPECIALIST' // Default fallback
+  };
+  
+  const normalized = inputSeniority.toLowerCase().trim();
+  return seniorityMappings[normalized] || 'SPECIALIST'; // Always provide a fallback
+}
+
 // GET /api/admin/contacts - Get all contacts (admin only)
 export async function GET(request: NextRequest) {
   try {
@@ -107,25 +170,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the contact
+    // Create the contact with enum mapping
     const contact = await prisma.contact.create({
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
-        fullName: data.fullName,
+        fullName: data.fullName || `${data.firstName} ${data.lastName}`,
         title: data.title,
         email: data.email || null,
         phone: data.phone || null,
         linkedinUrl: data.linkedinUrl || null,
         personalEmail: data.personalEmail || null,
-        department: data.department || null,
-        seniority: data.seniority,
+        department: mapDepartmentValue(data.department),
+        seniority: mapSeniorityValue(data.seniority) || 'SPECIALIST', // Always provide a valid fallback
         isDecisionMaker: data.isDecisionMaker || false,
         preferredContact: data.preferredContact || null,
         verified: data.verified || false,
         isActive: data.isActive !== false, // Default to true unless explicitly false
         companyId: data.companyId,
-        lastVerified: data.verified ? new Date() : null
+        lastVerified: data.verified ? new Date() : null,
+        dataQuality: 'BASIC' // Set default data quality
       },
       include: {
         company: {
