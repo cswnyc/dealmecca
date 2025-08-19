@@ -109,8 +109,8 @@ export default function SearchPage() {
       setError(null)
       
       if (searchType === 'companies') {
-        // Use the companies endpoint but with safe handling
-        const response = await fetch('/api/companies?limit=50', {
+        // Use the orgs companies endpoint which works correctly
+        const response = await fetch('/api/orgs/companies?limit=50', {
           credentials: 'include'
         })
         
@@ -139,7 +139,8 @@ export default function SearchPage() {
         setCompanies(safeCompanies)
         setFilteredCompanies(safeCompanies)
       } else {
-        const response = await fetch('/api/contacts?limit=50', {
+        // Use the orgs contacts API which doesn't require auth restrictions
+        const response = await fetch('/api/orgs/contacts?limit=50', {
           credentials: 'include'
         })
         
@@ -152,6 +153,7 @@ export default function SearchPage() {
         }
         
         const data = await response.json()
+        // The orgs API returns contacts in data.contacts format
         setContacts(data.contacts || [])
         setFilteredContacts(data.contacts || [])
       }
