@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Search, Building2, Users, MapPin, Globe, Mail, Phone, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -354,47 +355,58 @@ export default function SearchPage() {
               ) : (
                 <div className="space-y-4">
                   {filteredCompanies.slice(0, 20).map((company) => (
-                    <div key={company.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <div className="flex items-center space-x-4">
-                        <div className="bg-sky-100 p-2 rounded-lg">
-                          <Building2 className="h-5 w-5 text-sky-600" />
+                    <Link 
+                      key={company.id} 
+                      href={`/orgs/companies/${company.id}`}
+                      className="block"
+                    >
+                      <div className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md hover:bg-gray-50 transition-all cursor-pointer">
+                        <div className="flex items-center space-x-4">
+                          <div className="bg-sky-100 p-2 rounded-lg">
+                            <Building2 className="h-5 w-5 text-sky-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 hover:text-sky-600">{company.name}</h3>
+                            <p className="text-sm text-gray-600">
+                              {company.industry || 'Unknown Industry'} 
+                              {company.city && company.state && ` • ${company.city}, ${company.state}`}
+                              {company.headquarters && !company.city && ` • ${company.headquarters}`}
+                            </p>
+                            {company.description && (
+                              <p className="text-xs text-gray-500 mt-1 line-clamp-1">{company.description}</p>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-medium">{company.name}</h3>
-                          <p className="text-sm text-gray-600">
-                            {company.industry || 'Unknown Industry'} 
-                            {company.city && company.state && ` • ${company.city}, ${company.state}`}
-                            {company.headquarters && !company.city && ` • ${company.headquarters}`}
-                          </p>
-                          {company.description && (
-                            <p className="text-xs text-gray-500 mt-1 line-clamp-1">{company.description}</p>
+                        <div className="flex items-center space-x-2">
+                          {company.verified && (
+                            <Badge variant="default">
+                              <Star className="w-3 h-3 mr-1" />
+                              Verified
+                            </Badge>
+                          )}
+                          {company.type && (
+                            <Badge variant="outline">
+                              {company.type}
+                            </Badge>
+                          )}
+                          <Badge variant="secondary">
+                            {getContactCount(company)} contacts
+                          </Badge>
+                          {company.website && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              asChild
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <a href={company.website} target="_blank" rel="noopener noreferrer">
+                                <Globe className="w-4 h-4" />
+                              </a>
+                            </Button>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {company.verified && (
-                          <Badge variant="default">
-                            <Star className="w-3 h-3 mr-1" />
-                            Verified
-                          </Badge>
-                        )}
-                        {company.type && (
-                          <Badge variant="outline">
-                            {company.type}
-                          </Badge>
-                        )}
-                        <Badge variant="secondary">
-                          {getContactCount(company)} contacts
-                        </Badge>
-                        {company.website && (
-                          <Button variant="ghost" size="sm" asChild>
-                            <a href={company.website} target="_blank" rel="noopener noreferrer">
-                              <Globe className="w-4 h-4" />
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )
@@ -418,51 +430,67 @@ export default function SearchPage() {
               ) : (
                 <div className="space-y-4">
                   {filteredContacts.slice(0, 20).map((contact) => (
-                    <div key={contact.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <div className="flex items-center space-x-4">
-                        <div className="bg-teal-100 p-2 rounded-lg">
-                          <Users className="h-5 w-5 text-teal-600" />
+                    <Link 
+                      key={contact.id} 
+                      href={`/orgs/contacts/${contact.id}`}
+                      className="block"
+                    >
+                      <div className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md hover:bg-gray-50 transition-all cursor-pointer">
+                        <div className="flex items-center space-x-4">
+                          <div className="bg-teal-100 p-2 rounded-lg">
+                            <Users className="h-5 w-5 text-teal-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 hover:text-teal-600">{getFullName(contact)}</h3>
+                            <p className="text-sm text-gray-600">
+                              {contact.title || 'No title'}
+                              {contact.company?.name && ` • ${contact.company.name}`}
+                            </p>
+                            {contact.department && (
+                              <p className="text-xs text-gray-500 mt-1">{contact.department}</p>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-medium">{getFullName(contact)}</h3>
-                          <p className="text-sm text-gray-600">
-                            {contact.title || 'No title'}
-                            {contact.company?.name && ` • ${contact.company.name}`}
-                          </p>
-                          {contact.department && (
-                            <p className="text-xs text-gray-500 mt-1">{contact.department}</p>
+                        <div className="flex items-center space-x-2">
+                          {contact.isDecisionMaker && (
+                            <Badge variant="default">
+                              Decision Maker
+                            </Badge>
                           )}
+                          {contact.seniority && (
+                            <Badge variant="outline">
+                              {contact.seniority}
+                            </Badge>
+                          )}
+                          <div className="flex space-x-1">
+                            {contact.email && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                asChild
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <a href={`mailto:${contact.email}`}>
+                                  <Mail className="w-4 h-4" />
+                                </a>
+                              </Button>
+                            )}
+                            {contact.phone && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                asChild
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <a href={`tel:${contact.phone}`}>
+                                  <Phone className="w-4 h-4" />
+                                </a>
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {contact.isDecisionMaker && (
-                          <Badge variant="default">
-                            Decision Maker
-                          </Badge>
-                        )}
-                        {contact.seniority && (
-                          <Badge variant="outline">
-                            {contact.seniority}
-                          </Badge>
-                        )}
-                        <div className="flex space-x-1">
-                          {contact.email && (
-                            <Button variant="ghost" size="sm" asChild>
-                              <a href={`mailto:${contact.email}`}>
-                                <Mail className="w-4 h-4" />
-                              </a>
-                            </Button>
-                          )}
-                          {contact.phone && (
-                            <Button variant="ghost" size="sm" asChild>
-                              <a href={`tel:${contact.phone}`}>
-                                <Phone className="w-4 h-4" />
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )
