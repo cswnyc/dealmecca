@@ -12,8 +12,9 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q') || '';
-  const limit = parseInt(searchParams.get('limit') || '20');
-  const offset = parseInt(searchParams.get('offset') || '0');
+  // Remove pagination limits for admin - show all companies
+  // const limit = parseInt(searchParams.get('limit') || '20');
+  // const offset = parseInt(searchParams.get('offset') || '0');
 
   try {
     const where = query
@@ -37,9 +38,10 @@ export async function GET(request: NextRequest) {
             select: { contacts: true }
           }
         },
-        orderBy: { name: 'asc' },
-        take: limit,
-        skip: offset
+        orderBy: { name: 'asc' }
+        // Remove pagination for admin - show all companies
+        // take: limit,
+        // skip: offset
       }),
       prisma.company.count({ where })
     ]);
@@ -48,9 +50,9 @@ export async function GET(request: NextRequest) {
       companies,
       totalCount,
       pagination: {
-        limit,
-        offset,
-        hasMore: totalCount > (offset + limit)
+        limit: totalCount, // Return all records
+        offset: 0,
+        hasMore: false // No more pages since we return all
       }
     });
 
