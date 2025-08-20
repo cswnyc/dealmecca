@@ -66,55 +66,48 @@ export async function findContactDuplicates(contactData: {
   firstName: string;
   lastName: string;
   email?: string;
-  companyId?: string;
+  companyId: string;
 }): Promise<Contact | null> {
-  
-  const normalizedFirstName = contactData.firstName.toLowerCase().trim();
-  const normalizedLastName = contactData.lastName.toLowerCase().trim();
-  const normalizedEmail = contactData.email?.toLowerCase().trim();
 
-  // Build search conditions
-  const searchConditions = [];
+  const checks = [];
 
-  // Email match (strongest indicator)
-  if (normalizedEmail) {
-    searchConditions.push({
-      email: { equals: normalizedEmail, mode: 'insensitive' as const }
+  // 1. Email uniqueness (global)
+  if (contactData.email) {
+    checks.push({
+      email: {
+        equals: contactData.email,
+        mode: 'insensitive' as const
+      }
     });
   }
 
-  // Name + company match
-  if (contactData.companyId) {
-    searchConditions.push({
+  // 2. Name + Company uniqueness
+  checks.push({
+    AND: [
+      { firstName: { equals: contactData.firstName, mode: 'insensitive' as const } },
+      { lastName: { equals: contactData.lastName, mode: 'insensitive' as const } },
+      { companyId: contactData.companyId }
+    ]
+  });
+
+  // 3. Similar name variations
+  const firstNameVariations = [
+    contactData.firstName,
+    contactData.firstName.substring(0, 3), // Mike vs Michael
+  ];
+  
+  for (const variation of firstNameVariations) {
+    checks.push({
       AND: [
-        { firstName: { equals: contactData.firstName, mode: 'insensitive' as const } },
+        { firstName: { startsWith: variation, mode: 'insensitive' as const } },
         { lastName: { equals: contactData.lastName, mode: 'insensitive' as const } },
         { companyId: contactData.companyId }
       ]
     });
   }
 
-  // Name variations (nicknames, initials, etc.)
-  searchConditions.push({
-    AND: [
-      {
-        OR: [
-          { firstName: { equals: contactData.firstName, mode: 'insensitive' as const } },
-          { firstName: { startsWith: normalizedFirstName.charAt(0), mode: 'insensitive' as const } }
-        ]
-      },
-      { lastName: { equals: contactData.lastName, mode: 'insensitive' as const } }
-    ]
-  });
-
-  if (searchConditions.length === 0) {
-    return null;
-  }
-
   const existingContact = await prisma.contact.findFirst({
-    where: {
-      OR: searchConditions
-    },
+    where: { OR: checks },
     include: {
       company: {
         select: {
