@@ -79,8 +79,9 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    // Remove pagination limits for admin - show all contacts
+    // const limit = parseInt(searchParams.get('limit') || '20')
+    // const offset = parseInt(searchParams.get('offset') || '0')
 
     const where = query
       ? {
@@ -115,9 +116,10 @@ export async function GET(request: NextRequest) {
           { verified: 'desc' },
           { isActive: 'desc' },
           { fullName: 'asc' }
-        ],
-        take: limit,
-        skip: offset
+        ]
+        // Remove pagination for admin - show all contacts
+        // take: limit,
+        // skip: offset
       }),
       prisma.contact.count({ where })
     ]);
@@ -126,9 +128,9 @@ export async function GET(request: NextRequest) {
       contacts,
       totalCount,
       pagination: {
-        limit,
-        offset,
-        hasMore: totalCount > (offset + limit)
+        limit: totalCount, // Return all records
+        offset: 0,
+        hasMore: false // No more pages since we return all
       }
     });
 
