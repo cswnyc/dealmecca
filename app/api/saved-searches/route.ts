@@ -1,158 +1,252 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { PrismaClient } from '@prisma/client'
-import { createAuthError, createInternalError } from '@/lib/api-responses'
 
 const prisma = new PrismaClient()
 
+// GET - List all saved searches for user
 export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions)
+  
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
-    // Get user info from middleware headers
-    const userId = request.headers.get('x-user-id')
-    const userTier = request.headers.get('x-user-tier')
-    
-    if (!userId) {
-      return createAuthError()
-    }
-
-    const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
-    const offset = (page - 1) * limit
-
-    // TODO: Enable when schema is updated
-    // const [savedSearches, total] = await Promise.all([
-    //   prisma.savedSearch.findMany({
-    //     where: { userId },
-    //     orderBy: { lastRun: 'desc' },
-    //     skip: offset,
-    //     take: limit
-    //   }),
-    //   prisma.savedSearch.count({ where: { userId } })
-    // ])
-
-    // Mock saved searches for now
-    const mockSavedSearches = [
-      {
-        id: '1',
-        name: 'Fortune 500 Advertisers',
-        query: 'large advertisers',
-        filters: JSON.stringify({
-          companyType: ['ADVERTISER'],
-          employeeCount: { min: 1000, max: 100000 },
-          revenueRange: { min: 100000000, max: 10000000000 }
-        }),
-        alertEnabled: true,
-        lastRun: new Date().toISOString(),
-        resultCount: 247,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+    const savedSearches = await prisma.savedSearch.findMany({
+      where: {
+        userId: session.user.id,
+        isActive: true
       },
-      {
-        id: '2',
-        name: 'Digital Agencies - NYC',
-        query: 'digital agencies New York',
-        filters: JSON.stringify({
-          companyType: ['AGENCY'],
-          industry: ['Digital Advertising'],
-          headquarters: ['New York']
-        }),
-        alertEnabled: false,
-        lastRun: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        resultCount: 89,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    ]
+      orderBy: [
+        { lastRun: 'desc' },
+        { createdAt: 'desc' }
+      ]
+    })
 
     return NextResponse.json({
-      savedSearches: mockSavedSearches,
-      pagination: {
-        page,
-        limit,
-        total: mockSavedSearches.length,
-        totalPages: Math.ceil(mockSavedSearches.length / limit)
-      }
+      success: true,
+      savedSearches
     })
+
   } catch (error) {
-    console.error('Saved searches API error:', error)
+    console.error('Failed to fetch saved searches:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch saved searches' },
       { status: 500 }
     )
   }
 }
 
+// POST - Create new saved search
 export async function POST(request: NextRequest) {
-  try {
-    // Get user info from middleware headers
-    const userId = request.headers.get('x-user-id')
-    const userTier = request.headers.get('x-user-tier')
-    
-    if (!userId) {
-      return createAuthError()
-    }
+  const session = await getServerSession(authOptions)
+  
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
+  try {
     const body = await request.json()
-    const { name, query, filters, alertEnabled = false } = body
+    const { name, description, query, filters, alertEnabled } = body
 
     // Validate required fields
-    if (!name || !query) {
+    if (!name || !filters) {
       return NextResponse.json(
-        { error: 'Name and query are required' },
+        { error: 'Name and filters are required' },
         { status: 400 }
       )
     }
 
-    // Check if user has reached saved search limit for their tier
-    const maxSavedSearches = userTier === 'FREE' ? 3 : userTier === 'PRO' ? 25 : 100
-    
-    // TODO: Enable when schema is updated
-    // const existingCount = await prisma.savedSearch.count({
-    //   where: { userId }
-    // })
-    
-    // if (existingCount >= maxSavedSearches) {
-    //   return NextResponse.json(
-    //     { 
-    //       error: 'Saved search limit reached', 
-    //       message: `${userTier} users are limited to ${maxSavedSearches} saved searches.`,
-    //       upgradeUrl: userTier === 'FREE' ? '/upgrade' : null
-    //     },
-    //     { status: 403 }
-    //   )
-    // }
+    // Check if name already exists for this user
+    const existingSearch = await prisma.savedSearch.findFirst({
+      where: {
+        userId: session.user.id,
+        name,
+        isActive: true
+      }
+    })
 
-    // TODO: Enable when schema is updated
-    // const savedSearch = await prisma.savedSearch.create({
-    //   data: {
-    //     userId,
-    //     name,
-    //     query,
-    //     filters: JSON.stringify(filters),
-    //     alertEnabled
-    //   }
-    // })
-
-    // Mock saved search creation
-    const savedSearch = {
-      id: Date.now().toString(),
-      userId,
-      name,
-      query,
-      filters: JSON.stringify(filters),
-      alertEnabled,
-      lastRun: new Date().toISOString(),
-      resultCount: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    if (existingSearch) {
+      return NextResponse.json(
+        { error: 'A saved search with this name already exists' },
+        { status: 409 }
+      )
     }
 
-    return NextResponse.json(savedSearch, { status: 201 })
+    // Execute the search to get result count
+    let resultCount = null
+    try {
+      // Here you would run the actual search with the filters
+      // For now, we'll set it to null and update it later
+      resultCount = 0
+    } catch (searchError) {
+      console.warn('Failed to get initial result count:', searchError)
+    }
+
+    const savedSearch = await prisma.savedSearch.create({
+      data: {
+        userId: session.user.id,
+        name,
+        description,
+        query: query || '',
+        filters: filters,
+        alertEnabled: alertEnabled || false,
+        resultCount,
+        lastRun: new Date()
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      savedSearch,
+      message: 'Saved search created successfully'
+    })
+
   } catch (error) {
-    console.error('Create saved search error:', error)
+    console.error('Failed to create saved search:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to create saved search' },
       { status: 500 }
     )
   }
-} 
+}
+
+// PUT - Update saved search
+export async function PUT(request: NextRequest) {
+  const session = await getServerSession(authOptions)
+  
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    const body = await request.json()
+    const { id, name, description, query, filters, alertEnabled, isActive } = body
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Search ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Verify ownership
+    const existingSearch = await prisma.savedSearch.findFirst({
+      where: {
+        id,
+        userId: session.user.id
+      }
+    })
+
+    if (!existingSearch) {
+      return NextResponse.json(
+        { error: 'Saved search not found' },
+        { status: 404 }
+      )
+    }
+
+    // Check for name conflicts if name is being changed
+    if (name && name !== existingSearch.name) {
+      const nameConflict = await prisma.savedSearch.findFirst({
+        where: {
+          userId: session.user.id,
+          name,
+          isActive: true,
+          id: { not: id }
+        }
+      })
+
+      if (nameConflict) {
+        return NextResponse.json(
+          { error: 'A saved search with this name already exists' },
+          { status: 409 }
+        )
+      }
+    }
+
+    const updatedSearch = await prisma.savedSearch.update({
+      where: { id },
+      data: {
+        ...(name && { name }),
+        ...(description !== undefined && { description }),
+        ...(query !== undefined && { query }),
+        ...(filters && { filters }),
+        ...(alertEnabled !== undefined && { alertEnabled }),
+        ...(isActive !== undefined && { isActive }),
+        updatedAt: new Date()
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      savedSearch: updatedSearch,
+      message: 'Saved search updated successfully'
+    })
+
+  } catch (error) {
+    console.error('Failed to update saved search:', error)
+    return NextResponse.json(
+      { error: 'Failed to update saved search' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE - Delete saved search
+export async function DELETE(request: NextRequest) {
+  const session = await getServerSession(authOptions)
+  
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Search ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Verify ownership
+    const existingSearch = await prisma.savedSearch.findFirst({
+      where: {
+        id,
+        userId: session.user.id
+      }
+    })
+
+    if (!existingSearch) {
+      return NextResponse.json(
+        { error: 'Saved search not found' },
+        { status: 404 }
+      )
+    }
+
+    // Soft delete by setting isActive to false
+    await prisma.savedSearch.update({
+      where: { id },
+      data: { 
+        isActive: false,
+        updatedAt: new Date()
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Saved search deleted successfully'
+    })
+
+  } catch (error) {
+    console.error('Failed to delete saved search:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete saved search' },
+      { status: 500 }
+    )
+  }
+}
