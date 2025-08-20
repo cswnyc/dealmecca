@@ -71,6 +71,10 @@ export default function SearchPage() {
   // Load data immediately like the working orgs page
   useEffect(() => {
     fetchInitialData()
+    // Also pre-fetch contacts so the count is immediately available
+    if (searchType === 'companies') {
+      fetchDataForType('contacts')
+    }
   }, [])
 
   // Search filtering - copy the working pattern from orgs page
@@ -105,11 +109,40 @@ export default function SearchPage() {
 
   // Copy the working fetchCompanies pattern from orgs page
   const fetchInitialData = async () => {
+    await fetchDataForType(searchType)
+  }
+
+  // Safe helper functions - copying orgs page pattern
+  const getContactCount = (company: Company) => {
+    if (company._count && typeof company._count === 'object') {
+      return company._count.contacts || 0
+    }
+    return company.contacts?.length || 0
+  }
+
+  const getFullName = (contact: Contact) => {
+    if (contact.fullName) return contact.fullName
+    if (contact.firstName || contact.lastName) {
+      return `${contact.firstName || ''} ${contact.lastName || ''}`.trim()
+    }
+    return 'Unknown Contact'
+  }
+
+  const handleSearchTypeChange = async (type: 'companies' | 'contacts') => {
+    setSearchType(type)
+    setSearchQuery('')
+    if (type !== searchType) {
+      // Fetch data specifically for the new type to avoid race condition
+      await fetchDataForType(type)
+    }
+  }
+
+  const fetchDataForType = async (type: 'companies' | 'contacts') => {
     try {
       setLoading(true)
       setError(null)
       
-      if (searchType === 'companies') {
+      if (type === 'companies') {
         // Use the orgs companies endpoint which works correctly
         const response = await fetch('/api/orgs/companies?limit=50', {
           credentials: 'include'
@@ -162,30 +195,6 @@ export default function SearchPage() {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
-    }
-  }
-
-  // Safe helper functions - copying orgs page pattern
-  const getContactCount = (company: Company) => {
-    if (company._count && typeof company._count === 'object') {
-      return company._count.contacts || 0
-    }
-    return company.contacts?.length || 0
-  }
-
-  const getFullName = (contact: Contact) => {
-    if (contact.fullName) return contact.fullName
-    if (contact.firstName || contact.lastName) {
-      return `${contact.firstName || ''} ${contact.lastName || ''}`.trim()
-    }
-    return 'Unknown Contact'
-  }
-
-  const handleSearchTypeChange = (type: 'companies' | 'contacts') => {
-    setSearchType(type)
-    setSearchQuery('')
-    if (type !== searchType) {
-      fetchInitialData()
     }
   }
 
