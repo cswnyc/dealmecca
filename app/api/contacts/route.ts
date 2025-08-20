@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { recordSearch, canUserSearch } from '@/lib/auth'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
 import type { Prisma } from '@prisma/client'
+import { findContactDuplicates } from '@/lib/bulk-import/duplicate-detection'
 
 // Enum mapping functions (same as admin contacts API)
 function mapDepartmentValue(inputDepartment?: string): string | undefined {
@@ -251,13 +252,124 @@ export async function POST(request: NextRequest) {
       isDecisionMaker,
       department,
       seniority,
+      forceUpdate
     } = body
+
+    // Validate required fields
+    if (!companyId || !name || !title) {
+      return NextResponse.json(
+        { error: 'Company ID, name, and title are required' },
+        { status: 400 }
+      )
+    }
+
+    // Verify company exists
+    const company = await prisma.company.findUnique({
+      where: { id: companyId }
+    });
+
+    if (!company) {
+      return NextResponse.json(
+        { error: 'Company not found' },
+        { status: 400 }
+      );
+    }
+
+    const firstName = name.split(' ')[0] || name;
+    const lastName = name.split(' ').slice(1).join(' ') || '';
+
+    // Check for duplicates using smart detection
+    const existingContact = await findContactDuplicates({
+      firstName,
+      lastName,
+      email,
+      companyId
+    });
+
+    if (existingContact) {
+      if (forceUpdate) {
+        // Update existing contact with new data
+        const updateData: any = {
+          updatedAt: new Date()
+        };
+
+        // Only update fields that have new/better data
+        if (email && (!existingContact.email || email !== existingContact.email)) {
+          updateData.email = email;
+        }
+        if (phone && (!existingContact.phone || phone !== existingContact.phone)) {
+          updateData.phone = phone;
+        }
+        if (title && title !== existingContact.title) {
+          updateData.title = title;
+        }
+        if (department && mapDepartmentValue(department) !== existingContact.department) {
+          updateData.department = mapDepartmentValue(department) as any;
+        }
+        if (seniority && mapSeniorityValue(seniority) !== existingContact.seniority) {
+          updateData.seniority = mapSeniorityValue(seniority) as any;
+        }
+        if (linkedinUrl && (!existingContact.linkedinUrl || linkedinUrl !== existingContact.linkedinUrl)) {
+          updateData.linkedinUrl = linkedinUrl;
+        }
+        if (typeof isDecisionMaker === 'boolean' && isDecisionMaker !== existingContact.isDecisionMaker) {
+          updateData.isDecisionMaker = isDecisionMaker;
+        }
+
+        // Only update if there are actual changes
+        if (Object.keys(updateData).length > 1) { // More than just updatedAt
+          const updatedContact = await prisma.contact.update({
+            where: { id: existingContact.id },
+            data: updateData,
+            include: {
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  companyType: true
+                }
+              }
+            }
+          });
+          
+          return NextResponse.json({ 
+            contact: updatedContact, 
+            action: 'updated',
+            message: 'Contact updated with new information'
+          }, { status: 200 });
+        } else {
+          return NextResponse.json({ 
+            contact: existingContact, 
+            action: 'no_changes',
+            message: 'No new information to update'
+          }, { status: 200 });
+        }
+      } else {
+        // Return duplicate with options for user
+        return NextResponse.json({
+          error: 'duplicate_found',
+          message: 'A similar contact already exists',
+          existingContact: {
+            id: existingContact.id,
+            firstName: existingContact.firstName,
+            lastName: existingContact.lastName,
+            email: existingContact.email,
+            title: existingContact.title,
+            companyId: existingContact.companyId
+          },
+          suggestions: {
+            update: 'Add forceUpdate: true to update the existing contact',
+            merge: 'Consider merging data with the existing contact'
+          }
+        }, { status: 409 });
+      }
+    }
 
     const contact = await prisma.contact.create({
       data: {
         companyId,
-        firstName: name.split(' ')[0] || name,
-        lastName: name.split(' ').slice(1).join(' ') || '',
+        firstName,
+        lastName,
         fullName: name,
         name, // Keep for backward compatibility
         title,
@@ -273,7 +385,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(contact, { status: 201 })
+    return NextResponse.json({ 
+      contact, 
+      action: 'created',
+      message: 'Contact created successfully'
+    }, { status: 201 })
   } catch (error: any) {
     console.error('Create contact error:', error)
     

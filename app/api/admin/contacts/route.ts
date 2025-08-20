@@ -4,6 +4,7 @@ import { createSuccessResponse, createAuthError, createInternalError } from '@/l
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { Prisma } from '@prisma/client';
+import { findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
 
 // Enum mapping functions
 function mapDepartmentValue(inputDepartment?: string): string | undefined {
@@ -172,6 +173,105 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check for duplicates using smart detection
+    const existingContact = await findContactDuplicates({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      companyId: data.companyId
+    });
+
+    if (existingContact) {
+      // Check if user wants to update existing contact
+      if (data.forceUpdate) {
+        // Update existing contact with new data
+        const updateData: any = {
+          updatedAt: new Date()
+        };
+
+        // Only update fields that have new/better data
+        if (data.email && (!existingContact.email || data.email !== existingContact.email)) {
+          updateData.email = data.email;
+        }
+        if (data.phone && (!existingContact.phone || data.phone !== existingContact.phone)) {
+          updateData.phone = data.phone;
+        }
+        if (data.title && data.title !== existingContact.title) {
+          updateData.title = data.title;
+        }
+        if (data.department && mapDepartmentValue(data.department) !== existingContact.department) {
+          updateData.department = mapDepartmentValue(data.department) as any;
+        }
+        if (data.seniority && mapSeniorityValue(data.seniority) !== existingContact.seniority) {
+          updateData.seniority = mapSeniorityValue(data.seniority) as any;
+        }
+        if (data.linkedinUrl && (!existingContact.linkedinUrl || data.linkedinUrl !== existingContact.linkedinUrl)) {
+          updateData.linkedinUrl = data.linkedinUrl;
+        }
+        if (data.personalEmail && (!existingContact.personalEmail || data.personalEmail !== existingContact.personalEmail)) {
+          updateData.personalEmail = data.personalEmail;
+        }
+        if (data.preferredContact && data.preferredContact !== existingContact.preferredContact) {
+          updateData.preferredContact = data.preferredContact;
+        }
+        if (typeof data.isDecisionMaker === 'boolean' && data.isDecisionMaker !== existingContact.isDecisionMaker) {
+          updateData.isDecisionMaker = data.isDecisionMaker;
+        }
+        if (data.verified && !existingContact.verified) {
+          updateData.verified = true;
+          updateData.lastVerified = new Date();
+          updateData.dataQuality = 'VERIFIED';
+        }
+
+        // Only update if there are actual changes
+        if (Object.keys(updateData).length > 1) { // More than just updatedAt
+          const updatedContact = await prisma.contact.update({
+            where: { id: existingContact.id },
+            data: updateData,
+            include: {
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  companyType: true
+                }
+              }
+            }
+          });
+          
+          return NextResponse.json({ 
+            contact: updatedContact, 
+            action: 'updated',
+            message: 'Contact updated with new information'
+          }, { status: 200 });
+        } else {
+          return NextResponse.json({ 
+            contact: existingContact, 
+            action: 'no_changes',
+            message: 'No new information to update'
+          }, { status: 200 });
+        }
+      } else {
+        // Return duplicate with options for user
+        return NextResponse.json({
+          error: 'duplicate_found',
+          message: 'A similar contact already exists',
+          existingContact: {
+            id: existingContact.id,
+            firstName: existingContact.firstName,
+            lastName: existingContact.lastName,
+            email: existingContact.email,
+            title: existingContact.title,
+            companyId: existingContact.companyId
+          },
+          suggestions: {
+            update: 'Add forceUpdate: true to update the existing contact',
+            merge: 'Consider merging data with the existing contact'
+          }
+        }, { status: 409 });
+      }
+    }
+
     // Create the contact with enum mapping
     const contact = await prisma.contact.create({
       data: {
@@ -204,7 +304,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({ contact }, { status: 201 });
+    return NextResponse.json({ 
+      contact, 
+      action: 'created',
+      message: 'Contact created successfully'
+    }, { status: 201 });
 
   } catch (error: any) {
     console.error('Admin contact creation error:', error);

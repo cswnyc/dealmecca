@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
 // We'll use Prisma's auto-generated cuid() for IDs
 
 interface ImportContact {
@@ -116,35 +117,7 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        // Check for existing contact (same email or same name + company)
-        const existingContact = await prisma.contact.findFirst({
-          where: {
-            OR: [
-              // Check by email if provided
-              ...(contact.email ? [{
-                email: contact.email
-              }] : []),
-              // Check by name + company
-              {
-                AND: [
-                  { firstName: contact.firstName },
-                  { lastName: contact.lastName },
-                  { companyId: contact.companyId }
-                ]
-              }
-            ]
-          }
-        });
 
-        if (existingContact) {
-          results.failed++;
-          results.errors.push({
-            row: i + 1,
-            contact: `${contact.firstName} ${contact.lastName}`,
-            error: 'Contact already exists'
-          });
-          continue;
-        }
 
         // Verify company exists
         const company = await prisma.company.findUnique({
@@ -195,29 +168,76 @@ export async function POST(request: NextRequest) {
           return validDepartments.includes(deptUpper) ? deptUpper as any : 'MARKETING';
         };
 
-        // Create the contact
-        await prisma.contact.create({
-          data: {
-            firstName: contact.firstName.trim(),
-            lastName: contact.lastName.trim(),
-            fullName: `${contact.firstName.trim()} ${contact.lastName.trim()}`,
-            title: contact.title.trim(),
-            email: contact.email?.trim() || null,
-            phone: contact.phone?.trim() || null,
-            linkedinUrl: contact.linkedinUrl?.trim() || null,
-            department: getDepartment(contact.department),
-            seniority: getSeniorityLevel(contact.title),
-            company: {
-              connect: { id: contact.companyId }
-            },
-            verified: false,
-            isActive: true,
-            isDecisionMaker: false,
-            preferredContact: contact.email ? 'EMAIL' : 'PHONE'
-          }
+        // Check for duplicates using smart detection
+        const existingContact = await findContactDuplicates({
+          firstName: contact.firstName.trim(),
+          lastName: contact.lastName.trim(),
+          email: contact.email?.trim(),
+          companyId: contact.companyId!
         });
 
-        results.imported++;
+        if (existingContact) {
+          // Update existing contact with new data if we have better information
+          const updateData: any = {
+            updatedAt: new Date()
+          };
+
+          // Only update fields that have new/better data
+          if (contact.email?.trim() && (!existingContact.email || contact.email.trim() !== existingContact.email)) {
+            updateData.email = contact.email.trim();
+          }
+          if (contact.phone?.trim() && (!existingContact.phone || contact.phone.trim() !== existingContact.phone)) {
+            updateData.phone = contact.phone.trim();
+          }
+          if (contact.title?.trim() && contact.title.trim() !== existingContact.title) {
+            updateData.title = contact.title.trim();
+          }
+          if (contact.department && getDepartment(contact.department) !== existingContact.department) {
+            updateData.department = getDepartment(contact.department);
+          }
+          if (getSeniorityLevel(contact.title) !== existingContact.seniority) {
+            updateData.seniority = getSeniorityLevel(contact.title);
+          }
+          if (contact.linkedinUrl?.trim() && (!existingContact.linkedinUrl || contact.linkedinUrl.trim() !== existingContact.linkedinUrl)) {
+            updateData.linkedinUrl = contact.linkedinUrl.trim();
+          }
+
+          // Only update if there are actual changes
+          if (Object.keys(updateData).length > 1) { // More than just updatedAt
+            await prisma.contact.update({
+              where: { id: existingContact.id },
+              data: updateData
+            });
+            results.imported++; // Count updates as imports
+          } else {
+            // No changes needed, but still count as successful processing
+            results.imported++;
+          }
+        } else {
+          // Create new contact
+          await prisma.contact.create({
+            data: {
+              firstName: contact.firstName.trim(),
+              lastName: contact.lastName.trim(),
+              fullName: `${contact.firstName.trim()} ${contact.lastName.trim()}`,
+              title: contact.title.trim(),
+              email: contact.email?.trim() || null,
+              phone: contact.phone?.trim() || null,
+              linkedinUrl: contact.linkedinUrl?.trim() || null,
+              department: getDepartment(contact.department),
+              seniority: getSeniorityLevel(contact.title),
+              company: {
+                connect: { id: contact.companyId }
+              },
+              verified: false,
+              isActive: true,
+              isDecisionMaker: false,
+              preferredContact: contact.email ? 'EMAIL' : 'PHONE',
+              dataQuality: 'BASIC'
+            }
+          });
+          results.imported++;
+        }
 
       } catch (error) {
         console.error(`Error importing contact ${i + 1}:`, error);
