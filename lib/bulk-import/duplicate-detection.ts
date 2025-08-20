@@ -1,58 +1,38 @@
 import { PrismaClient, Company, Contact } from '@prisma/client'
+import { normalizeCompanyName, normalizeWebsite, normalizeEmail } from '@/lib/normalization-utils'
 
 const prisma = new PrismaClient()
 
-// Enhanced company duplicate detection
+// Enhanced company duplicate detection using normalized fields
 export async function findCompanyDuplicates(companyData: {
   name: string;
   website?: string;
 }): Promise<Company | null> {
   
-  // Normalize company name for comparison
-  const normalizedName = companyData.name
-    .toLowerCase()
-    .replace(/[^\w\s]/g, '') // Remove punctuation
-    .replace(/\s+/g, ' ')    // Normalize spaces
-    .replace(/\b(inc|corp|ltd|llc|group|plc|corporation|company)\b/g, '') // Remove legal entities
-    .trim();
+  // Normalize inputs for efficient database lookup
+  const normalizedName = normalizeCompanyName(companyData.name);
+  const normalizedWebsite = companyData.website ? normalizeWebsite(companyData.website) : null;
 
-  // Normalize website/domain
-  const normalizedWebsite = companyData.website
-    ?.toLowerCase()
-    .replace(/^https?:\/\//, '') // Remove protocol
-    .replace(/^www\./, '')       // Remove www
-    .replace(/\/$/, '')          // Remove trailing slash
-    .split('/')[0];              // Get just the domain
-
-  // Check for existing company
+  // Check for existing company using normalized fields (much faster with indexes)
   const existingCompany = await prisma.company.findFirst({
     where: {
       OR: [
-        // Exact name match
+        // Exact normalized name match (fastest lookup with unique index)
+        ...(normalizedName ? [{
+          normalizedName: normalizedName
+        }] : []),
+        
+        // Exact normalized website match (fastest lookup with unique index)  
+        ...(normalizedWebsite ? [{
+          normalizedWebsite: normalizedWebsite
+        }] : []),
+        
+        // Fallback to original name matching for legacy data without normalized fields
         { name: { equals: companyData.name, mode: 'insensitive' as const } },
         
-        // Normalized name match (if significantly different from original)
-        ...(normalizedName !== companyData.name.toLowerCase() ? [{
-          name: {
-            contains: normalizedName,
-            mode: 'insensitive' as const
-          }
-        }] : []),
-        
-        // Website match (if provided)
-        ...(normalizedWebsite ? [{
-          website: {
-            contains: normalizedWebsite,
-            mode: 'insensitive' as const
-          }
-        }] : []),
-        
-        // Check if our website matches their name (common for tech companies)
-        ...(normalizedWebsite ? [{
-          name: {
-            contains: normalizedWebsite.split('.')[0],
-            mode: 'insensitive' as const
-          }
+        // Fallback to original website matching for legacy data
+        ...(companyData.website ? [{
+          website: { equals: companyData.website, mode: 'insensitive' as const }
         }] : [])
       ]
     }
@@ -61,7 +41,7 @@ export async function findCompanyDuplicates(companyData: {
   return existingCompany;
 }
 
-// Enhanced contact duplicate detection
+// Enhanced contact duplicate detection using indexed fields
 export async function findContactDuplicates(contactData: {
   firstName: string;
   lastName: string;
@@ -71,13 +51,11 @@ export async function findContactDuplicates(contactData: {
 
   const checks = [];
 
-  // 1. Email uniqueness (global)
+  // 1. Email uniqueness (global) - uses email index for fast lookup
   if (contactData.email) {
+    const normalizedEmail = normalizeEmail(contactData.email);
     checks.push({
-      email: {
-        equals: contactData.email,
-        mode: 'insensitive' as const
-      }
+      email: normalizedEmail
     });
   }
 
