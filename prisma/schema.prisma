@@ -58,6 +58,10 @@ model User {
   company              Company?                 @relation("UserCompany", fields: [companyId], references: [id])
   connections          UserConnection[]
   networkingActivity   UserNetworkingActivity[]
+  contactInteractions  ContactInteraction[]
+  contactNotes         ContactNote[]
+  viewedContacts       ViewedContact[]
+  contactStatuses      ContactStatus[]
 }
 
 model Account {
@@ -181,6 +185,10 @@ model Contact {
   eventAttendees   EventAttendee[]
   connections      UserConnection[]
   company          Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  interactions     ContactInteraction[]
+  notes            ContactNote[]
+  viewedBy         ViewedContact[]
+  status           ContactStatus?
 
   @@unique([firstName, lastName, companyId], map: "unique_contact_per_company")
   @@index([companyId])
@@ -249,9 +257,11 @@ model SavedSearch {
   id           String   @id @default(cuid())
   userId       String
   name         String
+  description  String?
   query        String
-  filters      String
+  filters      Json     // Enhanced to support complex filter objects
   alertEnabled Boolean  @default(false)
+  isActive     Boolean  @default(true)
   lastRun      DateTime @default(now())
   resultCount  Int?
   createdAt    DateTime @default(now())
@@ -260,6 +270,82 @@ model SavedSearch {
 
   @@index([userId])
   @@index([lastRun])
+  @@index([isActive])
+}
+
+model ContactInteraction {
+  id          String    @id @default(cuid())
+  contactId   String
+  userId      String
+  type        InteractionType
+  notes       String?
+  outcome     String?   // connected, no_answer, interested, not_interested, follow_up
+  followUpAt  DateTime?
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  contact     Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([contactId])
+  @@index([userId])
+  @@index([followUpAt])
+  @@index([type])
+}
+
+model ContactNote {
+  id        String   @id @default(cuid())
+  contactId String
+  userId    String
+  content   String
+  isPrivate Boolean  @default(false)
+  tags      String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([contactId])
+  @@index([userId])
+}
+
+model ViewedContact {
+  id        String   @id @default(cuid())
+  userId    String
+  contactId String
+  viewedAt  DateTime @default(now())
+  duration  Int?     // Time spent viewing in seconds
+  
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, contactId])
+  @@index([userId])
+  @@index([viewedAt])
+}
+
+model ContactStatus {
+  id           String        @id @default(cuid())
+  contactId    String        @unique
+  userId       String
+  status       LeadStatus    @default(NEW)
+  priority     Priority      @default(MEDIUM)
+  leadScore    Int?          // Calculated lead score 0-100
+  lastActivity DateTime?
+  nextAction   String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  contact      Contact       @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([leadScore])
 }
 
 model CompanyInsight {
@@ -1066,4 +1152,37 @@ enum NotificationType {
   CONNECTION_REQUEST
   ACHIEVEMENT_UNLOCKED
   SYSTEM_ANNOUNCEMENT
+}
+
+enum InteractionType {
+  EMAIL
+  PHONE_CALL
+  LINKEDIN_MESSAGE
+  LINKEDIN_CONNECTION
+  MEETING
+  CONFERENCE_CALL
+  TEXT_MESSAGE
+  IN_PERSON
+  SOCIAL_MEDIA
+  OTHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATING
+  CLOSED_WON
+  CLOSED_LOST
+  NOT_INTERESTED
+  NURTURING
+  ON_HOLD
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
