@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { recordSearch, canUserSearch } from '@/lib/auth'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
+import { findCompanyDuplicates } from '@/lib/bulk-import/duplicate-detection'
 
 export async function GET(request: NextRequest) {
   console.log('🚀 === COMPANIES API START ===')
@@ -214,8 +215,96 @@ export async function POST(request: NextRequest) {
       headquarters,
       revenue,
       parentCompany,
+      forceUpdate
     } = body
 
+    // Validate required fields
+    if (!name || !type) {
+      return NextResponse.json(
+        { error: 'Name and company type are required' },
+        { status: 400 }
+      );
+    }
+
+    // Check for duplicates using smart detection
+    const existingCompany = await findCompanyDuplicates({
+      name,
+      website
+    });
+
+    if (existingCompany) {
+      if (forceUpdate) {
+        // Update existing company with new data
+        const updateData: any = {
+          updatedAt: new Date()
+        };
+
+        // Only update fields that have new/better data
+        if (website && (!existingCompany.website || website !== existingCompany.website)) {
+          updateData.website = website;
+        }
+        if (industry && industry !== existingCompany.industry) {
+          updateData.industry = industry;
+        }
+        if (employeeCount && employeeCount !== existingCompany.employeeCount) {
+          updateData.employeeCount = employeeCount;
+        }
+        if (revenue && revenue !== existingCompany.revenue) {
+          updateData.revenue = revenue;
+        }
+        if (headquarters && headquarters !== existingCompany.headquarters) {
+          updateData.headquarters = headquarters;
+        }
+        if (description && description !== existingCompany.description) {
+          updateData.description = description;
+        }
+        if (type && type !== existingCompany.companyType) {
+          updateData.companyType = type;
+        }
+        if (parentCompany && parentCompany !== existingCompany.parentCompanyId) {
+          updateData.parentCompanyId = parentCompany;
+        }
+
+        // Only update if there are actual changes
+        if (Object.keys(updateData).length > 1) { // More than just updatedAt
+          const updatedCompany = await prisma.company.update({
+            where: { id: existingCompany.id },
+            data: updateData
+          });
+          
+          return NextResponse.json({ 
+            company: updatedCompany, 
+            action: 'updated',
+            message: 'Company updated with new information'
+          }, { status: 200 });
+        } else {
+          return NextResponse.json({ 
+            company: existingCompany, 
+            action: 'no_changes',
+            message: 'No new information to update'
+          }, { status: 200 });
+        }
+      } else {
+        // Return duplicate with options for user
+        return NextResponse.json({
+          error: 'duplicate_found',
+          message: 'A similar company already exists',
+          existingCompany: {
+            id: existingCompany.id,
+            name: existingCompany.name,
+            website: existingCompany.website,
+            industry: existingCompany.industry,
+            companyType: existingCompany.companyType
+          },
+          suggestions: {
+            update: 'Add forceUpdate: true to update the existing company',
+            merge: 'Consider merging data with the existing company'
+          }
+        }, { status: 409 });
+      }
+    }
+
+    // Create new company if no duplicates found
     const company = await prisma.company.create({
       data: {
         name,
@@ -227,11 +316,16 @@ export async function POST(request: NextRequest) {
         employeeCount,
         headquarters,
         revenue,
-        parentCompany,
+        parentCompanyId: parentCompany,
+        dataQuality: 'BASIC'
       } as any,
     })
 
-    return NextResponse.json(company, { status: 201 })
+    return NextResponse.json({ 
+      company, 
+      action: 'created',
+      message: 'Company created successfully'
+    }, { status: 201 })
   } catch (error) {
     console.error('Create company error:', error)
     return NextResponse.json(
