@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { BulkImportCompany, BulkImportContact } from '@/lib/types/bulk-import';
+import { findCompanyDuplicates, findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -61,15 +62,10 @@ export async function POST(request: NextRequest) {
         try {
           console.log(`🏢 Processing company: ${companyData.name}`);
           
-          // Check for existing company by name or website
-          const existingCompany = await prisma.company.findFirst({
-            where: {
-              OR: [
-                { name: { equals: companyData.name, mode: 'insensitive' } },
-                ...(companyData.website ? [{ website: companyData.website }] : []),
-                ...(companyData.domain ? [{ website: companyData.domain }] : [])
-              ]
-            }
+          // Check for existing company using enhanced duplicate detection
+          const existingCompany = await findCompanyDuplicates({
+            name: companyData.name,
+            website: companyData.website || companyData.domain
           });
 
           if (existingCompany) {
@@ -138,12 +134,31 @@ export async function POST(request: NextRequest) {
             createdCompanies.set(companyData.name.toLowerCase(), newCompany.id);
           }
 
-        } catch (error) {
-          const errorMsg = `Company "${companyData.name}": ${error instanceof Error ? error.message : 'Unknown error'}`;
-          results.errors.push(errorMsg);
-          console.error('❌ Company error:', errorMsg);
-          console.error('🔍 Company data:', companyData);
-          console.error('🔍 Full error:', error);
+        } catch (error: any) {
+          let errorMsg = `Company "${companyData.name}": `;
+          
+          // Handle unique constraint violations
+          if (error.code === 'P2002') {
+            const field = error.meta?.target?.[0];
+            if (field === 'name') {
+              errorMsg += 'A company with this name already exists (detected after our duplicate check)';
+              results.companiesSkipped++;
+            } else if (field === 'website') {
+              errorMsg += 'A company with this website already exists (detected after our duplicate check)';
+              results.companiesSkipped++;
+            } else {
+              errorMsg += 'This company already exists (unique constraint violation)';
+              results.companiesSkipped++;
+            }
+            results.warnings.push(errorMsg);
+            console.log('⚠️ Company duplicate detected:', errorMsg);
+          } else {
+            errorMsg += error instanceof Error ? error.message : 'Unknown error';
+            results.errors.push(errorMsg);
+            console.error('❌ Company error:', errorMsg);
+            console.error('🔍 Company data:', companyData);
+            console.error('🔍 Full error:', error);
+          }
         }
       }
     }
@@ -181,15 +196,12 @@ export async function POST(request: NextRequest) {
 
           const finalCompanyId = createdCompanies.get(contactData.companyName.toLowerCase())!;
 
-          // Check for existing contact
-          const existingContact = await prisma.contact.findFirst({
-            where: {
-              AND: [
-                { firstName: { equals: contactData.firstName, mode: 'insensitive' } },
-                { lastName: { equals: contactData.lastName, mode: 'insensitive' } },
-                { companyId: finalCompanyId }
-              ]
-            }
+          // Check for existing contact using enhanced duplicate detection
+          const existingContact = await findContactDuplicates({
+            firstName: contactData.firstName,
+            lastName: contactData.lastName,
+            email: contactData.email,
+            companyId: finalCompanyId
           });
 
           if (existingContact) {
@@ -249,10 +261,29 @@ export async function POST(request: NextRequest) {
             results.contactsCreated++;
           }
 
-        } catch (error) {
-          const errorMsg = `Contact "${contactData.firstName} ${contactData.lastName}": ${error instanceof Error ? error.message : 'Unknown error'}`;
-          results.errors.push(errorMsg);
-          console.error('❌ Contact error:', errorMsg);
+        } catch (error: any) {
+          let errorMsg = `Contact "${contactData.firstName} ${contactData.lastName}": `;
+          
+          // Handle unique constraint violations
+          if (error.code === 'P2002') {
+            const target = error.meta?.target;
+            if (target?.includes('email')) {
+              errorMsg += 'A contact with this email already exists (detected after our duplicate check)';
+              results.contactsSkipped++;
+            } else if (target?.includes('firstName') && target?.includes('lastName') && target?.includes('companyId')) {
+              errorMsg += 'A contact with this name already exists at this company (detected after our duplicate check)';
+              results.contactsSkipped++;
+            } else {
+              errorMsg += 'This contact already exists (unique constraint violation)';
+              results.contactsSkipped++;
+            }
+            results.warnings.push(errorMsg);
+            console.log('⚠️ Contact duplicate detected:', errorMsg);
+          } else {
+            errorMsg += error instanceof Error ? error.message : 'Unknown error';
+            results.errors.push(errorMsg);
+            console.error('❌ Contact error:', errorMsg);
+          }
         }
       }
     }

@@ -274,8 +274,29 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(contact, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create contact error:', error)
+    
+    // Handle unique constraint violations
+    if (error.code === 'P2002') {
+      const target = error.meta?.target;
+      if (target?.includes('email')) {
+        return NextResponse.json(
+          { error: 'A contact with this email already exists' },
+          { status: 409 }
+        )
+      } else if (target?.includes('firstName') && target?.includes('lastName') && target?.includes('companyId')) {
+        return NextResponse.json(
+          { error: 'A contact with this name already exists at this company' },
+          { status: 409 }
+        )
+      }
+      return NextResponse.json(
+        { error: 'This contact already exists' },
+        { status: 409 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -191,6 +191,11 @@ model Company {
   @@index([city, state])
   @@index([verified])
   @@index([lastInsightUpdate])
+  
+  // Duplicate prevention constraints
+  @@unique([name], map: "unique_company_name")
+  @@unique([website], map: "unique_company_website")
+  
   @@map("companies")
 }
 
@@ -253,6 +258,11 @@ model Contact {
   @@index([department])
   @@index([seniority])
   @@index([verified])
+  
+  // Duplicate prevention constraints
+  @@unique([email], map: "unique_contact_email")
+  @@unique([firstName, lastName, companyId], map: "unique_contact_per_company")
+  
   @@map("contacts")
 }
 

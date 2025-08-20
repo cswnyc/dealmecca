@@ -92,8 +92,29 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ company }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Admin company creation error:', error);
+    
+    // Handle unique constraint violations
+    if (error.code === 'P2002') {
+      const field = error.meta?.target?.[0];
+      if (field === 'name') {
+        return NextResponse.json(
+          { error: 'A company with this name already exists' },
+          { status: 409 }
+        );
+      } else if (field === 'website') {
+        return NextResponse.json(
+          { error: 'A company with this website already exists' },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json(
+        { error: 'This company already exists' },
+        { status: 409 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Failed to create company' },
       { status: 500 }
