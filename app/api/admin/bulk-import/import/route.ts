@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { BulkImportCompany, BulkImportContact } from '@/lib/types/bulk-import';
 import { findCompanyDuplicates, findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
+import { prepareCompanyForDatabase } from '@/lib/normalization-utils';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -113,21 +114,23 @@ export async function POST(request: NextRequest) {
             createdCompanies.set(companyData.name.toLowerCase(), existingCompany.id);
 
           } else {
-            // Create new company
+            // Create new company with normalized fields
+            const companyDataWithNormalized = prepareCompanyForDatabase({
+              name: companyData.name,
+              slug: companyData.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''),
+              website: companyData.website || companyData.domain, // Map domain to website field
+              industry: companyData.industry,
+              employeeCount: companyData.employeeCount,
+              revenue: companyData.revenue,
+              headquarters: companyData.headquarters,
+              description: companyData.description,
+              companyType: companyData.type || 'ADVERTISER', // Use valid enum value
+              dataQuality: 'BASIC',
+              verified: false
+            });
+            
             const newCompany = await prisma.company.create({
-              data: {
-                name: companyData.name,
-                slug: companyData.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''),
-                website: companyData.website || companyData.domain, // Map domain to website field
-                industry: companyData.industry,
-                employeeCount: companyData.employeeCount,
-                revenue: companyData.revenue,
-                headquarters: companyData.headquarters,
-                description: companyData.description,
-                companyType: companyData.type || 'ADVERTISER', // Use valid enum value
-                dataQuality: 'BASIC',
-                verified: false
-              }
+              data: companyDataWithNormalized as any
             });
             
             results.companiesCreated++;

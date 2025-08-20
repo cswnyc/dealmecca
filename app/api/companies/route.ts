@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { recordSearch, canUserSearch } from '@/lib/auth'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
 import { findCompanyDuplicates } from '@/lib/bulk-import/duplicate-detection'
+import { prepareCompanyForDatabase } from '@/lib/normalization-utils'
 
 export async function GET(request: NextRequest) {
   console.log('🚀 === COMPANIES API START ===')
@@ -305,20 +306,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new company if no duplicates found
+    const companyDataWithNormalized = prepareCompanyForDatabase({
+      name,
+      slug: `${(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${Date.now()}`,
+      companyType: type,
+      industry,
+      description,
+      website,
+      employeeCount,
+      headquarters,
+      revenue,
+      parentCompanyId: parentCompany,
+      dataQuality: 'BASIC'
+    } as any);
+    
     const company = await prisma.company.create({
-      data: {
-        name,
-        slug: `${(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${Date.now()}`,
-        companyType: type,
-        industry,
-        description,
-        website,
-        employeeCount,
-        headquarters,
-        revenue,
-        parentCompanyId: parentCompany,
-        dataQuality: 'BASIC'
-      } as any,
+      data: companyDataWithNormalized as any,
     })
 
     return NextResponse.json({ 

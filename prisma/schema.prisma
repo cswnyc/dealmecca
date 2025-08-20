@@ -128,6 +128,10 @@ model Company {
   logoUrl         String?
   description     String?
   
+  // Normalized fields for efficient duplicate detection
+  normalizedName    String?  // Normalized company name (lowercase, no punctuation, no legal entities)
+  normalizedWebsite String?  // Normalized website/domain (lowercase, no protocol, no www)
+  
   // Classification fields
   companyType     CompanyType
   agencyType      AgencyType?
@@ -192,9 +196,16 @@ model Company {
   @@index([verified])
   @@index([lastInsightUpdate])
   
-  // Duplicate prevention constraints
+  // Enhanced indexing for duplicate detection
+  @@index([normalizedName])
+  @@index([normalizedWebsite])
+  
+  // Duplicate prevention constraints  
   @@unique([name], map: "unique_company_name")
   @@unique([website], map: "unique_company_website")
+  // Note: Normalized field unique constraints will be added after data population
+  // @@unique([normalizedName], map: "unique_company_normalized_name")
+  // @@unique([normalizedWebsite], map: "unique_company_normalized_website")
   
   @@map("companies")
 }
@@ -258,6 +269,10 @@ model Contact {
   @@index([department])
   @@index([seniority])
   @@index([verified])
+  
+  // Enhanced indexing for duplicate detection performance
+  @@index([email])
+  @@index([firstName, lastName, companyId])
   
   // Duplicate prevention constraints
   @@unique([email], map: "unique_contact_email")

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { findCompanyDuplicates } from '@/lib/bulk-import/duplicate-detection';
+import { prepareCompanyForDatabase } from '@/lib/normalization-utils';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -165,12 +166,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new company if no duplicates found
+    const companyDataWithNormalized = prepareCompanyForDatabase({
+      ...data,
+      dataQuality: data.verified ? 'VERIFIED' : 'BASIC',
+      slug: data.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+    });
+    
     const company = await prisma.company.create({
-      data: {
-        ...data,
-        dataQuality: data.verified ? 'VERIFIED' : 'BASIC',
-        slug: data.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
-      }
+      data: companyDataWithNormalized as any
     });
 
     return NextResponse.json({ 
