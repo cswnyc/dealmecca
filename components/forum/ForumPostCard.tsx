@@ -111,8 +111,52 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote }: ForumPostC
     ENTERPRISE: 'Enterprise Deal'
   };
 
-  const tags = post.tags ? JSON.parse(post.tags) : [];
-  const mediaTypes = post.mediaType ? JSON.parse(post.mediaType) : [];
+  // Safe parsing for tags - handle various formats
+  const safeParseTags = (tagsData: any): string[] => {
+    if (!tagsData) return [];
+    
+    // If already an array, return it
+    if (Array.isArray(tagsData)) return tagsData;
+    
+    // If it's a string, try different parsing methods
+    if (typeof tagsData === 'string') {
+      // First try JSON parsing
+      try {
+        const parsed = JSON.parse(tagsData);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        // If JSON parsing fails, try comma-separated parsing
+        return tagsData.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      }
+    }
+    
+    return [];
+  };
+
+  // Safe parsing for media types - handle various formats  
+  const safeParseMediaTypes = (mediaData: any): string[] => {
+    if (!mediaData) return [];
+    
+    // If already an array, return it
+    if (Array.isArray(mediaData)) return mediaData;
+    
+    // If it's a string, try different parsing methods
+    if (typeof mediaData === 'string') {
+      // First try JSON parsing
+      try {
+        const parsed = JSON.parse(mediaData);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        // If JSON parsing fails, try comma-separated parsing
+        return mediaData.split(',').map(type => type.trim()).filter(type => type.length > 0);
+      }
+    }
+    
+    return [];
+  };
+
+  const tags = safeParseTags(post.tags);
+  const mediaTypes = safeParseMediaTypes(post.mediaType);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">

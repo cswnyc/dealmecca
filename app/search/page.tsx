@@ -405,12 +405,13 @@ export default function SearchPage() {
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              asChild
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                window.open(company.website, '_blank', 'noopener,noreferrer');
+                              }}
                             >
-                              <a href={company.website} target="_blank" rel="noopener noreferrer">
-                                <Globe className="w-4 h-4" />
-                              </a>
+                              <Globe className="w-4 h-4" />
                             </Button>
                           )}
                         </div>
