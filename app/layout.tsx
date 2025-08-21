@@ -35,51 +35,55 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'default',
     title: 'DealMecca',
-    startupImage: [
-      {
-        url: '/icons/apple-touch-startup-image-750x1334.png',
-        media: '(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)',
-      },
-      {
-        url: '/icons/apple-touch-startup-image-828x1792.png',
-        media: '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)',
-      },
-    ],
+    // Temporarily disabled to prevent 404 errors
+    // startupImage: [
+    //   {
+    //     url: '/icons/apple-touch-startup-image-750x1334.png',
+    //     media: '(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)',
+    //   },
+    //   {
+    //     url: '/icons/apple-touch-startup-image-828x1792.png',
+    //     media: '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)',
+    //   },
+    // ],
   },
   openGraph: {
     title: 'DealMecca - Intelligence that closes',
     description: 'The intelligence hub for media-sales teams. Connect your CRM, ad-server, and billing data into one neural engine for faster deals and surgical forecasting accuracy.',
     url: 'https://www.getmecca.com',
     siteName: 'DealMecca',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'DealMecca - Intelligence that closes',
-      },
-    ],
+    // Temporarily disabled to prevent 404 errors
+    // images: [
+    //   {
+    //     url: '/og-image.jpg',
+    //     width: 1200,
+    //     height: 630,
+    //     alt: 'DealMecca - Intelligence that closes',
+    //   },
+    // ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'DealMecca - Intelligence that closes',
     description: 'The intelligence hub for media-sales teams. Connect your CRM, ad-server, and billing data into one neural engine for faster deals and surgical forecasting accuracy.',
-    images: ['/twitter-image.jpg'],
+    // Temporarily disabled to prevent 404 errors
+    // images: ['/twitter-image.jpg'],
   },
   robots: {
     index: true,
     follow: true,
   },
-  icons: {
-    icon: [
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-  },
+  // Temporarily disabled to prevent 404 errors
+  // icons: {
+  //   icon: [
+  //     { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+  //     { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+  //   ],
+  //   apple: [
+  //     { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+  //   ],
+  // },
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',

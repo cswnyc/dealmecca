@@ -249,12 +249,46 @@ function ContactCard({ contact, viewMode }: { contact: Contact; viewMode: 'grid'
                   variant="outline"
                   size="sm"
                   className="w-full sm:w-auto min-h-[44px]"
-                  asChild
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    window.location.href = `mailto:${contact.email}`;
+                  }}
                 >
-                  <a href={`mailto:${contact.email}`}>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Email
-                  </a>
+                  <Mail className="w-4 h-4 mr-2" />
+                  Email
+                </Button>
+              )}
+              
+              {contact.phone && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto min-h-[44px]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    window.location.href = `tel:${contact.phone}`;
+                  }}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Phone
+                </Button>
+              )}
+              
+              {contact.linkedinUrl && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto min-h-[44px]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    window.open(contact.linkedinUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  <LinkedinIcon className="w-4 h-4 mr-2" />
+                  LinkedIn
                 </Button>
               )}
             </div>
@@ -367,25 +401,44 @@ function ContactCard({ contact, viewMode }: { contact: Contact; viewMode: 'grid'
           {/* Contact Methods */}
           <div className="flex space-x-2 pt-2">
             {contact.email && (
-              <Button variant="outline" size="sm" asChild className="flex-1">
-                <a href={`mailto:${contact.email}`}>
-                  <Mail className="w-3 h-3 mr-1" />
-                  Email
-                </a>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  window.location.href = `mailto:${contact.email}`;
+                }}
+              >
+                <Mail className="w-3 h-3 mr-1" />
+                Email
               </Button>
             )}
             {contact.phone && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={`tel:${contact.phone}`}>
-                  <Phone className="w-3 h-3" />
-                </a>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  window.location.href = `tel:${contact.phone}`;
+                }}
+              >
+                <Phone className="w-3 h-3" />
               </Button>
             )}
             {contact.linkedinUrl && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                  <LinkedinIcon className="w-3 h-3" />
-                </a>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  window.open(contact.linkedinUrl, '_blank', 'noopener,noreferrer');
+                }}
+              >
+                <LinkedinIcon className="w-3 h-3" />
               </Button>
             )}
           </div>

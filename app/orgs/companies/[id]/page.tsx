@@ -272,24 +272,42 @@ export default function CompanyProfilePage() {
                         </div>
                         <div className="flex space-x-2">
                           {contact.email && (
-                            <Button variant="ghost" size="sm" asChild>
-                              <a href={`mailto:${contact.email}`}>
-                                <Mail className="w-4 h-4" />
-                              </a>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                window.location.href = `mailto:${contact.email}`;
+                              }}
+                            >
+                              <Mail className="w-4 h-4" />
                             </Button>
                           )}
                           {contact.phone && (
-                            <Button variant="ghost" size="sm" asChild>
-                              <a href={`tel:${contact.phone}`}>
-                                <Phone className="w-4 h-4" />
-                              </a>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                window.location.href = `tel:${contact.phone}`;
+                              }}
+                            >
+                              <Phone className="w-4 h-4" />
                             </Button>
                           )}
                           {contact.linkedinUrl && (
-                            <Button variant="ghost" size="sm" asChild>
-                              <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                                <LinkedinIcon className="w-4 h-4" />
-                              </a>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                window.open(contact.linkedinUrl, '_blank', 'noopener,noreferrer');
+                              }}
+                            >
+                              <LinkedinIcon className="w-4 h-4" />
                             </Button>
                           )}
                           <Button variant="outline" size="sm" asChild>

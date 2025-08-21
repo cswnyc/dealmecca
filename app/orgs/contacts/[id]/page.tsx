@@ -234,27 +234,48 @@ export default function ContactProfilePage() {
               {/* Contact Actions */}
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto md:flex-shrink-0">
                 {contact.email && (
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto min-h-[44px]" asChild>
-                    <a href={`mailto:${contact.email}`}>
-                      <Mail className="w-4 h-4 mr-2" />
-                      Email
-                    </a>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full sm:w-auto min-h-[44px]"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      window.location.href = `mailto:${contact.email}`;
+                    }}
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email
                   </Button>
                 )}
                 {contact.phone && (
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto min-h-[44px]" asChild>
-                    <a href={`tel:${contact.phone}`}>
-                      <Phone className="w-4 h-4 mr-2" />
-                      Call
-                    </a>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full sm:w-auto min-h-[44px]"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      window.location.href = `tel:${contact.phone}`;
+                    }}
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    Call
                   </Button>
                 )}
                 {contact.linkedinUrl && (
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto min-h-[44px]" asChild>
-                    <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                      <LinkedinIcon className="w-4 h-4 mr-2" />
-                      LinkedIn
-                    </a>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full sm:w-auto min-h-[44px]"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      window.open(contact.linkedinUrl, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
+                    <LinkedinIcon className="w-4 h-4 mr-2" />
+                    LinkedIn
                   </Button>
                 )}
               </div>
