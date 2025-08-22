@@ -120,11 +120,63 @@ self.addEventListener('fetch', (event) => {
 async function handleApiRequest(request) {
   const url = new URL(request.url)
   
-  // Cache-first for user profile and dashboard metrics
-  const cacheFirstRoutes = [
+  // CRITICAL: NEVER cache these dynamic data endpoints
+  const neverCacheRoutes = [
+    '/api/orgs/companies',
+    '/api/companies',
+    '/api/contacts',
     '/api/users/profile',
     '/api/dashboard/metrics',
-    '/api/search/suggestions'
+    '/api/search',
+    '/api/events',
+    '/api/forum/posts',
+    '/api/session-status',
+    '/api/orgs/contacts',
+    '/api/admin'
+  ]
+  
+  // If this is a dynamic data route, ALWAYS go to network first
+  if (neverCacheRoutes.some(route => url.pathname.startsWith(route))) {
+    console.log('[SW] Network-first for dynamic data:', url.pathname)
+    
+    try {
+      const response = await fetch(request)
+      
+      // Add no-cache headers to response
+      const modifiedResponse = new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: {
+          ...Object.fromEntries(response.headers.entries()),
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
+      
+      return modifiedResponse
+    } catch (error) {
+      console.log('[SW] Network error for dynamic data:', error)
+      
+      // For dynamic data, return network error instead of stale cache
+      return new Response(JSON.stringify({
+        error: 'Network Error',
+        message: 'Unable to fetch fresh data. Please check your connection and try again.',
+        timestamp: new Date().toISOString()
+      }), {
+        status: 503,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate'
+        }
+      })
+    }
+  }
+
+  // Cache-first only for static suggestions and slow-changing data
+  const cacheFirstRoutes = [
+    '/api/search/suggestions',
+    '/api/forum/categories'
   ]
   
   if (cacheFirstRoutes.some(route => url.pathname.includes(route))) {
@@ -142,26 +194,29 @@ async function handleApiRequest(request) {
     }
   }
 
-  // Network-first for other API routes
+  // Network-first for all other API routes
   try {
     const response = await fetch(request)
     
-    // Cache successful responses
-    if (response.ok && request.method === 'GET') {
+    // Only cache static/slow-changing responses
+    if (response.ok && request.method === 'GET' && 
+        cacheFirstRoutes.some(route => url.pathname.includes(route))) {
       const cache = await caches.open(API_CACHE)
       cache.put(request, response.clone())
     }
     
     return response
   } catch (error) {
-    console.log('[SW] Network error, serving from cache:', error)
+    console.log('[SW] Network error, checking cache fallback:', error)
     
-    // Serve from cache on network failure
-    const cache = await caches.open(API_CACHE)
-    const cachedResponse = await cache.match(request)
-    
-    if (cachedResponse) {
-      return cachedResponse
+    // Serve from cache ONLY for static content on network failure
+    if (cacheFirstRoutes.some(route => url.pathname.includes(route))) {
+      const cache = await caches.open(API_CACHE)
+      const cachedResponse = await cache.match(request)
+      
+      if (cachedResponse) {
+        return cachedResponse
+      }
     }
     
     // Return offline response for API failures

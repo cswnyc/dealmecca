@@ -1,0 +1,11 @@
+company_name,industry,city,state,website,email,phone,employee_count,company_type
+"Nike","Sportswear","Beaverton","OR","https://nike.com","info@nike.com","503-671-6453","75000","enterprise"
+"Spotify","Technology","Stockholm","Sweden","https://spotify.com","contact@spotify.com","+46-8-502-039-00","8000","growth"
+"Airbnb","Travel","San Francisco","CA","https://airbnb.com","support@airbnb.com","415-800-5959","6000","growth"
+"Figma","Design Tools","San Francisco","CA","https://figma.com","hello@figma.com","","500","startup"
+"Shopify","E-commerce","Ottawa","Canada","https://shopify.com","support@shopify.com","1-888-746-7439","10000","growth"
+"Notion","Productivity","San Francisco","CA","https://notion.so","team@notion.so","","1000","startup"
+"Stripe","Fintech","San Francisco","CA","https://stripe.com","support@stripe.com","415-963-1200","4000","growth"
+"Canva","Design","Sydney","Australia","https://canva.com","hello@canva.com","+61-2-8098-4444","3500","growth"
+"Discord","Communication","San Francisco","CA","https://discord.com","support@discord.com","","700","startup"
+"Zoom","Video Conferencing","San Jose","CA","https://zoom.us","support@zoom.us","408-466-7200","7000","enterprise"

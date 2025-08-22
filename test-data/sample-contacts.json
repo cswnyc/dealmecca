@@ -1,0 +1,104 @@
+[
+  {
+    "id": "1",
+    "fullName": "Sarah Johnson",
+    "title": "VP of Marketing",
+    "company": {
+      "id": "1",
+      "name": "Nike",
+      "city": "Beaverton",
+      "state": "OR",
+      "verified": true,
+      "logoUrl": "https://logo.clearbit.com/nike.com"
+    },
+    "email": "sarah.johnson@nike.com",
+    "phone": "+1 (503) 555-0123",
+    "linkedinUrl": "https://linkedin.com/in/sarahjohnson",
+    "seniority": "VP",
+    "department": "Marketing",
+    "verified": true,
+    "lastActive": "2 hours ago",
+    "roles": ["Marketing", "Brand Strategy", "Digital"]
+  },
+  {
+    "id": "2",
+    "fullName": "Michael Chen",
+    "title": "Senior Product Manager",
+    "company": {
+      "id": "2",
+      "name": "Spotify",
+      "city": "Stockholm",
+      "state": "Sweden",
+      "verified": true,
+      "logoUrl": "https://logo.clearbit.com/spotify.com"
+    },
+    "email": "michael.chen@spotify.com",
+    "linkedinUrl": "https://linkedin.com/in/michaelchen",
+    "seniority": "Manager",
+    "department": "Product",
+    "verified": false,
+    "lastActive": "5 hours ago",
+    "roles": ["Product Management", "Strategy"]
+  },
+  {
+    "id": "3",
+    "fullName": "Emily Rodriguez",
+    "title": "Chief Technology Officer",
+    "company": {
+      "id": "3",
+      "name": "Shopify",
+      "city": "Ottawa",
+      "state": "Canada",
+      "verified": true,
+      "logoUrl": "https://logo.clearbit.com/shopify.com"
+    },
+    "email": "emily.rodriguez@shopify.com",
+    "phone": "+1 (613) 555-0456",
+    "linkedinUrl": "https://linkedin.com/in/emilyrodriguez",
+    "seniority": "C-Level",
+    "department": "Technology",
+    "verified": true,
+    "lastActive": "1 hour ago",
+    "roles": ["Engineering", "Leadership", "Technology Strategy"]
+  },
+  {
+    "id": "4",
+    "fullName": "David Kim",
+    "title": "Marketing Coordinator",
+    "company": {
+      "id": "4",
+      "name": "Figma",
+      "city": "San Francisco",
+      "state": "CA",
+      "verified": true,
+      "logoUrl": "https://logo.clearbit.com/figma.com"
+    },
+    "email": "david.kim@figma.com",
+    "seniority": "Coordinator",
+    "department": "Marketing",
+    "verified": false,
+    "lastActive": "1 day ago",
+    "roles": ["Content Marketing", "Social Media"]
+  },
+  {
+    "id": "5",
+    "fullName": "Lisa Wang",
+    "title": "Director of Sales",
+    "company": {
+      "id": "5",
+      "name": "Stripe",
+      "city": "San Francisco",
+      "state": "CA",
+      "verified": true,
+      "logoUrl": "https://logo.clearbit.com/stripe.com"
+    },
+    "email": "lisa.wang@stripe.com",
+    "phone": "+1 (415) 555-0789",
+    "linkedinUrl": "https://linkedin.com/in/lisawang",
+    "seniority": "Director",
+    "department": "Sales",
+    "verified": true,
+    "lastActive": "3 hours ago",
+    "roles": ["Enterprise Sales", "Business Development", "Team Leadership"]
+  }
+]
