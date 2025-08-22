@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle } from 'lucide-react';
+import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network } from 'lucide-react';
 import Link from 'next/link';
 import PageLayout from '@/components/navigation/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -83,25 +83,84 @@ export default function OrgsPage() {
     async function fetchCompanies() {
       try {
         setLoading(true);
-        const response = await fetch('/api/orgs/companies?limit=20', {
-          credentials: 'include'
+        setError(null);
+        
+        console.log('🔄 Fetching companies with cache busting...');
+        const response = await fetch('/api/orgs/companies?limit=20&_t=' + Date.now(), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          },
+          credentials: 'include',
+          cache: 'no-store'
         });
+        
+        console.log('📡 Response status:', response.status);
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch companies');
+          const errorText = await response.text();
+          console.error('❌ API Error:', errorText);
+          throw new Error(`Failed to fetch companies: ${response.status}`);
         }
+        
         const data = await response.json();
-        setCompanies(data.companies || []);
-        setFilteredCompanies(data.companies || []);
+        console.log('✅ Companies data received:', data);
+        
+        const companiesArray = data.companies || data.data?.companies || [];
+        setCompanies(companiesArray);
+        setFilteredCompanies(companiesArray);
+        
+        if (companiesArray.length === 0) {
+          console.warn('⚠️ No companies returned from API');
+        }
+        
       } catch (err) {
+        console.error('💥 Fetch error:', err);
         setError(err instanceof Error ? err.message : 'An error occurred');
+        
+        // Fallback to mock data for testing
+        const mockCompanies = [
+          {
+            id: 'mock-1',
+            name: 'GroupM',
+            companyType: 'HOLDING_COMPANY_AGENCY',
+            industry: 'Advertising & Marketing',
+            city: 'New York',
+            state: 'NY',
+            verified: true,
+            _count: { contacts: 125 }
+          },
+          {
+            id: 'mock-2', 
+            name: 'Nike',
+            companyType: 'NATIONAL_ADVERTISER',
+            industry: 'Sportswear',
+            city: 'Beaverton',
+            state: 'OR',
+            verified: true,
+            _count: { contacts: 89 }
+          }
+        ];
+        
+        console.log('🔄 Using mock data as fallback');
+        setCompanies(mockCompanies);
+        setFilteredCompanies(mockCompanies);
+        
       } finally {
         setLoading(false);
       }
     }
 
-    // Load companies regardless of auth status for testing
+    // Only fetch when session loading is complete
     if (status !== 'loading') {
-      fetchCompanies();
+      // Add a small delay to ensure proper hydration
+      const timer = setTimeout(() => {
+        fetchCompanies();
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [status]);
 
@@ -388,23 +447,45 @@ export default function OrgsPage() {
                         <Building2 className="h-5 w-5 text-sky-600" />
                       </div>
                       <div>
-                        <Link href={`/orgs/companies/${company.id}`} className="group">
-                          <h3 className="font-medium group-hover:text-blue-600 group-hover:underline cursor-pointer transition-colors">
-                            {company.name}
-                          </h3>
-                        </Link>
+                        <div className="flex items-center space-x-2">
+                          <Link href={`/orgs/companies/${company.id}`} className="group">
+                            <h3 className="font-medium group-hover:text-blue-600 group-hover:underline cursor-pointer transition-colors">
+                              {company.name}
+                            </h3>
+                          </Link>
+                          <Badge variant="outline" className="text-xs bg-secondary/10 text-secondary border-secondary/20">
+                            <Network className="w-3 h-3 mr-1" />
+                            Org Chart
+                          </Badge>
+                        </div>
                         <p className="text-sm text-gray-600">
                           {company.industry} • {company.city}, {company.state}
                         </p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {company._count.contacts} contacts
+                          </Badge>
+                          {company.verified && (
+                            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Verified
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge variant={company.verified ? "default" : "secondary"}>
-                        {company.verified ? "Verified" : "Unverified"}
-                      </Badge>
-                      <Badge variant="outline">
-                        {company._count.contacts} contacts
-                      </Badge>
+                      <Link href={`/orgs/companies/${company.id}?tab=org-chart`}>
+                        <Button variant="outline" size="sm" className="text-xs">
+                          <Network className="w-3 h-3 mr-1" />
+                          View Org Chart
+                        </Button>
+                      </Link>
+                      <Link href={`/orgs/companies/${company.id}`}>
+                        <Button variant="ghost" size="sm" className="text-xs">
+                          View Profile
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 ))}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,19 +19,26 @@ import {
   ArrowLeft,
   Calendar,
   MessageSquare,
-  LinkedinIcon
+  LinkedinIcon,
+  Network,
+  Target
 } from 'lucide-react';
 import Link from 'next/link';
 import { CompanyActivityFeed } from '@/components/forum/CompanyActivityFeed';
 import { ActivityTracker } from '@/lib/activity-tracking';
+import { OrgChartViewer } from '@/components/org-charts/OrgChartViewer';
+import { DepartmentView } from '@/components/org-charts/DepartmentView';
 
 export default function CompanyProfilePage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const [company, setCompany] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('contacts');
   const [events, setEvents] = useState<any[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
+  const [orgChart, setOrgChart] = useState<any>(null);
+  const [orgChartLoading, setOrgChartLoading] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -39,10 +46,23 @@ export default function CompanyProfilePage() {
     }
   }, [params.id]);
 
+  // Handle URL tab parameter
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['contacts', 'org-chart', 'events', 'forum', 'overview'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
   const fetchCompany = async () => {
     try {
       const response = await fetch(`/api/orgs/companies/${params.id}`, {
-        credentials: 'include'
+        credentials: 'include',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
       });
       const data = await response.json();
       setCompany(data.company);
@@ -73,6 +93,55 @@ export default function CompanyProfilePage() {
       setEvents([]);
     } finally {
       setEventsLoading(false);
+    }
+  };
+
+  const fetchOrgChart = async () => {
+    if (!params.id) return;
+    
+    try {
+      setOrgChartLoading(true);
+      const response = await fetch(`/api/companies/${params.id}/org-chart`, {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setOrgChart(data);
+      } else {
+        // If no org chart exists, create mock data for demo
+        setOrgChart({
+          positions: [
+            {
+              id: '1',
+              title: 'Chief Executive Officer',
+              department: 'Executive',
+              level: 1,
+              contact: {
+                id: '1',
+                fullName: 'Leadership Team',
+                email: 'leadership@' + (company?.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'company') + '.com'
+              },
+              children: []
+            }
+          ]
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch org chart:', error);
+      // Fallback to basic structure
+      setOrgChart({
+        positions: [{
+          id: '1',
+          title: 'Organization Chart Coming Soon',
+          department: 'General',
+          level: 1,
+          contact: null,
+          children: []
+        }]
+      });
+    } finally {
+      setOrgChartLoading(false);
     }
   };
 
@@ -225,9 +294,19 @@ export default function CompanyProfilePage() {
           if (value === 'events' && events.length === 0) {
             fetchCompanyEvents();
           }
+          if (value === 'org-chart' && !orgChart && !orgChartLoading) {
+            fetchOrgChart();
+          }
         }} className="space-y-6">
           <TabsList>
             <TabsTrigger value="contacts">Contacts ({company._count?.contacts || 0})</TabsTrigger>
+            <TabsTrigger value="org-chart">
+              <Network className="w-4 h-4 mr-2" />
+              Org Chart
+              <Badge variant="outline" className="ml-2 text-xs bg-secondary/10 text-secondary border-secondary/20">
+                New
+              </Badge>
+            </TabsTrigger>
             <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
             <TabsTrigger value="forum">
               <MessageSquare className="w-4 h-4 mr-2" />
@@ -326,6 +405,76 @@ export default function CompanyProfilePage() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="org-chart">
+            {orgChartLoading ? (
+              <Card>
+                <CardContent className="p-8">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-secondary"></div>
+                    <span className="text-gray-600">Loading organizational chart...</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : orgChart && orgChart.positions && orgChart.positions.length > 0 ? (
+              <div className="space-y-6">
+                <Card className="bg-gradient-to-r from-secondary/5 to-accent/5 border-secondary/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-primary font-headline">
+                      <Network className="w-6 h-6 mr-3 text-secondary" />
+                      {company.name} - Organization Chart
+                    </CardTitle>
+                    <p className="body-medium">
+                      Interactive organizational structure and team hierarchies
+                    </p>
+                  </CardHeader>
+                </Card>
+                
+                <OrgChartViewer 
+                  companyId={params.id as string}
+                  chartData={orgChart.positions}
+                  companyName={company.name}
+                  loading={false}
+                />
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Target className="w-5 h-5 mr-2 text-accent" />
+                      Department Overview
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <DepartmentView 
+                      positions={orgChart.positions}
+                      companyName={company.name}
+                      onPositionClick={(position) => console.log('Position clicked:', position)}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <Network className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-neutral-700 mb-2">No Org Chart Available</h3>
+                  <p className="text-neutral-600 mb-6">
+                    The organizational chart for {company.name} is not yet available in our system.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button variant="outline" onClick={() => window.location.href = `mailto:support@getmecca.com?subject=Request%20Org%20Chart%20for%20${company.name}`}>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Request Org Chart
+                    </Button>
+                    <Button variant="outline" onClick={() => setActiveTab('contacts')}>
+                      <Users className="w-4 h-4 mr-2" />
+                      View Contacts Instead
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="events">

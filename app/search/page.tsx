@@ -408,7 +408,9 @@ export default function SearchPage() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                window.open(company.website, '_blank', 'noopener,noreferrer');
+                                if (company.website) {
+                                  window.open(company.website, '_blank', 'noopener,noreferrer');
+                                }
                               }}
                             >
                               <Globe className="w-4 h-4" />
@@ -477,24 +479,26 @@ export default function SearchPage() {
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                asChild
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  window.location.href = `mailto:${contact.email}`;
+                                }}
                               >
-                                <a href={`mailto:${contact.email}`}>
-                                  <Mail className="w-4 h-4" />
-                                </a>
+                                <Mail className="w-4 h-4" />
                               </Button>
                             )}
                             {contact.phone && (
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                asChild
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  window.location.href = `tel:${contact.phone}`;
+                                }}
                               >
-                                <a href={`tel:${contact.phone}`}>
-                                  <Phone className="w-4 h-4" />
-                                </a>
+                                <Phone className="w-4 h-4" />
                               </Button>
                             )}
                           </div>

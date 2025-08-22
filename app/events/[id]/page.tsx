@@ -117,7 +117,9 @@ export default function EventDetailPage() {
   const fetchEventDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/events/${params.id}`);
+      const response = await fetch(`/api/events/${params.id}`, {
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch event details');
@@ -136,6 +138,7 @@ export default function EventDetailPage() {
     try {
       const response = await fetch(`/api/events/${params.id}/rsvp`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

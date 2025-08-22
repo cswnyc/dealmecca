@@ -52,12 +52,16 @@ export async function middleware(req: NextRequest) {
     '/api/test-nextauth-flow',
     '/api/auth-login',
     '/api/companies',
-    '/api/events',
     '/api/forum/posts',
     '/api/forum/categories'
   ]
   
-  if (publicApiRoutes.some(route => pathname.startsWith(route))) {
+  // Routes that are public only for the exact path (not sub-routes)
+  const exactPublicApiRoutes = [
+    '/api/events'  // Only /api/events, not /api/events/[id]
+  ]
+  
+  if (publicApiRoutes.some(route => pathname.startsWith(route)) || exactPublicApiRoutes.includes(pathname)) {
     console.log('🔵 Allowing public API route:', pathname)
     return NextResponse.next()
   }

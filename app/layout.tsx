@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import AuthProvider from '@/components/providers/session-provider';
 import PWAProvider from '@/components/providers/pwa-provider';
+import { CacheInvalidator } from '@/components/providers/cache-invalidator';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
 import './globals.css';
 import './navigation-polish.css';
