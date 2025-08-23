@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import GoogleProvider from 'next-auth/providers/google'
+import LinkedInProvider from 'next-auth/providers/linkedin'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
@@ -12,6 +13,15 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    LinkedInProvider({
+      clientId: process.env.LINKEDIN_CLIENT_ID!,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: 'openid profile email',
+        },
+      },
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -248,8 +258,8 @@ export const authOptions: NextAuthOptions = {
       })
       
       try {
-        if (account?.provider === 'google') {
-          console.log('🔗 SIGNIN: Google OAuth provider detected')
+        if (account?.provider === 'google' || account?.provider === 'linkedin') {
+          console.log(`🔗 SIGNIN: ${account.provider} OAuth provider detected`)
           
           try {
             // Check if user exists in our database
@@ -258,7 +268,7 @@ export const authOptions: NextAuthOptions = {
             })
 
             if (!existingUser) {
-              console.log('🆕 SIGNIN: Creating new Google user')
+              console.log(`🆕 SIGNIN: Creating new ${account.provider} user`)
               
               // Create new user with default role and subscription
               const newUser = await prisma.user.create({
@@ -270,14 +280,14 @@ export const authOptions: NextAuthOptions = {
                 },
               })
               
-              console.log('✅ SIGNIN: New Google user created:', newUser.id)
+              console.log(`✅ SIGNIN: New ${account.provider} user created:`, newUser.id)
               
               // Update the user object to include our custom fields
               user.id = newUser.id
               user.role = newUser.role
               user.subscriptionTier = newUser.subscriptionTier
             } else {
-              console.log('👤 SIGNIN: Existing Google user found:', existingUser.id)
+              console.log(`👤 SIGNIN: Existing ${account.provider} user found:`, existingUser.id)
               
               // Update the user object with existing user data
               user.id = existingUser.id
@@ -285,7 +295,7 @@ export const authOptions: NextAuthOptions = {
               user.subscriptionTier = existingUser.subscriptionTier
             }
           } catch (error) {
-            console.error('❌ SIGNIN: Error handling Google sign-in:', error)
+            console.error(`❌ SIGNIN: Error handling ${account.provider} sign-in:`, error)
             return false
           }
         } else if (account?.provider === 'credentials') {
