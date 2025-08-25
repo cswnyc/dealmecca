@@ -28,35 +28,30 @@ export default function SignInPage() {
     setError('')
 
     try {
-      console.log('🔐 Attempting login with working auth endpoint...')
+      console.log('🔐 Attempting login with NextAuth credentials provider...')
       
-      const response = await fetch('/api/auth-login', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({ 
-          email: email.trim().toLowerCase(), 
-          password 
-        }),
-        credentials: 'include' // CRITICAL: Ensures session cookies are set
+      const result = await signIn('credentials', {
+        email: email.trim().toLowerCase(),
+        password,
+        redirect: false,
+        callbackUrl: '/dashboard'
       })
       
-      if (response.ok) {
-        const result = await response.json()
-        console.log('✅ Login successful:', result.user)
+      if (result?.error) {
+        console.log('❌ Login failed:', result.error)
+        setError('Invalid email or password')
+      } else if (result?.ok) {
+        console.log('✅ Login successful!')
         
-        const redirectUrl = result.redirectUrl || '/dashboard-test'
+        const redirectUrl = result.url || '/dashboard'
         console.log('🔄 Redirecting to:', redirectUrl)
-        console.log('🔄 Using window.location for reliable redirect...')
         
         // Use window.location for immediate, reliable redirect
         window.location.href = redirectUrl
         
       } else {
-        const errorData = await response.json()
-        console.log('❌ Login failed:', errorData)
-        setError(errorData.error || 'Invalid email or password')
+        console.log('❌ Unexpected login result:', result)
+        setError('Login failed - please try again')
       }
       
     } catch (error) {

@@ -83,17 +83,26 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (status === 'loading') {
+      return // Wait for session to load
+    }
+    
     if (status === 'unauthenticated') {
-      router.push('/login')
+      router.push('/auth/signin')
       return
     }
     
-    if (session) {
-      fetchProfile()
+    if (session && status === 'authenticated') {
+      // Add a small delay to ensure session is fully established after OAuth
+      const timeoutId = setTimeout(() => {
+        fetchProfile()
+      }, 100)
+      
+      return () => clearTimeout(timeoutId)
     }
   }, [session, status, router])
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (retryCount = 0) => {
     try {
       const response = await fetch('/api/users/profile', {
         cache: 'no-store',
@@ -106,12 +115,28 @@ export default function DashboardPage() {
         const data = await response.json()
         setProfile(data)
       } else if (response.status === 401) {
-        router.push('/login')
+        // If unauthorized and this is the first retry, wait a bit for session to sync
+        if (retryCount < 3) {
+          console.log(`Session not ready, retrying in ${(retryCount + 1) * 500}ms...`)
+          setTimeout(() => {
+            fetchProfile(retryCount + 1)
+          }, (retryCount + 1) * 500)
+          return
+        }
+        router.push('/auth/signin')
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
+      if (retryCount < 2) {
+        setTimeout(() => {
+          fetchProfile(retryCount + 1)
+        }, 1000)
+        return
+      }
     } finally {
-      setLoading(false)
+      if (retryCount === 0) {
+        setLoading(false)
+      }
     }
   }
 

@@ -4,11 +4,26 @@ import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { User, LogOut, Settings, BarChart3 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function AuthHeader() {
   const { data: session, status } = useSession()
   const [showDropdown, setShowDropdown] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Prevent hydration mismatch by not rendering until client is ready
+  if (!isClient) {
+    return (
+      <div className="flex items-center space-x-4">
+        <div className="animate-pulse bg-gray-200 rounded h-8 w-16"></div>
+        <div className="animate-pulse bg-gray-200 rounded h-8 w-20"></div>
+      </div>
+    )
+  }
 
   if (status === 'loading') {
     return (

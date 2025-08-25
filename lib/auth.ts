@@ -7,8 +7,9 @@ import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
 export const authOptions: NextAuthOptions = {
-  // Use adapter for OAuth providers only, not for credentials
-  adapter: PrismaAdapter(prisma),
+  // Remove adapter to fix OAuth account linking issues with JWT
+  // adapter: PrismaAdapter(prisma),
+  trustHost: true,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -185,24 +186,56 @@ export const authOptions: NextAuthOptions = {
       })
       
       if (user) {
-        console.log('🆕 JWT: First time login detected, user:', user)
+        console.log('🆕 JWT: First time login detected')
         
-        // For JWT strategy, just store user data in the token
-        // No need for manual database sessions
+        // For OAuth users, fetch complete user data from database
+        if (account?.provider === 'google' || account?.provider === 'linkedin') {
+          console.log(`🔍 JWT: Fetching ${account.provider} user from database`)
+          
+          try {
+            const dbUser = await prisma.user.findUnique({
+              where: { email: user.email! },
+            })
+            
+            if (dbUser) {
+              console.log('📊 JWT: Found user in database:', dbUser.id)
+              const newToken = {
+                ...token,
+                sub: dbUser.id,
+                role: dbUser.role,
+                subscriptionTier: dbUser.subscriptionTier,
+                email: dbUser.email,
+                name: dbUser.name,
+              }
+              
+              console.log('✅ JWT: Created OAuth token:', {
+                sub: newToken.sub,
+                role: newToken.role,
+                email: newToken.email,
+                provider: account.provider
+              })
+              
+              return newToken
+            }
+          } catch (error) {
+            console.error('❌ JWT: Error fetching OAuth user:', error)
+          }
+        }
+        
+        // For credentials or fallback, use user object directly
         const newToken = {
           ...token,
           sub: user.id,
-          role: user.role,
-          subscriptionTier: user.subscriptionTier,
+          role: user.role || 'FREE',
+          subscriptionTier: user.subscriptionTier || 'FREE',
           email: user.email,
           name: user.name,
         }
         
-        console.log('✅ JWT: Created JWT-only token:', {
+        console.log('✅ JWT: Created fallback token:', {
           sub: newToken.sub,
           role: newToken.role,
           email: newToken.email,
-          strategy: 'jwt-only'
         })
         
         return newToken
@@ -261,53 +294,60 @@ export const authOptions: NextAuthOptions = {
         if (account?.provider === 'google' || account?.provider === 'linkedin') {
           console.log(`🔗 SIGNIN: ${account.provider} OAuth provider detected`)
           
-          try {
-            // Check if user exists in our database
-            const existingUser = await prisma.user.findUnique({
-              where: { email: user.email! },
-            })
-
-            if (!existingUser) {
-              console.log(`🆕 SIGNIN: Creating new ${account.provider} user`)
-              
-              // Create new user with default role and subscription
-              const newUser = await prisma.user.create({
-                data: {
-                  email: user.email!,
-                  name: user.name,
-                  role: 'FREE',
-                  subscriptionTier: 'FREE',
-                },
-              })
-              
-              console.log(`✅ SIGNIN: New ${account.provider} user created:`, newUser.id)
-              
-              // Update the user object to include our custom fields
-              user.id = newUser.id
-              user.role = newUser.role
-              user.subscriptionTier = newUser.subscriptionTier
-            } else {
-              console.log(`👤 SIGNIN: Existing ${account.provider} user found:`, existingUser.id)
-              
-              // Update the user object with existing user data
-              user.id = existingUser.id
-              user.role = existingUser.role
-              user.subscriptionTier = existingUser.subscriptionTier
-            }
-          } catch (error) {
-            console.error(`❌ SIGNIN: Error handling ${account.provider} sign-in:`, error)
+          if (!user.email) {
+            console.log('❌ SIGNIN: No email provided by OAuth provider')
             return false
           }
-        } else if (account?.provider === 'credentials') {
-          console.log('🔑 SIGNIN: Credentials provider - user already verified in authorize()')
-        } else {
-          console.log('❓ SIGNIN: Unknown provider or no account:', account?.provider)
+          
+          // Check if user exists, create if not
+          let existingUser = await prisma.user.findUnique({
+            where: { email: user.email },
+          })
+
+          if (!existingUser) {
+            console.log(`🆕 SIGNIN: Creating new ${account.provider} user`)
+            existingUser = await prisma.user.create({
+              data: {
+                email: user.email,
+                name: user.name || user.email,
+                role: 'FREE',
+                subscriptionTier: 'FREE',
+                searchesUsed: 0,
+                searchesResetAt: new Date(),
+                dashboardVisits: 0,
+                searchesThisMonth: 0,
+                searchResetDate: new Date(),
+                annualEventGoal: 10,
+                annualNetworkingGoal: 50,
+                achievementPoints: 0,
+                subscriptionStatus: 'ACTIVE',
+                cancelAtPeriodEnd: false,
+                lastSearchLimitCheck: new Date(),
+              },
+            })
+            console.log(`✅ SIGNIN: New ${account.provider} user created:`, existingUser.id)
+          } else {
+            console.log(`👤 SIGNIN: Existing ${account.provider} user found:`, existingUser.id)
+          }
+          
+          // Update user object with database info for JWT
+          user.id = existingUser.id
+          user.role = existingUser.role
+          user.subscriptionTier = existingUser.subscriptionTier
+          
+          return true
         }
         
-        console.log('✅ SIGNIN: Callback successful, allowing sign in')
-        return true
+        // For credentials provider, the user is already validated in authorize()
+        if (account?.provider === 'credentials') {
+          console.log('🔑 SIGNIN: Credentials provider, allowing sign in')
+          return true
+        }
+        
+        console.log('⚠️ SIGNIN: Unknown provider, denying sign in')
+        return false
       } catch (error) {
-        console.error('❌ SIGNIN: Callback error:', error)
+        console.error('❌ SIGNIN: Error in signIn callback:', error)
         return false
       }
     },
