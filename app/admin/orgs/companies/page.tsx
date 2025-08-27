@@ -123,7 +123,15 @@ export default function CompaniesAdminPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <Building2 className="w-8 h-8 text-blue-600" />
+                    {company.logoUrl ? (
+                      <img 
+                        src={company.logoUrl} 
+                        alt={`${company.name} logo`}
+                        className="w-8 h-8 rounded object-cover border border-gray-200"
+                      />
+                    ) : (
+                      <Building2 className="w-8 h-8 text-blue-600" />
+                    )}
                     <div>
                       <CardTitle className="text-lg">{company.name}</CardTitle>
                       <p className="text-sm text-gray-600">

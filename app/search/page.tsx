@@ -278,7 +278,7 @@ export default function SearchPage() {
               <div className="text-2xl font-bold">
                 {searchType === 'companies' ? companies.length : contacts.length}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-gray-700 font-medium">
                 {searchQuery ? `Found ${searchType === 'companies' ? filteredCompanies.length : filteredContacts.length} matching "${searchQuery}"` : 'Total records'}
               </p>
             </CardContent>
@@ -296,7 +296,7 @@ export default function SearchPage() {
                   : contacts.filter(c => c.email).length
                 }
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-gray-700 font-medium">
                 {searchType === 'companies' ? 'Verified companies' : 'With email contact'}
               </p>
             </CardContent>
@@ -311,7 +311,7 @@ export default function SearchPage() {
               <div className="text-2xl font-bold">
                 {searchType === 'companies' ? filteredCompanies.length : filteredContacts.length}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-gray-700 font-medium">
                 Current results
               </p>
             </CardContent>

@@ -614,6 +614,12 @@ model ForumPost {
   aiTags             String[]         @default([])
   aiVersion          String?
   extractedCompanies String[]         @default([])
+  // Post type specific fields
+  postType           String           @default("post") // "post", "list", "poll"
+  listItems          String[]         @default([])     // For list posts
+  pollChoices        String[]         @default([])     // For poll posts  
+  pollDuration       Int?                              // Poll duration in days
+  pollEndsAt         DateTime?                         // When poll expires
   companyMentions    CompanyMention[] @relation("PostCompanyMentions")
   contactMentions    ContactMention[] @relation("PostContactMentions")
   bookmarkedBy       ForumBookmark[]

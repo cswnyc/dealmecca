@@ -17,9 +17,11 @@ interface ForumCategory {
 
 interface SmartPostFormProps {
   categories: ForumCategory[];
+  postType?: 'post' | 'list' | 'poll';
+  onSuccess?: () => void;
 }
 
-export function SmartPostForm({ categories }: SmartPostFormProps) {
+export function SmartPostForm({ categories, postType = 'post', onSuccess }: SmartPostFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
@@ -34,7 +36,12 @@ export function SmartPostForm({ categories }: SmartPostFormProps) {
     dealSize: '',
     location: '',
     mediaType: [] as string[],
-    eventId: eventId || ''
+    eventId: eventId || '',
+    // List specific fields
+    listItems: [''],
+    // Poll specific fields
+    pollChoices: ['', ''],
+    pollDuration: 7 // days
   });
 
   const [eventInfo, setEventInfo] = useState<{
@@ -55,6 +62,54 @@ export function SmartPostForm({ categories }: SmartPostFormProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAiSuggestions, setShowAiSuggestions] = useState(false);
+
+  // Functions for handling list items
+  const addListItem = () => {
+    setFormData(prev => ({
+      ...prev,
+      listItems: [...prev.listItems, '']
+    }));
+  };
+
+  const updateListItem = (index: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      listItems: prev.listItems.map((item, i) => i === index ? value : item)
+    }));
+  };
+
+  const removeListItem = (index: number) => {
+    if (formData.listItems.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        listItems: prev.listItems.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  // Functions for handling poll choices
+  const addPollChoice = () => {
+    setFormData(prev => ({
+      ...prev,
+      pollChoices: [...prev.pollChoices, '']
+    }));
+  };
+
+  const updatePollChoice = (index: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      pollChoices: prev.pollChoices.map((choice, i) => i === index ? value : choice)
+    }));
+  };
+
+  const removePollChoice = (index: number) => {
+    if (formData.pollChoices.length > 2) {
+      setFormData(prev => ({
+        ...prev,
+        pollChoices: prev.pollChoices.filter((_, i) => i !== index)
+      }));
+    }
+  };
 
   // Fetch event information if eventId is present
   useEffect(() => {
@@ -134,18 +189,51 @@ export function SmartPostForm({ categories }: SmartPostFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.content || !formData.categoryId) return;
+    
+    // Validation based on post type
+    if (!formData.title) return;
+    
+    if (postType === 'post' && !formData.content) return;
+    if (postType === 'list' && formData.listItems.filter(item => item.trim()).length === 0) return;
+    if (postType === 'poll' && formData.pollChoices.filter(choice => choice.trim()).length < 2) return;
+    
+    if (!formData.categoryId) return;
 
     setIsSubmitting(true);
     try {
+      // Prepare content based on post type
+      let content = formData.content;
+      let additionalData = {};
+
+      if (postType === 'list') {
+        content = formData.listItems.filter(item => item.trim()).join('\n');
+        additionalData = { 
+          postType: 'list',
+          listItems: formData.listItems.filter(item => item.trim())
+        };
+      } else if (postType === 'poll') {
+        content = formData.pollChoices.filter(choice => choice.trim()).join('\n');
+        additionalData = { 
+          postType: 'poll',
+          pollChoices: formData.pollChoices.filter(choice => choice.trim()),
+          pollDuration: formData.pollDuration,
+          pollEndsAt: new Date(Date.now() + formData.pollDuration * 24 * 60 * 60 * 1000).toISOString()
+        };
+      } else {
+        additionalData = { postType: 'post' };
+      }
+
       // Parse mentions from content
-      const mentions = parseMentions(formData.content);
+      const mentions = parseMentions(content);
       
       const response = await fetch('/api/forum/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
+          content,
+          ...additionalData,
           tags: JSON.stringify(formData.tags),
           mediaType: JSON.stringify(formData.mediaType),
           // Include mentions for backend processing
@@ -158,7 +246,12 @@ export function SmartPostForm({ categories }: SmartPostFormProps) {
 
       if (response.ok) {
         const post = await response.json();
-        router.push(`/forum/posts/${post.slug}`);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Only redirect if no onSuccess callback provided
+          router.push('/forum');
+        }
       } else {
         throw new Error('Failed to create post');
       }
@@ -204,34 +297,150 @@ export function SmartPostForm({ categories }: SmartPostFormProps) {
           </div>
         )}
         
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-            Title *
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={formData.title}
-            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            placeholder="What's the opportunity or question?"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-          />
-        </div>
+        {/* Dynamic Content Based on Post Type */}
+        {postType === 'post' && (
+          <>
+            {/* Post Title */}
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                Title *
+              </label>
+              <input
+                type="text"
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="What's the opportunity or question?"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
 
-        {/* Content */}
-        <div>
-          <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-            Content *
-          </label>
-          <MentionTextarea
-            value={formData.content}
-            onChange={(content) => setFormData(prev => ({ ...prev, content }))}
-            placeholder="Share details, context, or ask your question... Use @company or @contact to mention organizations or people"
-            rows={6}
-          />
-        </div>
+            {/* Post Content */}
+            <div>
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+                Content *
+              </label>
+              <MentionTextarea
+                value={formData.content}
+                onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                placeholder="Share details, context, or ask your question... Use @company or @contact to mention organizations or people"
+                rows={6}
+              />
+            </div>
+          </>
+        )}
+
+        {postType === 'list' && (
+          <>
+            {/* List Title */}
+            <div>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Name your list..."
+                className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                required
+              />
+            </div>
+
+            {/* List Items */}
+            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              {formData.listItems.map((item, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => updateListItem(index, e.target.value)}
+                    placeholder="Add an item"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {formData.listItems.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeListItem(index)}
+                      className="text-red-500 hover:text-red-700 p-1"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addListItem}
+                className="w-full text-left px-3 py-2 border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                Add an item
+              </button>
+            </div>
+          </>
+        )}
+
+        {postType === 'poll' && (
+          <>
+            {/* Poll Question */}
+            <div>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Ask a question..."
+                className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                required
+              />
+            </div>
+
+            {/* Poll Choices */}
+            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              {formData.pollChoices.map((choice, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={choice}
+                    onChange={(e) => updatePollChoice(index, e.target.value)}
+                    placeholder={`Choice ${index + 1}`}
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                  {formData.pollChoices.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => removePollChoice(index)}
+                      className="text-red-500 hover:text-red-700 p-1"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addPollChoice}
+                className="w-full text-left px-3 py-2 border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                Add choice
+              </button>
+            </div>
+
+            {/* Poll Duration */}
+            <div className="text-sm text-gray-600">
+              <span>Poll ends in </span>
+              <select
+                value={formData.pollDuration}
+                onChange={(e) => setFormData(prev => ({ ...prev, pollDuration: parseInt(e.target.value) }))}
+                className="mx-1 px-2 py-1 border border-gray-200 rounded"
+              >
+                <option value={1}>1 day</option>
+                <option value={3}>3 days</option>
+                <option value={7}>7 days</option>
+                <option value={14}>14 days</option>
+                <option value={30}>30 days</option>
+              </select>
+            </div>
+          </>
+        )}
 
         {/* AI Suggestions */}
         {showAiSuggestions && (

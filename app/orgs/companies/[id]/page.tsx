@@ -34,7 +34,7 @@ export default function CompanyProfilePage() {
   const searchParams = useSearchParams();
   const [company, setCompany] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('contacts');
+  const [activeTab, setActiveTab] = useState('overview');
   const [events, setEvents] = useState<any[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
   const [orgChart, setOrgChart] = useState<any>(null);
@@ -299,25 +299,263 @@ export default function CompanyProfilePage() {
           }
         }} className="space-y-6">
           <TabsList>
-            <TabsTrigger value="contacts">Contacts ({company._count?.contacts || 0})</TabsTrigger>
-            <TabsTrigger value="org-chart">
-              <Network className="w-4 h-4 mr-2" />
-              Org Chart
-              <Badge variant="outline" className="ml-2 text-xs bg-secondary/10 text-secondary border-secondary/20">
-                New
-              </Badge>
-            </TabsTrigger>
-            <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
-            <TabsTrigger value="forum">
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Forum Discussions
-            </TabsTrigger>
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            {company._count?.subsidiaries > 0 && (
-              <TabsTrigger value="subsidiaries">Subsidiaries ({company._count.subsidiaries})</TabsTrigger>
-            )}
+            <TabsTrigger value="teams">Teams</TabsTrigger>
+            <TabsTrigger value="posts">Posts</TabsTrigger>
+            <TabsTrigger value="people">People</TabsTrigger>
+            <TabsTrigger value="duties">Duties</TabsTrigger>
+            <TabsTrigger value="contact-info">Contact Info</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="overview">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Company Info Card */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>About {company.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Industry</h4>
+                        <p className="text-gray-600">{company.industry}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Type</h4>
+                        <p className="text-gray-600">{company.companyType?.replace(/_/g, ' ')}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Location</h4>
+                        <p className="text-gray-600">{company.city}, {company.state}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Team Size</h4>
+                        <p className="text-gray-600">{company._count?.contacts || 0} team members</p>
+                      </div>
+                    </div>
+                    
+                    {company.description && (
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2">Description</h4>
+                        <p className="text-gray-600">{company.description}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Quick Stats */}
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Quick Stats</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Total Posts</span>
+                      <span className="font-medium">12</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Team Members</span>
+                      <span className="font-medium">{company._count?.contacts || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Last Activity</span>
+                      <span className="font-medium">2 hours ago</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Founded</span>
+                      <span className="font-medium">2 years ago</span>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Latest Contributions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3 text-sm">
+                      <div>
+                        <p className="font-medium">New team member added</p>
+                        <p className="text-gray-500">22 hrs</p>
+                      </div>
+                      <div>
+                        <p className="font-medium">Company info updated</p>
+                        <p className="text-gray-500">3 mos</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="teams">
+            <Card>
+              <CardHeader>
+                <CardTitle>Teams</CardTitle>
+                <p className="text-sm text-gray-600">Department and team structure</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Example teams based on org chart */}
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-medium">Account Management</h3>
+                      <Badge variant="outline">3 members</Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">Handles client relationships and account strategy</p>
+                    <div className="text-sm text-gray-500">Last activity: 1 year</div>
+                  </div>
+                  
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-medium">Creative Department</h3>
+                      <Badge variant="outline">5 members</Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">Develops creative campaigns and brand strategies</p>
+                    <div className="text-sm text-gray-500">Last activity: 1 year</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="posts">
+            <Card>
+              <CardHeader>
+                <CardTitle>Posts about {company.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="border-l-4 border-blue-500 pl-4">
+                    <p className="font-medium">Company update posted</p>
+                    <p className="text-sm text-gray-600 mt-1">New team members announced and organizational changes.</p>
+                    <div className="flex items-center space-x-2 mt-2 text-xs text-gray-500">
+                      <span>SC Admin</span>
+                      <span>•</span>
+                      <span>22 hrs</span>
+                    </div>
+                  </div>
+                  
+                  <div className="border-l-4 border-green-500 pl-4">
+                    <p className="font-medium">Industry insights shared</p>
+                    <p className="text-sm text-gray-600 mt-1">Market analysis and strategic positioning discussion.</p>
+                    <div className="flex items-center space-x-2 mt-2 text-xs text-gray-500">
+                      <span>Packing Ticket</span>
+                      <span>•</span>
+                      <span>2 years</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="people">
+            <Card>
+              <CardHeader>
+                <CardTitle>People</CardTitle>
+                <p className="text-sm text-gray-600">Team members and key contacts</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* This will show the existing contacts */}
+                  <div className="text-center py-8 text-gray-500">
+                    <Users className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <p>Contact information will be displayed here</p>
+                    <p className="text-sm">Including roles, responsibilities, and contact details</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="duties">
+            <Card>
+              <CardHeader>
+                <CardTitle>What does {company.name} do?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-xs font-medium text-blue-600">1</span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Strategic Planning</h3>
+                      <p className="text-sm text-gray-600 mt-1">Develops comprehensive marketing strategies and campaign planning</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-xs font-medium text-green-600">2</span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Client Services</h3>
+                      <p className="text-sm text-gray-600 mt-1">Manages client relationships and ensures project delivery</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-xs font-medium text-purple-600">3</span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Creative Development</h3>
+                      <p className="text-sm text-gray-600 mt-1">Creates and executes creative campaigns across multiple channels</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="contact-info">
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact Info</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Address</h4>
+                    <p className="text-gray-600">
+                      {company.city && company.state ? `${company.city}, ${company.state}` : 'Address not available'}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Email</h4>
+                    <p className="text-gray-600">
+                      {company.website ? `contact@${company.website.replace('https://', '').replace('http://', '')}` : 'Email not available'}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Website</h4>
+                    {company.website ? (
+                      <Link href={company.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        View Website
+                      </Link>
+                    ) : (
+                      <p className="text-gray-600">Website not available</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Contact information last updated</h4>
+                    <p className="text-gray-600">2 years ago</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Keep old content for fallback - will be removed */}
           <TabsContent value="contacts">
             <Card>
               <CardHeader>

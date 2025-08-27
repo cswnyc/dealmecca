@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Users, Database, Building2, BarChart3, Plus, Upload, TrendingUp } from 'lucide-react';
+import { Shield, Users, Database, Building2, BarChart3, Plus, Upload, TrendingUp, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { AdminPageLayout } from '@/components/navigation/PageLayout';
 
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
                   <TrendingUp className="w-3 h-3 mr-1" />
                   {stats.overview.totalCompanies.change}
                 </Badge>
-                <p className="text-xs text-gray-600">{stats.overview.totalCompanies.changeLabel}</p>
+                <p className="text-sm text-gray-700 font-medium">{stats.overview.totalCompanies.changeLabel}</p>
               </div>
             </CardContent>
           </Card>
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
                   <TrendingUp className="w-3 h-3 mr-1" />
                   {stats.overview.totalContacts.change}
                 </Badge>
-                <p className="text-xs text-gray-600">{stats.overview.totalContacts.changeLabel}</p>
+                <p className="text-sm text-gray-700 font-medium">{stats.overview.totalContacts.changeLabel}</p>
               </div>
             </CardContent>
           </Card>
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
                 <Badge variant="outline" className="mr-2">
                   {stats.contacts.verificationRate}%
                 </Badge>
-                <p className="text-xs text-gray-600">verification rate</p>
+                <p className="text-sm text-gray-700 font-medium">verification rate</p>
               </div>
             </CardContent>
           </Card>
@@ -350,6 +350,37 @@ export default function AdminDashboard() {
                 <BarChart3 className="w-4 h-4 mr-2" />
                 Quality Reports
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <MessageSquare className="h-5 w-5 text-purple-600" />
+                <span>Forum Management</span>
+              </CardTitle>
+              <CardDescription>
+                Manage forum categories, topics, and community discussions
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Link href="/admin/forum-categories">
+                <Button className="w-full">
+                  Manage Categories
+                </Button>
+              </Link>
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/admin/forum-categories?create=true">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add Topic
+                  </Button>
+                </Link>
+                <Button variant="outline" size="sm" className="w-full">
+                  <BarChart3 className="w-3 h-3 mr-1" />
+                  Analytics
+                </Button>
+              </div>
             </CardContent>
           </Card>
 

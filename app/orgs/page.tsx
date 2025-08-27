@@ -2,12 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network } from 'lucide-react';
+import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network, Filter, Plus, MapPin, ChevronDown, X, Globe, User, Briefcase, BarChart3, Tv, Satellite, Monitor } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/navigation/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SearchHighlight } from '@/components/ui/SearchHighlight';
 
 interface Company {
   id: string;
@@ -17,6 +28,7 @@ interface Company {
   city: string;
   state: string;
   verified: boolean;
+  logoUrl?: string;
   _count: {
     contacts: number;
   };
@@ -41,217 +53,317 @@ interface BulkUploadResult {
   }>;
 }
 
+interface Agency {
+  id: string
+  name: string
+  type: 'INDEPENDENT_AGENCY' | 'HOLDING_COMPANY_AGENCY' | 'NETWORK_AGENCY'
+  city: string
+  state: string
+  country?: string
+  verified: boolean
+  logoUrl?: string
+  teamCount: number
+  lastActivity: string
+  clients: Array<{
+    id: string
+    name: string
+    industry: string
+    logoUrl?: string
+    verified: boolean
+  }>
+}
+
+const MOCK_AGENCIES: Agency[] = [
+  {
+    id: '1',
+    name: 'Kinesso SF',
+    type: 'NETWORK_AGENCY',
+    city: 'San Francisco',
+    state: 'CA',
+    verified: true,
+    teamCount: 12,
+    lastActivity: '2 hrs',
+    clients: [
+      { id: '1', name: 'DoPro', industry: 'TECHNOLOGY', verified: true },
+      { id: '2', name: 'Boeing', industry: 'AEROSPACE', verified: true },
+      { id: '3', name: 'GrubHub', industry: 'FOOD_DELIVERY', verified: true }
+    ]
+  },
+  {
+    id: '2',
+    name: 'OMD Chicago',
+    type: 'NETWORK_AGENCY',
+    city: 'Chicago',
+    state: 'IL',
+    verified: true,
+    teamCount: 22,
+    lastActivity: '2 hrs',
+    clients: [
+      { id: '4', name: 'Amazon', industry: 'E_COMMERCE', verified: true },
+      { id: '5', name: 'State Farm', industry: 'INSURANCE', verified: true },
+      { id: '6', name: 'Pepsi Co', industry: 'FOOD_BEVERAGE', verified: true }
+    ]
+  },
+  {
+    id: '3',
+    name: 'The Marketing Practice Denver',
+    type: 'INDEPENDENT_AGENCY',
+    city: 'Denver',
+    state: 'CO',
+    verified: true,
+    teamCount: 8,
+    lastActivity: '3 hrs',
+    clients: [
+      { id: '7', name: 'Commvault', industry: 'TECHNOLOGY', verified: true },
+      { id: '8', name: 'GE Aerospace', industry: 'AEROSPACE', verified: true }
+    ]
+  },
+  {
+    id: '4',
+    name: 'Billups NY',
+    type: 'INDEPENDENT_AGENCY',
+    city: 'New York City',
+    state: 'NY',
+    verified: true,
+    teamCount: 81,
+    lastActivity: '3 hrs',
+    clients: [
+      { id: '9', name: 'University of Virginia', industry: 'EDUCATION', verified: true },
+      { id: '10', name: 'Kennedy Space Center', industry: 'AEROSPACE', verified: true },
+      { id: '11', name: 'Etihad Airways', industry: 'TRAVEL', verified: true }
+    ]
+  },
+  {
+    id: '5',
+    name: 'EssenceMediacom NY',
+    type: 'NETWORK_AGENCY',
+    city: 'New York City',
+    state: 'NY',
+    verified: true,
+    teamCount: 49,
+    lastActivity: '3 hrs',
+    clients: [
+      { id: '12', name: 'NBCUniversal', industry: 'ENTERTAINMENT_MEDIA', verified: true },
+      { id: '13', name: 'Google', industry: 'TECHNOLOGY', verified: true },
+      { id: '14', name: 'Target', industry: 'RETAIL', verified: true }
+    ]
+  }
+]
+
+const INDUSTRY_COLORS: Record<string, string> = {
+  'TECHNOLOGY': 'bg-blue-100 text-blue-800',
+  'AEROSPACE': 'bg-purple-100 text-purple-800',
+  'FOOD_DELIVERY': 'bg-orange-100 text-orange-800',
+  'E_COMMERCE': 'bg-green-100 text-green-800',
+  'INSURANCE': 'bg-red-100 text-red-800',
+  'FOOD_BEVERAGE': 'bg-yellow-100 text-yellow-800',
+  'EDUCATION': 'bg-indigo-100 text-indigo-800',
+  'TRAVEL': 'bg-pink-100 text-pink-800',
+  'ENTERTAINMENT_MEDIA': 'bg-violet-100 text-violet-800',
+  'RETAIL': 'bg-emerald-100 text-emerald-800'
+}
+
 export default function OrgsPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Admin and bulk upload state
+  // Agency view state
+  const [agencies, setAgencies] = useState<Agency[]>(MOCK_AGENCIES);
+  const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>(MOCK_AGENCIES);
+  const [activeTab, setActiveTab] = useState<'agencies' | 'advertisers' | 'people' | 'industries' | 'publisher' | 'dsp-ssp' | 'adtech'>('agencies');
+
+  const [showAddAgencyModal, setShowAddAgencyModal] = useState(false);
+  const [agencyForm, setAgencyForm] = useState({
+    name: '',
+    brands: '',
+    location: '',
+    team: '',
+    description: ''
+  });
+
+  // Persistent filter states across all tabs
+  const [filterState, setFilterState] = useState({
+    agencyType: 'all',
+    geography: 'all',
+    industry: 'all',
+    status: 'all',
+    client: 'all',
+    clientIndustry: 'all',
+    duty: 'all'
+  });
+
+  // UI state
+  const [showFilters, setShowFilters] = useState(false);
   const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<BulkUploadResult | null>(null);
+  const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(new Set());
 
-  // Check user session and admin status
-  useEffect(() => {
-    async function checkSession() {
-      try {
-        const response = await fetch('/api/session-status', {
-          credentials: 'include'
-        });
-        if (response.ok) {
-          const sessionData = await response.json();
-          const activeToken = sessionData.activeToken;
-          if (activeToken) {
-            setUserSession(activeToken);
-            setIsAdmin(activeToken.role === 'ADMIN');
-          }
-        }
-      } catch (error) {
-        console.error('Failed to check session:', error);
-      }
-    }
-    
-    checkSession();
-  }, []);
-
-  useEffect(() => {
-    async function fetchCompanies() {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        console.log('🔄 Fetching companies with cache busting...');
-        const response = await fetch('/api/orgs/companies?limit=20&_t=' + Date.now(), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          },
-          credentials: 'include',
-          cache: 'no-store'
-        });
-        
-        console.log('📡 Response status:', response.status);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('❌ API Error:', errorText);
-          throw new Error(`Failed to fetch companies: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('✅ Companies data received:', data);
-        
-        const companiesArray = data.companies || data.data?.companies || [];
-        setCompanies(companiesArray);
-        setFilteredCompanies(companiesArray);
-        
-        if (companiesArray.length === 0) {
-          console.warn('⚠️ No companies returned from API');
-        }
-        
-      } catch (err) {
-        console.error('💥 Fetch error:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        
-        // Fallback to mock data for testing
-        const mockCompanies = [
-          {
-            id: 'mock-1',
-            name: 'GroupM',
-            companyType: 'HOLDING_COMPANY_AGENCY',
-            industry: 'Advertising & Marketing',
-            city: 'New York',
-            state: 'NY',
-            verified: true,
-            _count: { contacts: 125 }
-          },
-          {
-            id: 'mock-2', 
-            name: 'Nike',
-            companyType: 'NATIONAL_ADVERTISER',
-            industry: 'Sportswear',
-            city: 'Beaverton',
-            state: 'OR',
-            verified: true,
-            _count: { contacts: 89 }
-          }
-        ];
-        
-        console.log('🔄 Using mock data as fallback');
-        setCompanies(mockCompanies);
-        setFilteredCompanies(mockCompanies);
-        
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    // Only fetch when session loading is complete
-    if (status !== 'loading') {
-      // Add a small delay to ensure proper hydration
-      const timer = setTimeout(() => {
-        fetchCompanies();
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
-
-  // Filter companies based on search query
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredCompanies(companies);
-    } else {
-      const filtered = companies.filter(company =>
-        company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        company.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        company.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        company.state.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredCompanies(filtered);
-    }
-  }, [searchQuery, companies]);
-
-  // Handle file upload
-  const handleFileUpload = async () => {
-    if (!uploadFile || !isAdmin) return;
-
-    setUploading(true);
-    setUploadResult(null);
-
-    try {
-      // Parse CSV file
-      const text = await uploadFile.text();
-      const lines = text.split('\n').filter(line => line.trim());
-      const headers = lines[0].split(',').map(h => h.trim());
-      
-      const contacts = lines.slice(1).map((line, index) => {
-        const values = line.split(',').map(v => v.trim());
-        return {
-          id: `temp-${index}`,
-          firstName: values[0] || '',
-          lastName: values[1] || '',
-          title: values[2] || '',
-          email: values[3] || '',
-          phone: values[4] || '',
-          linkedinUrl: values[5] || '',
-          department: values[6] || '',
-          company: values[7] || '',
-          companyId: companies.find(c => c.name.toLowerCase() === (values[7] || '').toLowerCase())?.id || '',
-          isValid: !!(values[0] && values[1] && values[2] && values[7])
-        };
-      }).filter(contact => contact.isValid);
-
-      // Send to bulk import API
-      const response = await fetch('/api/admin/contacts/bulk-import', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ contacts }),
-      });
-
-      const result = await response.json();
-      setUploadResult(result);
-      
-      if (result.success) {
-        // Clear the file input
-        setUploadFile(null);
-        // Refresh companies data to show updated contact counts
-        const companiesResponse = await fetch('/api/orgs/companies?limit=20', {
-          credentials: 'include'
-        });
-        if (companiesResponse.ok) {
-          const companiesData = await companiesResponse.json();
-          setCompanies(companiesData.companies || []);
-          setFilteredCompanies(companiesData.companies || []);
-        }
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      setUploadResult({
-        success: false,
-        imported: 0,
-        failed: 0,
-        errors: [{ row: 0, contact: '', error: 'Failed to process file' }]
-      });
-    } finally {
-      setUploading(false);
+  // Helper functions for agency view
+  const getAgencyTypeLabel = (type: string) => {
+    switch (type) {
+      case 'INDEPENDENT_AGENCY': return 'Independent Agency';
+      case 'HOLDING_COMPANY_AGENCY': return 'Holding Company';
+      case 'NETWORK_AGENCY': return 'Network Agency';
+      default: return type;
     }
   };
 
+  const getAgencyTypeBadgeColor = (type: string) => {
+    switch (type) {
+      case 'INDEPENDENT_AGENCY': return 'bg-green-100 text-green-800';
+      case 'HOLDING_COMPANY_AGENCY': return 'bg-blue-100 text-blue-800';
+      case 'NETWORK_AGENCY': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Mock data for client relationships
+  const getCompanyClients = (companyId: string) => {
+    const clientData: Record<string, string[]> = {
+      '1': ['Nike', 'Adidas', 'Under Armour'],
+      '2': ['Coca-Cola', 'Pepsi', 'Dr Pepper'],
+      '3': ['Apple', 'Microsoft', 'Google'],
+      '4': ['McDonald\'s', 'Burger King', 'KFC'],
+      '5': ['Toyota', 'Honda', 'Ford']
+    };
+    return clientData[companyId] || ['Client A', 'Client B'];
+  };
+
+  const toggleCompanyExpansion = (companyId: string) => {
+    setExpandedCompanies(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(companyId)) {
+        newSet.delete(companyId);
+      } else {
+        newSet.add(companyId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleTabChange = (tabValue: string) => {
+    setActiveTab(tabValue as any);
+  };
+
+  // Fetch companies data
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/orgs/companies');
+        if (!response.ok) {
+          throw new Error('Failed to fetch companies');
+        }
+        const data = await response.json();
+        console.log('API response:', data); // Debug log
+        if (data.success && Array.isArray(data.companies)) {
+          setCompanies(data.companies);
+          setFilteredCompanies(data.companies);
+        } else {
+          throw new Error(data.error || 'Invalid response format');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+  // Filter companies based on search and filters
+  useEffect(() => {
+    if (!Array.isArray(companies)) {
+      setFilteredCompanies([]);
+      return;
+    }
+    
+    let filtered = [...companies];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(company =>
+        (company.name && company.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (company.city && company.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (company.state && company.state.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // Apply agency type filter
+    if (filterState.agencyType !== 'all') {
+      filtered = filtered.filter(company =>
+        (company as any).agencyType === filterState.agencyType ||
+        company.companyType === filterState.agencyType
+      );
+    }
+
+    // Apply geography filter
+    if (filterState.geography !== 'all') {
+      filtered = filtered.filter(company =>
+        company.state === filterState.geography
+      );
+    }
+
+    // Apply industry filter (using clientIndustry for now)
+    if (filterState.clientIndustry !== 'all') {
+      filtered = filtered.filter(company =>
+        company.industry === filterState.clientIndustry
+      );
+    }
+
+    setFilteredCompanies(filtered);
+  }, [searchQuery, companies, filterState]);
+
+  // Set admin status
+  useEffect(() => {
+    if (session?.user?.role === 'ADMIN') {
+      setIsAdmin(true);
+    }
+  }, [session]);
+
+  // Agency filtering
+  useEffect(() => {
+    if (!Array.isArray(agencies)) {
+      setFilteredAgencies([]);
+      return;
+    }
+    
+    let filtered = [...agencies];
+    
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(agency =>
+        (agency.name && agency.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (agency.city && agency.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (agency.state && agency.state.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    if (filterState.agencyType !== 'all') {
+      filtered = filtered.filter(agency => agency.type === filterState.agencyType);
+    }
+
+    if (filterState.geography !== 'all') {
+      filtered = filtered.filter(agency => agency.state === filterState.geography);
+    }
+
+    setFilteredAgencies(filtered);
+  }, [searchQuery, agencies, filterState.agencyType, filterState.geography]);
+
+  // Early return for loading state - must come after all hooks
   if (status === 'loading') {
     return (
       <PageLayout
-        title="Organization Charts"
-        description="Explore company structures and connections"
+        title="Deal Directory"
+        description="Explore deal connections and partnership opportunities"
       >
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
@@ -263,237 +375,598 @@ export default function OrgsPage() {
     );
   }
 
-  const headerActions = (
-    <div className="flex items-center space-x-2">
-      <div className="relative">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search companies..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-64"
-        />
-      </div>
-      {searchQuery && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setSearchQuery('')}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          Clear
-        </Button>
-      )}
-    </div>
-  );
+  const headerActions = null;
 
   return (
     <PageLayout
-      title="Organization Charts"
-      description="Explore company structures and connections"
+      title="Deal Directory"
+      description="Explore deal connections and partnership opportunities"
       actions={headerActions}
     >
       <div className="space-y-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Companies</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{companies.length}</div>
-              <p className="text-xs text-muted-foreground">
-                Active organizations
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Contacts</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {companies.reduce((sum, company) => sum + company._count.contacts, 0)}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Professional contacts
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Verified Rate</CardTitle>
-              <Badge variant="secondary" className="h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {companies.length > 0 
-                  ? Math.round((companies.filter(c => c.verified).length / companies.length) * 100)
-                  : 0}%
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Data quality
-              </p>
-            </CardContent>
-          </Card>
+        {/* Tab Navigation */}
+        <div className="flex items-center justify-between">
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+            {[
+              { id: 'agencies', label: 'Agencies', icon: Building2 },
+              { id: 'advertisers', label: 'Advertisers', icon: Globe },
+              { id: 'people', label: 'People', icon: User },
+              { id: 'industries', label: 'Industries', icon: Briefcase },
+              { id: 'publisher', label: 'Publisher', icon: Monitor },
+              { id: 'dsp-ssp', label: 'DSP/SSP', icon: Satellite },
+              { id: 'adtech', label: 'Adtech', icon: BarChart3 }
+            ].map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <IconComponent className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Admin Bulk Upload Section */}
-        {isAdmin && (
+        {/* Search Bar and Action Buttons */}
+        <div className="flex items-center justify-between space-x-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder={
+                activeTab === 'agencies' ? 'Search agencies...' :
+                activeTab === 'advertisers' ? 'Search advertisers...' :
+                activeTab === 'people' ? 'Search people...' :
+                activeTab === 'industries' ? 'Search industries...' :
+                activeTab === 'publisher' ? 'Search publishers...' :
+                activeTab === 'dsp-ssp' ? 'Search DSP/SSP...' :
+                'Search adtech...'
+              }
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10 h-11"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <div className="flex space-x-2">
+            {activeTab === 'agencies' && (
+              <Button onClick={() => setShowAddAgencyModal(true)} className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Agency
+              </Button>
+            )}
+            {activeTab === 'advertisers' && (
+              <Button className="bg-green-600 hover:bg-green-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Advertiser
+              </Button>
+            )}
+            {activeTab === 'people' && (
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Person
+              </Button>
+            )}
+            {activeTab === 'industries' && (
+              <Button className="bg-orange-600 hover:bg-orange-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Industry
+              </Button>
+            )}
+            {activeTab === 'publisher' && (
+              <Button className="bg-red-600 hover:bg-red-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Publisher
+              </Button>
+            )}
+            {activeTab === 'dsp-ssp' && (
+              <Button className="bg-indigo-600 hover:bg-indigo-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add DSP/SSP
+              </Button>
+            )}
+            {activeTab === 'adtech' && (
+              <Button className="bg-pink-600 hover:bg-pink-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Adtech
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'agencies' && (
+          <div className="w-full">
+            {/* Modern Stats Bar */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
+                      <Building2 className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Total Agencies</p>
+                      <p className="text-2xl font-bold text-gray-900">{Array.isArray(companies) ? companies.length : 0}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
+                      <Users className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Team Members</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {Array.isArray(companies) ? companies.reduce((total, company) => total + (company._count?.contacts || 0), 0) : 0}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
+                      <CheckCircle className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Verified Rate</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {Array.isArray(companies) && companies.length > 0 
+                          ? Math.round((companies.filter(c => c.verified).length / companies.length) * 100)
+                          : 0}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Filter Toggle */}
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200"
+                >
+                  <Filter className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">Filters</span>
+                  <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Companies List */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {searchQuery ? `Search Results (${Array.isArray(filteredCompanies) ? filteredCompanies.length : 0})` : 'Agency Directory'}
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {searchQuery ? `Found ${Array.isArray(filteredCompanies) ? filteredCompanies.length : 0} agencies matching your search` : 'Discover and connect with leading agencies'}
+                </p>
+              </div>
+              <div className="p-6">
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading agencies...</p>
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-12">
+                    <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <Button onClick={() => window.location.reload()} variant="outline">
+                      Try Again
+                    </Button>
+                  </div>
+                ) : !Array.isArray(filteredCompanies) || filteredCompanies.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2">No agencies found</p>
+                    <p className="text-sm text-gray-500">Try adjusting your search or filters</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {Array.isArray(filteredCompanies) ? filteredCompanies.slice(0, 10).map((company) => (
+                      <div key={company.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-4 flex-1">
+                            <div className="flex-shrink-0">
+                              {company.logoUrl ? (
+                                <img 
+                                  src={company.logoUrl} 
+                                  alt={`${company.name} logo`}
+                                  className="w-12 h-12 rounded-xl object-cover border border-gray-200"
+                                />
+                              ) : (
+                                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                                  <Building2 className="h-6 w-6 text-blue-600" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-start justify-between mb-2">
+                                <div>
+                                  <Link href={`/orgs/companies/${company.id}`} className="group">
+                                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                      <SearchHighlight 
+                                        text={company.name} 
+                                        searchTerm={searchQuery}
+                                        highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-semibold"
+                                      />
+                                    </h3>
+                                  </Link>
+                                  <div className="flex items-center space-x-2 mt-1">
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getAgencyTypeBadgeColor(company.companyType)}`}>
+                                      {getAgencyTypeLabel(company.companyType)}
+                                    </span>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                      <Network className="w-3 h-3 mr-1" />
+                                      Org Chart
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              {/* Client/Advertiser Pills */}
+                              <div className="mt-2 mb-1">
+                                <div className="flex flex-wrap gap-1">
+                                  {getCompanyClients(company.id).slice(0, expandedCompanies.has(company.id) ? undefined : 2).map((client, index) => (
+                                    <span
+                                      key={index}
+                                      className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                                    >
+                                      {client}
+                                    </span>
+                                  ))}
+                                  {getCompanyClients(company.id).length > 2 && (
+                                    <button
+                                      onClick={() => toggleCompanyExpansion(company.id)}
+                                      className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                                    >
+                                      {expandedCompanies.has(company.id) 
+                                        ? 'Show less' 
+                                        : `+${getCompanyClients(company.id).length - 2} more clients`
+                                      }
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )) : null}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Other Tab Contents */}
+        {activeTab === 'advertisers' && (
           <Card>
             <CardHeader>
-              <CardTitle>Bulk Upload Contacts</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <Globe className="h-5 w-5" />
+                <span>Advertisers</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
-                />
-                <Button
-                  onClick={handleFileUpload}
-                  disabled={!uploadFile || uploading}
-                  className="flex items-center space-x-2"
-                >
-                  {uploading ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      <span>Uploading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4" />
-                      <span>Upload CSV</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-              {uploadResult && (
-                <div className="mt-4 p-3 border rounded-lg">
-                  {uploadResult.success ? (
-                    <div className="flex items-center text-green-600">
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      <span>{uploadResult.imported} contacts imported successfully!</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center text-red-600">
-                      <XCircle className="h-5 w-5 mr-2" />
-                      <span>{uploadResult.failed} contacts failed to import.</span>
-                      {uploadResult.errors.length > 0 && (
-                        <ul className="mt-2 text-sm">
-                          {uploadResult.errors.map((error, index) => (
-                            <li key={index}>
-                              Row {error.row + 1}: {error.contact} - {error.error}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+              <p className="text-gray-600">Advertiser directory coming soon...</p>
             </CardContent>
           </Card>
         )}
 
-        {/* Companies List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {searchQuery ? `Search Results (${filteredCompanies.length})` : 'Recent Companies'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto mb-2"></div>
-                <p className="text-gray-600">Loading companies...</p>
+        {activeTab === 'people' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="h-5 w-5" />
+                <span>People</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">People directory coming soon...</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'industries' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Briefcase className="h-5 w-5" />
+                <span>Industries</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">Industry analysis coming soon...</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'publisher' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Monitor className="h-5 w-5" />
+                <span>Publishers</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">Publisher directory coming soon...</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'dsp-ssp' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Satellite className="h-5 w-5" />
+                <span>DSP/SSP</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">DSP/SSP directory coming soon...</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'adtech' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5" />
+                <span>Adtech</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">Adtech directory coming soon...</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Add Agency Modal */}
+        {showAddAgencyModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Add New Agency</h3>
+                <button
+                  onClick={() => setShowAddAgencyModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-            ) : error ? (
-              <div className="text-center py-8">
-                <p className="text-red-600">Error: {error}</p>
-              </div>
-            ) : filteredCompanies.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-600">
-                  {searchQuery ? `No companies found matching "${searchQuery}"` : 'No companies found'}
-                </p>
-                {searchQuery && (
-                  <Button
-                    variant="link"
-                    onClick={() => setSearchQuery('')}
-                    className="mt-2"
-                  >
-                    Clear search
-                  </Button>
-                )}
-              </div>
-            ) : (
               <div className="space-y-4">
-                {filteredCompanies.slice(0, 10).map((company) => (
-                  <div key={company.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="bg-sky-100 p-2 rounded-lg">
-                        <Building2 className="h-5 w-5 text-sky-600" />
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <Link href={`/orgs/companies/${company.id}`} className="group">
-                            <h3 className="font-medium group-hover:text-blue-600 group-hover:underline cursor-pointer transition-colors">
-                              {company.name}
-                            </h3>
-                          </Link>
-                          <Badge variant="outline" className="text-xs bg-secondary/10 text-secondary border-secondary/20">
-                            <Network className="w-3 h-3 mr-1" />
-                            Org Chart
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600">
-                          {company.industry} • {company.city}, {company.state}
-                        </p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            {company._count.contacts} contacts
-                          </Badge>
-                          {company.verified && (
-                            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              Verified
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Link href={`/orgs/companies/${company.id}?tab=org-chart`}>
-                        <Button variant="outline" size="sm" className="text-xs">
-                          <Network className="w-3 h-3 mr-1" />
-                          View Org Chart
-                        </Button>
-                      </Link>
-                      <Link href={`/orgs/companies/${company.id}`}>
-                        <Button variant="ghost" size="sm" className="text-xs">
-                          View Profile
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Agency Name
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Enter agency name"
+                    value={agencyForm.name}
+                    onChange={(e) => setAgencyForm({...agencyForm, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Brands/Clients
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Enter brand names"
+                    value={agencyForm.brands}
+                    onChange={(e) => setAgencyForm({...agencyForm, brands: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="City, State"
+                    value={agencyForm.location}
+                    onChange={(e) => setAgencyForm({...agencyForm, location: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Team Size
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Number of employees"
+                    value={agencyForm.team}
+                    onChange={(e) => setAgencyForm({...agencyForm, team: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Brief description"
+                    value={agencyForm.description}
+                    onChange={(e) => setAgencyForm({...agencyForm, description: e.target.value})}
+                  />
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <div className="flex space-x-3 mt-6">
+                <Button
+                  onClick={() => setShowAddAgencyModal(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button className="flex-1">
+                  Add Agency
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Persistent Filter Panel */}
+      {showFilters && (
+        <div className="bg-white border border-gray-200 rounded-xl mb-6 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+            <h3 className="text-lg font-semibold text-gray-900">Filter Options</h3>
+            <p className="text-sm text-gray-600 mt-1">Refine your search to find the perfect agency partners</p>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* By Agency Type */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-900">Agency Type</label>
+                <Select 
+                  value={filterState.agencyType} 
+                  onValueChange={(value) => setFilterState(prev => ({...prev, agencyType: value}))}
+                >
+                  <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue placeholder="Select agency type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="INDEPENDENT_AGENCY">Independent Agency</SelectItem>
+                    <SelectItem value="HOLDING_COMPANY_AGENCY">Holding Company</SelectItem>
+                    <SelectItem value="NETWORK_AGENCY">Network Agency</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* By Location */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-900">Location</label>
+                <Select 
+                  value={filterState.geography} 
+                  onValueChange={(value) => setFilterState(prev => ({...prev, geography: value}))}
+                >
+                  <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue placeholder="Select location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Locations</SelectItem>
+                    <SelectItem value="CA">California</SelectItem>
+                    <SelectItem value="NY">New York</SelectItem>
+                    <SelectItem value="IL">Illinois</SelectItem>
+                    <SelectItem value="TX">Texas</SelectItem>
+                    <SelectItem value="FL">Florida</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* By Client */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-900">Client</label>
+                <Select 
+                  value={filterState.client} 
+                  onValueChange={(value) => setFilterState(prev => ({...prev, client: value}))}
+                >
+                  <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue placeholder="Select client" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Clients</SelectItem>
+                    <SelectItem value="nike">Nike</SelectItem>
+                    <SelectItem value="coca-cola">Coca-Cola</SelectItem>
+                    <SelectItem value="apple">Apple</SelectItem>
+                    <SelectItem value="mcdonalds">McDonald's</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* By Client Industry */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-900">Client Industry</label>
+                <Select 
+                  value={filterState.clientIndustry} 
+                  onValueChange={(value) => setFilterState(prev => ({...prev, clientIndustry: value}))}
+                >
+                  <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Industries</SelectItem>
+                    <SelectItem value="TECHNOLOGY">Technology</SelectItem>
+                    <SelectItem value="RETAIL">Retail</SelectItem>
+                    <SelectItem value="AUTOMOTIVE">Automotive</SelectItem>
+                    <SelectItem value="FOOD_BEVERAGE">Food & Beverage</SelectItem>
+                    <SelectItem value="FINANCIAL_SERVICES">Financial Services</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* By Service Type */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-900">Service Type</label>
+                <Select 
+                  value={filterState.duty} 
+                  onValueChange={(value) => setFilterState(prev => ({...prev, duty: value}))}
+                >
+                  <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue placeholder="Select service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Services</SelectItem>
+                    <SelectItem value="media-planning">Media Planning</SelectItem>
+                    <SelectItem value="creative">Creative</SelectItem>
+                    <SelectItem value="digital">Digital</SelectItem>
+                    <SelectItem value="strategy">Strategy</SelectItem>
+                    <SelectItem value="analytics">Analytics</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          {/* Filter Actions */}
+          <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div className="text-sm text-gray-600">
+              {activeTab === 'agencies' && `Showing ${Array.isArray(filteredCompanies) ? filteredCompanies.length : 0} of ${Array.isArray(companies) ? companies.length : 0} agencies`}
+              {activeTab !== 'agencies' && `Filters applied to ${activeTab}`}
+            </div>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setFilterState({
+                  agencyType: 'all',
+                  geography: 'all',
+                  industry: 'all',
+                  status: 'all',
+                  client: 'all',
+                  clientIndustry: 'all',
+                  duty: 'all'
+                })}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
+                Clear All
+              </button>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageLayout>
   );
-} 
+}
+

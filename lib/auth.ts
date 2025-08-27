@@ -9,7 +9,6 @@ import { prisma } from '@/lib/prisma'
 export const authOptions: NextAuthOptions = {
   // Remove adapter to fix OAuth account linking issues with JWT
   // adapter: PrismaAdapter(prisma),
-  trustHost: true,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -175,6 +174,7 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, account }) {
       console.log('🔐 JWT CALLBACK STARTED')
@@ -373,7 +373,6 @@ export const authOptions: NextAuthOptions = {
       return dashboardUrl;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
 }
 
 // Helper function to get user with full profile

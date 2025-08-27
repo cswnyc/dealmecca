@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
+import { useSession } from 'next-auth/react';
 import { 
   ChatBubbleLeftIcon,
   BookmarkIcon,
@@ -35,6 +37,12 @@ interface ForumPost {
   createdAt: string;
   updatedAt: string;
   lastActivityAt: string;
+  // Post type fields
+  postType?: string;
+  listItems?: string[];
+  pollChoices?: string[];
+  pollDuration?: number;
+  pollEndsAt?: string;
   author: {
     id: string;
     name: string;
@@ -87,15 +95,36 @@ interface ForumPostCardProps {
   onVote?: (postId: string, type: 'upvote' | 'downvote') => void;
   onBookmark?: (postId: string) => void;
   userVote?: 'UPVOTE' | 'DOWNVOTE' | null;
+  expandable?: boolean;
 }
 
-export function ForumPostCard({ post, onVote, onBookmark, userVote }: ForumPostCardProps) {
+export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable = false }: ForumPostCardProps) {
+  const [expanded, setExpanded] = useState(expandable);
+  const [comments, setComments] = useState<any[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [commentAnonymous, setCommentAnonymous] = useState(false);
+  const [submittingComment, setSubmittingComment] = useState(false);
+  const [commentVotes, setCommentVotes] = useState<{[key: string]: string}>({});
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState('');
+  const [mentionSuggestions, setMentionSuggestions] = useState<any[]>([]);
+  const { data: session } = useSession();
   const urgencyColors = {
     LOW: 'text-gray-500',
     MEDIUM: 'text-blue-500', 
     HIGH: 'text-orange-500',
     URGENT: 'text-red-700'
   };
+
+  // Auto-load comments when expandable
+  useEffect(() => {
+    if (expandable && comments.length === 0 && !commentsLoading) {
+      fetchComments();
+    }
+  }, [expandable]);
 
   const urgencyLabels = {
     LOW: 'Low Priority',
@@ -158,176 +187,351 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote }: ForumPostC
   const tags = safeParseTags(post.tags);
   const mediaTypes = safeParseMediaTypes(post.mediaType);
 
+  const fetchComments = async () => {
+    if (!expandable || commentsLoading) return;
+    
+    setCommentsLoading(true);
+    try {
+      const response = await fetch(`/api/forum/posts/${post.id}/comments`);
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data.comments || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch comments:', error);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  const handleToggleComments = () => {
+    if (!expanded && comments.length === 0) {
+      fetchComments();
+    }
+    setExpanded(!expanded);
+  };
+
+  const handleSubmitComment = async () => {
+    if (!commentText.trim() || submittingComment) return;
+    
+    setSubmittingComment(true);
+    try {
+      const response = await fetch(`/api/forum/posts/${post.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: commentText.trim(),
+          isAnonymous: commentAnonymous,
+          authorId: session?.user?.id,
+          anonymousHandle: commentAnonymous ? `User${Math.floor(Math.random() * 1000)}` : null
+        })
+      });
+
+      if (response.ok) {
+        const newComment = await response.json();
+        setComments(prev => [...prev, newComment]);
+        setCommentText('');
+        setCommentAnonymous(false);
+        // Refresh to get updated comment count
+        fetchComments();
+      }
+    } catch (error) {
+      console.error('Failed to post comment:', error);
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
+  const handleCommentVote = async (commentId: string, voteType: 'up' | 'down') => {
+    try {
+      // Use session user ID or create anonymous user ID
+      const userId = session?.user?.id || 'anonymous-user-' + Math.random().toString(36).substr(2, 9);
+      
+      const response = await fetch(`/api/forum/comments/${commentId}/vote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          voteType,
+          userId
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Update the comment in our local state
+        setComments(prevComments => 
+          prevComments.map(comment => 
+            comment.id === commentId 
+              ? { ...comment, upvotes: data.comment.upvotes, downvotes: data.comment.downvotes }
+              : comment
+          )
+        );
+        // Track user's vote
+        setCommentVotes(prev => ({
+          ...prev,
+          [commentId]: data.userVote
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to vote on comment:', error);
+    }
+  };
+
+  const handleReply = (commentId: string, authorName: string) => {
+    setReplyingTo(commentId);
+    setReplyText(`@${authorName} `);
+  };
+
+  const handleSubmitReply = async () => {
+    if (!replyText.trim() || !replyingTo) return;
+
+    try {
+      const response = await fetch(`/api/forum/posts/${post.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: replyText,
+          parentId: replyingTo,
+          isAnonymous: true,
+          authorId: session?.user?.id,
+          anonymousHandle: `User${Math.floor(Math.random() * 1000)}`
+        }),
+      });
+
+      if (response.ok) {
+        setReplyText('');
+        setReplyingTo(null);
+        // Refresh comments
+        fetchComments();
+      }
+    } catch (error) {
+      console.error('Failed to post reply:', error);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 hover:-translate-y-0.5 group">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <div className="flex items-start space-x-3 mb-2">
-            {/* Author Avatar & Info */}
-            <div className="flex-1">
-              <div className="flex items-center space-x-2 mb-1">
-                {/* Author Name */}
-                <span className="text-sm font-medium text-gray-900">
-                  {post.isAnonymous ? post.anonymousHandle : post.author.name}
+      <div className="flex items-start space-x-3 mb-4">
+        {/* Company Logo as Main Avatar */}
+        {!post.isAnonymous && post.author.company ? (
+          <Link href={`/orgs/companies/${post.author.company.id}`} className="flex-shrink-0">
+            {post.author.company.logoUrl ? (
+              <img 
+                src={post.author.company.logoUrl} 
+                alt={post.author.company.name}
+                className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-lg bg-blue-100 border border-gray-200 flex items-center justify-center">
+                <BuildingOfficeIcon className="w-6 h-6 text-blue-600" />
+              </div>
+            )}
+          </Link>
+        ) : (
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-100 to-blue-100 border border-gray-200 flex items-center justify-center">
+            <span className="text-xl">
+              {['🎯', '💡', '🚀', '🎨', '📊', '🔥', '⭐', '💎'][Math.floor(Math.random() * 8)]}
                 </span>
-                
-                {/* Company Affiliation */}
-                {!post.isAnonymous && post.author.company && (
+          </div>
+        )}
+
+        <div className="flex-1 min-w-0">
+          {/* Company Names + Follow Button */}
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center space-x-2">
+              {!post.isAnonymous && post.author.company ? (
+                <div className="flex items-center space-x-2">
                   <Link 
                     href={`/orgs/companies/${post.author.company.id}`}
-                    className="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                    className="font-semibold text-gray-900 hover:text-blue-600 transition-colors"
                   >
-                    {post.author.company.logoUrl ? (
-                      <img 
-                        src={post.author.company.logoUrl} 
-                        alt={post.author.company.name}
-                        className="w-4 h-4 rounded-sm object-cover"
-                      />
-                    ) : (
-                      <BuildingOfficeIcon className="w-4 h-4" />
-                    )}
-                    <span className="font-medium">{post.author.company.name}</span>
+                    {post.author.company.name}
                     {post.author.company.verified && (
-                      <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
+                      <CheckBadgeIcon className="w-4 h-4 text-blue-500 inline ml-1" />
                     )}
                   </Link>
+                  {/* Multiple Company Tags */}
+                  {post.companyMentions && post.companyMentions.length > 0 && (
+                    <>
+                      <span className="text-gray-400">+</span>
+                      {post.companyMentions.slice(0, 2).map((mention, index) => (
+                        <Link
+                          key={mention.company.id}
+                          href={`/orgs/companies/${mention.company.id}`}
+                          className="inline-flex items-center space-x-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                        >
+                          {mention.company.logoUrl ? (
+                            <img 
+                              src={mention.company.logoUrl} 
+                              alt={`${mention.company.name} logo`}
+                              className="w-4 h-4 rounded object-cover"
+                            />
+                          ) : (
+                            <div className="w-4 h-4 rounded bg-gray-200 flex items-center justify-center">
+                              <BuildingOfficeIcon className="w-2.5 h-2.5 text-gray-500" />
+                            </div>
+                          )}
+                          <span>{mention.company.name}</span>
+                        </Link>
+                      ))}
+                      {post.companyMentions.length > 2 && (
+                        <span className="text-sm text-gray-500">+ {post.companyMentions.length - 2} more</span>
+                      )}
+                    </>
                 )}
               </div>
-              
-              {/* Badges Row */}
-              <div className="flex items-center space-x-2">
-                {/* Category */}
-                <span 
-                  className="px-2 py-1 rounded text-xs font-medium"
-                  style={{ backgroundColor: `${post.category.color}20`, color: post.category.color }}
-                >
-                  {post.category.name}
+              ) : (
+                <span className="font-semibold text-gray-900">
+                  {post.isAnonymous ? post.anonymousHandle : post.author.name}
                 </span>
-                
-                {/* Urgency Badge */}
-                <span className={`px-2 py-1 rounded text-xs font-medium ${urgencyColors[post.urgency]}`}>
-                  {urgencyLabels[post.urgency]}
-                </span>
-                
-                {/* Time */}
-                <span className="text-xs text-gray-500 flex items-center space-x-1">
-                  <ClockIcon className="w-3 h-3" />
-                  <span>{formatDistanceToNow(new Date(post.createdAt))} ago</span>
-                </span>
-              </div>
+              )}
+              {!post.companyMentions || post.companyMentions.length === 0 ? (
+                <span className="text-sm text-gray-500">+ 5 more</span>
+              ) : null}
             </div>
+            <button className="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center space-x-1">
+              <span>Follow</span>
+            </button>
           </div>
           
-          {/* Title */}
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
-          
-          {/* Content preview with mentions */}
-          <div className="text-gray-600 line-clamp-3 mb-3">
-            <MentionDisplayReact content={post.content} showIcons={false} />
+          {/* Categories */}
+          <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+            <span>in</span>
+            <span className="text-blue-600">{post.category.name}</span>
+            {tags.length > 0 && (
+              <>
+                <span>,</span>
+                <span className="text-blue-600">{tags.slice(0, 2).join(', ')}</span>
+                {tags.length > 2 && <span>+{tags.length - 2} more</span>}
+              </>
+            )}
+          </div>
+        </div>
           </div>
 
-          {/* Companies Mentioned Section */}
-          {post.companyMentions && post.companyMentions.length > 0 && (
-            <div className="mb-3">
-              <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
-                Companies Mentioned
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {post.companyMentions.map((mention, index) => (
-                  <Link
-                    key={index}
-                    href={`/orgs/companies/${mention.company.id}`}
-                    className="flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-md text-xs transition-colors"
-                  >
-                    {mention.company.logoUrl ? (
-                      <img 
-                        src={mention.company.logoUrl} 
-                        alt={mention.company.name}
-                        className="w-4 h-4 rounded-sm object-cover"
-                      />
-                    ) : (
-                      <BuildingOfficeIcon className="w-4 h-4" />
-                    )}
-                    <span className="font-medium">{mention.company.name}</span>
-                    {mention.company.verified && (
-                      <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
-                    )}
-                  </Link>
-                ))}
-              </div>
+      {/* Title with engagement indicators */}
+      <div className="flex items-start justify-between mb-3">
+        <h3 className="text-lg font-medium text-gray-900 flex-1 group-hover:text-gray-700 transition-colors">
+          {post.title}
+        </h3>
+        <div className="flex items-center space-x-2 ml-4">
+          {/* Trending indicator */}
+          {post.views > 100 && (
+            <div className="flex items-center space-x-1 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
+              <span>🔥</span>
+              <span>Hot</span>
             </div>
           )}
+          {/* New indicator */}
+          {new Date(post.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000) && (
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          )}
+        </div>
         </div>
         
-        {/* Pinned indicator */}
-        {post.isPinned && (
-          <div className="text-yellow-500 ml-2">
-            📌
+      {/* Content preview with mentions - Dynamic based on post type */}
+      <div className="text-gray-700 mb-4">
+        {post.postType === 'list' && post.listItems ? (
+          <div className="space-y-2">
+            {post.listItems.slice(0, 3).map((item, index) => (
+              <div key={index} className="flex items-start space-x-2">
+                <span className="text-gray-400 mt-1">•</span>
+                <span>{item}</span>
+              </div>
+            ))}
+            {post.listItems.length > 3 && (
+              <div className="text-gray-500 text-sm">+{post.listItems.length - 3} more items</div>
+            )}
           </div>
+        ) : post.postType === 'poll' && post.pollChoices ? (
+          <div className="space-y-2">
+            {post.pollChoices.slice(0, 3).map((choice, index) => (
+              <div key={index} className="flex items-center space-x-2 p-2 border border-gray-200 rounded">
+                <div className="w-4 h-4 border border-gray-300 rounded"></div>
+                <span>{choice}</span>
+              </div>
+            ))}
+            {post.pollChoices.length > 3 && (
+              <div className="text-gray-500 text-sm">+{post.pollChoices.length - 3} more choices</div>
+            )}
+            {post.pollEndsAt && (
+              <div className="text-xs text-gray-500 mt-2">
+                Poll ends {formatDistanceToNow(new Date(post.pollEndsAt), { addSuffix: true })}
+              </div>
+            )}
+          </div>
+        ) : (
+          <MentionDisplayReact content={post.content} showIcons={false} />
         )}
       </div>
 
-      {/* Metadata */}
-      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-        <div className="flex items-center space-x-4">
-          {/* Time */}
-          <div className="flex items-center space-x-1">
-            <ClockIcon className="w-4 h-4" />
-            <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>
-          </div>
-          
-          {/* Location */}
-          {post.location && (
-            <div className="flex items-center space-x-1">
-              <MapPinIcon className="w-4 h-4" />
-              <span>{post.location}</span>
-            </div>
-          )}
-          
-          {/* Deal Size */}
-          {post.dealSize && (
-            <span className="px-2 py-1 bg-gray-100 rounded text-xs">
-              {dealSizeLabels[post.dealSize]}
-            </span>
-          )}
-
-          {/* Media Types */}
-          {mediaTypes.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {mediaTypes.map((type: string) => (
-                <span 
-                  key={type}
-                  className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded"
+      {/* Contact Mentions Section - Enhanced Display */}
+      {post.contactMentions && post.contactMentions.length > 0 && (
+        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+          <div className="text-sm text-gray-600 mb-2">few in house contacts</div>
+          <div className="space-y-1">
+            {post.contactMentions.slice(0, 2).map((mention, index) => (
+              <div key={mention.contact.id} className="flex items-center space-x-2">
+                <a 
+                  href={`mailto:${mention.contact.email}`}
+                  className="text-blue-600 hover:text-blue-800 text-sm"
                 >
-                  {type}
+                  {mention.contact.email}
+                </a>
+                <span className="text-gray-500 text-sm">
+                  - {mention.contact.title || 'Contact'}
                 </span>
+              </div>
               ))}
-            </div>
+            {post.contactMentions.length > 2 && (
+              <button className="text-blue-600 text-sm hover:text-blue-800">
+                Read more
+              </button>
           )}
         </div>
-        
-        {/* Views */}
-        <span>{post.views} views</span>
-      </div>
-
-      {/* Tags */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {tags.map((tag: string) => (
-            <span 
-              key={tag}
-              className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded"
-            >
-              #{tag}
-            </span>
-          ))}
         </div>
       )}
 
-      {/* Actions */}
+      {/* User Attribution & Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
+          {/* User Avatar who posted */}
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center border">
+              <span className="text-xs">
+                {['🎭', '👤', '🕶️', '🎪', '🎨', '🔮'][Math.floor(Math.random() * 6)]}
+              </span>
+            </div>
+            <span className="text-sm text-gray-600">
+              {post.isAnonymous ? post.anonymousHandle : post.author.name.split(' ')[0]} 
+            </span>
+            <span className="text-sm text-gray-400">•</span>
+            <span className="text-sm text-gray-500">
+              {formatDistanceToNow(new Date(post.createdAt))} ago
+            </span>
+          </div>
+
+          {/* Bookmark */}
+          <button
+            onClick={() => onBookmark?.(post.id)}
+            className="flex items-center space-x-1 text-gray-500 hover:text-yellow-600 transition-colors"
+          >
+            <BookmarkIcon className="w-4 h-4" />
+          </button>
+
+          {/* Share/Actions Icon */}
+          <button className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            </svg>
+          </button>
+        </div>
+
           {/* Real-time Votes */}
           <RealTimeVotes
             postId={post.id}
@@ -336,26 +540,266 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote }: ForumPostC
             onVote={onVote ? (type) => onVote(post.id, type) : () => {}}
             userVote={userVote}
           />
+      </div>
 
-          {/* Comments */}
-          <Link 
-            href={`/forum/posts/${post.slug}#comments`}
-            className="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors"
-          >
-            <ChatBubbleLeftIcon className="w-4 h-4" />
-            <span className="text-sm">{post._count.comments} comments</span>
-          </Link>
+      {/* Enhanced Comment Box */}
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="flex space-x-3">
+          {/* Anonymous User Avatar with hover effect */}
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center border border-gray-200 hover:scale-105 transition-transform cursor-pointer">
+            <span className="text-sm font-medium text-gray-600">
+              {Math.random() > 0.5 ? '👤' : '🎭'}
+            </span>
+          </div>
+          
+          {/* Enhanced Comment Input */}
+          <div className="flex-1">
+            <div className="relative">
+              <textarea
+                value={commentText}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setCommentText(value);
+                  
+                  // Auto-expand
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                  
+                  // Simple @mention detection
+                  const lastWord = value.split(' ').pop() || '';
+                  if (lastWord.startsWith('@') && lastWord.length > 1) {
+                    setMentionQuery(lastWord.slice(1));
+                    setShowMentions(true);
+                    // Mock suggestions for now
+                    setMentionSuggestions([
+                      { name: 'John Doe', company: 'Nike' },
+                      { name: 'Jane Smith', company: 'Adidas' },
+                      { name: 'Mike Johnson', company: 'Pepsi' }
+                    ].filter(user => user.name.toLowerCase().includes(lastWord.slice(1).toLowerCase())));
+                  } else {
+                    setShowMentions(false);
+                  }
+                }}
+                placeholder="Add a comment... Use @username to mention someone"
+                className="w-full p-3 border border-gray-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300"
+                rows={2}
+                disabled={submittingComment}
+                style={{ minHeight: '60px', maxHeight: '150px' }}
+              />
+              
+              {/* Mention Suggestions */}
+              {showMentions && mentionSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
+                  {mentionSuggestions.map((user, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        const words = commentText.split(' ');
+                        words[words.length - 1] = `@${user.name}`;
+                        setCommentText(words.join(' ') + ' ');
+                        setShowMentions(false);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-100 flex items-center space-x-2"
+                    >
+                      <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-xs">👤</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-sm">{user.name}</div>
+                        <div className="text-xs text-gray-500">{user.company}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {/* Quick reactions */}
+              {!commentText && (
+                <div className="absolute right-3 top-3 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {['👍', '💡', '🔥', '🎯'].map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => setCommentText(emoji + ' ')}
+                      className="text-lg hover:scale-125 transition-transform"
+                      title="Quick reaction"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-between items-center mt-2">
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center text-xs text-gray-600">
+                  <input 
+                    type="checkbox" 
+                    className="mr-2 w-4 h-4 rounded border-gray-300 focus:ring-blue-500" 
+                    checked={commentAnonymous}
+                    onChange={(e) => setCommentAnonymous(e.target.checked)}
+                    disabled={submittingComment}
+                  />
+                  Anonymous
+                </label>
+                <span className="text-xs text-gray-400">
+                  {commentText.length}/500
+                </span>
+              </div>
+              
+              <button 
+                onClick={handleSubmitComment}
+                disabled={!commentText.trim() || submittingComment || commentText.length > 500}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 hover:shadow-md"
+              >
+                {submittingComment ? (
+                  <>
+                    <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Posting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Comment</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded Comments Section */}
+      {expandable && expanded && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-900 mb-3">
+              Discussion ({post._count.comments})
+            </h4>
+            
+            {commentsLoading ? (
+              <div className="space-y-3">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="animate-pulse flex space-x-3">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                      <div className="h-3 bg-gray-100 rounded w-full"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : comments.length > 0 ? (
+              <div className="space-y-3">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="flex space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center border">
+                      <span className="text-xs">
+                        {['🎭', '👤', '🕶️', '🎪', '🎨', '🔮'][Math.floor(Math.random() * 6)]}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-medium">
+                              {comment.isAnonymous ? comment.anonymousHandle : comment.author.name}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {formatDistanceToNow(new Date(comment.createdAt))} ago
+                            </span>
+                          </div>
+                        </div>
+                        <MentionDisplayReact content={comment.content} showIcons={false} />
+                        
+                        {/* Comment Actions */}
+                        <div className="flex items-center space-x-4 mt-2 pt-2 border-t border-gray-200">
+                          {/* Vote buttons */}
+                          <div className="flex items-center space-x-1">
+                            <button 
+                              onClick={() => handleCommentVote(comment.id, 'up')}
+                              className={`flex items-center space-x-1 text-xs transition-colors ${
+                                commentVotes[comment.id] === 'up' 
+                                  ? 'text-blue-600' 
+                                  : 'text-gray-500 hover:text-blue-600'
+                              }`}
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              </svg>
+                              <span>{comment.upvotes || 0}</span>
+                            </button>
+                            <button 
+                              onClick={() => handleCommentVote(comment.id, 'down')}
+                              className={`flex items-center space-x-1 text-xs transition-colors ${
+                                commentVotes[comment.id] === 'down' 
+                                  ? 'text-red-600' 
+                                  : 'text-gray-500 hover:text-red-600'
+                              }`}
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                              <span>{comment.downvotes || 0}</span>
+                            </button>
+                          </div>
+                          
+                          {/* Reply button */}
+                          <button 
+                            onClick={() => handleReply(comment.id, comment.isAnonymous ? comment.anonymousHandle : comment.author.name)}
+                            className="text-xs text-gray-500 hover:text-blue-600 transition-colors"
+                          >
+                            Reply
+                          </button>
+                          
+                          {/* Share button */}
+                          <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                            Share
+                          </button>
+                        </div>
         </div>
 
-        {/* Bookmark */}
+                      {/* Reply Form */}
+                      {replyingTo === comment.id && (
+                        <div className="mt-3 ml-6 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-200">
+                          <div className="flex space-x-2">
+                            <textarea
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder="Write your reply..."
+                              className="flex-1 p-2 border border-gray-200 rounded text-sm resize-none"
+                              rows={2}
+                            />
+                          </div>
+                          <div className="flex justify-end space-x-2 mt-2">
+                            <button
+                              onClick={() => setReplyingTo(null)}
+                              className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700"
+                            >
+                              Cancel
+                            </button>
         <button
-          onClick={() => onBookmark?.(post.id)}
-          className="flex items-center space-x-1 text-gray-500 hover:text-yellow-600 transition-colors"
+                              onClick={handleSubmitReply}
+                              className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
         >
-          <BookmarkIcon className="w-4 h-4" />
-          <span className="text-sm">Save</span>
+                              Reply
         </button>
       </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 italic">No comments yet. Be the first to comment!</p>
+            )}
+          </div>
+
+
+        </div>
+      )}
     </div>
   );
 } 

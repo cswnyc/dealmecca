@@ -17,64 +17,62 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ contacts: [] });
     }
 
-    // Search contacts by name for mentions
-    const contacts = await prisma.contact.findMany({
+    // Search forum users (media sellers) by name for mentions
+    const users = await prisma.user.findMany({
       where: {
         OR: [
           {
-            firstName: {
+            name: {
               contains: query,
+              mode: 'insensitive'
             }
           },
           {
-            lastName: {
+            email: {
               contains: query,
-            }
-          },
-          {
-            fullName: {
-              contains: query,
+              mode: 'insensitive'
             }
           }
         ],
-        verified: true // Only show verified contacts in mentions
+        NOT: {
+          id: userId // Don't include the current user
+        }
       },
       include: {
         company: {
           select: {
             id: true,
             name: true,
-            logoUrl: true
+            logoUrl: true,
+            companyType: true
           }
         }
       },
       orderBy: [
-        { verified: 'desc' }, // Verified contacts first
-        { lastName: 'asc' },
-        { firstName: 'asc' }
+        { name: 'asc' }
       ],
       take: 10 // Limit for autocomplete dropdown
     });
 
-    // Format for mention autocomplete
-    const mentionSuggestions = contacts.map((contact: any) => ({
-      id: contact.id,
-      name: contact.fullName,
-      displayName: `${contact.fullName}${contact.title ? ` - ${contact.title}` : ''}`,
-      title: contact.title,
-      company: contact.company ? {
-        id: contact.company.id,
-        name: contact.company.name,
-        logo: contact.company.logoUrl
+    // Format for mention autocomplete - these are media sellers/community members
+    const mentionSuggestions = users.map((user: any) => ({
+      id: user.id,
+      name: user.name,
+      displayName: `${user.name}${user.company ? ` (${user.company.name})` : ''}`,
+      email: user.email,
+      company: user.company ? {
+        id: user.company.id,
+        name: user.company.name,
+        logo: user.company.logoUrl,
+        type: user.company.companyType
       } : null,
-      department: contact.department,
-      seniority: contact.seniority,
-      verified: contact.verified
+      role: user.role,
+      subscriptionTier: user.subscriptionTier
     }));
 
     return NextResponse.json({ 
-      contacts: mentionSuggestions,
-      total: contacts.length 
+      contacts: mentionSuggestions, // Keep the same key for compatibility
+      total: users.length 
     });
   } catch (error) {
     console.error('Failed to search contacts for mentions:', error);

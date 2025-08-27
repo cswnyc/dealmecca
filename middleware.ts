@@ -52,8 +52,12 @@ export async function middleware(req: NextRequest) {
     '/api/test-nextauth-flow',
     '/api/auth-login',
     '/api/companies',
-    '/api/forum/posts',
     '/api/forum/categories'
+  ]
+  
+  // Routes that are public only for GET requests
+  const publicGetOnlyRoutes = [
+    '/api/forum/posts'
   ]
   
   // Routes that are public only for the exact path (not sub-routes)
@@ -61,7 +65,12 @@ export async function middleware(req: NextRequest) {
     '/api/events'  // Only /api/events, not /api/events/[id]
   ]
   
-  if (publicApiRoutes.some(route => pathname.startsWith(route)) || exactPublicApiRoutes.includes(pathname)) {
+  // Check if this is a public route or a public GET-only route
+  const isPublicRoute = publicApiRoutes.some(route => pathname.startsWith(route)) || 
+                       exactPublicApiRoutes.includes(pathname) ||
+                       (publicGetOnlyRoutes.some(route => pathname.startsWith(route)) && req.method === 'GET')
+  
+  if (isPublicRoute) {
     console.log('🔵 Allowing public API route:', pathname)
     return NextResponse.next()
   }
