@@ -7,12 +7,17 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts",
+    "stripe:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/stripe/seedStripe.ts",
+    "bootstrap": "./scripts/bootstrap.sh",
+    "reset": "npx prisma migrate reset --force && npm run seed",
+    "fresh": "rm -rf node_modules .next && npm run bootstrap"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.60.0",
     "@auth/prisma-adapter": "^2.10.0",
     "@hcaptcha/react-hcaptcha": "^1.12.1",
     "@hookform/resolvers": "^5.2.1",

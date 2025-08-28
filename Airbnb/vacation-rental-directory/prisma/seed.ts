@@ -180,7 +180,8 @@ async function main() {
         start,
         end,
         status: 'active',
-        stripeSubId: null, // attach real IDs when Stripe Billing is wired
+        stripeSubscriptionId: null, // attach real IDs when Stripe Billing is wired
+        stripeCustomerId: null,
       },
     });
 
