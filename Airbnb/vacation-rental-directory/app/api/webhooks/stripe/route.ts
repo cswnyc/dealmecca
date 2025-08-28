@@ -57,6 +57,18 @@ export async function POST(req: NextRequest) {
         break;
       }
       
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaymentFailed(invoice);
+        break;
+      }
+      
+      case 'customer.subscription.trial_will_end': {
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleTrialWillEnd(subscription);
+        break;
+      }
+      
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -207,4 +219,48 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   });
   
   console.log(`Subscription canceled: ${subscription.id}`);
+}
+
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  if (!invoice.subscription) {
+    console.log('Skipping invoice without subscription');
+    return;
+  }
+  
+  // Update subscription status to past_due
+  await prisma.subscription.updateMany({
+    where: {
+      stripeSubscriptionId: invoice.subscription as string,
+    },
+    data: {
+      status: 'past_due',
+    },
+  });
+  
+  // Here you could add logic to:
+  // - Send email notifications
+  // - Temporarily restrict features
+  // - Log for support follow-up
+  
+  console.log(`Payment failed for subscription: ${invoice.subscription}`);
+}
+
+async function handleTrialWillEnd(subscription: Stripe.Subscription) {
+  // Update subscription record to note trial ending soon
+  await prisma.subscription.updateMany({
+    where: {
+      stripeSubscriptionId: subscription.id,
+    },
+    data: {
+      // Could add a trialEndingNotificationSent field
+      status: subscription.status,
+    },
+  });
+  
+  // Here you could add logic to:
+  // - Send trial ending notification emails
+  // - Show upgrade prompts in UI
+  // - Prepare for billing transition
+  
+  console.log(`Trial ending soon for subscription: ${subscription.id}`);
 }

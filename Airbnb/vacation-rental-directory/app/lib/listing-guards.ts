@@ -1,8 +1,9 @@
 'use server';
 
-import { requireActiveSub } from './subscriptions';
+import { requireActiveSub, getActiveSubscription } from './subscriptions';
 import { prisma } from './db';
 import { ListingStatus } from '@prisma/client';
+import { getTierLimits } from './billing-restrictions';
 
 export class ListingGateError extends Error {
   constructor(message: string) {
@@ -70,26 +71,18 @@ export async function getOwnerListingLimits(ownerId: string): Promise<{
   hasActiveSub: boolean;
 }> {
   try {
-    const subscription = await requireActiveSub(ownerId);
-    const currentListings = await prisma.listing.count({
-      where: { ownerId }
-    });
+    const [subscription, currentListings] = await Promise.all([
+      getActiveSubscription(ownerId),
+      prisma.listing.count({ where: { ownerId } })
+    ]);
     
-    // Default limits based on tier
-    const tierLimits = {
-      BRONZE: 3,
-      SILVER: 10,
-      GOLD: 25,
-      PLATINUM: 999999 // Unlimited
-    };
-    
-    const maxListings = tierLimits[subscription.tier] || 1;
+    const limits = getTierLimits(subscription?.tier || null);
     
     return {
-      maxListings,
+      maxListings: limits.maxListings,
       currentListings,
-      canCreateMore: currentListings < maxListings,
-      hasActiveSub: true
+      canCreateMore: limits.maxListings === -1 || currentListings < limits.maxListings,
+      hasActiveSub: !!subscription
     };
   } catch (error) {
     const currentListings = await prisma.listing.count({

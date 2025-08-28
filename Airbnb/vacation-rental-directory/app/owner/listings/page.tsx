@@ -1,8 +1,9 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { prisma } from '../../lib/db';
-import { getOwnerListingLimits, canActivateListing } from '../../lib/listing-guards';
 import { getActiveSubscription, getTierDisplayName } from '../../lib/subscriptions';
+import { getTierLimits } from '../../lib/billing-restrictions';
+import { UpgradePrompt } from '../../components/billing/UpgradePrompt';
 import { updateListingStatusAction } from './actions';
 
 // Mock owner ID for demo - in real app, get from session
@@ -11,13 +12,18 @@ const DEMO_OWNER_ID = 'demo-owner-1';
 async function ListingStatusButton({ 
   listingId, 
   currentStatus, 
-  ownerId 
+  ownerId,
+  currentTier,
+  activeListingCount
 }: { 
   listingId: string; 
   currentStatus: string; 
   ownerId: string; 
+  currentTier: any;
+  activeListingCount: number;
 }) {
-  const { canActivate, reason } = await canActivateListing(ownerId, listingId);
+  const limits = getTierLimits(currentTier);
+  const canActivate = limits.maxListings === -1 || activeListingCount < limits.maxListings;
   
   if (currentStatus === 'ACTIVE') {
     return (
@@ -32,17 +38,23 @@ async function ListingStatusButton({
     );
   }
   
-  if (!canActivate) {
+  if (!canActivate && currentStatus !== 'ACTIVE') {
+    const requiredTier = currentTier === 'BRONZE' ? 'SILVER' : 
+                        currentTier === 'SILVER' ? 'GOLD' : 'PLATINUM';
     return (
-      <div className="space-y-1">
+      <div className="space-y-2">
         <button
           disabled
           className="px-3 py-1 bg-gray-300 text-gray-500 text-sm rounded cursor-not-allowed"
-          title={reason}
         >
           🔒 Activate
         </button>
-        <p className="text-xs text-red-600">{reason}</p>
+        <UpgradePrompt 
+          currentTier={currentTier}
+          requiredTier={requiredTier}
+          feature="Additional active listings"
+          compact={true}
+        />
       </div>
     );
   }
@@ -78,6 +90,9 @@ async function ListingsContent() {
     }),
     getActiveSubscription(DEMO_OWNER_ID)
   ]);
+  
+  const activeListingCount = listings.filter(l => l.status === 'ACTIVE').length;
+  const currentTier = subscription?.tier || null;
   
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -238,6 +253,8 @@ async function ListingsContent() {
                       listingId={listing.id}
                       currentStatus={listing.status}
                       ownerId={DEMO_OWNER_ID}
+                      currentTier={currentTier}
+                      activeListingCount={activeListingCount}
                     />
                   </Suspense>
                 </div>
