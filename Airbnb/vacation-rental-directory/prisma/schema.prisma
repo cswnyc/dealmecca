@@ -135,6 +135,7 @@ model City {
 
   neighborhoods Neighborhood[]
   listings      Listing[]
+  seoPages      SeoPage[]
 
   @@index([slug])
   @@map("cities")
@@ -337,10 +338,10 @@ model Review {
 model Subscription {
   id                   String   @id @default(cuid())
   ownerId              String
-  stripeSubId          String?  @unique
   stripeSubscriptionId String?  @unique
+  stripeCustomerId     String?
   tier                 Tier
-  status               String   // Stripe status
+  status               String   // active|past_due|canceled|incomplete
   start                DateTime?
   end                  DateTime?
   currentPeriodStart   DateTime?
@@ -390,12 +391,18 @@ model SeoPage {
   h1              String?
   content         String? // Generated content
   
+  // SEO controls
+  indexed         Boolean @default(true)
+  
   // Filters represented as JSON
   params          String  // JSON string of search parameters
   citySlug        String?
   neighborhoodSlug String?
   bedrooms        Int?
   amenities       String?   // JSON string of amenity names
+  
+  // Relations
+  city            City?   @relation(fields: [citySlug], references: [slug], onDelete: SetNull)
   
   // Analytics
   views           Int      @default(0)
@@ -406,6 +413,8 @@ model SeoPage {
   
   @@index([slug])
   @@index([views])
+  @@index([indexed])
+  @@index([citySlug])
   @@map("seo_pages")
 }
 

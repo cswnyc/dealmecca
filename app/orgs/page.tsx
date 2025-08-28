@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { SearchHighlight } from '@/components/ui/SearchHighlight';
+import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 interface Company {
   id: string;
@@ -579,19 +580,12 @@ export default function OrgsPage() {
                       <div key={company.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-4 flex-1">
-                            <div className="flex-shrink-0">
-                              {company.logoUrl ? (
-                                <img 
-                                  src={company.logoUrl} 
-                                  alt={`${company.name} logo`}
-                                  className="w-12 h-12 rounded-xl object-cover border border-gray-200"
-                                />
-                              ) : (
-                                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                                  <Building2 className="h-6 w-6 text-blue-600" />
-                                </div>
-                              )}
-                            </div>
+                            <CompanyLogo 
+                              logoUrl={company.logoUrl} 
+                              companyName={company.name}
+                              size="lg"
+                              className="rounded-xl"
+                            />
                             <div className="min-w-0 flex-1">
                               <div className="flex items-start justify-between mb-2">
                                 <div>
