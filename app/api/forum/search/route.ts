@@ -18,25 +18,22 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const where: any = {};
 
-    // Text search across title and content
+    // Text search across title and content (SQLite compatible)
     if (query.trim()) {
       where.OR = [
         {
           title: {
-            contains: query,
-            mode: 'insensitive'
+            contains: query
           }
         },
         {
           content: {
-            contains: query,
-            mode: 'insensitive'
+            contains: query
           }
         },
         {
           tags: {
-            contains: query,
-            mode: 'insensitive'
+            contains: query
           }
         }
       ];
@@ -62,8 +59,7 @@ export async function GET(request: NextRequest) {
     // Media type filter (search within JSON array)
     if (mediaType) {
       where.mediaType = {
-        contains: mediaType,
-        mode: 'insensitive'
+        contains: mediaType
       };
     }
 
@@ -191,8 +187,8 @@ async function getSearchSuggestions(query: string): Promise<string[]> {
     const categories = await prisma.forumCategory.findMany({
       where: {
         OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { description: { contains: query, mode: 'insensitive' } }
+          { name: { contains: query } },
+          { description: { contains: query } }
         ],
         isActive: true
       },
@@ -205,7 +201,7 @@ async function getSearchSuggestions(query: string): Promise<string[]> {
     // Search in popular tags (extract from posts)
     const posts = await prisma.forumPost.findMany({
       where: {
-        tags: { contains: query, mode: 'insensitive' }
+        tags: { contains: query }
       },
       select: { tags: true },
       take: 10

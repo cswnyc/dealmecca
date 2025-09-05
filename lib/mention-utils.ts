@@ -1,7 +1,7 @@
 // Utility functions for handling @company and @contact mentions in forum posts
 
 export interface MentionMatch {
-  type: 'company' | 'contact';
+  type: 'company' | 'contact' | 'topic';
   id: string;
   name: string;
   startIndex: number;
@@ -13,7 +13,7 @@ export interface MentionSuggestion {
   id: string;
   name: string;
   displayName: string;
-  type: 'company' | 'contact';
+  type: 'company' | 'contact' | 'topic';
   logo?: string;
   company?: {
     id: string;
@@ -22,31 +22,33 @@ export interface MentionSuggestion {
   };
   title?: string;
   verified?: boolean;
+  description?: string;
 }
 
 // Regular expressions for detecting mentions
 export const MENTION_PATTERNS = {
   company: /@company\[([^\]]+)\]\(([^)]+)\)/g,
   contact: /@contact\[([^\]]+)\]\(([^)]+)\)/g,
-  trigger: /@(company|contact)\s*$/,
-  partialTrigger: /@(company|contact)\s+([^@\s]*)\s*$/
+  topic: /@topic\[([^\]]+)\]\(([^)]+)\)/g,
+  trigger: /@(company|contact|topic)\s*$/,
+  partialTrigger: /@(company|contact|topic)\s+([^@\s]*)\s*$/
 };
 
 /**
  * Detect if user is currently typing a mention
  */
 export function detectMentionTrigger(text: string, cursorPosition: number): {
-  type: 'company' | 'contact' | null;
+  type: 'company' | 'contact' | 'topic' | null;
   query: string;
   startIndex: number;
 } | null {
   const beforeCursor = text.substring(0, cursorPosition);
   
   // Check for partial mention patterns
-  const partialMatch = beforeCursor.match(/@(company|contact)\s+([^@\s]*)\s*$/);
+  const partialMatch = beforeCursor.match(/@(company|contact|topic)\s+([^@\s]*)\s*$/);
   if (partialMatch) {
     return {
-      type: partialMatch[1] as 'company' | 'contact',
+      type: partialMatch[1] as 'company' | 'contact' | 'topic',
       query: partialMatch[2] || '',
       startIndex: beforeCursor.lastIndexOf(partialMatch[0])
     };
@@ -142,15 +144,20 @@ export function formatMentionsForDisplay(text: string): string {
  * Search for mention suggestions from API
  */
 export async function searchMentionSuggestions(
-  type: 'company' | 'contact', 
+  type: 'company' | 'contact' | 'topic', 
   query: string
 ): Promise<MentionSuggestion[]> {
   if (!query || query.length < 2) return [];
   
   try {
-    const endpoint = type === 'company' 
-      ? `/api/forum/mentions/companies?q=${encodeURIComponent(query)}`
-      : `/api/forum/mentions/contacts?q=${encodeURIComponent(query)}`;
+    let endpoint;
+    if (type === 'company') {
+      endpoint = `/api/forum/mentions/companies?q=${encodeURIComponent(query)}`;
+    } else if (type === 'contact') {
+      endpoint = `/api/forum/mentions/contacts?q=${encodeURIComponent(query)}`;
+    } else {
+      endpoint = `/api/forum/mentions/topics?q=${encodeURIComponent(query)}`;
+    }
     
     const response = await fetch(endpoint);
     
@@ -163,10 +170,15 @@ export async function searchMentionSuggestions(
         ...company,
         type: 'company' as const
       }));
-    } else {
+    } else if (type === 'contact') {
       return data.contacts.map((contact: any) => ({
         ...contact,
         type: 'contact' as const
+      }));
+    } else {
+      return data.topics.map((topic: any) => ({
+        ...topic,
+        type: 'topic' as const
       }));
     }
   } catch (error) {
@@ -184,6 +196,7 @@ export function stripMentionMarkup(text: string): string {
   // Replace mention markup with just the names
   cleanText = cleanText.replace(MENTION_PATTERNS.company, '@$1');
   cleanText = cleanText.replace(MENTION_PATTERNS.contact, '@$1');
+  cleanText = cleanText.replace(MENTION_PATTERNS.topic, '#$1');
   
   return cleanText;
 } 

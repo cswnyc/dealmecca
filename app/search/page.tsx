@@ -8,7 +8,7 @@ import { Search, Building2, Users, MapPin, Globe, Mail, Phone, Star } from 'luci
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import PageLayout from '@/components/navigation/PageLayout'
+import { ForumLayout } from '@/components/layout/ForumLayout'
 
 // Using the WORKING Company interface pattern from orgs page
 interface Company {
@@ -200,67 +200,77 @@ export default function SearchPage() {
 
   if (status === 'loading') {
     return (
-      <PageLayout title="Search Database" description="Loading...">
+      <ForumLayout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
             <p className="text-gray-600 text-lg">Loading...</p>
           </div>
         </div>
-      </PageLayout>
+      </ForumLayout>
     )
   }
 
-  const headerActions = (
-    <div className="flex items-center space-x-2">
-      <div className="flex gap-2">
-        <Button
-          variant={searchType === 'companies' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => handleSearchTypeChange('companies')}
-        >
-          <Building2 className="w-4 h-4 mr-1" />
-          Companies
-        </Button>
-        <Button
-          variant={searchType === 'contacts' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => handleSearchTypeChange('contacts')}
-        >
-          <Users className="w-4 h-4 mr-1" />
-          Contacts
-        </Button>
-      </div>
-      <div className="relative">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        <input
-          type="text"
-          placeholder={`Search ${searchType}...`}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-64"
-        />
-      </div>
-      {searchQuery && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setSearchQuery('')}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          Clear
-        </Button>
-      )}
-    </div>
-  )
+  // Header actions now integrated into the page content since ForumLayout handles navigation
 
   return (
-    <PageLayout
-      title="Search Database"
-      description="Find companies and contacts in our database"
-      actions={headerActions}
-    >
+    <ForumLayout>
       <div className="space-y-6">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Search Database
+          </h1>
+          <p className="text-lg text-gray-600">
+            Find companies and contacts in our database
+          </p>
+        </div>
+
+        {/* Search Controls */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="flex items-center justify-between space-x-4">
+            <div className="flex gap-2">
+              <Button
+                variant={searchType === 'companies' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleSearchTypeChange('companies')}
+              >
+                <Building2 className="w-4 h-4 mr-1" />
+                Companies
+              </Button>
+              <Button
+                variant={searchType === 'contacts' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleSearchTypeChange('contacts')}
+              >
+                <Users className="w-4 h-4 mr-1" />
+                Contacts
+              </Button>
+            </div>
+            <div className="flex items-center space-x-2 flex-1 max-w-md">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder={`Search ${searchType}...`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-full"
+                />
+              </div>
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSearchQuery('')}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
         {/* Stats Cards - copying orgs page pattern */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
@@ -512,6 +522,6 @@ export default function SearchPage() {
           </CardContent>
         </Card>
       </div>
-    </PageLayout>
+    </ForumLayout>
   )
 } 

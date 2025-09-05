@@ -15,7 +15,8 @@ import {
   Plus,
   Upload,
   FileText,
-  Calendar
+  Calendar,
+  MessageSquare
 } from 'lucide-react';
 
 interface SubMenuItem {
@@ -101,25 +102,26 @@ const navigationItems: NavigationItem[] = [
     ]
   },
   {
-    name: 'Verification Queue',
-    href: '/admin/orgs/verification',
-    icon: Shield
-  },
-  {
-    name: 'Data Import',
-    href: '/admin/orgs/import',
-    icon: Database
-  },
-  {
-    name: 'Settings',
-    href: '/admin/settings',
-    icon: Settings
+    name: 'Forum',
+    icon: MessageSquare,
+    subItems: [
+      {
+        name: 'All Posts',
+        href: '/admin/forum/posts',
+        icon: MessageSquare
+      },
+      {
+        name: 'Categories',
+        href: '/admin/forum-categories',
+        icon: FileText
+      }
+    ]
   }
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['Companies', 'Contacts', 'Events']); // Default expand Companies, Contacts and Events
+  const [expandedItems, setExpandedItems] = useState<string[]>(['Companies', 'Contacts', 'Events', 'Forum']); // Default expand Companies, Contacts, Events and Forum
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems(prev => 
@@ -144,7 +146,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <div className="w-64 bg-white shadow-md">
+    <div className="w-64 bg-white shadow-md h-full overflow-y-auto">
       <div className="p-6">
         <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
         <p className="text-sm text-gray-500 mt-1">Organization Management</p>

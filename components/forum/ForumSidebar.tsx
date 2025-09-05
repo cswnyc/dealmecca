@@ -1,0 +1,237 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { 
+  Trophy, 
+  Crown, 
+  Star, 
+  TrendingUp, 
+  Gift, 
+  Target,
+  Users,
+  MessageSquare,
+  Eye,
+  Calendar,
+  UserPlus,
+  Bookmark,
+  Bell
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+
+interface UserStats {
+  gems: number;
+  rank: number;
+  contributions: number;
+  streak: number;
+  tier: 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND';
+  nextTierGems: number;
+}
+
+interface QuickStat {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+  color: string;
+}
+
+export function ForumSidebar() {
+  const { data: session } = useSession();
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (session) {
+      fetchUserStats();
+    }
+  }, [session]);
+
+  const fetchUserStats = async () => {
+    try {
+      const response = await fetch('/api/rewards/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setUserStats(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'DIAMOND': return 'from-blue-500 to-blue-600';
+      case 'PLATINUM': return 'from-purple-500 to-purple-600';
+      case 'GOLD': return 'from-yellow-500 to-yellow-600';
+      case 'SILVER': return 'from-gray-400 to-gray-500';
+      case 'BRONZE': return 'from-orange-500 to-orange-600';
+      default: return 'from-gray-400 to-gray-500';
+    }
+  };
+
+  const quickStats: QuickStat[] = [
+    { label: 'Active Users', value: '2.3k', icon: <Users className="w-4 h-4" />, color: 'text-blue-600' },
+    { label: 'Today\'s Posts', value: '47', icon: <MessageSquare className="w-4 h-4" />, color: 'text-green-600' },
+    { label: 'Online Now', value: '156', icon: <Eye className="w-4 h-4" />, color: 'text-purple-600' },
+  ];
+
+  if (loading && session) {
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="animate-pulse space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-6 bg-gray-200 rounded"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* User Stats Card */}
+      {session && userStats && (
+        <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium flex items-center space-x-2">
+              <Trophy className="w-4 h-4 text-yellow-500" />
+              <span>Your Progress</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Tier Badge */}
+            <div className="flex items-center justify-between">
+              <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${getTierColor(userStats.tier)} text-white text-xs font-medium`}>
+                {userStats.tier} TIER
+              </div>
+              <div className="flex items-center space-x-1">
+                <Gift className="w-4 h-4 text-green-600" />
+                <span className="font-bold text-green-600">{userStats.gems}</span>
+                <span className="text-xs text-gray-500">gems</span>
+              </div>
+            </div>
+
+            {/* Progress to Next Tier */}
+            <div>
+              <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <span>Progress to next tier</span>
+                <span>{userStats.gems}/{userStats.nextTierGems}</span>
+              </div>
+              <Progress 
+                value={(userStats.gems / userStats.nextTierGems) * 100} 
+                className="h-2" 
+              />
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="text-center p-2 bg-blue-50 rounded">
+                <div className="font-semibold text-blue-600">#{userStats.rank}</div>
+                <div className="text-gray-600">Rank</div>
+              </div>
+              <div className="text-center p-2 bg-green-50 rounded">
+                <div className="font-semibold text-green-600">{userStats.streak}</div>
+                <div className="text-gray-600">Day Streak</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Community Stats */}
+      <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium flex items-center space-x-2">
+            <TrendingUp className="w-4 h-4 text-blue-500" />
+            <span>Community Activity</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {quickStats.map((stat, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className={stat.color}>{stat.icon}</div>
+                <span className="text-sm text-gray-600">{stat.label}</span>
+              </div>
+              <span className="font-semibold text-gray-900">{stat.value}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
+            <UserPlus className="w-3 h-3 mr-2" />
+            Follow Companies
+          </Button>
+          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
+            <Bookmark className="w-3 h-3 mr-2" />
+            Saved Posts
+          </Button>
+          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
+            <Bell className="w-3 h-3 mr-2" />
+            Notifications
+          </Button>
+          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
+            <Calendar className="w-3 h-3 mr-2" />
+            Events
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Top Contributors Mini Leaderboard */}
+      <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium flex items-center space-x-2">
+            <Star className="w-4 h-4 text-yellow-500" />
+            <span>Top Contributors</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {[
+            { name: 'Alex Rodriguez', gems: 2840, rank: 1, isVIP: true },
+            { name: 'Sarah Chen', gems: 2650, rank: 2, isVIP: true },
+            { name: 'Mike Johnson', gems: 2100, rank: 3, isVIP: false },
+          ].map((user, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold ${
+                index === 0 ? 'bg-yellow-500 text-white' :
+                index === 1 ? 'bg-gray-400 text-white' :
+                'bg-orange-600 text-white'
+              }`}>
+                {user.rank}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-1">
+                  <span className="text-sm font-medium truncate">{user.name}</span>
+                  {user.isVIP && <Crown className="w-3 h-3 text-yellow-500 flex-shrink-0" />}
+                </div>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Gift className="w-3 h-3 text-green-600" />
+                <span className="text-xs font-semibold text-green-600">{user.gems}</span>
+              </div>
+            </div>
+          ))}
+          <Button variant="ghost" size="sm" className="w-full text-xs">
+            View Leaderboard
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

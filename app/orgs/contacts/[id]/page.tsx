@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ActivityTracker } from '@/lib/activity-tracking';
+import { ForumLayout } from '@/components/layout/ForumLayout';
 
 interface ContactProfileData {
   id: string;
@@ -98,19 +99,19 @@ export default function ContactProfilePage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <ForumLayout>
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-1/3"></div>
           <div className="h-32 bg-gray-200 rounded"></div>
           <div className="h-64 bg-gray-200 rounded"></div>
         </div>
-      </div>
+      </ForumLayout>
     );
   }
 
   if (!contact) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <ForumLayout>
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">Contact not found</h1>
           <p className="text-gray-600 mt-2">The contact you're looking for doesn't exist or has been removed.</p>
@@ -119,7 +120,7 @@ export default function ContactProfilePage() {
             Back to Directory
           </Link>
         </div>
-      </div>
+      </ForumLayout>
     );
   }
 
@@ -145,8 +146,8 @@ export default function ContactProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <ForumLayout>
+      <div className="space-y-6">
         {/* Back Navigation */}
         <div className="flex items-center space-x-4 mb-6">
           <Link href="/orgs" className="inline-flex items-center text-blue-600 hover:text-blue-700">
@@ -503,6 +504,6 @@ export default function ContactProfilePage() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </ForumLayout>
   );
 } 

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import EventCard from '@/components/events/EventCard'
 import { Search, Filter, Calendar, Grid, List, Plus, MapPin, DollarSign, Clock, Users } from 'lucide-react'
-import { EventsPageLayout } from '@/components/navigation/PageLayout'
+import { ForumLayout } from '@/components/layout/ForumLayout'
 
 interface Event {
   id: string
@@ -261,17 +261,14 @@ export default function EventsPage() {
 
   if (status === 'loading') {
     return (
-      <EventsPageLayout
-        title="Events & Conferences"
-        description="Discover industry events, track ROI, and connect with your network"
-      >
+      <ForumLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading events...</p>
           </div>
         </div>
-      </EventsPageLayout>
+      </ForumLayout>
     )
   }
 
@@ -301,12 +298,18 @@ export default function EventsPage() {
   );
 
   return (
-    <EventsPageLayout
-      title="Events & Conferences"
-      description="Discover industry events, track ROI, and connect with your network"
-      actions={headerActions}
-    >
+    <ForumLayout>
       <div className="space-y-6">
+        {/* Page Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Events & Conferences</h1>
+            <p className="text-lg text-gray-600">Discover industry events, track ROI, and connect with your network</p>
+          </div>
+          <div className="flex items-center space-x-2">
+            {headerActions}
+          </div>
+        </div>
         {/* Search & Quick Filters */}
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -486,6 +489,6 @@ export default function EventsPage() {
           </Card>
         )}
       </div>
-    </EventsPageLayout>
+    </ForumLayout>
   )
 } 

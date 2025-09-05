@@ -24,14 +24,18 @@ export default function Home() {
             
             {/* Navigation Links */}
             <nav className="hidden md:flex space-x-8">
-              <a href="#features" className="nav-link">Features</a>
-              <Link href="/orgs" className="nav-link flex items-center space-x-1">
-                <span>Organizations</span>
+              <Link href="/forum" className="nav-link flex items-center space-x-1">
+                <MessageSquare className="w-4 h-4" />
+                <span>Forum</span>
+                <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Active</span>
+              </Link>
+              <Link href="/org-charts" className="nav-link flex items-center space-x-1">
+                <Building2 className="w-4 h-4" />
+                <span>Org Charts</span>
                 <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">New</span>
               </Link>
+              <a href="#features" className="nav-link">Features</a>
               <a href="#pricing" className="nav-link">Pricing</a>
-              <a href="#intelligence" className="nav-link">Intelligence</a>
-              <a href="#resources" className="nav-link">Resources</a>
             </nav>
             
             {/* Dynamic Auth Header */}
@@ -108,7 +112,32 @@ export default function Home() {
             </p>
           </div>
 
-          {/* New Org Chart Feature - Highlighted */}
+          {/* Forum Feature - Highlighted */}
+          <div className="bg-gradient-to-br from-orange-50 to-red-100 rounded-xl p-8 mb-8">
+            <div className="flex items-center space-x-4 mb-4">
+              <MessageSquare className="w-8 h-8 text-orange-600" />
+              <h3 className="text-2xl font-bold">Media Industry Forum</h3>
+              <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Active</span>
+            </div>
+            <p className="text-gray-600 mb-6 text-lg">
+              Connect with media professionals, share hot opportunities, and get industry insights. 
+              Real-time discussions about deals, RFPs, and account intelligence.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/forum">
+                <Button className="bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                  Join Discussions
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+              <div className="flex items-center text-sm text-gray-600">
+                <Users className="w-4 h-4 mr-1" />
+                <span>11 active discussions • 7 categories</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Org Chart Feature - Highlighted */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-8 mb-12">
             <div className="flex items-center space-x-4 mb-4">
               <Building2 className="w-8 h-8 text-blue-600" />
@@ -116,15 +145,21 @@ export default function Home() {
               <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">New</span>
             </div>
             <p className="text-gray-600 mb-6 text-lg">
-              Access comprehensive org charts for 1,000+ agencies and advertisers. 
+              Access comprehensive org charts for major media agencies and holding companies. 
               Find the right contacts with verified professional information and company hierarchies.
             </p>
-            <Link href="/orgs">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                Explore Organizations
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/org-charts">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                  Explore Organizations
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+              <div className="flex items-center text-sm text-gray-600">
+                <Building2 className="w-4 h-4 mr-1" />
+                <span>9 companies • 8 verified contacts</span>
+              </div>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-16">
@@ -215,14 +250,14 @@ export default function Home() {
 
           {/* Comparison Table */}
           <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-lg relative z-10 mb-20">
-            <h3 className="text-2xl font-bold text-center mb-8 text-gray-900">DealMecca vs SellerCrowd</h3>
+            <h3 className="text-2xl font-bold text-center mb-8 text-gray-900">DealMecca vs Others</h3>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2">
                     <th className="text-left py-4 px-2 text-gray-900 font-semibold">Feature</th>
                     <th className="text-center py-4 px-2 text-primary font-bold">DealMecca</th>
-                    <th className="text-center py-4 px-2 text-gray-700 font-semibold">SellerCrowd</th>
+                    <th className="text-center py-4 px-2 text-gray-700 font-semibold">Others</th>
                   </tr>
                 </thead>
                 <tbody className="space-y-2">
@@ -453,7 +488,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-gray-800 mb-6 text-lg leading-relaxed">
-                  "We switched from SellerCrowd and immediately saved $4,000 per year while getting better features. 
+                  "We switched from other platforms and immediately saved $4,000 per year while getting better features. 
                   The team dashboard and CRM integration have streamlined our entire sales process."
                 </p>
                 <div className="flex items-center">

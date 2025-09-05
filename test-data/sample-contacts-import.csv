@@ -1,0 +1,21 @@
+firstName,lastName,title,email,phone,department,seniority,companyName,isDecisionMaker,verified
+"Christian","Juhl","Global CEO",christian.juhl@groupm.com,"+1-212-555-0101",LEADERSHIP,C_LEVEL,"GroupM",true,true
+"Josh","Krichefski","Global CEO",josh.krichefski@havasmediagroup.com,"+1-212-555-0102",LEADERSHIP,C_LEVEL,"Havas Media Group",true,true
+"Mat","Baxter","Global CEO",mat.baxter@initiative.com,"+1-212-555-0103",LEADERSHIP,C_LEVEL,"Initiative",true,true
+"Adam","Gerhart","Global CEO",adam.gerhart@mindshareworld.com,"+1-212-555-0104",LEADERSHIP,C_LEVEL,"Mindshare",true,true
+"Nick","Lawson","Global CEO",nick.lawson@mediacom.com,"+1-212-555-0105",LEADERSHIP,C_LEVEL,"MediaCom",true,true
+"Florian","Adamski","Global CEO",florian.adamski@omd.com,"+1-212-555-0106",LEADERSHIP,C_LEVEL,"OMD Worldwide",true,true
+"Vikram","Sakhuja","Global CEO",vikram.sakhuja@zenithmedia.com,"+1-212-555-0107",LEADERSHIP,C_LEVEL,"Zenith Media",true,true
+"David","Doft","Global CEO",david.doft@essenceglobal.com,"+1-212-555-0108",LEADERSHIP,C_LEVEL,"Essence",true,true
+"Scott","Hagedorn","Global CEO",scott.hagedorn@heartsandscience.com,"+1-212-555-0109",LEADERSHIP,C_LEVEL,"Hearts & Science",true,true
+"Jem","Lloyd-Williams","Global CEO",jem.lloyd-williams@vizeum.com,"+44-20-555-0110",LEADERSHIP,C_LEVEL,"Vizeum",true,true
+"Toby","Jenner","Global CEO",toby.jenner@wavemakerglobal.com,"+1-212-555-0111",LEADERSHIP,C_LEVEL,"Wavemaker",true,true
+"Chris","Boothe","Global CEO",chris.boothe@sparkfoundryww.com,"+1-212-555-0112",LEADERSHIP,C_LEVEL,"Spark Foundry",true,true
+"John","Osborn","Global CEO",john.osborn@starcomww.com,"+1-312-555-0113",LEADERSHIP,C_LEVEL,"Starcom",true,true
+"Mike","Cooper","Global CEO",mike.cooper@phdnetwork.com,"+44-20-555-0114",LEADERSHIP,C_LEVEL,"PHD",true,true
+"Rob","Lynam","Global CEO",rob.lynam@carat.com,"+44-20-555-0115",LEADERSHIP,C_LEVEL,"Carat",true,true
+"Tim","Hipperson","Chief Strategy Officer",tim.hipperson@groupm.com,"+1-212-555-0116",STRATEGY_PLANNING,C_LEVEL,"GroupM",true,true
+"Peter","Mears","Chief Investment Officer",peter.mears@groupm.com,"+1-212-555-0117",STRATEGY_PLANNING,C_LEVEL,"GroupM",true,true
+"Susan","Schiekofer","Chief Digital Officer",susan.schiekofer@groupm.com,"+1-212-555-0118",DIGITAL_MARKETING,C_LEVEL,"GroupM",true,true
+"Kelly","Clark","North America CEO",kelly.clark@mindshareworld.com,"+1-212-555-0119",LEADERSHIP,C_LEVEL,"Mindshare",true,true
+"Amanda","Richman","North America CEO",amanda.richman@starcomww.com,"+1-312-555-0120",LEADERSHIP,C_LEVEL,"Starcom",true,true

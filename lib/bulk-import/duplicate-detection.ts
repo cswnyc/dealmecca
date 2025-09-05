@@ -28,11 +28,11 @@ export async function findCompanyDuplicates(companyData: {
         }] : []),
         
         // Fallback to original name matching for legacy data without normalized fields
-        { name: { equals: companyData.name, mode: 'insensitive' as const } },
+        { name: { equals: companyData.name } },
         
         // Fallback to original website matching for legacy data
         ...(companyData.website ? [{
-          website: { equals: companyData.website, mode: 'insensitive' as const }
+          website: { equals: companyData.website }
         }] : [])
       ]
     }
@@ -62,8 +62,8 @@ export async function findContactDuplicates(contactData: {
   // 2. Name + Company uniqueness
   checks.push({
     AND: [
-      { firstName: { equals: contactData.firstName, mode: 'insensitive' as const } },
-      { lastName: { equals: contactData.lastName, mode: 'insensitive' as const } },
+      { firstName: { equals: contactData.firstName } },
+      { lastName: { equals: contactData.lastName } },
       { companyId: contactData.companyId }
     ]
   });
@@ -77,8 +77,8 @@ export async function findContactDuplicates(contactData: {
   for (const variation of firstNameVariations) {
     checks.push({
       AND: [
-        { firstName: { startsWith: variation, mode: 'insensitive' as const } },
-        { lastName: { equals: contactData.lastName, mode: 'insensitive' as const } },
+        { firstName: { startsWith: variation } },
+        { lastName: { equals: contactData.lastName } },
         { companyId: contactData.companyId }
       ]
     });

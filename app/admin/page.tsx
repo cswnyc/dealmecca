@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Users, Database, Building2, BarChart3, Plus, Upload, TrendingUp, MessageSquare } from 'lucide-react';
+import { Shield, Users, Database, Building2, BarChart3, Plus, Upload, TrendingUp, MessageSquare, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { AdminPageLayout } from '@/components/navigation/PageLayout';
 
@@ -89,13 +89,34 @@ export default function AdminDashboard() {
         description="Manage DealMecca organization data and platform settings"
       >
         <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Loading skeleton for metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded animate-pulse"></div>
+              <div key={i} className="bg-white p-6 rounded-lg shadow-sm border animate-pulse">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                  <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                </div>
+                <div className="h-8 bg-gray-200 rounded w-16 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Loading skeleton for action cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="bg-white p-6 rounded-lg shadow-sm border animate-pulse">
+                <div className="flex items-center space-x-2 mb-3">
+                  <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                  <div className="h-5 bg-gray-200 rounded w-32"></div>
+                </div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-4"></div>
+                <div className="space-y-2">
+                  <div className="h-9 bg-gray-200 rounded"></div>
+                  <div className="h-9 bg-gray-200 rounded"></div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -109,14 +130,25 @@ export default function AdminDashboard() {
         title="Admin Dashboard"
         description="Manage DealMecca organization data and platform settings"
       >
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <p className="text-red-600 mb-4">{error}</p>
-              <Button onClick={fetchStats}>Retry</Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Card className="max-w-md w-full">
+            <CardContent className="pt-6">
+              <div className="text-center py-6">
+                <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                  <BarChart3 className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Dashboard</h3>
+                <p className="text-gray-600 mb-6">
+                  {error || "We couldn't load your dashboard data. Please try again."}
+                </p>
+                <Button onClick={fetchStats} className="w-full">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Retry Loading
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </AdminPageLayout>
     );
   }
@@ -137,69 +169,72 @@ export default function AdminDashboard() {
       actions={headerActions}
     >
       <div className="space-y-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-blue-500">
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Companies</CardTitle>
-              <Building2 className="h-4 w-4 text-blue-600" />
+              <CardTitle className="text-sm font-medium text-gray-700">Companies</CardTitle>
+              <Building2 className="h-5 w-5 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.overview.totalCompanies.value}</div>
-              <div className="flex items-center mt-1">
-                <Badge variant="secondary" className="mr-2">
+              <div className="text-2xl font-bold text-gray-900">{stats.overview.totalCompanies.value}</div>
+              <div className="flex items-center mt-2">
+                <Badge variant="secondary" className="mr-2 bg-blue-50 text-blue-700 hover:bg-blue-100">
                   <TrendingUp className="w-3 h-3 mr-1" />
-                  {stats.overview.totalCompanies.change}
+                  +{stats.overview.totalCompanies.change}
                 </Badge>
-                <p className="text-sm text-gray-700 font-medium">{stats.overview.totalCompanies.changeLabel}</p>
+                <p className="text-xs text-gray-600">{stats.overview.totalCompanies.changeLabel}</p>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="border-l-4 border-l-green-500">
+          <Card className="border-l-4 border-l-green-500 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Contacts</CardTitle>
-              <Users className="h-4 w-4 text-green-600" />
+              <CardTitle className="text-sm font-medium text-gray-700">Contacts</CardTitle>
+              <Users className="h-5 w-5 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.overview.totalContacts.value}</div>
-              <div className="flex items-center mt-1">
-                <Badge variant="secondary" className="mr-2">
+              <div className="text-2xl font-bold text-gray-900">{stats.overview.totalContacts.value}</div>
+              <div className="flex items-center mt-2">
+                <Badge variant="secondary" className="mr-2 bg-green-50 text-green-700 hover:bg-green-100">
                   <TrendingUp className="w-3 h-3 mr-1" />
-                  {stats.overview.totalContacts.change}
+                  +{stats.overview.totalContacts.change}
                 </Badge>
-                <p className="text-sm text-gray-700 font-medium">{stats.overview.totalContacts.changeLabel}</p>
+                <p className="text-xs text-gray-600">{stats.overview.totalContacts.changeLabel}</p>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="border-l-4 border-l-yellow-500">
+          <Card className="border-l-4 border-l-amber-500 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Verified Contacts</CardTitle>
-              <Shield className="h-4 w-4 text-yellow-600" />
+              <CardTitle className="text-sm font-medium text-gray-700">Verified</CardTitle>
+              <Shield className="h-5 w-5 text-amber-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.contacts.verified}</div>
-              <div className="flex items-center mt-1">
-                <Badge variant="outline" className="mr-2">
+              <div className="text-2xl font-bold text-gray-900">{stats.contacts.verified}</div>
+              <div className="flex items-center mt-2">
+                <Badge variant="outline" className="mr-2 border-amber-200 text-amber-700">
                   {stats.contacts.verificationRate}%
                 </Badge>
-                <p className="text-sm text-gray-700 font-medium">verification rate</p>
+                <p className="text-xs text-gray-600">verification rate</p>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="border-l-4 border-l-purple-500">
+          <Card className="border-l-4 border-l-purple-500 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Data Quality</CardTitle>
-              <BarChart3 className="h-4 w-4 text-purple-600" />
+              <CardTitle className="text-sm font-medium text-gray-700">Data Quality</CardTitle>
+              <BarChart3 className="h-5 w-5 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.overview.dataQuality.score}%</div>
-              <div className="flex items-center mt-1">
+              <div className="text-2xl font-bold text-gray-900">{stats.overview.dataQuality.score}%</div>
+              <div className="flex items-center mt-2">
                 <Badge 
                   variant={stats.overview.dataQuality.score >= 80 ? "default" : "secondary"}
-                  className="mr-2"
+                  className={stats.overview.dataQuality.score >= 80 
+                    ? "mr-2 bg-purple-100 text-purple-800" 
+                    : "mr-2 bg-gray-100 text-gray-800"
+                  }
                 >
                   {stats.overview.dataQuality.changeLabel}
                 </Badge>
@@ -208,87 +243,94 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        {/* Contact Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                <span>Contacts by Department</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {stats.contacts.byDepartment.slice(0, 5).map((dept, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{dept.name}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-16 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
-                          style={{ 
-                            width: `${(dept.count / stats.contacts.total) * 100}%` 
-                          }}
-                        ></div>
+        {/* Data Insights - Only shown if we have data */}
+        {stats.contacts.byDepartment.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  <span>Top Departments</span>
+                </CardTitle>
+                <CardDescription>Contact distribution by department</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {stats.contacts.byDepartment.slice(0, 4).map((dept, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">{dept.name}</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-20 bg-gray-100 rounded-full h-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                            style={{ 
+                              width: `${(dept.count / stats.contacts.total) * 100}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-sm text-gray-900 font-medium w-6 text-right">{dept.count}</span>
                       </div>
-                      <span className="text-sm text-gray-600 w-8">{dept.count}</span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5 text-green-600" />
-                <span>Contacts by Seniority</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {stats.contacts.bySeniority.slice(0, 5).map((sen, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{sen.name}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-16 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-green-600 h-2 rounded-full" 
-                          style={{ 
-                            width: `${(sen.count / stats.contacts.total) * 100}%` 
-                          }}
-                        ></div>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BarChart3 className="w-5 h-5 text-green-600" />
+                  <span>Top Seniority Levels</span>
+                </CardTitle>
+                <CardDescription>Contact distribution by seniority</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {stats.contacts.bySeniority.slice(0, 4).map((sen, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">{sen.name}</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-20 bg-gray-100 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+                            style={{ 
+                              width: `${(sen.count / stats.contacts.total) * 100}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-sm text-gray-900 font-medium w-6 text-right">{sen.count}</span>
                       </div>
-                      <span className="text-sm text-gray-600 w-8">{sen.count}</span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="hover:shadow-md transition-shadow">
+        {/* Core Management Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {/* Company Management - Working */}
+          <Card className="hover:shadow-lg transition-all border-l-4 border-l-blue-500">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Building2 className="h-5 w-5 text-blue-600" />
                 <span>Company Management</span>
               </CardTitle>
               <CardDescription>
-                Add, edit, and verify company profiles and organizational data
+                Add, edit, and manage company profiles and organizational data
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-3">
               <Link href="/admin/orgs/companies">
-                <Button className="w-full">
+                <Button className="w-full" size="sm">
+                  <Building2 className="w-4 h-4 mr-2" />
                   Manage Companies
+                  <Badge className="ml-2">{stats.companies.total}</Badge>
                 </Button>
               </Link>
               <Link href="/admin/orgs/companies/create">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   Add New Company
                 </Button>
@@ -296,7 +338,8 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
+          {/* Contact Management - Working */}
+          <Card className="hover:shadow-lg transition-all border-l-4 border-l-green-500">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-green-600" />
@@ -306,9 +349,10 @@ export default function AdminDashboard() {
                 Manage professional contacts and organizational relationships
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-3">
               <Link href="/admin/orgs/contacts">
-                <Button className="w-full">
+                <Button className="w-full" size="sm">
+                  <Users className="w-4 h-4 mr-2" />
                   Manage Contacts
                   <Badge className="ml-2">{stats.contacts.total}</Badge>
                 </Button>
@@ -330,61 +374,8 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-yellow-600" />
-                <span>Data Verification</span>
-              </CardTitle>
-              <CardDescription>
-                Review and verify data quality for accuracy and completeness
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Link href="/admin/orgs/verification">
-                <Button className="w-full">
-                  Verification Queue
-                </Button>
-              </Link>
-              <Button variant="outline" className="w-full">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Quality Reports
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5 text-purple-600" />
-                <span>Forum Management</span>
-              </CardTitle>
-              <CardDescription>
-                Manage forum categories, topics, and community discussions
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Link href="/admin/forum-categories">
-                <Button className="w-full">
-                  Manage Categories
-                </Button>
-              </Link>
-              <div className="grid grid-cols-2 gap-2">
-                <Link href="/admin/forum-categories?create=true">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Plus className="w-3 h-3 mr-1" />
-                    Add Topic
-                  </Button>
-                </Link>
-                <Button variant="outline" size="sm" className="w-full">
-                  <BarChart3 className="w-3 h-3 mr-1" />
-                  Analytics
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-all border-2 border-green-200 bg-gradient-to-br from-green-50 to-blue-50">
+          {/* Bulk Import - Primary Feature */}
+          <Card className="hover:shadow-xl transition-all border-2 border-green-300 bg-gradient-to-br from-green-50 to-emerald-50 md:col-span-2 xl:col-span-1">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -392,7 +383,7 @@ export default function AdminDashboard() {
                   <span className="text-green-800">Bulk Import</span>
                 </div>
                 <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
-                  New
+                  Priority
                 </Badge>
               </CardTitle>
               <CardDescription className="text-green-700">
@@ -401,7 +392,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="space-y-3">
               <Link href="/admin/bulk-import">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white" size="sm">
                   <Upload className="w-4 h-4 mr-2" />
                   Start Bulk Import
                 </Button>
@@ -421,74 +412,97 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
+          {/* Forum Management - Working */}
+          <Card className="hover:shadow-lg transition-all border-l-4 border-l-purple-500">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-red-700" />
-                <span>Analytics</span>
+                <MessageSquare className="h-5 w-5 text-purple-600" />
+                <span>Forum Management</span>
               </CardTitle>
               <CardDescription>
-                View platform usage analytics and data insights
+                Manage forum categories, topics, and community discussions
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <Button className="w-full">
-                View Analytics
-              </Button>
-              <Button variant="outline" className="w-full">
-                Usage Reports
-              </Button>
+            <CardContent className="space-y-3">
+              <Link href="/admin/forum-categories">
+                <Button className="w-full" size="sm">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Manage Categories
+                </Button>
+              </Link>
+              <Link href="/admin/forum-categories?create=true">
+                <Button variant="outline" className="w-full" size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add New Topic
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
+          {/* Events Management - Working */}
+          <Card className="hover:shadow-lg transition-all border-l-4 border-l-orange-500">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-gray-600" />
-                <span>System Settings</span>
+                <Calendar className="h-5 w-5 text-orange-600" />
+                <span>Event Management</span>
               </CardTitle>
               <CardDescription>
-                Configure platform settings and administrative preferences
+                Create and manage industry events and networking opportunities
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <Link href="/admin/settings">
-                <Button className="w-full">
-                  Settings
+            <CardContent className="space-y-3">
+              <Link href="/admin/events">
+                <Button className="w-full" size="sm">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Manage Events
                 </Button>
               </Link>
-              <Button variant="outline" className="w-full">
-                User Management
-              </Button>
+              <Link href="/admin/events/new">
+                <Button variant="outline" className="w-full" size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Event
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
 
         {/* Recent Activity */}
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest data management activities</CardDescription>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="w-5 h-5 text-gray-600" />
+              <span>Recent Activity</span>
+            </CardTitle>
+            <CardDescription>Latest data management activities across the platform</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {stats.activity.length > 0 ? (
                 stats.activity.map((activity, index) => (
-                  <div key={activity.id} className="flex items-center space-x-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{activity.message}</p>
+                  <div key={activity.id} className="flex items-start space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 animate-pulse"></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{activity.message}</p>
                       {activity.company && (
-                        <p className="text-xs text-gray-500">Company: {activity.company}</p>
+                        <p className="text-xs text-blue-600 font-medium mt-1">
+                          Company: {activity.company}
+                        </p>
                       )}
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-500 mt-1">
                         {new Date(activity.timestamp).toLocaleString()}
                       </p>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500 text-center py-4">No recent activity</p>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <BarChart3 className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-sm text-gray-500">No recent activity</p>
+                  <p className="text-xs text-gray-400 mt-1">Activity will appear here as you use the system</p>
+                </div>
               )}
             </div>
           </CardContent>

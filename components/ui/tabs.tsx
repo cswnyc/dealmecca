@@ -13,13 +13,35 @@ const TabsContext = React.createContext<TabsContextType | undefined>(undefined)
 const Tabs = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    value: string
-    onValueChange: (value: string) => void
+    value?: string
+    defaultValue?: string
+    onValueChange?: (value: string) => void
   }
->(({ className, value, onValueChange, ...props }, ref) => {
+>(({ className, value: controlledValue, defaultValue, onValueChange, ...props }, ref) => {
+  const [internalValue, setInternalValue] = React.useState(() => defaultValue || "")
+  const [mounted, setMounted] = React.useState(false)
+  const isControlled = controlledValue !== undefined
+  const value = isControlled ? controlledValue : internalValue
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const setValue = React.useCallback((newValue: string) => {
-    onValueChange(newValue)
-  }, [onValueChange])
+    if (!isControlled) {
+      setInternalValue(newValue)
+    }
+    onValueChange?.(newValue)
+  }, [isControlled, onValueChange])
+
+  // Don't render tabs content during SSR to prevent hydration mismatch
+  if (!mounted && !isControlled) {
+    return (
+      <TabsContext.Provider value={{ value: defaultValue || "", setValue }}>
+        <div ref={ref} className={cn("", className)} {...props} />
+      </TabsContext.Provider>
+    )
+  }
 
   return (
     <TabsContext.Provider value={{ value, setValue }}>

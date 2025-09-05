@@ -1,389 +1,368 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { 
-  Search, 
-  Home, 
-  Calendar, 
-  Users, 
-  Target, 
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { useMobileOptimization } from '@/lib/mobile-performance';
+import {
   Menu,
-  Bell,
-  User,
-  Settings,
-  Plus,
-  MessageCircle,
+  X,
+  Home,
+  Search,
+  Users,
   BarChart3,
+  Settings,
+  User,
+  Bell,
+  Download,
   Zap,
+  Shield,
+  HelpCircle,
+  LogOut,
+  ChevronRight,
+  Activity,
+  TrendingUp,
+  MessageSquare,
   Building2
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { usePWA } from '@/components/providers/pwa-provider'
-
-interface NavigationItem {
-  id: string
-  name: string
-  href: string
-  icon: React.ReactNode
-  activeIcon?: React.ReactNode
-  badge?: number | string
-  shortcut?: boolean
-  color: string
-  activeColor: string
-}
+} from 'lucide-react';
 
 interface MobileNavigationProps {
-  className?: string
+  currentPath?: string;
+  userName?: string;
+  userRole?: string;
+  notifications?: number;
+  onNavigate?: (path: string) => void;
 }
 
-export default function MobileNavigation({ className = '' }: MobileNavigationProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { data: session } = useSession()
-  const { isOnline, offlineActions } = usePWA()
-  const [notifications, setNotifications] = useState(3)
-  const [showQuickActions, setShowQuickActions] = useState(false)
+interface NavigationItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  path: string;
+  badge?: number;
+  requiresAuth?: boolean;
+  adminOnly?: boolean;
+  children?: NavigationItem[];
+}
 
-  // Primary navigation items for bottom tab bar
-  const primaryNavItems: NavigationItem[] = [
+export default function MobileNavigation({
+  currentPath = '/',
+  userName = 'User',
+  userRole = 'FREE',
+  notifications = 0,
+  onNavigate
+}: MobileNavigationProps) {
+  const { isMobile } = useMobileOptimization();
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const navigationItems: NavigationItem[] = [
     {
       id: 'dashboard',
-      name: 'Home',
-      href: '/dashboard',
-      icon: <Home className="w-5 h-5" />,
-      activeIcon: <Home className="w-5 h-5 fill-current" />,
-      color: 'text-gray-600',
-      activeColor: 'text-blue-600'
+      label: 'Dashboard',
+      icon: Home,
+      path: '/dashboard'
+    },
+    {
+      id: 'forum',
+      label: 'Forum',
+      icon: MessageSquare,
+      path: '/forum'
+    },
+    {
+      id: 'org-charts',
+      label: 'Organization Charts',
+      icon: Building2,
+      path: '/org-charts'
     },
     {
       id: 'search',
-      name: 'Search',
-      href: '/search',
-      icon: <Search className="w-5 h-5" />,
-      activeIcon: <Search className="w-5 h-5 fill-current" />,
-      shortcut: true,
-      color: 'text-gray-600',
-      activeColor: 'text-blue-600'
-    },
-    {
-      id: 'orgs',
-      name: 'Orgs',
-      href: '/orgs',
-      icon: <Building2 className="w-5 h-5" />,
-      activeIcon: <Building2 className="w-5 h-5 fill-current" />,
-      badge: 'New',
-      color: 'text-gray-600',
-      activeColor: 'text-indigo-600'
-    },
-    {
-      id: 'events',
-      name: 'Events',
-      href: '/events',
-      icon: <Calendar className="w-5 h-5" />,
-      activeIcon: <Calendar className="w-5 h-5 fill-current" />,
-      badge: 2, // upcoming events
-      color: 'text-gray-600',
-      activeColor: 'text-green-600'
-    },
-    {
-      id: 'more',
-      name: 'More',
-      href: '#',
-      icon: <Menu className="w-5 h-5" />,
-      color: 'text-gray-600',
-      activeColor: 'text-gray-800'
-    }
-  ]
-
-  // Quick action items
-  const quickActions = [
-    {
-      id: 'voice-search',
-      name: 'Voice Search',
-      icon: <Search className="w-5 h-5" />,
-      action: () => startVoiceSearch(),
-      color: 'bg-blue-600'
-    },
-    {
-      id: 'scan-card',
-      name: 'Scan Card',
-      icon: <User className="w-5 h-5" />,
-      action: () => startCardScan(),
-      color: 'bg-green-600'
-    },
-    {
-      id: 'quick-note',
-      name: 'Quick Note',
-      icon: <Plus className="w-5 h-5" />,
-      action: () => createQuickNote(),
-      color: 'bg-purple-600'
-    },
-    {
-      id: 'nearby-events',
-      name: 'Nearby Events',
-      icon: <Calendar className="w-5 h-5" />,
-      action: () => findNearbyEvents(),
-      color: 'bg-orange-600'
-    }
-  ]
-
-  // Additional navigation items for the drawer/more menu
-  const secondaryNavItems = [
-    { name: 'Intelligence', href: '/intelligence', icon: <Target className="w-5 h-5" />, badge: 'AI' },
-    { name: 'Forum', href: '/forum', icon: <MessageCircle className="w-5 h-5" />, badge: notifications },
-    { name: 'Analytics', href: '/analytics', icon: <BarChart3 className="w-5 h-5" /> },
-    { name: 'Settings', href: '/settings', icon: <Settings className="w-5 h-5" /> },
-    { name: 'Profile', href: '/profile', icon: <User className="w-5 h-5" /> }
-  ]
-
-  const handleNavigation = (item: NavigationItem) => {
-    // Haptic feedback if supported
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50)
-    }
-
-    if (item.id === 'more') {
-      setShowQuickActions(!showQuickActions)
-    } else {
-      router.push(item.href)
-      setShowQuickActions(false)
-    }
-  }
-
-  const startVoiceSearch = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      // Voice search implementation would go here
-      console.log('Starting voice search...')
-      router.push('/search?voice=true')
-    } else {
-      router.push('/search')
-    }
-  }
-
-  const startCardScan = () => {
-    if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-      // Camera scanning implementation would go here
-      console.log('Starting card scan...')
-      router.push('/scan')
-    } else {
-      alert('Camera not available on this device')
-    }
-  }
-
-  const createQuickNote = () => {
-    router.push('/notes/new')
-  }
-
-  const findNearbyEvents = () => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords
-          router.push(`/events?lat=${latitude}&lng=${longitude}&nearby=true`)
+      label: 'Search',
+      icon: Search,
+      path: '/search',
+      children: [
+        {
+          id: 'basic-search',
+          label: 'Basic Search',
+          icon: Search,
+          path: '/search/basic'
         },
-        (error) => {
-          console.log('Location access denied:', error)
-          router.push('/events')
+        {
+          id: 'advanced-search',
+          label: 'Advanced Search',
+          icon: Zap,
+          path: '/search/advanced',
+          requiresAuth: true
         }
-      )
+      ]
+    },
+    {
+      id: 'contacts',
+      label: 'Contacts',
+      icon: Users,
+      path: '/contacts',
+      requiresAuth: true
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: BarChart3,
+      path: '/analytics',
+      requiresAuth: true,
+      children: [
+        {
+          id: 'trends',
+          label: 'Trend Analysis',
+          icon: TrendingUp,
+          path: '/analytics/trends',
+          requiresAuth: true
+        },
+        {
+          id: 'admin-insights',
+          label: 'Admin Insights',
+          icon: Shield,
+          path: '/analytics/admin',
+          adminOnly: true
+        }
+      ]
+    },
+    {
+      id: 'exports',
+      label: 'Exports',
+      icon: Download,
+      path: '/exports',
+      requiresAuth: true
+    }
+  ];
+
+  const accountItems: NavigationItem[] = [
+    {
+      id: 'profile',
+      label: 'Profile',
+      icon: User,
+      path: '/profile'
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: Settings,
+      path: '/settings'
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      icon: Bell,
+      path: '/notifications',
+      badge: notifications
+    },
+    {
+      id: 'help',
+      label: 'Help & Support',
+      icon: HelpCircle,
+      path: '/help'
+    },
+    {
+      id: 'logout',
+      label: 'Sign Out',
+      icon: LogOut,
+      path: '/logout'
+    }
+  ];
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
     } else {
-      router.push('/events')
+      document.body.style.overflow = 'unset';
     }
-  }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
-  const isActiveRoute = (href: string) => {
-    if (href === '/dashboard') {
-      return pathname === '/' || pathname === '/dashboard'
+  const handleNavigate = (path: string) => {
+    if (onNavigate) {
+      onNavigate(path);
+    } else {
+      window.location.href = path;
     }
-    return pathname.startsWith(href)
-  }
+    setIsOpen(false);
+  };
 
-  const getActiveItem = () => {
-    return primaryNavItems.find(item => 
-      item.href !== '#' && isActiveRoute(item.href)
-    )
-  }
+  const toggleExpanded = (sectionId: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(sectionId)) {
+      newExpanded.delete(sectionId);
+    } else {
+      newExpanded.add(sectionId);
+    }
+    setExpandedSections(newExpanded);
+  };
 
-  const activeItem = getActiveItem()
+  const isActive = (path: string): boolean => {
+    return currentPath === path || currentPath.startsWith(path + '/');
+  };
+
+  const canAccess = (item: NavigationItem): boolean => {
+    if (item.adminOnly && !['ADMIN', 'SUPER_ADMIN'].includes(userRole)) {
+      return false;
+    }
+    if (item.requiresAuth && userRole === 'FREE') {
+      return false;
+    }
+    return true;
+  };
+
+  const getRoleBadgeColor = (role: string): string => {
+    switch (role) {
+      case 'FREE': return 'bg-gray-500';
+      case 'PRO': return 'bg-blue-500';
+      case 'TEAM': return 'bg-green-500';
+      case 'ENTERPRISE': return 'bg-purple-500';
+      case 'ADMIN': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const renderNavigationItem = (item: NavigationItem, level: number = 0) => {
+    if (!canAccess(item)) return null;
+    
+    const hasChildren = item.children && item.children.length > 0;
+    const isExpanded = expandedSections.has(item.id);
+    const active = isActive(item.path);
+    
+    return (
+      <div key={item.id}>
+        <Button
+          variant={active ? 'default' : 'ghost'}
+          className={`w-full justify-start h-auto py-3 px-4 ${
+            level > 0 ? 'ml-4 border-l-2 border-gray-200 dark:border-gray-700' : ''
+          }`}
+          onClick={() => {
+            if (hasChildren) {
+              toggleExpanded(item.id);
+            } else {
+              handleNavigate(item.path);
+            }
+          }}
+        >
+          <item.icon className={`h-5 w-5 mr-3 ${level > 0 ? 'h-4 w-4' : ''}`} />
+          <span className="flex-1 text-left">{item.label}</span>
+          {item.badge && item.badge > 0 && (
+            <Badge variant="destructive" className="ml-auto text-xs">
+              {item.badge}
+            </Badge>
+          )}
+          {hasChildren && (
+            <ChevronRight 
+              className={`h-4 w-4 ml-2 transition-transform ${
+                isExpanded ? 'rotate-90' : ''
+              }`} 
+            />
+          )}
+        </Button>
+        
+        {hasChildren && isExpanded && (
+          <div className="mt-1 space-y-1">
+            {item.children!.map(child => renderNavigationItem(child, level + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  if (!mounted || !isMobile) {
+    return null;
+  }
 
   return (
     <>
-      {/* Bottom Navigation Bar */}
-      <div className={`fixed bottom-0 left-0 right-0 z-50 md:hidden ${className}`}>
-        <div className="bg-white border-t border-gray-200 px-2 py-1 safe-area-padding-bottom">
-          <div className="flex items-center justify-around">
-            {primaryNavItems.map((item) => {
-              const isActive = item.href !== '#' && isActiveRoute(item.href)
-              const showBadge = item.badge && (typeof item.badge === 'number' ? item.badge > 0 : true)
-              
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavigation(item)}
-                  className={`relative flex flex-col items-center justify-center min-w-0 flex-1 py-2 px-1 transition-colors duration-200 ${
-                    isActive ? 'text-blue-600' : 'text-gray-600'
-                  } hover:text-blue-600 focus:outline-none focus:text-blue-600`}
-                  style={{
-                    minHeight: '48px', // Touch target minimum
-                    WebkitTapHighlightColor: 'transparent'
-                  }}
-                >
-                  <div className="relative">
-                    {isActive ? (item.activeIcon || item.icon) : item.icon}
-                    
-                    {/* Badge */}
-                    {showBadge && (
-                      <div className="absolute -top-2 -right-2">
-                        <Badge 
-                          variant={typeof item.badge === 'string' ? 'default' : 'destructive'}
-                          className={`text-xs px-1.5 py-0.5 min-w-[16px] h-4 flex items-center justify-center ${
-                            typeof item.badge === 'string' 
-                              ? 'bg-purple-600 text-white' 
-                              : 'bg-red-500 text-white'
-                          }`}
-                        >
-                          {item.badge}
-                        </Badge>
-                      </div>
-                    )}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsOpen(true)}
+        className="fixed top-4 left-4 z-40 md:hidden"
+      >
+        <Menu className="h-4 w-4" />
+      </Button>
 
-                    {/* Offline sync indicator */}
-                    {item.id === 'search' && !isOnline && offlineActions.length > 0 && (
-                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full" />
-                    )}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden">
+          <div className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-gray-900 shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                    {userName}
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <Badge 
+                      className={`text-xs ${getRoleBadgeColor(userRole)} text-white`}
+                    >
+                      {userRole}
+                    </Badge>
                   </div>
-                  
-                  <span className={`text-xs mt-1 truncate max-w-full ${
-                    isActive ? 'font-medium' : 'font-normal'
-                  }`}>
-                    {item.name}
-                  </span>
-
-                  {/* Active indicator */}
-                  {isActive && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full" />
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions Overlay */}
-      {showQuickActions && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black bg-opacity-50" 
-            onClick={() => setShowQuickActions(false)}
-          />
-          
-          {/* Quick Actions Panel */}
-          <div className="absolute bottom-16 left-4 right-4 bg-white rounded-2xl shadow-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
-              <button
-                onClick={() => setShowQuickActions(false)}
-                className="p-1 text-gray-400 hover:text-gray-600"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-            </div>
-            
-            {/* Quick Actions Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              {quickActions.map((action) => (
-                <button
-                  key={action.id}
-                  onClick={() => {
-                    action.action()
-                    setShowQuickActions(false)
-                  }}
-                  className={`flex flex-col items-center justify-center p-4 rounded-xl text-white transition-transform active:scale-95 ${action.color}`}
-                  style={{ minHeight: '80px' }}
-                >
-                  {action.icon}
-                  <span className="text-sm font-medium mt-2">{action.name}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Secondary Navigation */}
-            <div className="border-t border-gray-200 pt-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">More Options</h4>
-              <div className="space-y-2">
-                {secondaryNavItems.map((item) => (
-                  <button
-                    key={item.href}
-                    onClick={() => {
-                      router.push(item.href)
-                      setShowQuickActions(false)
-                    }}
-                    className="flex items-center gap-3 w-full p-2 text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <div className="text-gray-500">
-                      {item.icon}
-                    </div>
-                    <span className="flex-1">{item.name}</span>
-                    {item.badge && (
-                      <Badge variant="secondary" className="text-xs">
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* User Info */}
-            {session?.user && (
-              <div className="border-t border-gray-200 pt-4 mt-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">{session.user.name}</p>
-                    <p className="text-sm text-gray-500">{session.user.email}</p>
-                  </div>
-                  {!isOnline && (
-                    <div className="text-orange-500">
-                      <Zap className="w-4 h-4" />
-                    </div>
-                  )}
                 </div>
               </div>
-            )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto py-4">
+              <div className="px-4">
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                  Navigation
+                </h3>
+                <div className="space-y-1">
+                  {navigationItems.map(item => renderNavigationItem(item))}
+                </div>
+              </div>
+
+              <div className="px-4 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                  Account
+                </h3>
+                <div className="space-y-1">
+                  {accountItems.map(item => renderNavigationItem(item))}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-gray-900 dark:text-gray-100">
+                        Mobile Optimized
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Enhanced for mobile devices
+                      </p>
+                    </div>
+                    <Zap className="h-4 w-4 text-yellow-500" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Safe area padding for devices with notches */}
-      <style jsx>{`
-        .safe-area-padding-bottom {
-          padding-bottom: env(safe-area-inset-bottom, 0px);
-        }
-        
-        /* Prevent zoom on touch */
-        button {
-          touch-action: manipulation;
-        }
-        
-        /* Smooth scrolling for mobile */
-        html {
-          scroll-behavior: smooth;
-          -webkit-overflow-scrolling: touch;
-        }
-        
-        /* Custom tap highlight */
-        * {
-          -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
-        }
-      `}</style>
     </>
-  )
-} 
+  );
+}

@@ -10,7 +10,9 @@ import {
   ClockIcon,
   MapPinIcon,
   BuildingOfficeIcon,
-  CheckBadgeIcon
+  CheckBadgeIcon,
+  TagIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import { RealTimeVotes } from './RealTimeVotes';
 import { MentionDisplayReact } from './MentionDisplay';
@@ -39,8 +41,8 @@ interface ForumPost {
   lastActivityAt: string;
   // Post type fields
   postType?: string;
-  listItems?: string[];
-  pollChoices?: string[];
+  listItems?: string; // JSON string of array
+  pollChoices?: string; // JSON string of array
   pollDuration?: number;
   pollEndsAt?: string;
   author: {
@@ -109,6 +111,29 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showMentions, setShowMentions] = useState(false);
+  const [tagsExpanded, setTagsExpanded] = useState(false);
+
+  // Helper functions to parse JSON string fields
+  const parseListItems = (listItems?: string): string[] => {
+    if (!listItems) return [];
+    try {
+      return JSON.parse(listItems);
+    } catch {
+      return [];
+    }
+  };
+
+  const parsePollChoices = (pollChoices?: string): string[] => {
+    if (!pollChoices) return [];
+    try {
+      return JSON.parse(pollChoices);
+    } catch {
+      return [];
+    }
+  };
+
+  const listItemsArray = parseListItems(post.listItems);
+  const pollChoicesArray = parsePollChoices(post.pollChoices);
   const [mentionQuery, setMentionQuery] = useState('');
   const [mentionSuggestions, setMentionSuggestions] = useState<any[]>([]);
   const { data: session } = useSession();
@@ -341,59 +366,194 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
         )}
 
         <div className="flex-1 min-w-0">
-          {/* Company Names + Follow Button */}
+          {/* Primary Display: Company/Agency + Tags */}
           <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center space-x-2">
-              {!post.isAnonymous && post.author.company ? (
-                <div className="flex items-center space-x-2">
-                  <Link 
-                    href={`/orgs/companies/${post.author.company.id}`}
-                    className="font-semibold text-gray-900 hover:text-blue-600 transition-colors"
-                  >
-                    {post.author.company.name}
-                    {post.author.company.verified && (
-                      <CheckBadgeIcon className="w-4 h-4 text-blue-500 inline ml-1" />
-                    )}
-                  </Link>
-                  {/* Multiple Company Tags */}
-                  {post.companyMentions && post.companyMentions.length > 0 && (
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              {!post.isAnonymous ? (
+                <div className="flex items-center space-x-2 flex-1 min-w-0">
+                  {/* Primary Company Display - Most Prominent */}
+                  {post.author.company ? (
+                    <div className="flex items-center space-x-2">
+                      <Link 
+                        href={`/orgs/companies/${post.author.company.id}`}
+                        className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center space-x-1"
+                      >
+                        <span>{post.author.company.name}</span>
+                        {post.author.company.verified && (
+                          <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                        )}
+                      </Link>
+                      {/* Show Company @ Agency format if there are company mentions */}
+                      {post.companyMentions && post.companyMentions.length > 0 && (
+                        <>
+                          <span className="text-gray-400 text-lg">@</span>
+                          <Link
+                            href={`/orgs/companies/${post.companyMentions[0].company.id}`}
+                            className="font-medium text-gray-700 hover:text-blue-600 transition-colors flex items-center space-x-1"
+                          >
+                            <span>{post.companyMentions[0].company.name}</span>
+                            {post.companyMentions[0].company.verified && (
+                              <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
+                            )}
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    // Fallback to author name when no company
+                    <span className="font-semibold text-gray-900 text-lg">
+                      {post.author.name}
+                    </span>
+                  )}
+                  
+                  {/* Enhanced Tag Display */}
+                  {(post.companyMentions && post.companyMentions.length > 1) || tags.length > 0 ? (
                     <>
                       <span className="text-gray-400">+</span>
-                      {post.companyMentions.slice(0, 2).map((mention, index) => (
+                      <div className="flex items-center space-x-1">
+                        {/* Additional Company Mentions (after first one used in @ format) */}
+                        {post.companyMentions && post.companyMentions.slice(1, 3).map((mention, index) => (
+                          <Link
+                            key={mention.company.id}
+                            href={`/orgs/companies/${mention.company.id}`}
+                            className="inline-flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-colors"
+                          >
+                            {mention.company.logoUrl ? (
+                              <img 
+                                src={mention.company.logoUrl} 
+                                alt={`${mention.company.name} logo`}
+                                className="w-3 h-3 rounded object-cover"
+                              />
+                            ) : (
+                              <BuildingOfficeIcon className="w-3 h-3" />
+                            )}
+                            <span>{mention.company.name}</span>
+                          </Link>
+                        ))}
+                        
+                        {/* Custom Tags */}
+                        {tags.slice(0, 2).map((tag, index) => (
+                          <span key={index} className="inline-flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-colors">
+                            <TagIcon className="w-3 h-3" />
+                            <span>{tag}</span>
+                          </span>
+                        ))}
+                        
+                        {/* Expandable "more" indicator */}
+                        {(post.companyMentions && post.companyMentions.length > 3) || tags.length > 2 || (post.contactMentions && post.contactMentions.length > 0) ? (
+                          <button 
+                            onClick={() => setTagsExpanded(!tagsExpanded)}
+                            className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors"
+                          >
+                            {tagsExpanded ? '- less' : `+ ${Math.max(0, ((post.companyMentions?.length || 0) - 3) + Math.max(0, (tags.length - 2)) + (post.contactMentions?.length || 0))} more`}
+                          </button>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              ) : (
+                <span className="font-semibold text-gray-900 text-lg">
+                  {post.anonymousHandle}
+                </span>
+              )}
+            </div>
+          
+          {/* Expanded Tags Section - Enhanced UX */}
+          {tagsExpanded && (
+            <div className="mt-4 p-4 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-xl border border-blue-100/50">
+              <div className="space-y-4">
+                {/* Companies Section */}
+                {post.companyMentions && post.companyMentions.slice(3).length > 0 && (
+                  <div>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <BuildingOfficeIcon className="w-4 h-4 text-blue-600" />
+                      <h4 className="text-sm font-medium text-blue-800">Additional Companies</h4>
+                      <div className="flex-1 h-px bg-blue-200"></div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {post.companyMentions.slice(3).map((mention) => (
                         <Link
                           key={mention.company.id}
                           href={`/orgs/companies/${mention.company.id}`}
-                          className="inline-flex items-center space-x-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                          className="inline-flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-all duration-200 hover:shadow-sm border border-blue-100"
                         >
                           {mention.company.logoUrl ? (
                             <img 
                               src={mention.company.logoUrl} 
                               alt={`${mention.company.name} logo`}
-                              className="w-4 h-4 rounded object-cover"
+                              className="w-3 h-3 rounded object-cover"
                             />
                           ) : (
-                            <div className="w-4 h-4 rounded bg-gray-200 flex items-center justify-center">
-                              <BuildingOfficeIcon className="w-2.5 h-2.5 text-gray-500" />
-                            </div>
+                            <BuildingOfficeIcon className="w-3 h-3" />
                           )}
-                          <span>{mention.company.name}</span>
+                          <span className="font-medium">{mention.company.name}</span>
+                          {mention.company.verified && (
+                            <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
+                          )}
                         </Link>
                       ))}
-                      {post.companyMentions.length > 2 && (
-                        <span className="text-sm text-gray-500">+ {post.companyMentions.length - 2} more</span>
-                      )}
-                    </>
+                    </div>
+                  </div>
                 )}
+                
+                {/* Contacts Section */}
+                {post.contactMentions && post.contactMentions.length > 0 && (
+                  <div>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <UserIcon className="w-4 h-4 text-blue-600" />
+                      <h4 className="text-sm font-medium text-blue-800">Key Contacts</h4>
+                      <div className="flex-1 h-px bg-blue-200"></div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {post.contactMentions.map((mention) => (
+                        <Link
+                          key={mention.contact.id}
+                          href={`/orgs/contacts/${mention.contact.id}`}
+                          className="inline-flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-all duration-200 hover:shadow-sm border border-blue-100"
+                        >
+                          <UserIcon className="w-3 h-3" />
+                          <span className="font-medium">{mention.contact.fullName}</span>
+                          {mention.contact.title && (
+                            <span className="text-blue-600 text-xs">• {mention.contact.title}</span>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Category Tags Section */}
+                {tags.slice(2).length > 0 && (
+                  <div>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <TagIcon className="w-4 h-4 text-blue-600" />
+                      <h4 className="text-sm font-medium text-blue-800">Additional Tags</h4>
+                      <div className="flex-1 h-px bg-blue-200"></div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {tags.slice(2).map((tag, index) => (
+                        <span key={index} className="inline-flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-all duration-200 border border-blue-100">
+                          <TagIcon className="w-3 h-3" />
+                          <span className="font-medium">{tag}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Collapse Button */}
+                <div className="pt-2 border-t border-blue-200/50">
+                  <button 
+                    onClick={() => setTagsExpanded(false)}
+                    className="w-full text-center py-2 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                  >
+                    ↑ Show less
+                  </button>
+                </div>
               </div>
-              ) : (
-                <span className="font-semibold text-gray-900">
-                  {post.isAnonymous ? post.anonymousHandle : post.author.name}
-                </span>
-              )}
-              {!post.companyMentions || post.companyMentions.length === 0 ? (
-                <span className="text-sm text-gray-500">+ 5 more</span>
-              ) : null}
             </div>
+          )}
             <button className="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center space-x-1">
               <span>Follow</span>
             </button>
@@ -414,12 +574,9 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
         </div>
           </div>
 
-      {/* Title with engagement indicators */}
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="text-lg font-medium text-gray-900 flex-1 group-hover:text-gray-700 transition-colors">
-          {post.title}
-        </h3>
-        <div className="flex items-center space-x-2 ml-4">
+      {/* Engagement indicators only (no title) */}
+      <div className="flex items-center justify-end mb-3">
+        <div className="flex items-center space-x-2">
           {/* Trending indicator */}
           {post.views > 100 && (
             <div className="flex items-center space-x-1 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
@@ -432,32 +589,32 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
           )}
         </div>
-        </div>
+      </div>
         
       {/* Content preview with mentions - Dynamic based on post type */}
       <div className="text-gray-700 mb-4">
-        {post.postType === 'list' && post.listItems ? (
+        {post.postType === 'list' && listItemsArray.length > 0 ? (
           <div className="space-y-2">
-            {post.listItems.slice(0, 3).map((item, index) => (
+            {listItemsArray.slice(0, 3).map((item, index) => (
               <div key={index} className="flex items-start space-x-2">
                 <span className="text-gray-400 mt-1">•</span>
                 <span>{item}</span>
               </div>
             ))}
-            {post.listItems.length > 3 && (
-              <div className="text-gray-500 text-sm">+{post.listItems.length - 3} more items</div>
+            {listItemsArray.length > 3 && (
+              <div className="text-gray-500 text-sm">+{listItemsArray.length - 3} more items</div>
             )}
           </div>
-        ) : post.postType === 'poll' && post.pollChoices ? (
+        ) : post.postType === 'poll' && pollChoicesArray.length > 0 ? (
           <div className="space-y-2">
-            {post.pollChoices.slice(0, 3).map((choice, index) => (
+            {pollChoicesArray.slice(0, 3).map((choice, index) => (
               <div key={index} className="flex items-center space-x-2 p-2 border border-gray-200 rounded">
                 <div className="w-4 h-4 border border-gray-300 rounded"></div>
                 <span>{choice}</span>
               </div>
             ))}
-            {post.pollChoices.length > 3 && (
-              <div className="text-gray-500 text-sm">+{post.pollChoices.length - 3} more choices</div>
+            {pollChoicesArray.length > 3 && (
+              <div className="text-gray-500 text-sm">+{pollChoicesArray.length - 3} more choices</div>
             )}
             {post.pollEndsAt && (
               <div className="text-xs text-gray-500 mt-2">

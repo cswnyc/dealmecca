@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ForumLayout } from '@/components/layout/ForumLayout';
 import EventHeader from '@/components/events/EventHeader';
 import AttendanceActions from '@/components/events/AttendanceActions';
 import EventStats from '@/components/events/EventStats';
@@ -177,34 +178,39 @@ export default function EventDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading event details...</p>
+      <ForumLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading event details...</p>
+          </div>
         </div>
-      </div>
+      </ForumLayout>
     );
   }
 
   if (error || !eventData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h2>
-          <p className="text-gray-600 mb-4">{error || 'This event could not be found.'}</p>
-          <Button onClick={() => router.push('/events')} variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Events
-          </Button>
+      <ForumLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h2>
+            <p className="text-gray-600 mb-4">{error || 'This event could not be found.'}</p>
+            <Button onClick={() => router.push('/events')} variant="outline">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Events
+            </Button>
+          </div>
         </div>
-      </div>
+      </ForumLayout>
     );
   }
 
   const { event, avgRatings, avgCosts, roiStats } = eventData;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <ForumLayout>
+      <div className="bg-gray-50">
       {/* Header Section */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -719,6 +725,6 @@ export default function EventDetailPage() {
           </div>
         </div>
       </div>
-    </div>
+    </ForumLayout>
   );
 } 

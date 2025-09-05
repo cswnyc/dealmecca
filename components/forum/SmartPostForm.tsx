@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { generateMetadata } from '@/lib/ai-tagging';
 import { parseMentions } from '@/lib/mention-utils';
 import { MentionTextarea } from './MentionTextarea';
+import { CodeGenerationInterface } from '@/components/code/CodeGenerationInterface';
 import { TagIcon, MapPinIcon, ExclamationTriangleIcon, BuildingOfficeIcon, CalendarIcon } from '@heroicons/react/24/outline';
 
 interface ForumCategory {
@@ -17,7 +18,7 @@ interface ForumCategory {
 
 interface SmartPostFormProps {
   categories: ForumCategory[];
-  postType?: 'post' | 'list' | 'poll';
+  postType?: 'post' | 'list' | 'poll' | 'code';
   onSuccess?: () => void;
 }
 
@@ -32,8 +33,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     categoryId: '',
     tags: [] as string[],
     isAnonymous: false,
-    urgency: 'MEDIUM',
-    dealSize: '',
     location: '',
     mediaType: [] as string[],
     eventId: eventId || '',
@@ -41,7 +40,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     listItems: [''],
     // Poll specific fields
     pollChoices: ['', ''],
-    pollDuration: 7 // days
+    pollDuration: 7, // days
+    // Code specific fields
+    codePrompt: '',
+    codeLanguage: 'typescript',
+    codeFramework: 'React',
+    codeType: 'component',
+    codeComplexity: 'intermediate',
+    generatedCode: ''
   });
 
   const [eventInfo, setEventInfo] = useState<{
@@ -55,9 +61,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     tags: [] as string[],
     companies: [] as string[],
     location: '',
-    mediaTypes: [] as string[],
-    urgency: 'MEDIUM' as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT',
-    dealSize: null as string | null
+    mediaTypes: [] as string[]
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -129,31 +133,56 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     }
   }, [eventId]);
 
-  // AI-powered suggestions when title or content changes
+  // Enhanced AI-powered suggestions when content changes
   useEffect(() => {
-    if (formData.title.length > 10 || formData.content.length > 50) {
-      const suggestions = generateMetadata(formData.title, formData.content) as any;
-      setAiSuggestions(suggestions);
-      setShowAiSuggestions(true);
+    if (formData.content.length > 50) {
+      const getSuggestions = async () => {
+        try {
+          // Use Claude Code SDK via API for more advanced suggestions
+          const response = await fetch('/api/claude-code/forum-suggestions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: formData.content })
+          });
+          const claudeSuggestions = response.ok ? await response.json() : null;
+          
+          // Fallback to local suggestions if Claude fails
+          const fallbackSuggestions = generateMetadata('', formData.content) as any;
+          
+          // Merge suggestions, prioritizing Claude's suggestions
+          const mergedSuggestions = {
+            tags: [...(claudeSuggestions?.tags || []), ...((fallbackSuggestions?.tags) || [])].slice(0, 10),
+            companies: [...(claudeSuggestions?.technologies || []), ...((fallbackSuggestions?.companies) || [])],
+            location: claudeSuggestions?.location || fallbackSuggestions?.location || '',
+            mediaTypes: [...(claudeSuggestions?.frameworks || []), ...((fallbackSuggestions?.mediaTypes) || [])],
+          };
+          
+          setAiSuggestions(mergedSuggestions);
+          setShowAiSuggestions(true);
+          
+          // Auto-set detected values if not already set
+          if (mergedSuggestions.location && !formData.location) {
+            setFormData(prev => ({ ...prev, location: mergedSuggestions.location || '' }));
+          }
+          
+          
+          if (mergedSuggestions.mediaTypes.length > 0 && formData.mediaType.length === 0) {
+            setFormData(prev => ({ ...prev, mediaType: mergedSuggestions.mediaTypes }));
+          }
+        } catch (error) {
+          console.error('Failed to get Claude suggestions, using fallback:', error);
+          // Use fallback suggestions on error
+          const suggestions = generateMetadata('', formData.content) as any;
+          if (suggestions) {
+            setAiSuggestions(suggestions);
+            setShowAiSuggestions(true);
+          }
+        }
+      };
       
-      // Auto-set location and urgency if detected and not already set
-      if (suggestions.location && !formData.location) {
-        setFormData(prev => ({ ...prev, location: suggestions.location || '' }));
-      }
-      
-      if (suggestions.urgency && formData.urgency === 'MEDIUM') {
-        setFormData(prev => ({ ...prev, urgency: suggestions.urgency }));
-      }
-      
-      if (suggestions.dealSize && !formData.dealSize) {
-        setFormData(prev => ({ ...prev, dealSize: suggestions.dealSize || '' }));
-      }
-      
-      if (suggestions.mediaTypes.length > 0 && formData.mediaType.length === 0) {
-        setFormData(prev => ({ ...prev, mediaType: suggestions.mediaTypes }));
-      }
+      getSuggestions();
     }
-  }, [formData.title, formData.content]);
+  }, [formData.content]);
 
   const addTag = (tag: string) => {
     if (!formData.tags.includes(tag)) {
@@ -191,11 +220,11 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     e.preventDefault();
     
     // Validation based on post type
-    if (!formData.title) return;
     
     if (postType === 'post' && !formData.content) return;
     if (postType === 'list' && formData.listItems.filter(item => item.trim()).length === 0) return;
     if (postType === 'poll' && formData.pollChoices.filter(choice => choice.trim()).length < 2) return;
+    if (postType === 'code' && !formData.generatedCode && !formData.content) return;
     
     if (!formData.categoryId) return;
 
@@ -219,6 +248,19 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           pollDuration: formData.pollDuration,
           pollEndsAt: new Date(Date.now() + formData.pollDuration * 24 * 60 * 60 * 1000).toISOString()
         };
+      } else if (postType === 'code') {
+        // For code posts, include both generated code and additional context
+        content = formData.generatedCode ? 
+          `\`\`\`${formData.codeLanguage}\n${formData.generatedCode}\n\`\`\`\n\n${formData.content}` : 
+          formData.content;
+        additionalData = { 
+          postType: 'code',
+          codeLanguage: formData.codeLanguage,
+          codeFramework: formData.codeFramework,
+          codeType: formData.codeType,
+          codeComplexity: formData.codeComplexity,
+          generatedCode: formData.generatedCode
+        };
       } else {
         additionalData = { postType: 'post' };
       }
@@ -226,22 +268,30 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
       // Parse mentions from content
       const mentions = parseMentions(content);
       
+      // Auto-generate title from content (first 50 characters)
+      const autoTitle = content.length > 0 ? 
+        content.replace(/\s+/g, ' ').trim().substring(0, 50) + (content.length > 50 ? '...' : '') :
+        'New Post';
+      
+      const requestBody = {
+        ...formData,
+        title: autoTitle,
+        content,
+        ...additionalData,
+        tags: JSON.stringify(formData.tags),
+        mediaType: JSON.stringify(formData.mediaType),
+        // Include mentions for backend processing
+        mentions: {
+          companies: mentions.companyMentions,
+          contacts: mentions.contactMentions
+        }
+      };
+      
       const response = await fetch('/api/forum/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          ...formData,
-          content,
-          ...additionalData,
-          tags: JSON.stringify(formData.tags),
-          mediaType: JSON.stringify(formData.mediaType),
-          // Include mentions for backend processing
-          mentions: {
-            companies: mentions.companyMentions,
-            contacts: mentions.contactMentions
-          }
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (response.ok) {
@@ -253,7 +303,9 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           router.push('/forum');
         }
       } else {
-        throw new Error('Failed to create post');
+        const errorText = await response.text();
+        console.error('Server responded with error:', response.status, errorText);
+        throw new Error(`Failed to create post: ${response.status} - ${errorText}`);
       }
     } catch (error) {
       console.error('Error creating post:', error);
@@ -300,21 +352,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         {/* Dynamic Content Based on Post Type */}
         {postType === 'post' && (
           <>
-            {/* Post Title */}
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Title *
-              </label>
-              <input
-                type="text"
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="What's the opportunity or question?"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
 
             {/* Post Content */}
             <div>
@@ -333,17 +370,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
         {postType === 'list' && (
           <>
-            {/* List Title */}
-            <div>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Name your list..."
-                className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
-                required
-              />
-            </div>
 
             {/* List Items */}
             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
@@ -378,19 +404,46 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           </>
         )}
 
-        {postType === 'poll' && (
+        {postType === 'code' && (
           <>
-            {/* Poll Question */}
+
+            {/* Code Generation Interface */}
             <div>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Ask a question..."
-                className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
-                required
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Code Generation
+              </label>
+              <CodeGenerationInterface
+                initialPrompt={formData.codePrompt}
+                initialLanguage={formData.codeLanguage}
+                initialFramework={formData.codeFramework}
+                onCodeGenerated={(code, language) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    generatedCode: code,
+                    codeLanguage: language,
+                    content: code // Set the generated code as the post content
+                  }));
+                }}
               />
             </div>
+
+            {/* Optional additional context */}
+            <div>
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+                Additional Context (Optional)
+              </label>
+              <MentionTextarea
+                value={formData.content}
+                onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                placeholder="Add any additional context, questions, or discussion points about this code..."
+                rows={4}
+              />
+            </div>
+          </>
+        )}
+
+        {postType === 'poll' && (
+          <>
 
             {/* Poll Choices */}
             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
@@ -519,26 +572,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             )}
 
             {/* Detected Urgency */}
-            {aiSuggestions.urgency !== 'MEDIUM' && (
-              <div className="mb-3">
-                <p className="text-xs text-blue-700 mb-2 flex items-center">
-                  <ExclamationTriangleIcon className="w-3 h-3 mr-1" />
-                  Detected priority: 
-                  <span className={`ml-1 px-2 py-0.5 rounded text-xs font-medium ${getUrgencyColor(aiSuggestions.urgency)}`}>
-                    {aiSuggestions.urgency}
-                  </span>
-                </p>
-              </div>
-            )}
-
-            {/* Deal Size */}
-            {aiSuggestions.dealSize && (
-              <div>
-                <p className="text-xs text-blue-700 mb-2">
-                  Detected deal size: <span className="font-medium">{aiSuggestions.dealSize}</span>
-                </p>
-              </div>
-            )}
           </div>
         )}
 
@@ -565,42 +598,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             </select>
           </div>
 
-          {/* Urgency */}
-          <div>
-            <label htmlFor="urgency" className="block text-sm font-medium text-gray-700 mb-2">
-              Priority Level
-            </label>
-            <select
-              id="urgency"
-              value={formData.urgency}
-              onChange={(e) => setFormData(prev => ({ ...prev, urgency: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="LOW">Low Priority</option>
-              <option value="MEDIUM">Medium Priority</option>
-              <option value="HIGH">High Priority</option>
-              <option value="URGENT">🚨 URGENT</option>
-            </select>
-          </div>
-
-          {/* Deal Size */}
-          <div>
-            <label htmlFor="dealSize" className="block text-sm font-medium text-gray-700 mb-2">
-              Deal Size (Optional)
-            </label>
-            <select
-              id="dealSize"
-              value={formData.dealSize}
-              onChange={(e) => setFormData(prev => ({ ...prev, dealSize: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Not specified</option>
-              <option value="SMALL">Under $50K</option>
-              <option value="MEDIUM">$50K - $500K</option>
-              <option value="LARGE">$500K - $2M</option>
-              <option value="ENTERPRISE">$2M+</option>
-            </select>
-          </div>
         </div>
 
         {/* Location */}
@@ -719,10 +716,15 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           </button>
           <button
             type="submit"
-            disabled={isSubmitting || !formData.title || !formData.content || !formData.categoryId}
+            disabled={isSubmitting || 
+              (postType === 'post' && !formData.content) ||
+              (postType === 'list' && formData.listItems.filter(item => item.trim()).length === 0) ||
+              (postType === 'poll' && formData.pollChoices.filter(choice => choice.trim()).length < 2) ||
+              (postType === 'code' && !formData.generatedCode && !formData.content) ||
+              !formData.categoryId}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isSubmitting ? 'Creating...' : 'Create Post'}
+            {isSubmitting ? 'Creating...' : `Create ${postType.charAt(0).toUpperCase() + postType.slice(1)}`}
           </button>
         </div>
       </form>

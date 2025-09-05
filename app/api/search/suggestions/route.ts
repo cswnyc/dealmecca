@@ -1,58 +1,120 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { createAuthError, createInternalError } from '@/lib/api-responses'
+import { searchSuggestionEngine } from '@/lib/search-suggestions'
+import { logger } from '@/lib/logger'
 
 const prisma = new PrismaClient()
 
 interface SearchSuggestion {
   id: string
   query: string
-  type: 'company' | 'industry' | 'person' | 'trend'
+  type: 'company' | 'contact' | 'location' | 'industry' | 'title' | 'trend' | 'recent'
+  display: string
   description: string
+  count?: number
   popularity: number
-  category?: string
-  relevanceScore: number
-  reasoning?: string
+  category: string
+  metadata?: Record<string, any>
 }
 
 export async function GET(request: NextRequest) {
+  const startTime = Date.now()
+  
   try {
     // Get user info from middleware headers
     const userId = request.headers.get('x-user-id')
     const userTier = request.headers.get('x-user-tier')
     
-    if (!userId) {
-      return createAuthError()
-    }
-
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q') || ''
     const type = searchParams.get('type') || 'all'
     const limit = parseInt(searchParams.get('limit') || '10')
+    const categorized = searchParams.get('categorized') === 'true'
 
-    // Get user's search history for personalization
-    const userSearchHistory = await prisma.search.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      take: 20
+    // Validate query length for performance
+    if (query.length > 0 && query.length < 2) {
+      return NextResponse.json(
+        { 
+          error: 'Query must be at least 2 characters long',
+          suggestions: [],
+          categories: {},
+          totalResults: 0,
+          queryTime: 0
+        },
+        { status: 400 }
+      );
+    }
+
+    // Use categorized search for global search dropdown
+    if (categorized && query.length >= 2) {
+      const categorizedResults = await getCategorizedSuggestions(query, limit)
+      
+      logger.info('search', 'Categorized suggestions requested', {
+        query,
+        limit,
+        userId: userId || 'anonymous',
+        resultCount: categorizedResults.totalResults,
+        duration: Date.now() - startTime
+      })
+
+      return NextResponse.json({
+        ...categorizedResults,
+        seeAllQuery: query,
+        queryTime: Date.now() - startTime,
+        metadata: {
+          query,
+          type,
+          personalized: userId ? true : false,
+          userTier: userTier || 'FREE',
+          timestamp: new Date().toISOString()
+        }
+      })
+    }
+
+    // Use new advanced suggestion engine for regular suggestions
+    const suggestions = await searchSuggestionEngine.getAutoCompleteSuggestions(
+      query,
+      userId || undefined,
+      Math.min(limit, userTier === 'FREE' ? 5 : userTier === 'PRO' ? 15 : 25)
+    )
+
+    // Log the request
+    logger.info('search', 'Auto-complete suggestions requested', {
+      query,
+      limit,
+      type,
+      userId: userId || 'anonymous',
+      resultCount: suggestions.totalResults,
+      queryTime: suggestions.queryTime,
+      duration: Date.now() - startTime
     })
 
-    // Generate suggestions based on query and user history
-    const suggestions = await generateSuggestions(query, type, userSearchHistory, userTier || 'FREE', limit)
-
     return NextResponse.json({
-      suggestions,
+      ...suggestions,
       metadata: {
         query,
         type,
-        personalized: userSearchHistory.length > 0,
-        userTier
+        personalized: userId ? true : false,
+        userTier: userTier || 'FREE',
+        timestamp: new Date().toISOString()
       }
     })
   } catch (error) {
-    console.error('Search suggestions API error:', error)
+    logger.error('search', 'Search suggestions API error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      duration: Date.now() - startTime
+    })
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Failed to fetch search suggestions',
+        suggestions: [],
+        categories: {},
+        totalResults: 0,
+        queryTime: Date.now() - startTime
+      },
       { status: 500 }
     )
   }
@@ -340,6 +402,198 @@ function generateQuerySpecificSuggestions(query: string): SearchSuggestion[] {
   }
 
   return suggestions
+}
+
+// New function for categorized suggestions (global search dropdown)
+async function getCategorizedSuggestions(query: string, limit: number = 8) {
+  const suggestions: any[] = []
+  const categories = {
+    company: 0,
+    team: 0,
+    businessLine: 0,
+    contact: 0
+  }
+
+  try {
+    // Search companies (limit to 3 for balanced results)
+    const companies = await prisma.company.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } }
+        ],
+        verified: true
+      },
+      select: {
+        id: true,
+        name: true,
+        city: true,
+        state: true,
+        companyType: true,
+        verified: true
+      },
+      take: 3,
+      orderBy: [
+        { verified: 'desc' },
+        { name: 'asc' }
+      ]
+    })
+
+    companies.forEach(company => {
+      suggestions.push({
+        id: company.id,
+        title: company.name,
+        type: 'company',
+        category: 'Company',
+        icon: 'building',
+        metadata: {
+          verified: company.verified,
+          location: company.city && company.state ? `${company.city}, ${company.state}` : undefined,
+          description: company.companyType
+        }
+      })
+      categories.company++
+    })
+
+    // Search contacts (limit to 2 for balanced results)
+    const contacts = await prisma.contact.findMany({
+      where: {
+        OR: [
+          { fullName: { contains: query, mode: 'insensitive' } },
+          { firstName: { contains: query, mode: 'insensitive' } },
+          { lastName: { contains: query, mode: 'insensitive' } }
+        ],
+        isActive: true
+      },
+      include: {
+        company: {
+          select: {
+            name: true,
+            verified: true
+          }
+        }
+      },
+      take: 2,
+      orderBy: [
+        { verified: 'desc' },
+        { fullName: 'asc' }
+      ]
+    })
+
+    contacts.forEach(contact => {
+      suggestions.push({
+        id: contact.id,
+        title: contact.fullName,
+        type: 'contact',
+        category: 'Contact',
+        icon: 'user',
+        metadata: {
+          verified: contact.verified,
+          location: contact.company?.name,
+          description: contact.title
+        }
+      })
+      categories.contact++
+    })
+
+    // Generate team suggestions based on company search + "@ Agency" pattern
+    if (companies.length > 0 && suggestions.length < limit) {
+      const teamSuggestions = generateTeamSuggestions(query, companies)
+      teamSuggestions.forEach(team => {
+        if (suggestions.length < limit) {
+          suggestions.push(team)
+          categories.team++
+        }
+      })
+    }
+
+    // Generate business line suggestions
+    if (suggestions.length < limit) {
+      const businessLineSuggestions = generateBusinessLineSuggestions(query)
+      businessLineSuggestions.forEach(bl => {
+        if (suggestions.length < limit) {
+          suggestions.push(bl)
+          categories.businessLine++
+        }
+      })
+    }
+
+    return {
+      suggestions: suggestions.slice(0, limit),
+      categories,
+      totalResults: suggestions.length
+    }
+
+  } catch (error) {
+    console.error('Error fetching categorized suggestions:', error)
+    return {
+      suggestions: [],
+      categories,
+      totalResults: 0
+    }
+  }
+}
+
+// Generate team suggestions (Brand @ Agency pattern)
+function generateTeamSuggestions(query: string, companies: any[]) {
+  const teams: any[] = []
+  const queryLower = query.toLowerCase()
+
+  // Known agency patterns
+  const agencies = ['Initiative', 'GroupM', 'Mindshare', 'MediaCom', 'Wavemaker', 'PMG Austin']
+  
+  companies.forEach(company => {
+    if (company.name.toLowerCase().includes(queryLower)) {
+      agencies.forEach(agency => {
+        teams.push({
+          id: `${company.id}-${agency.toLowerCase().replace(/\s+/g, '-')}`,
+          title: `${company.name} @ ${agency}`,
+          type: 'team',
+          category: 'Team',
+          icon: 'users',
+          metadata: {
+            description: `${company.name} team at ${agency}`
+          }
+        })
+      })
+    }
+  })
+
+  return teams.slice(0, 2) // Limit to 2 team suggestions
+}
+
+// Generate business line suggestions
+function generateBusinessLineSuggestions(query: string) {
+  const businessLines: any[] = []
+  const queryLower = query.toLowerCase()
+
+  // Business line patterns based on common queries
+  const patterns = [
+    { suffix: '+', description: 'Premium services division' },
+    { suffix: ' Digital', description: 'Digital transformation unit' },
+    { suffix: ' Media', description: 'Media services division' },
+    { suffix: ' Studios', description: 'Creative production arm' }
+  ]
+
+  // If query matches a known brand, suggest business lines
+  const knownBrands = ['Nike', 'Apple', 'Google', 'Microsoft', 'Amazon']
+  knownBrands.forEach(brand => {
+    if (brand.toLowerCase().includes(queryLower) || queryLower.includes(brand.toLowerCase())) {
+      patterns.forEach(pattern => {
+        businessLines.push({
+          id: `${brand.toLowerCase()}-${pattern.suffix.toLowerCase().replace(/\s+/g, '-')}`,
+          title: `${brand}${pattern.suffix}`,
+          type: 'businessLine',
+          category: 'Business Lines',
+          icon: 'briefcase',
+          metadata: {
+            description: pattern.description
+          }
+        })
+      })
+    }
+  })
+
+  return businessLines.slice(0, 1) // Limit to 1 business line suggestion
 }
 
 export async function POST(request: NextRequest) {

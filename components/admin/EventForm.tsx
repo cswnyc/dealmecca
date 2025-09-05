@@ -539,13 +539,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                   <SelectContent>
                     {eventCategories.map((category) => (
                       <SelectItem key={category.value} value={category.value}>
-                        <div className="flex items-center space-x-2">
-                          <span>{category.icon}</span>
-                          <div>
-                            <div>{category.label}</div>
-                            <div className="text-xs text-gray-500">{category.description}</div>
-                          </div>
-                        </div>
+                        {category.icon} {category.label} - {category.description}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -577,10 +571,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                   <SelectContent>
                     {eventTypes.map((type) => (
                       <SelectItem key={type.value} value={type.value}>
-                        <div>
-                          <div>{type.label}</div>
-                          <div className="text-xs text-gray-500">{type.description}</div>
-                        </div>
+                        {type.label} - {type.description}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -607,10 +598,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                 <SelectContent>
                   {eventStatuses.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
-                      <div className="flex items-center space-x-2">
-                        {status.icon}
-                        <span>{status.label}</span>
-                      </div>
+                      {status.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network, Filter, Plus, MapPin, ChevronDown, X, Globe, User, Briefcase, BarChart3, Tv, Satellite, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import PageLayout from '@/components/navigation/PageLayout';
+import { ForumLayout } from '@/components/layout/ForumLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { SearchHighlight } from '@/components/ui/SearchHighlight';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import { AddEntityModal } from '@/components/org-charts/AddEntityModal';
 
 interface Company {
   id: string;
@@ -178,14 +179,8 @@ export default function OrgsPage() {
   const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>(MOCK_AGENCIES);
   const [activeTab, setActiveTab] = useState<'agencies' | 'advertisers' | 'people' | 'industries' | 'publisher' | 'dsp-ssp' | 'adtech'>('agencies');
 
-  const [showAddAgencyModal, setShowAddAgencyModal] = useState(false);
-  const [agencyForm, setAgencyForm] = useState({
-    name: '',
-    brands: '',
-    location: '',
-    team: '',
-    description: ''
-  });
+  const [showAddEntityModal, setShowAddEntityModal] = useState(false);
+  const [selectedEntityType, setSelectedEntityType] = useState<'agency' | 'advertiser' | 'person' | 'industry' | 'publisher' | 'dsp-ssp' | 'adtech'>('agency');
 
   // Persistent filter states across all tabs
   const [filterState, setFilterState] = useState({
@@ -362,131 +357,176 @@ export default function OrgsPage() {
   // Early return for loading state - must come after all hooks
   if (status === 'loading') {
     return (
-      <PageLayout
-        title="Deal Directory"
-        description="Explore deal connections and partnership opportunities"
-      >
+      <ForumLayout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
             <p className="text-gray-600 text-lg">Loading...</p>
           </div>
         </div>
-      </PageLayout>
+      </ForumLayout>
     );
   }
 
-  const headerActions = null;
+  const headerActions = null; // test
 
   return (
-    <PageLayout
-      title="Deal Directory"
-      description="Explore deal connections and partnership opportunities"
-      actions={headerActions}
-    >
+    <ForumLayout>
       <div className="space-y-6">
-        {/* Tab Navigation */}
-        <div className="flex items-center justify-between">
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-            {[
-              { id: 'agencies', label: 'Agencies', icon: Building2 },
-              { id: 'advertisers', label: 'Advertisers', icon: Globe },
-              { id: 'people', label: 'People', icon: User },
-              { id: 'industries', label: 'Industries', icon: Briefcase },
-              { id: 'publisher', label: 'Publisher', icon: Monitor },
-              { id: 'dsp-ssp', label: 'DSP/SSP', icon: Satellite },
-              { id: 'adtech', label: 'Adtech', icon: BarChart3 }
-            ].map((tab) => {
-              const IconComponent = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <IconComponent className="h-4 w-4" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Deal Directory
+          </h1>
+          <p className="text-lg text-gray-600">
+            Explore deal connections and partnership opportunities
+          </p>
         </div>
-
-        {/* Search Bar and Action Buttons */}
-        <div className="flex items-center justify-between space-x-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder={
-                activeTab === 'agencies' ? 'Search agencies...' :
-                activeTab === 'advertisers' ? 'Search advertisers...' :
-                activeTab === 'people' ? 'Search people...' :
-                activeTab === 'industries' ? 'Search industries...' :
-                activeTab === 'publisher' ? 'Search publishers...' :
-                activeTab === 'dsp-ssp' ? 'Search DSP/SSP...' :
-                'Search adtech...'
-              }
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10 h-11"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 pb-6 mb-6">
+          {/* Tab Navigation */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+              {[
+                { id: 'agencies', label: 'Agencies', icon: Building2 },
+                { id: 'advertisers', label: 'Advertisers', icon: Globe },
+                { id: 'people', label: 'People', icon: User },
+                { id: 'industries', label: 'Industries', icon: Briefcase },
+                { id: 'publisher', label: 'Publisher', icon: Monitor },
+                { id: 'dsp-ssp', label: 'DSP/SSP', icon: Satellite },
+                { id: 'adtech', label: 'Adtech', icon: BarChart3 }
+              ].map((tab) => {
+                const IconComponent = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === tab.id
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <IconComponent className="h-4 w-4" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <div className="flex space-x-2">
-            {activeTab === 'agencies' && (
-              <Button onClick={() => setShowAddAgencyModal(true)} className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Agency
-              </Button>
-            )}
-            {activeTab === 'advertisers' && (
-              <Button className="bg-green-600 hover:bg-green-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Advertiser
-              </Button>
-            )}
-            {activeTab === 'people' && (
-              <Button className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Person
-              </Button>
-            )}
-            {activeTab === 'industries' && (
-              <Button className="bg-orange-600 hover:bg-orange-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Industry
-              </Button>
-            )}
-            {activeTab === 'publisher' && (
-              <Button className="bg-red-600 hover:bg-red-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Publisher
-              </Button>
-            )}
-            {activeTab === 'dsp-ssp' && (
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add DSP/SSP
-              </Button>
-            )}
-            {activeTab === 'adtech' && (
-              <Button className="bg-pink-600 hover:bg-pink-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Adtech
-              </Button>
-            )}
+
+          {/* Search Bar and Action Buttons */}
+          <div className="flex items-center justify-between space-x-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder={
+                  activeTab === 'agencies' ? 'Search agencies...' :
+                  activeTab === 'advertisers' ? 'Search advertisers...' :
+                  activeTab === 'people' ? 'Search people...' :
+                  activeTab === 'industries' ? 'Search industries...' :
+                  activeTab === 'publisher' ? 'Search publishers...' :
+                  activeTab === 'dsp-ssp' ? 'Search DSP/SSP...' :
+                  'Search adtech...'
+                }
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-10 h-11 bg-white shadow-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <div className="flex space-x-2">
+              {/* Show Add buttons for all authenticated users */}
+              {activeTab === 'agencies' && (
+                <Button onClick={() => {
+                  setSelectedEntityType('agency');
+                  setShowAddEntityModal(true);
+                }} className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Agency
+                </Button>
+              )}
+              {activeTab === 'advertisers' && (
+                <Button 
+                  onClick={() => {
+                    setSelectedEntityType('advertiser');
+                    setShowAddEntityModal(true);
+                  }} 
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Advertiser
+                </Button>
+              )}
+              {activeTab === 'people' && (
+                <Button 
+                  onClick={() => {
+                    setSelectedEntityType('person');
+                    setShowAddEntityModal(true);
+                  }} 
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Person
+                </Button>
+              )}
+              {activeTab === 'industries' && (
+                <Button 
+                  onClick={() => {
+                    setSelectedEntityType('industry');
+                    setShowAddEntityModal(true);
+                  }}
+                  className="bg-orange-600 hover:bg-orange-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Industry
+                </Button>
+              )}
+              {activeTab === 'publisher' && (
+                <Button 
+                  onClick={() => {
+                    setSelectedEntityType('publisher');
+                    setShowAddEntityModal(true);
+                  }}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Publisher
+                </Button>
+              )}
+              {activeTab === 'dsp-ssp' && (
+                <Button 
+                  onClick={() => {
+                    setSelectedEntityType('dsp-ssp');
+                    setShowAddEntityModal(true);
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add DSP/SSP
+                </Button>
+              )}
+              {activeTab === 'adtech' && (
+                <Button 
+                  onClick={() => {
+                    setSelectedEntityType('adtech');
+                    setShowAddEntityModal(true);
+                  }}
+                  className="bg-pink-600 hover:bg-pink-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Adtech
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -602,11 +642,31 @@ export default function OrgsPage() {
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getAgencyTypeBadgeColor(company.companyType)}`}>
                                       {getAgencyTypeLabel(company.companyType)}
                                     </span>
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    {(company.city || company.state) && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <MapPin className="w-3 h-3 mr-1" />
+                                        <SearchHighlight 
+                                          text={`${company.city || ''}, ${company.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
+                                          searchTerm={searchQuery}
+                                          highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                        />
+                                      </span>
+                                    )}
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                                       <Network className="w-3 h-3 mr-1" />
                                       Org Chart
                                     </span>
+                                    {company.verified && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                        <CheckCircle className="w-3 h-3 mr-1" />
+                                        Verified
+                                      </span>
+                                    )}
                                   </div>
+                                </div>
+                                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                  <Users className="w-4 h-4" />
+                                  <span>{company._count?.contacts || 0} people</span>
                                 </div>
                               </div>
                               {/* Client/Advertiser Pills */}
@@ -617,7 +677,11 @@ export default function OrgsPage() {
                                       key={index}
                                       className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
                                     >
-                                      {client}
+                                      <SearchHighlight 
+                                        text={client}
+                                        searchTerm={searchQuery}
+                                        highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                      />
                                     </span>
                                   ))}
                                   {getCompanyClients(company.id).length > 2 && (
@@ -730,94 +794,39 @@ export default function OrgsPage() {
           </Card>
         )}
 
-        {/* Add Agency Modal */}
-        {showAddAgencyModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Add New Agency</h3>
-                <button
-                  onClick={() => setShowAddAgencyModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Agency Name
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Enter agency name"
-                    value={agencyForm.name}
-                    onChange={(e) => setAgencyForm({...agencyForm, name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Brands/Clients
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Enter brand names"
-                    value={agencyForm.brands}
-                    onChange={(e) => setAgencyForm({...agencyForm, brands: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Location
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="City, State"
-                    value={agencyForm.location}
-                    onChange={(e) => setAgencyForm({...agencyForm, location: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Team Size
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Number of employees"
-                    value={agencyForm.team}
-                    onChange={(e) => setAgencyForm({...agencyForm, team: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Brief description"
-                    value={agencyForm.description}
-                    onChange={(e) => setAgencyForm({...agencyForm, description: e.target.value})}
-                  />
-                </div>
-              </div>
-              <div className="flex space-x-3 mt-6">
-                <Button
-                  onClick={() => setShowAddAgencyModal(false)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button className="flex-1">
-                  Add Agency
-                </Button>
-              </div>
-            </div>
-          </div>
+        {/* Add Entity Modal */}
+        {showAddEntityModal && (
+          <AddEntityModal
+            isOpen={showAddEntityModal}
+            onClose={() => setShowAddEntityModal(false)}
+            entityType={selectedEntityType}
+            onEntityAdded={(entity) => {
+              console.log('Entity added:', entity);
+              // Refresh the companies list to show the new entity
+              const fetchCompanies = async () => {
+                try {
+                  const response = await fetch('/api/orgs/companies');
+                  if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.companies)) {
+                      setCompanies(data.companies);
+                      setFilteredCompanies(data.companies);
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error refreshing companies:', error);
+                }
+              };
+              
+              // Only refresh for companies (agencies/advertisers), not people
+              if (selectedEntityType !== 'person') {
+                fetchCompanies();
+              }
+            }}
+          />
         )}
-      </div>
 
-      {/* Persistent Filter Panel */}
+        {/* Persistent Filter Panel */}
       {showFilters && (
         <div className="bg-white border border-gray-200 rounded-xl mb-6 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
@@ -960,7 +969,8 @@ export default function OrgsPage() {
           </div>
         </div>
       )}
-    </PageLayout>
+      </div>
+    </ForumLayout>
   );
 }
 

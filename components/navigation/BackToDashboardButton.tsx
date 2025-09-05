@@ -20,12 +20,12 @@ export default function BackToDashboardButton({
   className,
   showIcon = true,
   showText = true,
-  customText = 'Back to Dashboard'
+  customText = 'Back to Forum'
 }: BackToDashboardButtonProps) {
   const router = useRouter()
 
   const handleBackToDashboard = () => {
-    window.location.href = '/dashboard-test'
+    window.location.href = '/forum'
   }
 
   return (
@@ -51,12 +51,12 @@ export function HomeDashboardButton({
   className,
   showIcon = true,
   showText = true,
-  customText = 'Dashboard'
+  customText = 'Forum'
 }: BackToDashboardButtonProps) {
   const router = useRouter()
 
   const handleGoToDashboard = () => {
-    window.location.href = '/dashboard-test'
+    window.location.href = '/forum'
   }
 
   return (

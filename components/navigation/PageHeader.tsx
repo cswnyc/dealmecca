@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { GlobalSearchInput } from '@/components/navigation/GlobalSearchInput';
 import { 
   ArrowLeft, 
   Home, 
@@ -38,7 +39,10 @@ interface PageHeaderProps {
   showBackToDashboard?: boolean;
   customBackPath?: string;
   customBackLabel?: string;
+  customHomePath?: string;
+  customHomeLabel?: string;
   quickActions?: QuickAction[];
+  showGlobalSearch?: boolean;
   children?: React.ReactNode;
   className?: string;
 }
@@ -50,7 +54,10 @@ export function PageHeader({
   showBackToDashboard = true,
   customBackPath,
   customBackLabel,
+  customHomePath,
+  customHomeLabel,
   quickActions = [],
+  showGlobalSearch = true,
   children,
   className = ''
 }: PageHeaderProps) {
@@ -83,9 +90,9 @@ export function PageHeader({
         {breadcrumbs.length > 0 && (
           <div className="py-3 border-b border-gray-100">
             <nav className="flex items-center space-x-2 text-sm text-gray-600">
-              <Link href="/dashboard" className="flex items-center hover:text-blue-600 transition-colors">
+              <Link href={customHomePath || "/dashboard"} className="flex items-center hover:text-blue-600 transition-colors">
                 <Home className="w-4 h-4 mr-1" />
-                Dashboard
+                {customHomeLabel || "Dashboard"}
               </Link>
               
               {breadcrumbs.map((item, index) => (
@@ -136,6 +143,17 @@ export function PageHeader({
 
           {/* Right Section - Actions */}
           <div className="flex items-center gap-3 flex-wrap">
+            {/* Global Search - Desktop Only */}
+            {showGlobalSearch && (
+              <div className="hidden md:block">
+                <GlobalSearchInput 
+                  className="w-64 lg:w-80"
+                  size="md"
+                  placeholder="Search companies, teams..."
+                />
+              </div>
+            )}
+
             {/* Quick Actions */}
             {quickActions.map((action, index) => {
               const Icon = action.icon;

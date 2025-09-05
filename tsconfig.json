@@ -26,6 +26,12 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@/types": [
+        "./types"
+      ],
+      "@/constants": [
+        "./constants"
       ]
     },
     "types": [

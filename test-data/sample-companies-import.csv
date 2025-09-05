@@ -1,0 +1,21 @@
+name,website,companyType,industry,city,state,description,employeeCount,foundedYear,verified
+"GroupM",https://www.groupm.com,MEDIA_HOLDING_COMPANY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media investment company",MEGA_5000_PLUS,1999,true
+"Havas Media Group",https://www.havasmediagroup.com,MEDIA_HOLDING_COMPANY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media agency network",MEGA_5000_PLUS,1835,true
+"Initiative",https://www.initiative.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media agency",ENTERPRISE_1001_5000,1994,true
+"Mindshare",https://www.mindshareworld.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media agency network",MEGA_5000_PLUS,1997,true
+"MediaCom",https://www.mediacom.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media communications specialist",MEGA_5000_PLUS,1986,true
+"OMD Worldwide",https://www.omd.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media network",MEGA_5000_PLUS,1996,true
+"Zenith Media",https://www.zenithmedia.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media agency",ENTERPRISE_1001_5000,1988,true
+"Essence",https://www.essenceglobal.com,HOLDING_COMPANY_AGENCY,TECHNOLOGY,"New York",NY,"Global data and measurement-driven media agency",LARGE_201_1000,2005,true
+"Hearts & Science",https://www.heartsandscience.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Human experience company",LARGE_201_1000,2016,true
+"Vizeum",https://www.vizeum.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"London",,"Global media agency",ENTERPRISE_1001_5000,2000,true
+"Wavemaker",https://www.wavemakerglobal.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media network",MEGA_5000_PLUS,2017,true
+"Spark Foundry",https://www.sparkfoundryww.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media agency",ENTERPRISE_1001_5000,2017,true
+"Starcom",https://www.starcomww.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"Chicago",IL,"Global communications planning and media leader",MEGA_5000_PLUS,1999,true
+"PHD",https://www.phdnetwork.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"London",,"Global media and communications agency",ENTERPRISE_1001_5000,1990,true
+"Carat",https://www.carat.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"London",,"Global media agency",MEGA_5000_PLUS,1968,true
+"MEC",https://www.mecglobal.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"New York",NY,"Global media agency",ENTERPRISE_1001_5000,2002,false
+"Maxus",https://www.maxusglobal.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"London",,"Global media and digital agency network",LARGE_201_1000,2008,false
+"Posterscope",https://www.posterscope.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"London",,"Out-of-home media agency",MEDIUM_51_200,1988,true
+"Kinetic Worldwide",https://www.kineticww.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"London",,"Out-of-home communications agency",MEDIUM_51_200,2000,true
+"m/SIX",https://www.m-six.com,HOLDING_COMPANY_AGENCY,ENTERTAINMENT_MEDIA,"London",,"Performance and programmatic media agency",SMALL_11_50,2012,true

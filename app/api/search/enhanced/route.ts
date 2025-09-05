@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { getPerformanceMonitor } from '@/lib/performance-monitor'
+import { trackMemoryUsage } from '@/middleware/performance'
+import { cachedSearch, generateCacheKey, invalidateByTag } from '@/lib/search-cache'
+import { searchRankingEngine } from '@/lib/search-ranking'
+import { searchAnalyticsEngine } from '@/lib/search-analytics'
 
 const prisma = new PrismaClient()
+const performanceMonitor = getPerformanceMonitor(prisma)
 
 // Enhanced search interface for media seller intelligence
 interface EnhancedSearchParams {
@@ -116,6 +122,20 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     
+    // Get user info for personalization
+    const userId = request.headers.get('x-user-id')
+    const sessionId = request.headers.get('x-session-id') || requestId
+    const userLocation = request.headers.get('x-user-location')
+    let parsedUserLocation: { city: string; state: string } | undefined;
+    
+    if (userLocation) {
+      try {
+        parsedUserLocation = JSON.parse(userLocation);
+      } catch (e) {
+        console.log(`⚠️  [${requestId}] Failed to parse user location: ${userLocation}`);
+      }
+    }
+    
     // Parse enhanced search parameters
     const params: EnhancedSearchParams = {
       q: searchParams.get('q') || undefined,
@@ -149,23 +169,127 @@ export async function GET(request: NextRequest) {
       }
     }
     
-    // Execute search based on type
-    let contacts: any[] = []
-    let companies: any[] = []
-    let totalContacts = 0
-    let totalCompanies = 0
+    // Generate cache key for this search
+    const cacheKey = generateCacheKey('enhanced_search', params, requestId)
     
-    if (params.searchType === 'contacts' || params.searchType === 'both') {
-      const contactResult = await searchContacts(params, requestId)
-      contacts = contactResult.contacts
-      totalContacts = contactResult.total
-    }
+    // Execute cached search
+    const { result: searchResults, cached } = await cachedSearch(
+      cacheKey,
+      async () => {
+        console.log(`🔍 [${requestId}] Executing fresh search (not cached)`)
+        
+        let contacts: any[] = []
+        let companies: any[] = []
+        let totalContacts = 0
+        let totalCompanies = 0
+        
+        if (params.searchType === 'contacts' || params.searchType === 'both') {
+          const contactResult = await searchContacts(params, requestId)
+          contacts = contactResult.contacts
+          totalContacts = contactResult.total
+          
+          // Apply intelligent ranking for contacts
+          if (params.sortBy === 'relevance' && contacts.length > 0) {
+            console.log(`🎯 [${requestId}] Applying intelligent ranking to ${contacts.length} contacts`)
+            const rankedContacts = await searchRankingEngine.rankResults(
+              contacts,
+              params.q || '',
+              'contact',
+              {
+                seniority: params.seniority,
+                department: params.department,
+                companyType: params.companyType,
+                industry: params.industry,
+                location: params.city,
+                verified: undefined
+              },
+              userId || undefined,
+              parsedUserLocation
+            )
+            contacts = rankedContacts.map(r => ({
+              ...r.data,
+              _ranking: {
+                relevanceScore: r.relevanceScore,
+                personalizedScore: r.personalizedScore,
+                explanation: r.explanation,
+                topSignals: r.rankingSignals.slice(0, 3).map(s => s.name)
+              }
+            }))
+          }
+        }
+        
+        if (params.searchType === 'companies' || params.searchType === 'both') {
+          const companyResult = await searchCompanies(params, requestId)
+          companies = companyResult.companies
+          totalCompanies = companyResult.total
+          
+          // Apply intelligent ranking for companies
+          if (params.sortBy === 'relevance' && companies.length > 0) {
+            console.log(`🎯 [${requestId}] Applying intelligent ranking to ${companies.length} companies`)
+            const rankedCompanies = await searchRankingEngine.rankResults(
+              companies,
+              params.q || '',
+              'company',
+              {
+                companyType: params.companyType,
+                industry: params.industry,
+                location: params.city,
+                employeeCount: params.employeeSize,
+                verified: undefined
+              },
+              userId || undefined,
+              parsedUserLocation
+            )
+            companies = rankedCompanies.map(r => ({
+              ...r.data,
+              _ranking: {
+                relevanceScore: r.relevanceScore,
+                personalizedScore: r.personalizedScore,
+                explanation: r.explanation,
+                topSignals: r.rankingSignals.slice(0, 3).map(s => s.name)
+              }
+            }))
+          }
+        }
+        
+        // Track search interaction for analytics
+        if (params.q && params.q.length >= 2) {
+          searchAnalyticsEngine.trackSearchInteraction({
+            userId: userId || undefined,
+            sessionId,
+            query: params.q,
+            searchType: params.searchType === 'both' ? 'company' : params.searchType,
+            filters: {
+              seniority: params.seniority,
+              department: params.department,
+              companyType: params.companyType,
+              industry: params.industry,
+              location: params.city
+            },
+            resultCount: totalContacts + totalCompanies,
+            queryTime: Date.now() - startTime,
+            clickedResults: 0, // Will be updated by frontend
+            timeSpent: 0, // Will be updated by frontend
+            successful: (totalContacts + totalCompanies) > 0
+          }).catch(error => {
+            console.warn(`⚠️  [${requestId}] Failed to track search interaction:`, error)
+          })
+        }
+        
+        return {
+          contacts,
+          companies,
+          totalContacts,
+          totalCompanies
+        }
+      },
+      {
+        ttl: 1000 * 60 * 15, // 15 minutes for search results
+        tags: ['search', 'contacts', 'companies', params.searchType || 'both']
+      }
+    )
     
-    if (params.searchType === 'companies' || params.searchType === 'both') {
-      const companyResult = await searchCompanies(params, requestId)
-      companies = companyResult.companies
-      totalCompanies = companyResult.total
-    }
+    const { contacts, companies, totalContacts, totalCompanies } = cached ? searchResults.data : searchResults
     
     // Generate available filters and stats
     const [availableFilters, stats, quickFiltersWithCounts] = await Promise.all([
@@ -175,7 +299,7 @@ export async function GET(request: NextRequest) {
     ])
     
     const duration = Date.now() - startTime
-    console.log(`✅ [${requestId}] Enhanced search completed in ${duration}ms`)
+    console.log(`✅ [${requestId}] Enhanced search completed in ${duration}ms (${cached ? 'CACHED' : 'FRESH'})`)
     
     return NextResponse.json({
       success: true,
@@ -185,6 +309,10 @@ export async function GET(request: NextRequest) {
         totalContacts,
         totalCompanies,
         totalResults: totalContacts + totalCompanies
+      },
+      cache: {
+        cached,
+        key: cacheKey.slice(0, 16) + '...'
       },
       filters: {
         applied: generateAppliedFilters(params),
@@ -225,213 +353,229 @@ export async function GET(request: NextRequest) {
 async function searchContacts(params: EnhancedSearchParams, requestId: string) {
   console.log(`👥 [${requestId}] Searching contacts with filters`)
   
-  // Build contact where clause
-  const contactWhere: any = { AND: [] }
+  return await performanceMonitor.trackQuery(
+    'searchContacts',
+    async () => {
+      trackMemoryUsage(`contactSearch_${requestId}`)
+      
+      // Build contact where clause
+      const contactWhere: any = { AND: [] }
   
-  // Text search across contact fields
-  if (params.q && params.q.length >= 2) {
-    const searchTerm = params.q.toLowerCase()
-    contactWhere.AND.push({
-      OR: [
-        { firstName: { contains: searchTerm, mode: 'insensitive' } },
-        { lastName: { contains: searchTerm, mode: 'insensitive' } },
-        { fullName: { contains: searchTerm, mode: 'insensitive' } },
-        { title: { contains: searchTerm, mode: 'insensitive' } },
-        { email: { contains: searchTerm, mode: 'insensitive' } }
-      ]
-    })
-  }
+      // Text search across contact fields
+      if (params.q && params.q.length >= 2) {
+        const searchTerm = params.q.toLowerCase()
+        contactWhere.AND.push({
+          OR: [
+            { firstName: { contains: searchTerm, mode: 'insensitive' } },
+            { lastName: { contains: searchTerm, mode: 'insensitive' } },
+            { fullName: { contains: searchTerm, mode: 'insensitive' } },
+            { title: { contains: searchTerm, mode: 'insensitive' } },
+            { email: { contains: searchTerm, mode: 'insensitive' } }
+          ]
+        })
+      }
   
-  // Role/title filtering (search in title field)
-  if (params.roles?.length) {
-    contactWhere.AND.push({
-      OR: params.roles.map(role => ({
-        title: { contains: role, mode: 'insensitive' }
-      }))
-    })
-  }
-  
-  // Seniority filtering
-  if (params.seniority?.length) {
-    contactWhere.AND.push({
-      seniority: { in: params.seniority }
-    })
-  }
-  
-  // Department filtering
-  if (params.department?.length) {
-    contactWhere.AND.push({
-      department: { in: params.department }
-    })
-  }
-  
-  // Decision maker filtering
-  if (params.isDecisionMaker) {
-    contactWhere.AND.push({
-      isDecisionMaker: true
-    })
-  }
-  
-  // Company-based filters
-  const companyWhere: any = { AND: [] }
-  
-  if (params.companyType?.length) {
-    companyWhere.AND.push({
-      companyType: { in: params.companyType }
-    })
-  }
-  
-  if (params.industry?.length) {
-    companyWhere.AND.push({
-      industry: { in: params.industry }
-    })
-  }
-  
-  if (params.agencyType?.length) {
-    companyWhere.AND.push({
-      agencyType: { in: params.agencyType }
-    })
-  }
-  
-  if (params.employeeSize?.length) {
-    companyWhere.AND.push({
-      employeeCount: { in: params.employeeSize }
-    })
-  }
-  
-  if (params.city?.length) {
-    companyWhere.AND.push({
-      city: { in: params.city }
-    })
-  }
-  
-  if (params.state?.length) {
-    companyWhere.AND.push({
-      state: { in: params.state }
-    })
-  }
-  
-  // Combine contact and company filters
-  if (companyWhere.AND.length > 0) {
-    contactWhere.AND.push({
-      company: companyWhere
-    })
-  }
-  
-  // Execute contact search
-  const [contacts, total] = await Promise.all([
-    prisma.contact.findMany({
-      where: contactWhere,
-      include: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-            companyType: true,
-            industry: true,
-            city: true,
-            state: true,
-            verified: true
-          }
-        }
-      },
-      orderBy: [
-        { verified: 'desc' },
-        { isDecisionMaker: 'desc' },
-        { firstName: 'asc' }
-      ],
-      take: params.limit,
-      skip: params.offset
-    }),
-    prisma.contact.count({ where: contactWhere })
-  ])
-  
-  console.log(`👥 [${requestId}] Found ${total} contacts`)
-  return { contacts, total }
+      // Role/title filtering (search in title field)
+      if (params.roles?.length) {
+        contactWhere.AND.push({
+          OR: params.roles.map(role => ({
+            title: { contains: role, mode: 'insensitive' }
+          }))
+        })
+      }
+      
+      // Seniority filtering
+      if (params.seniority?.length) {
+        contactWhere.AND.push({
+          seniority: { in: params.seniority }
+        })
+      }
+      
+      // Department filtering
+      if (params.department?.length) {
+        contactWhere.AND.push({
+          department: { in: params.department }
+        })
+      }
+      
+      // Decision maker filtering
+      if (params.isDecisionMaker) {
+        contactWhere.AND.push({
+          isDecisionMaker: true
+        })
+      }
+      
+      // Company-based filters
+      const companyWhere: any = { AND: [] }
+      
+      if (params.companyType?.length) {
+        companyWhere.AND.push({
+          companyType: { in: params.companyType }
+        })
+      }
+      
+      if (params.industry?.length) {
+        companyWhere.AND.push({
+          industry: { in: params.industry }
+        })
+      }
+      
+      if (params.agencyType?.length) {
+        companyWhere.AND.push({
+          agencyType: { in: params.agencyType }
+        })
+      }
+      
+      if (params.employeeSize?.length) {
+        companyWhere.AND.push({
+          employeeCount: { in: params.employeeSize }
+        })
+      }
+      
+      if (params.city?.length) {
+        companyWhere.AND.push({
+          city: { in: params.city }
+        })
+      }
+      
+      if (params.state?.length) {
+        companyWhere.AND.push({
+          state: { in: params.state }
+        })
+      }
+      
+      // Combine contact and company filters
+      if (companyWhere.AND.length > 0) {
+        contactWhere.AND.push({
+          company: companyWhere
+        })
+      }
+      
+      // Execute contact search
+      const [contacts, total] = await Promise.all([
+        prisma.contact.findMany({
+          where: contactWhere,
+          include: {
+            company: {
+              select: {
+                id: true,
+                name: true,
+                companyType: true,
+                industry: true,
+                city: true,
+                state: true,
+                verified: true
+              }
+            }
+          },
+          orderBy: [
+            { verified: 'desc' },
+            { isDecisionMaker: 'desc' },
+            { firstName: 'asc' }
+          ],
+          take: params.limit,
+          skip: params.offset
+        }),
+        prisma.contact.count({ where: contactWhere })
+      ])
+      
+      console.log(`👥 [${requestId}] Found ${total} contacts`)
+      return { contacts, total }
+    },
+    { route: '/api/search/enhanced', userId: requestId }
+  )
 }
 
 async function searchCompanies(params: EnhancedSearchParams, requestId: string) {
   console.log(`🏢 [${requestId}] Searching companies with filters`)
   
-  // Build company where clause
-  const companyWhere: any = { AND: [] }
+  return await performanceMonitor.trackQuery(
+    'searchCompanies',
+    async () => {
+      trackMemoryUsage(`companySearch_${requestId}`)
+      
+      // Build company where clause
+      const companyWhere: any = { AND: [] }
+      
+      // Text search across company fields
+      if (params.q && params.q.length >= 2) {
+        const searchTerm = params.q.toLowerCase()
+        companyWhere.AND.push({
+          OR: [
+            { name: { contains: searchTerm, mode: 'insensitive' } },
+            { description: { contains: searchTerm, mode: 'insensitive' } },
+            { city: { contains: searchTerm, mode: 'insensitive' } }
+          ]
+        })
+      }
+      
+      // Company type filtering
+      if (params.companyType?.length) {
+        companyWhere.AND.push({
+          companyType: { in: params.companyType }
+        })
+      }
+      
+      // Industry filtering
+      if (params.industry?.length) {
+        companyWhere.AND.push({
+          industry: { in: params.industry }
+        })
+      }
+      
+      // Agency type filtering
+      if (params.agencyType?.length) {
+        companyWhere.AND.push({
+          agencyType: { in: params.agencyType }
+        })
+      }
+      
+      // Employee size filtering
+      if (params.employeeSize?.length) {
+        companyWhere.AND.push({
+          employeeCount: { in: params.employeeSize }
+        })
+      }
+      
+      // Location filtering
+      if (params.city?.length) {
+        companyWhere.AND.push({
+          city: { in: params.city }
+        })
+      }
+      
+      if (params.state?.length) {
+        companyWhere.AND.push({
+          state: { in: params.state }
+        })
+      }
+      
+      // Execute company search
+      const [companies, total] = await Promise.all([
+        prisma.company.findMany({
+          where: companyWhere,
+          include: {
+            _count: {
+              select: {
+                contacts: { where: { isActive: true } }
+              }
+            }
+          },
+          orderBy: [
+            { verified: 'desc' },
+            { name: 'asc' }
+          ],
+          take: params.limit,
+          skip: params.offset
+        }),
+        prisma.company.count({ where: companyWhere })
+      ])
   
-  // Text search across company fields
-  if (params.q && params.q.length >= 2) {
-    const searchTerm = params.q.toLowerCase()
-    companyWhere.AND.push({
-      OR: [
-        { name: { contains: searchTerm, mode: 'insensitive' } },
-        { description: { contains: searchTerm, mode: 'insensitive' } },
-        { city: { contains: searchTerm, mode: 'insensitive' } }
-      ]
-    })
-  }
-  
-  // Company type filtering
-  if (params.companyType?.length) {
-    companyWhere.AND.push({
-      companyType: { in: params.companyType }
-    })
-  }
-  
-  // Industry filtering
-  if (params.industry?.length) {
-    companyWhere.AND.push({
-      industry: { in: params.industry }
-    })
-  }
-  
-  // Agency type filtering
-  if (params.agencyType?.length) {
-    companyWhere.AND.push({
-      agencyType: { in: params.agencyType }
-    })
-  }
-  
-  // Employee size filtering
-  if (params.employeeSize?.length) {
-    companyWhere.AND.push({
-      employeeCount: { in: params.employeeSize }
-    })
-  }
-  
-  // Location filtering
-  if (params.city?.length) {
-    companyWhere.AND.push({
-      city: { in: params.city }
-    })
-  }
-  
-  if (params.state?.length) {
-    companyWhere.AND.push({
-      state: { in: params.state }
-    })
-  }
-  
-  // Execute company search
-  const [companies, total] = await Promise.all([
-    prisma.company.findMany({
-      where: companyWhere,
-      include: {
-        _count: {
-          select: {
-            contacts: { where: { isActive: true } }
-          }
-        }
-      },
-      orderBy: [
-        { verified: 'desc' },
-        { name: 'asc' }
-      ],
-      take: params.limit,
-      skip: params.offset
-    }),
-    prisma.company.count({ where: companyWhere })
-  ])
-  
-  console.log(`🏢 [${requestId}] Found ${total} companies`)
-  return { companies, total }
+      console.log(`🏢 [${requestId}] Found ${total} companies`)
+      return { companies, total }
+    },
+    { route: '/api/search/enhanced', userId: requestId }
+  )
 }
 
 async function generateAvailableFilters(params: EnhancedSearchParams) {

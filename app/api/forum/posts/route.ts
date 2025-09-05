@@ -56,20 +56,17 @@ export async function GET(request: NextRequest) {
       const searchConditions = [
         {
           title: {
-            contains: searchQuery,
-            mode: 'insensitive'
+            contains: searchQuery
           }
         },
         {
           content: {
-            contains: searchQuery,
-            mode: 'insensitive'
+            contains: searchQuery
           }
         },
         {
           tags: {
-            contains: searchQuery,
-            mode: 'insensitive'
+            contains: searchQuery
           }
         }
       ];
@@ -86,36 +83,53 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch forum posts with author company information
+    // Fetch forum posts with author company information  
     const posts = await prisma.forumPost.findMany({
       where,
       skip: offset,
       take: limit,
-      orderBy: [
-        { isPinned: 'desc' },
-        ...(sortBy === 'popular' ? [{ upvotes: 'desc' as const }] :
-           sortBy === 'comments' ? [{ _count: { comments: 'desc' as const } }] :
-           sortBy === 'trending' ? [{ views: 'desc' as const }] :
-           [{ createdAt: 'desc' as const }])
-      ],
-      include: {
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        slug: true,
+        authorId: true,
+        isAnonymous: true,
+        anonymousHandle: true,
+        categoryId: true,
+        tags: true,
+        eventId: true,
+        urgency: true,
+        dealSize: true,
+        location: true,
+        mediaType: true,
+        views: true,
+        upvotes: true,
+        downvotes: true,
+        bookmarks: true,
+        isPinned: true,
+        isLocked: true,
+        isFeatured: true,
+        createdAt: true,
+        updatedAt: true,
+        lastActivityAt: true,
+        extractedCompanies: true,
+        postType: true,
+        listItems: true,
+        pollChoices: true,
+        pollDuration: true,
+        pollEndsAt: true,
+        codeLanguage: true,
+        codeFramework: true,
+        codeType: true,
+        codeComplexity: true,
+        generatedCode: true,
         author: {
           select: {
             id: true,
             name: true,
             email: true,
-            company: {
-              select: {
-                id: true,
-                name: true,
-                logoUrl: true,
-                verified: true,
-                companyType: true,
-                industry: true,
-                city: true,
-                state: true
-              }
-            }
+            companyId: true
           }
         },
         category: {
@@ -140,21 +154,12 @@ export async function GET(request: NextRequest) {
           }
         },
         contactMentions: {
-          include: {
-            contact: {
-              select: {
-                id: true,
-                fullName: true,
-                title: true,
-                company: {
-                  select: {
-                    id: true,
-                    name: true,
-                    logoUrl: true
-                  }
-                }
-              }
-            }
+          select: {
+            id: true,
+            postId: true,
+            contactId: true,
+            mentionedBy: true,
+            createdAt: true
           }
         },
         _count: {
@@ -162,7 +167,108 @@ export async function GET(request: NextRequest) {
             comments: true
           }
         }
+      },
+      orderBy: [
+        { isPinned: 'desc' },
+        ...(sortBy === 'popular' ? [{ upvotes: 'desc' as const }] :
+           sortBy === 'comments' ? [{ _count: { comments: 'desc' as const } }] :
+           sortBy === 'trending' ? [{ views: 'desc' as const }] :
+           [{ createdAt: 'desc' as const }])
+      ]
+    });
+
+    // Enrich posts with author company information
+    const userIds = posts.map(post => post.authorId);
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: userIds }
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        companyId: true
       }
+    });
+
+    const companyIds = users.map(user => user.companyId).filter(Boolean);
+    const companies = await prisma.company.findMany({
+      where: {
+        id: { in: companyIds }
+      },
+      select: {
+        id: true,
+        name: true,
+        logoUrl: true,
+        verified: true,
+        companyType: true,
+        industry: true,
+        city: true,
+        state: true
+      }
+    });
+
+    // Create lookup maps
+    const userMap = new Map(users.map(user => [user.id, user]));
+    const companyMap = new Map(companies.map(company => [company.id, company]));
+
+    // Get contact information for mentions
+    const allContactIds = posts.flatMap(post => 
+      post.contactMentions.map(mention => mention.contactId)
+    );
+    
+    const contacts = allContactIds.length > 0 ? await prisma.contact.findMany({
+      where: {
+        id: { in: allContactIds }
+      },
+      select: {
+        id: true,
+        fullName: true,
+        title: true,
+        companyId: true
+      }
+    }) : [];
+
+    const contactCompanyIds = contacts.map(contact => contact.companyId).filter(Boolean);
+    const contactCompanies = contactCompanyIds.length > 0 ? await prisma.company.findMany({
+      where: {
+        id: { in: contactCompanyIds }
+      },
+      select: {
+        id: true,
+        name: true,
+        logoUrl: true
+      }
+    }) : [];
+
+    // Create contact lookup maps
+    const contactMap = new Map(contacts.map(contact => [contact.id, contact]));
+    const contactCompanyMap = new Map(contactCompanies.map(company => [company.id, company]));
+
+    // Enrich posts with full author and company data
+    const enrichedPosts = posts.map(post => {
+      const author = userMap.get(post.authorId);
+      const company = author?.companyId ? companyMap.get(author.companyId) : null;
+      
+      // Enrich contact mentions
+      const enrichedContactMentions = post.contactMentions.map(mention => ({
+        ...mention,
+        contact: {
+          ...contactMap.get(mention.contactId),
+          company: contactMap.get(mention.contactId)?.companyId 
+            ? contactCompanyMap.get(contactMap.get(mention.contactId).companyId)
+            : null
+        }
+      }));
+      
+      return {
+        ...post,
+        author: {
+          ...author,
+          company
+        },
+        contactMentions: enrichedContactMentions
+      };
     });
 
     // Get total count for pagination
@@ -170,7 +276,7 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit);
 
     return NextResponse.json({ 
-      posts,
+      posts: enrichedPosts,
       pagination: {
         page,
         limit,
@@ -247,29 +353,48 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the forum post
-    const post = await prisma.forumPost.create({
-      data: {
-        title,
-        content: content || '',
-        categoryId,
-        authorId: userId,
-        tags: tags || '[]',
-        isAnonymous: Boolean(isAnonymous),
-        anonymousHandle: isAnonymous ? `User${Math.random().toString(36).substr(2, 6)}` : null,
-        urgency: urgency || 'MEDIUM',
-        dealSize: dealSize || null,
-        location: location || null,
-        mediaType: mediaType || '[]',
-        eventId: eventId || null,
-        slug: `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
-        // Post type specific fields
-        postType: postType || 'post',
-        listItems: listItems || [],
-        pollChoices: pollChoices || [],
-        pollDuration: pollDuration || null,
-        pollEndsAt: pollEndsAt ? new Date(pollEndsAt) : null
-      }
+    console.log('Creating forum post with data:', {
+      title,
+      content: content || '',
+      categoryId,
+      authorId: userId,
+      tags: tags || '[]',
+      urgency: urgency || 'MEDIUM',
+      mediaType: mediaType || '[]',
+      postType: postType || 'post'
     });
+    
+    let post;
+    try {
+      post = await prisma.forumPost.create({
+        data: {
+          title,
+          content: content || '',
+          categoryId,
+          authorId: userId,
+          tags: tags || '[]',
+          isAnonymous: Boolean(isAnonymous),
+          anonymousHandle: isAnonymous ? `User${Math.random().toString(36).substr(2, 6)}` : null,
+          urgency: urgency || 'MEDIUM',
+          dealSize: dealSize || null,
+          location: location || null,
+          mediaType: mediaType || '[]',
+          eventId: eventId || null,
+          slug: `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
+          // Post type specific fields
+          postType: postType || 'post',
+          listItems: listItems ? JSON.stringify(listItems) : '[]',
+          pollChoices: pollChoices ? JSON.stringify(pollChoices) : '[]',
+          pollDuration: pollDuration || null,
+          pollEndsAt: pollEndsAt ? new Date(pollEndsAt) : null
+        }
+      });
+      
+      console.log('Forum post created successfully:', post.id);
+    } catch (prismaError) {
+      console.error('Prisma error creating forum post:', prismaError);
+      throw prismaError;
+    }
 
     // Save mentions if any
     if (mentions && (mentions.companies?.length > 0 || mentions.contacts?.length > 0)) {

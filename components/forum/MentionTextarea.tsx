@@ -7,7 +7,7 @@ import {
   searchMentionSuggestions, 
   MentionSuggestion 
 } from '@/lib/mention-utils';
-import { Building2, User, Search, Check } from 'lucide-react';
+import { Building2, User, Search, Check, Hash } from 'lucide-react';
 
 interface MentionTextareaProps {
   value: string;
@@ -33,14 +33,14 @@ export function MentionTextarea({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [currentTrigger, setCurrentTrigger] = useState<{
-    type: 'company' | 'contact';
+    type: 'company' | 'contact' | 'topic';
     query: string;
     startIndex: number;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Debounced search function
-  const searchSuggestions = useCallback(async (type: 'company' | 'contact', query: string) => {
+  const searchSuggestions = useCallback(async (type: 'company' | 'contact' | 'topic', query: string) => {
     if (query.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -73,9 +73,9 @@ export function MentionTextarea({
     const trigger = detectMentionTrigger(newValue, cursorPosition);
     
     if (trigger && trigger.type) {
-      setCurrentTrigger(trigger as { type: 'company' | 'contact'; query: string; startIndex: number });
+      setCurrentTrigger(trigger as { type: 'company' | 'contact' | 'topic'; query: string; startIndex: number });
       if (trigger.query.length >= 2) {
-        searchSuggestions(trigger.type as 'company' | 'contact', trigger.query);
+        searchSuggestions(trigger.type as 'company' | 'contact' | 'topic', trigger.query);
       } else if (trigger.query.length === 0) {
         // Show placeholder suggestions or hide dropdown
         setSuggestions([]);
@@ -232,8 +232,10 @@ export function MentionTextarea({
                       />
                     ) : suggestion.type === 'company' ? (
                       <Building2 className="w-4 h-4 text-blue-600" />
-                    ) : (
+                    ) : suggestion.type === 'contact' ? (
                       <User className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Hash className="w-4 h-4 text-purple-600" />
                     )}
                   </div>
 

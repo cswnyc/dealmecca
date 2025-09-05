@@ -9,6 +9,7 @@ import { Select, SelectItem } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { LogoUpload } from '@/components/admin/LogoUpload';
 
 const companyTypes = [
   { value: 'INDEPENDENT_AGENCY', label: 'Independent Agency' },
@@ -41,6 +42,7 @@ const regions = [
 export default function CreateCompanyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [createdCompanyId, setCreatedCompanyId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     website: '',
@@ -71,7 +73,9 @@ export default function CreateCompanyPage() {
       });
 
       if (response.ok) {
-        router.push('/admin/orgs/companies');
+        const result = await response.json();
+        setCreatedCompanyId(result.company.id);
+        // Don't redirect immediately, let user upload logo first
       } else {
         console.error('Failed to create company');
       }
@@ -196,21 +200,84 @@ export default function CreateCompanyPage() {
                 id="verified"
                 checked={formData.verified}
                 onCheckedChange={(checked) => updateFormData('verified', !!checked)}
+                disabled={createdCompanyId !== null}
               />
               <Label htmlFor="verified">Mark as verified</Label>
             </div>
 
+            {/* Logo Upload - Show after company creation */}
+            {createdCompanyId && (
+              <div className="border-t border-gray-200 pt-6">
+                <LogoUpload
+                  entityId={createdCompanyId}
+                  entityType="company"
+                  onLogoChange={(logoUrl) => {
+                    console.log('Logo updated:', logoUrl);
+                  }}
+                />
+              </div>
+            )}
+
             <div className="flex space-x-4">
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Creating...' : 'Create Company'}
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline"
-                onClick={() => router.back()}
-              >
-                Cancel
-              </Button>
+              {!createdCompanyId ? (
+                <>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Creating...' : 'Create Company'}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={() => router.back()}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <div className="w-full space-y-4">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-green-800">Company Created Successfully!</h3>
+                        <p className="text-sm text-green-700 mt-1">You can now upload a logo above, or continue to the company list.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex space-x-4">
+                    <Button 
+                      type="button" 
+                      onClick={() => router.push('/admin/orgs/companies')}
+                      className="flex-1"
+                    >
+                      Go to Company List
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => {
+                        setCreatedCompanyId(null);
+                        setFormData({
+                          name: '',
+                          website: '',
+                          description: '',
+                          companyType: '',
+                          employeeCount: '',
+                          city: '',
+                          state: '',
+                          region: '',
+                          verified: false
+                        });
+                      }}
+                    >
+                      Create Another
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

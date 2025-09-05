@@ -367,10 +367,10 @@ export const authOptions: NextAuthOptions = {
         return url;
       }
       
-      // Default redirect to dashboard for successful logins
-      const dashboardUrl = `${baseUrl}/dashboard`;
-      console.log('Default redirect to dashboard:', dashboardUrl);
-      return dashboardUrl;
+      // Default redirect to forum for successful logins (forum-first approach)
+      const forumUrl = `${baseUrl}/forum`;
+      console.log('Default redirect to forum:', forumUrl);
+      return forumUrl;
     },
   },
 }

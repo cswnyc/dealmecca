@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import AuthProvider from '@/components/providers/session-provider';
 import PWAProvider from '@/components/providers/pwa-provider';
 import { CacheInvalidator } from '@/components/providers/cache-invalidator';
+import { UserProvider } from '@/hooks/useUser';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
 import './globals.css';
 import './navigation-polish.css';
@@ -112,17 +113,19 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} min-h-screen bg-gray-50`}>
         <AuthProvider>
-          <PWAProvider>
-            <div className="min-h-screen">
-              {/* Main content with bottom padding for mobile navigation */}
-              <main className="pb-16 md:pb-0">
-                {children}
-              </main>
-              
-              {/* Mobile Navigation - only visible on mobile */}
-              <MobileNavigation />
-            </div>
-          </PWAProvider>
+          <UserProvider>
+            <PWAProvider>
+              <div className="min-h-screen">
+                {/* Main content with bottom padding for mobile navigation */}
+                <main className="pb-16 md:pb-0">
+                  {children}
+                </main>
+                
+                {/* Mobile Navigation - only visible on mobile */}
+                <MobileNavigation />
+              </div>
+            </PWAProvider>
+          </UserProvider>
         </AuthProvider>
       </body>
     </html>

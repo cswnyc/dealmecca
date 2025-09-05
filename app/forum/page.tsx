@@ -4,8 +4,11 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { ForumPostCard } from '@/components/forum/ForumPostCard';
-import { PageHeader } from '@/components/navigation/PageHeader';
 import { SmartPostForm } from '@/components/forum/SmartPostForm';
+import { IntelligenceSharing } from '@/components/forum/IntelligenceSharing';
+import { ForumSidebar } from '@/components/forum/ForumSidebar';
+import { GlobalSearchInput } from '@/components/navigation/GlobalSearchInput';
+import { ForumLayout } from '@/components/layout/ForumLayout';
 import { 
   Search, 
   ChevronDown, 
@@ -13,7 +16,11 @@ import {
   List, 
   BarChart3,
   Globe,
-  User
+  User,
+  Users,
+  Target,
+  Gift,
+  Crown
 } from 'lucide-react';
 
 interface ForumPost {
@@ -134,7 +141,7 @@ function ForumContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('latest');
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [createType, setCreateType] = useState<'post' | 'list' | 'poll'>('post');
+  const [createType, setCreateType] = useState<'post' | 'list' | 'poll' | 'intel'>('post');
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -147,15 +154,23 @@ function ForumContent() {
 
   useEffect(() => {
     fetchPosts();
-  }, [companyId, eventId, activeTab, selectedCategory, sortBy]);
+  }, [companyId, eventId, activeTab, selectedCategory, sortBy, searchQuery]);
 
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/forum/categories');
       const data = await response.json();
-      setCategories(data || []);
+      // Ensure we always set an array, even if API fails
+      if (Array.isArray(data)) {
+        setCategories(data);
+      } else {
+        console.warn('Categories API returned non-array data:', data);
+        setCategories([]);
+      }
     } catch (error) {
       console.error('Failed to fetch categories:', error);
+      // Set empty array on error
+      setCategories([]);
     }
   };
 
@@ -341,17 +356,19 @@ function ForumContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <PageHeader
-        title="Community Forum"
-        subtitle="Connect and share insights with media sales professionals"
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Forum', href: '/forum', current: true }
-        ]}
-      />
-      
+    <ForumLayout>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header with Search */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">Community Forum</h1>
+          <div className="relative">
+            <GlobalSearchInput 
+              className="w-full lg:w-96"
+              placeholder="Search companies, teams, contacts..."
+              size="md"
+            />
+          </div>
+        </div>
         {/* Tab Navigation */}
         <div className="flex items-center space-x-8 border-b border-gray-200 mb-6">
           <button
@@ -394,7 +411,7 @@ function ForumContent() {
           </button>
           
           {/* Show categories based on state */}
-          {(showAllCategories ? categories : categories.slice(0, 6)).map((category) => (
+          {(showAllCategories ? categories : (categories || []).slice(0, 6)).map((category) => (
             <button
               key={category.id}
               onClick={() => handleCategoryChange(category.id)}
@@ -410,62 +427,16 @@ function ForumContent() {
             </button>
           ))}
           
-          {categories.length > 6 && (
+          {(categories || []).length > 6 && (
             <button 
               onClick={() => setShowAllCategories(!showAllCategories)}
               className="px-3 py-1 bg-gray-100 text-blue-600 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors"
             >
-              {showAllCategories ? 'Show less' : `+${categories.length - 6} more`}
+              {showAllCategories ? 'Show less' : `+${(categories || []).length - 6} more`}
             </button>
           )}
         </div>
 
-        {/* Enhanced Search Bar */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search discussions, opportunities, and insights..."
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            
-            {/* Search Suggestions */}
-            {showSuggestions && searchSuggestions.length > 0 && searchQuery.trim() && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                <div className="p-2">
-                  <div className="text-xs text-gray-500 mb-2">Suggestions</div>
-                  {searchSuggestions.map((suggestion, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSearchQuery(suggestion);
-                        setShowSuggestions(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded transition-colors"
-                    >
-                      <Search className="w-3 h-3 inline mr-2 text-gray-400" />
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Search Results Count */}
-            {searchQuery.trim() && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <span className="text-xs text-gray-500">
-                  {pagination?.total || 0} results
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Create Post Section */}
         <div className="mb-6">
@@ -507,6 +478,18 @@ function ForumContent() {
                     <BarChart3 className="w-4 h-4" />
                     <span>Poll</span>
                   </button>
+                  <button
+                    onClick={() => setCreateType('intel')}
+                    className={`flex items-center space-x-1 px-4 py-2 rounded-full text-sm transition-colors ${
+                      createType === 'intel'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
+                    }`}
+                  >
+                    <Target className="w-4 h-4" />
+                    <span>Share Intel</span>
+                    <Gift className="w-3 h-3 text-blue-500" />
+                  </button>
                 </div>
               </div>
               
@@ -529,14 +512,25 @@ function ForumContent() {
                 </button>
               </div>
               
-              <SmartPostForm 
-                categories={categories as any} 
-                postType={createType}
-                onSuccess={() => {
-                  setShowCreateForm(false);
-                  fetchPosts(); // Refresh posts after creation
-                }}
-              />
+              {createType === 'intel' ? (
+                <IntelligenceSharing
+                  onSubmit={(intelligence) => {
+                    console.log('Intelligence shared:', intelligence);
+                    setShowCreateForm(false);
+                    fetchPosts(); // Refresh posts after creation
+                  }}
+                  onClose={() => setShowCreateForm(false)}
+                />
+              ) : (
+                <SmartPostForm 
+                  categories={categories as any} 
+                  postType={createType}
+                  onSuccess={() => {
+                    setShowCreateForm(false);
+                    fetchPosts(); // Refresh posts after creation
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
@@ -567,54 +561,64 @@ function ForumContent() {
           </div>
         </div>
 
-        {/* Posts Feed */}
-        <div className="space-y-4">
-          {loading ? (
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-100 rounded w-full mb-1"></div>
-                  <div className="h-3 bg-gray-100 rounded w-2/3"></div>
-                </div>
-              ))}
-            </div>
-          ) : posts.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-              <p className="text-gray-500 text-lg">No posts yet. Be the first to start a discussion!</p>
-              <button
-                onClick={() => setShowCreateForm(true)}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Create First Post
-              </button>
-            </div>
-          ) : (
-            posts.map((post) => (
-              <ForumPostCard
-                key={post.id}
-                post={post}
-                onVote={handleVote}
-                onBookmark={handleBookmark}
-                expandable={true}
-              />
-            ))
-          )}
-        </div>
+        {/* Main Content Area */}
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          {/* Posts Feed */}
+          <div className="xl:col-span-3 space-y-4">
+            {loading ? (
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-100 rounded w-full mb-1"></div>
+                    <div className="h-3 bg-gray-100 rounded w-2/3"></div>
+                  </div>
+                ))}
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+                <p className="text-gray-500 text-lg">No posts yet. Be the first to start a discussion!</p>
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Create First Post
+                </button>
+              </div>
+            ) : (
+              posts.map((post) => (
+                <ForumPostCard
+                  key={post.id}
+                  post={post}
+                  onVote={handleVote}
+                  onBookmark={handleBookmark}
+                  expandable={true}
+                />
+              ))
+            )}
 
-        {/* Load More */}
-        {pagination && pagination.pages > 1 && page < pagination.pages && (
-          <div className="flex justify-center mt-8">
-            <button 
-              onClick={handleLoadMore}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Load More Posts
-            </button>
+            {/* Load More */}
+            {pagination && pagination.pages > 1 && page < pagination.pages && (
+              <div className="flex justify-center mt-8">
+                <button 
+                  onClick={handleLoadMore}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Load More Posts
+                </button>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Sidebar */}
+          <div className="xl:col-span-1">
+            <div className="sticky top-6">
+              <ForumSidebar />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </ForumLayout>
   );
 }
 

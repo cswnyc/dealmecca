@@ -65,6 +65,7 @@ model User {
   analytics_events                                                analytics_events[]
   introduction_requests_introduction_requests_facilitatorIdToUser introduction_requests[]  @relation("introduction_requests_facilitatorIdToUser")
   introduction_requests_introduction_requests_requesterIdToUser   introduction_requests[]  @relation("introduction_requests_requesterIdToUser")
+  codeGenerations                                                 CodeGeneration[]         @relation("UserCodeGenerations")
 }
 
 model Account {
@@ -168,6 +169,7 @@ model Contact {
   email                 String?                 @unique(map: "unique_contact_email")
   phone                 String?
   linkedinUrl           String?
+  logoUrl               String?
   personalEmail         String?
   department            Department?
   seniority             SeniorityLevel
@@ -219,8 +221,8 @@ model Post {
   anonymousName      String
   votes              Int                  @default(0)
   isAnonymous        Boolean              @default(true)
-  extractedCompanies String[]             @default([])
-  aiTags             String[]             @default([])
+  extractedCompanies String              @default("")
+  aiTags             String              @default("")
   aiSummary          String?
   aiProcessed        Boolean              @default(false)
   aiProcessedAt      DateTime?
@@ -317,7 +319,7 @@ model ContactNote {
   userId    String
   content   String
   isPrivate Boolean  @default(false)
-  tags      String[] @default([])
+  tags      String @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
@@ -611,15 +613,21 @@ model ForumPost {
   aiProcessed        Boolean          @default(false)
   aiProcessedAt      DateTime?
   aiSummary          String?
-  aiTags             String[]         @default([])
+  aiTags             Json?
   aiVersion          String?
-  extractedCompanies String[]         @default([])
+  extractedCompanies String         @default("")
   // Post type specific fields
-  postType           String           @default("post") // "post", "list", "poll"
-  listItems          String[]         @default([])     // For list posts
-  pollChoices        String[]         @default([])     // For poll posts  
+  postType           String           @default("post") // "post", "list", "poll", "code"
+  listItems          String         @default("")     // For list posts
+  pollChoices        String         @default("")     // For poll posts  
   pollDuration       Int?                              // Poll duration in days
   pollEndsAt         DateTime?                         // When poll expires
+  // Code generation specific fields
+  codeLanguage       String?                           // Programming language
+  codeFramework      String?                           // Framework used
+  codeType           String?                           // Type of code (component, function, etc.)
+  codeComplexity     String?                           // Complexity level
+  generatedCode      String?                           // The actual generated code
   companyMentions    CompanyMention[] @relation("PostCompanyMentions")
   contactMentions    ContactMention[] @relation("PostContactMentions")
   bookmarkedBy       ForumBookmark[]
@@ -906,6 +914,9 @@ enum CompanyType {
   AGENCY
   MEDIA_COMPANY
   TECH_VENDOR
+  INDUSTRY
+  DSP_SSP
+  ADTECH
 }
 
 enum AgencyType {
@@ -1286,4 +1297,31 @@ enum IntroductionStatus {
   DECLINED
   COMPLETED
   CANCELLED
+}
+
+model CodeGeneration {
+  id              String   @id @default(cuid())
+  userId          String
+  prompt          String
+  language        String
+  framework       String?
+  codeType        String
+  complexity      String
+  generatedCode   String
+  explanation     String?
+  dependencies    String @default("")
+  suggestions     String @default("")
+  executionTime   Int?     // in milliseconds
+  tokensUsed      Int?
+  qualityScore    Float?
+  wasUseful       Boolean? // User feedback
+  forumPostId     String?  // If shared to forum
+  createdAt       DateTime @default(now())
+  user            User     @relation("UserCodeGenerations", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([language])
+  @@index([codeType])
+  @@index([createdAt])
+  @@index([forumPostId])
 }

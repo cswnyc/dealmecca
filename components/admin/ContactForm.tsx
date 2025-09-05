@@ -546,18 +546,13 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                   </SelectTrigger>
                   <SelectContent>
                     {filteredCompanies.length === 0 ? (
-                      <div className="p-2 text-center text-gray-500">
+                      <SelectItem value="" disabled>
                         {companySearchTerm ? 'No companies found' : 'Loading companies...'}
-                      </div>
+                      </SelectItem>
                     ) : (
                       filteredCompanies.map((company) => (
                         <SelectItem key={company.id} value={company.id}>
-                          <div className="flex items-center justify-between w-full">
-                            <span>{company.name}</span>
-                            <Badge variant="outline">
-                              {company.companyType.replace(/_/g, ' ')}
-                            </Badge>
-                          </div>
+                          {company.name} ({company.companyType.replace(/_/g, ' ')})
                         </SelectItem>
                       ))
                     )}
@@ -680,10 +675,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                 <SelectContent>
                   {contactMethods.map((method) => (
                     <SelectItem key={method.value} value={method.value}>
-                      <div className="flex items-center space-x-2">
-                        {method.icon}
-                        <span>{method.label}</span>
-                      </div>
+                      {method.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -714,10 +706,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                   <SelectContent>
                     {departments.map((dept) => (
                       <SelectItem key={dept.value} value={dept.value}>
-                        <div className="flex items-center space-x-2">
-                          <span>{dept.icon}</span>
-                          <span>{dept.label}</span>
-                        </div>
+                        {dept.icon} {dept.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -746,10 +735,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                   <SelectContent>
                     {seniorityLevels.map((level) => (
                       <SelectItem key={level.value} value={level.value}>
-                        <div className="flex items-center space-x-2">
-                          <span>{level.icon}</span>
-                          <span>{level.label}</span>
-                        </div>
+                        {level.icon} {level.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
