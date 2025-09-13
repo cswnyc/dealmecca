@@ -28,7 +28,19 @@ interface Company {
 }
 
 export default function OrganizationsPage() {
-  const { user: firebaseUser, loading: authLoading } = useAuth()
+  // Handle cases where Firebase provider might not be available (e.g., during build)
+  let firebaseUser = null;
+  let authLoading = false;
+  
+  try {
+    const authContext = useAuth();
+    firebaseUser = authContext.user;
+    authLoading = authContext.loading;
+  } catch (error) {
+    // If useAuth fails (e.g., during build), just use defaults
+    console.log('OrganizationsPage: Firebase context not available, using defaults');
+  }
+
   const router = useRouter()
   const [companies, setCompanies] = useState<Company[]>([])
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([])

@@ -10,7 +10,19 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function AuthHeader() {
-  const { user: firebaseUser, loading } = useAuth()
+  // Handle cases where Firebase provider might not be available (e.g., during build)
+  let firebaseUser = null;
+  let loading = false;
+  
+  try {
+    const authContext = useAuth();
+    firebaseUser = authContext.user;
+    loading = authContext.loading;
+  } catch (error) {
+    // If useAuth fails (e.g., during build), just use defaults
+    console.log('AuthHeader: Firebase context not available, using defaults');
+  }
+
   const [showDropdown, setShowDropdown] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const router = useRouter()

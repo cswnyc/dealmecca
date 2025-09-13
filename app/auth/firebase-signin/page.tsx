@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth, signInWithGoogle, signInWithLinkedIn, signInWithRedirect, signInWithPopup } from '@/lib/auth/firebase-auth';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { useConfettiCelebration, getCelebrationTypeForUser } from '@/components/auth/ConfettiCelebration';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +17,24 @@ export default function FirebaseSignInPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [useRedirect, setUseRedirect] = useState(false);
-  const { user, loading: authLoading } = useAuth();
+  
+  // Handle cases where Firebase provider might not be available (e.g., during build)
+  let user = null;
+  let authLoading = false;
+  let signInWithGoogle = null;
+  let signInWithLinkedIn = null;
+  
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+    authLoading = authContext.loading;
+    signInWithGoogle = authContext.signInWithGoogle;
+    signInWithLinkedIn = authContext.signInWithLinkedIn;
+  } catch (error) {
+    // If useAuth fails (e.g., during build), just use defaults
+    console.log('FirebaseSignInPage: Firebase context not available, using defaults');
+  }
+
   const router = useRouter();
   const { initTrigger, celebrate } = useConfettiCelebration();
 
@@ -28,8 +45,13 @@ export default function FirebaseSignInPage() {
       router.push('/dashboard');
     }
   }, [user, authLoading, router]);
-
+  
   const handleSignIn = useCallback(async (provider: 'google' | 'linkedin') => {
+    if (!signInWithGoogle || !signInWithLinkedIn) {
+      setError('Authentication is not available. Please try again later.');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setSuccess('');
@@ -38,21 +60,10 @@ export default function FirebaseSignInPage() {
       console.log(`🔐 Starting ${provider} authentication...`);
       
       let result;
-      if (useRedirect) {
-        console.log('🔄 Using redirect flow');
-        if (provider === 'google') {
-          await signInWithGoogle('redirect');
-        } else {
-          await signInWithLinkedIn('redirect');
-        }
-        return; // Function will not continue after redirect
+      if (provider === 'google') {
+        result = await signInWithGoogle(useRedirect);
       } else {
-        console.log('🪟 Using popup flow');
-        if (provider === 'google') {
-          result = await signInWithGoogle('popup');
-        } else {
-          result = await signInWithLinkedIn('popup');
-        }
+        result = await signInWithLinkedIn(useRedirect);
       }
 
       if (result?.user) {
