@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 
@@ -33,7 +33,7 @@ interface PerformanceGates {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json(
@@ -163,7 +163,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json(

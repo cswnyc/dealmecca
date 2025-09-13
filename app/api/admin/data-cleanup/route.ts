@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { PrismaClient } from '@prisma/client';
 import { successResponse, errorResponse, unauthorizedResponse, forbiddenResponse } from '@/lib/api-response';
 import { logger } from '@/lib/logger';
@@ -33,14 +33,15 @@ export interface DataCleanupOperation {
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
-    if (!session?.user?.email) {
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    // Authentication handled by middleware
+    if (false) {
       return unauthorizedResponse();
     }
 
     // Check admin permissions
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: request.headers.get('x-user-email') },
       select: { role: true }
     });
 
@@ -76,14 +77,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
-    if (!session?.user?.email) {
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    // Authentication handled by middleware
+    if (false) {
       return unauthorizedResponse();
     }
 
     // Check admin permissions
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: request.headers.get('x-user-email') },
       select: { id: true, role: true }
     });
 

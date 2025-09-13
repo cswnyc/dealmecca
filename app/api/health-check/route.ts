@@ -10,10 +10,9 @@ export async function GET(request: NextRequest) {
       message: 'Basic API functionality working',
       environment: {
         nodeEnv: process.env.NODE_ENV,
-        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-        hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
+        hasJWTSecret: !!process.env.JWT_SECRET,
         hasDatabaseUrl: !!process.env.DATABASE_URL,
-        secretLength: process.env.NEXTAUTH_SECRET?.length || 0
+        secretLength: process.env.JWT_SECRET?.length || 0
       }
     }
     

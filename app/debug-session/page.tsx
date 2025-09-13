@@ -1,13 +1,13 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useAuth } from "@/lib/auth/firebase-auth";
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { CheckCircle, XCircle, Clock, User, Database } from 'lucide-react'
 
 export default function SessionDebugPage() {
-  const { data: session, status } = useSession()
+  const { user, loading } = useAuth()
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
@@ -25,19 +25,19 @@ export default function SessionDebugPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 mb-4">
-                {status === 'loading' && (
+                {loading && (
                   <>
                     <Clock className="w-5 h-5 text-yellow-500" />
                     <span className="text-yellow-600 font-medium">Loading...</span>
                   </>
                 )}
-                {status === 'authenticated' && (
+                {!loading && user && (
                   <>
                     <CheckCircle className="w-5 h-5 text-green-500" />
                     <span className="text-green-600 font-medium">Authenticated</span>
                   </>
                 )}
-                {status === 'unauthenticated' && (
+                {!loading && !user && (
                   <>
                     <XCircle className="w-5 h-5 text-red-500" />
                     <span className="text-red-600 font-medium">Not Authenticated</span>

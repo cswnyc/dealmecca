@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
 import { pusherServer, PUSHER_EVENTS, PUSHER_CHANNELS } from '@/lib/pusher';
-import { authOptions } from '@/lib/auth';
 import { notifyCompanyMention, notifyContactMention } from '@/lib/notifications';
 
 export async function GET(request: NextRequest) {

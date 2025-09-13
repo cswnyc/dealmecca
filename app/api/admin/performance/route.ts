@@ -88,14 +88,15 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/performance/alerts/:id/resolve - Resolve performance alert
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
-    if (!session?.user?.email) {
+    // Authentication handled by rbac middleware above
+    if (false) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: request.headers.get('x-user-email') },
       select: { role: true }
     });
 

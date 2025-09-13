@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+// Removed NextAuth dependency - using Firebase auth via middleware
 
 export async function POST(request: NextRequest) {
   try {
     console.log('🔄 FORCE SESSION REFRESH: Starting...')
     
-    // Check if we can get a server session
-    const serverSession = await getServerSession(authOptions)
+    // Check user from middleware headers
+    const userId = request.headers.get('x-user-id')
+    const userEmail = request.headers.get('x-user-email')
     
-    if (serverSession) {
-      console.log('✅ FORCE SESSION REFRESH: Server session found')
+    if (userId && userEmail) {
+      console.log('✅ FORCE SESSION REFRESH: Firebase session found')
       
       return NextResponse.json({
         success: true,
         message: 'Session refresh successful',
-        session: serverSession,
+        session: { user: { id: userId, email: userEmail } },
         redirect: '/dashboard'
       })
     } else {

@@ -1,20 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Get user data from middleware headers
+    const userEmail = request.headers.get('x-user-email');
+    const userId = request.headers.get('x-user-id');
     
-    if (!session?.user) {
+    console.log('🎯 Rewards API: Headers check:', { userEmail, userId });
+    
+    if (!userEmail || !userId) {
+      console.log('🎯 Rewards API: No auth headers - returning 401');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get user details for name (could optimize this with middleware passing more data)
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true }
+    });
+
     // For now, return mock data since we haven't implemented the full rewards schema
     const mockUserStats = {
-      id: session.user.id,
-      name: session.user.name || 'User',
-      avatarUrl: session.user.image || undefined,
+      id: userId,
+      name: user?.name || 'User',
+      avatarUrl: undefined, // Could be added later from user profile
       gems: 150,
       rank: 8,
       contributions: 23,
@@ -37,7 +48,7 @@ export async function GET(request: NextRequest) {
     // In a real implementation, you would query the database:
     /*
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: request.headers.get('x-user-id') },
       select: {
         id: true,
         name: true,

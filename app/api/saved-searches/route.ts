@@ -1,22 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+// Removed getServerSession - using Firebase auth via middleware headers
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 // GET - List all saved searches for user
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions)
+  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  const userId = request.headers.get('x-user-id');
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
     const savedSearches = await prisma.savedSearch.findMany({
       where: {
-        userId: session.user.id,
+        userId: userId,
         isActive: true
       },
       orderBy: [
@@ -41,9 +41,10 @@ export async function GET(request: NextRequest) {
 
 // POST - Create new saved search
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions)
+  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  const userId = request.headers.get('x-user-id');
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Check if name already exists for this user
     const existingSearch = await prisma.savedSearch.findFirst({
       where: {
-        userId: session.user.id,
+        userId: userId,
         name,
         isActive: true
       }
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     const savedSearch = await prisma.savedSearch.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         name,
         description,
         query: query || '',
@@ -115,9 +116,10 @@ export async function POST(request: NextRequest) {
 
 // PUT - Update saved search
 export async function PUT(request: NextRequest) {
-  const session = await getServerSession(authOptions)
+  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  const userId = request.headers.get('x-user-id');
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -136,7 +138,7 @@ export async function PUT(request: NextRequest) {
     const existingSearch = await prisma.savedSearch.findFirst({
       where: {
         id,
-        userId: session.user.id
+        userId: request.headers.get('x-user-id')
       }
     })
 
@@ -151,7 +153,7 @@ export async function PUT(request: NextRequest) {
     if (name && name !== existingSearch.name) {
       const nameConflict = await prisma.savedSearch.findFirst({
         where: {
-          userId: session.user.id,
+          userId: userId,
           name,
           isActive: true,
           id: { not: id }
@@ -196,9 +198,10 @@ export async function PUT(request: NextRequest) {
 
 // DELETE - Delete saved search
 export async function DELETE(request: NextRequest) {
-  const session = await getServerSession(authOptions)
+  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  const userId = request.headers.get('x-user-id');
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -217,7 +220,7 @@ export async function DELETE(request: NextRequest) {
     const existingSearch = await prisma.savedSearch.findFirst({
       where: {
         id,
-        userId: session.user.id
+        userId: request.headers.get('x-user-id')
       }
     })
 

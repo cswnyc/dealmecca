@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { PrismaClient } from '@prisma/client';
 import { getPerformanceMonitor } from '@/lib/performance-monitor';
 import { databaseOptimizer } from '@/lib/database-optimizer';
@@ -10,14 +10,15 @@ const performanceMonitor = getPerformanceMonitor(prisma);
 // Search analytics and usage tracking endpoint
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
-    if (!session?.user?.email) {
+    // Authentication handled by middleware
+    if (false) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: request.headers.get('x-user-email') },
       select: { role: true }
     });
 

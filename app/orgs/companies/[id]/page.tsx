@@ -21,13 +21,17 @@ import {
   MessageSquare,
   LinkedinIcon,
   Network,
-  Target
+  Target,
+  BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
 import { CompanyActivityFeed } from '@/components/forum/CompanyActivityFeed';
 import { ActivityTracker } from '@/lib/activity-tracking';
 import { OrgChartViewer } from '@/components/org-charts/OrgChartViewer';
 import { DepartmentView } from '@/components/org-charts/DepartmentView';
+import { PartnershipNetworkVisualizer } from '@/components/partnerships/PartnershipNetworkVisualizer';
+import { EnhancedPartnershipCards } from '@/components/partnerships/EnhancedPartnershipCards';
+import { IntelligenceDashboard } from '@/components/intelligence/IntelligenceDashboard';
 
 export default function CompanyProfilePage() {
   const params = useParams();
@@ -39,6 +43,7 @@ export default function CompanyProfilePage() {
   const [eventsLoading, setEventsLoading] = useState(false);
   const [orgChart, setOrgChart] = useState<any>(null);
   const [orgChartLoading, setOrgChartLoading] = useState(false);
+  const [partnerships, setPartnerships] = useState<any[]>([]);
 
   useEffect(() => {
     if (params.id) {
@@ -49,10 +54,41 @@ export default function CompanyProfilePage() {
   // Handle URL tab parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['contacts', 'org-chart', 'events', 'forum', 'overview'].includes(tabParam)) {
+    if (tabParam && ['overview', 'partnerships', 'network', 'org-chart', 'intelligence', 'people', 'activity'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
+
+  // Process partnerships data
+  useEffect(() => {
+    if (company) {
+      const allPartnerships = [];
+      
+      // Process agency partnerships (where this company is the agency)
+      if (company.agencyPartnerships) {
+        company.agencyPartnerships.forEach((partnership: any) => {
+          allPartnerships.push({
+            ...partnership,
+            partner: partnership.advertiser,
+            currentCompanyRole: 'agency'
+          });
+        });
+      }
+      
+      // Process advertiser partnerships (where this company is the advertiser)
+      if (company.advertiserPartnerships) {
+        company.advertiserPartnerships.forEach((partnership: any) => {
+          allPartnerships.push({
+            ...partnership,
+            partner: partnership.agency,
+            currentCompanyRole: 'advertiser'
+          });
+        });
+      }
+      
+      setPartnerships(allPartnerships);
+    }
+  }, [company]);
 
   const fetchCompany = async () => {
     try {
@@ -258,6 +294,12 @@ export default function CompanyProfilePage() {
                         <span>{company._count.subsidiaries} subsidiaries</span>
                       </div>
                     )}
+                    {(company._count?.agencyPartnerships > 0 || company._count?.advertiserPartnerships > 0) && (
+                      <div className="flex items-center justify-center sm:justify-start space-x-1">
+                        <Network className="w-4 h-4" />
+                        <span>{(company._count?.agencyPartnerships || 0) + (company._count?.advertiserPartnerships || 0)} partnerships</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Description */}
@@ -298,161 +340,160 @@ export default function CompanyProfilePage() {
             fetchOrgChart();
           }
         }} className="space-y-6">
-          <TabsList>
+          <TabsList className="grid grid-cols-7 w-full">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="teams">Teams</TabsTrigger>
-            <TabsTrigger value="posts">Posts</TabsTrigger>
+            <TabsTrigger value="partnerships">Partnerships</TabsTrigger>
+            <TabsTrigger value="network">Network</TabsTrigger>
+            <TabsTrigger value="org-chart">Org Chart</TabsTrigger>
+            <TabsTrigger value="intelligence">Intelligence</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>
-            <TabsTrigger value="duties">Duties</TabsTrigger>
-            <TabsTrigger value="contact-info">Contact Info</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Company Info Card */}
-              <div className="lg:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>About {company.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Industry</h4>
-                        <p className="text-gray-600">{company.industry}</p>
+            <div className="space-y-6">
+              {/* Enhanced Company Overview */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+                    <CardHeader>
+                      <CardTitle className="text-blue-900">About {company.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Industry</h4>
+                          <p className="text-gray-600">{company.industry || 'Not specified'}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Type</h4>
+                          <p className="text-gray-600">{company.companyType?.replace(/_/g, ' ')}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Location</h4>
+                          <p className="text-gray-600">{company.city}, {company.state}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Network</h4>
+                          <p className="text-gray-600">
+                            {(company._count?.agencyPartnerships || 0) + (company._count?.advertiserPartnerships || 0)} partnerships
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Type</h4>
-                        <p className="text-gray-600">{company.companyType?.replace(/_/g, ' ')}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Location</h4>
-                        <p className="text-gray-600">{company.city}, {company.state}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Team Size</h4>
-                        <p className="text-gray-600">{company._count?.contacts || 0} team members</p>
-                      </div>
-                    </div>
-                    
-                    {company.description && (
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Description</h4>
-                        <p className="text-gray-600">{company.description}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-              
-              {/* Quick Stats */}
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Quick Stats</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Total Posts</span>
-                      <span className="font-medium">12</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Team Members</span>
-                      <span className="font-medium">{company._count?.contacts || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Last Activity</span>
-                      <span className="font-medium">2 hours ago</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Founded</span>
-                      <span className="font-medium">2 years ago</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                      
+                      {company.description && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Description</h4>
+                          <p className="text-gray-600">{company.description}</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
                 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Latest Contributions</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3 text-sm">
-                      <div>
-                        <p className="font-medium">New team member added</p>
-                        <p className="text-gray-500">22 hrs</p>
+                {/* Enhanced Stats */}
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base flex items-center">
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        Key Metrics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="text-center p-3 bg-blue-50 rounded-lg">
+                          <div className="text-2xl font-bold text-blue-900">
+                            {company._count?.contacts || 0}
+                          </div>
+                          <div className="text-xs text-blue-600">Team Members</div>
+                        </div>
+                        <div className="text-center p-3 bg-purple-50 rounded-lg">
+                          <div className="text-2xl font-bold text-purple-900">
+                            {partnerships.length}
+                          </div>
+                          <div className="text-xs text-purple-600">Partnerships</div>
+                        </div>
+                        <div className="text-center p-3 bg-green-50 rounded-lg">
+                          <div className="text-2xl font-bold text-green-900">
+                            {partnerships.filter(p => p.isActive).length}
+                          </div>
+                          <div className="text-xs text-green-600">Active Deals</div>
+                        </div>
+                        <div className="text-center p-3 bg-orange-50 rounded-lg">
+                          <div className="text-2xl font-bold text-orange-900">
+                            {company._count?.subsidiaries || 0}
+                          </div>
+                          <div className="text-xs text-orange-600">Subsidiaries</div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">Company info updated</p>
-                        <p className="text-gray-500">3 mos</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
+
+              {/* Partnership Preview */}
+              {partnerships.length > 0 && (
+                <EnhancedPartnershipCards
+                  partnerships={partnerships}
+                  companyName={company.name}
+                  companyType={company.companyType}
+                  maxVisible={3}
+                  showExpandButton={true}
+                  className=""
+                />
+              )}
             </div>
           </TabsContent>
 
-          <TabsContent value="teams">
-            <Card>
-              <CardHeader>
-                <CardTitle>Teams</CardTitle>
-                <p className="text-sm text-gray-600">Department and team structure</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Example teams based on org chart */}
-                  <div className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-medium">Account Management</h3>
-                      <Badge variant="outline">3 members</Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-3">Handles client relationships and account strategy</p>
-                    <div className="text-sm text-gray-500">Last activity: 1 year</div>
-                  </div>
-                  
-                  <div className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-medium">Creative Department</h3>
-                      <Badge variant="outline">5 members</Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-3">Develops creative campaigns and brand strategies</p>
-                    <div className="text-sm text-gray-500">Last activity: 1 year</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* New Partnership Tab */}
+          <TabsContent value="partnerships">
+            {partnerships.length > 0 ? (
+              <EnhancedPartnershipCards
+                partnerships={partnerships}
+                companyName={company.name}
+                companyType={company.companyType}
+                maxVisible={100}
+                showExpandButton={false}
+                className=""
+              />
+            ) : (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <Network className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">No Partnerships</h3>
+                  <p className="text-gray-600 mb-6">
+                    {company.name} doesn't have any partnerships in our system yet.
+                  </p>
+                  <Button variant="outline">
+                    <Target className="w-4 h-4 mr-2" />
+                    Suggest Partnerships
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
-          <TabsContent value="posts">
-            <Card>
-              <CardHeader>
-                <CardTitle>Posts about {company.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="border-l-4 border-blue-500 pl-4">
-                    <p className="font-medium">Company update posted</p>
-                    <p className="text-sm text-gray-600 mt-1">New team members announced and organizational changes.</p>
-                    <div className="flex items-center space-x-2 mt-2 text-xs text-gray-500">
-                      <span>SC Admin</span>
-                      <span>•</span>
-                      <span>22 hrs</span>
-                    </div>
-                  </div>
-                  
-                  <div className="border-l-4 border-green-500 pl-4">
-                    <p className="font-medium">Industry insights shared</p>
-                    <p className="text-sm text-gray-600 mt-1">Market analysis and strategic positioning discussion.</p>
-                    <div className="flex items-center space-x-2 mt-2 text-xs text-gray-500">
-                      <span>Packing Ticket</span>
-                      <span>•</span>
-                      <span>2 years</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* New Network Tab */}
+          <TabsContent value="network">
+            <PartnershipNetworkVisualizer
+              companyId={company.id}
+              companyName={company.name}
+              className=""
+            />
           </TabsContent>
+
+          {/* New Intelligence Tab */}
+          <TabsContent value="intelligence">
+            <IntelligenceDashboard
+              companyId={company.id}
+              companyName={company.name}
+              companyType={company.companyType}
+              className=""
+            />
+          </TabsContent>
+
+
 
           <TabsContent value="people">
             <Card>
@@ -473,110 +514,34 @@ export default function CompanyProfilePage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="duties">
-            <Card>
-              <CardHeader>
-                <CardTitle>What does {company.name} do?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-xs font-medium text-blue-600">1</span>
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Strategic Planning</h3>
-                      <p className="text-sm text-gray-600 mt-1">Develops comprehensive marketing strategies and campaign planning</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-xs font-medium text-green-600">2</span>
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Client Services</h3>
-                      <p className="text-sm text-gray-600 mt-1">Manages client relationships and ensures project delivery</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-xs font-medium text-purple-600">3</span>
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Creative Development</h3>
-                      <p className="text-sm text-gray-600 mt-1">Creates and executes creative campaigns across multiple channels</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          <TabsContent value="contact-info">
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Info</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Address</h4>
-                    <p className="text-gray-600">
-                      {company.city && company.state ? `${company.city}, ${company.state}` : 'Address not available'}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Email</h4>
-                    <p className="text-gray-600">
-                      {company.website ? `contact@${company.website.replace('https://', '').replace('http://', '')}` : 'Email not available'}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Website</h4>
-                    {company.website ? (
-                      <Link href={company.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                        View Website
-                      </Link>
-                    ) : (
-                      <p className="text-gray-600">Website not available</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Contact information last updated</h4>
-                    <p className="text-gray-600">2 years ago</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          {/* Keep old content for fallback - will be removed */}
-          <TabsContent value="contacts">
+          {/* Renamed People Tab */}
+          <TabsContent value="people">
             <Card>
               <CardHeader>
-                <CardTitle>Company Contacts</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Users className="w-5 h-5 mr-2" />
+                  Team Members
+                </CardTitle>
+                <p className="text-sm text-gray-600">People working at {company.name}</p>
               </CardHeader>
               <CardContent>
                 {company.contacts && company.contacts.length > 0 ? (
                   <div className="space-y-4">
                     {company.contacts.map((contact: any) => (
-                      <div key={contact.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={contact.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
                         <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-semibold shadow-sm">
                             {contact.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                           </div>
-                          <div>
-                            <Link href={`/contacts/${contact.id}`} className="group">
+                          <div className="flex-1">
+                            <Link href={`/orgs/contacts/${contact.id}`} className="group">
                               <h4 className="font-semibold group-hover:text-blue-600 group-hover:underline cursor-pointer">{contact.fullName}</h4>
                             </Link>
-                            <p className="text-sm text-gray-600">{contact.title}</p>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <Badge className="text-xs">
+                            <p className="text-sm text-gray-600 mb-1">{contact.title}</p>
+                            <div className="flex items-center space-x-2">
+                              <Badge className="text-xs bg-blue-100 text-blue-800">
                                 {contact.seniority.replace(/_/g, ' ')}
                               </Badge>
                               {contact.department && (
@@ -592,6 +557,7 @@ export default function CompanyProfilePage() {
                             <Button 
                               variant="ghost" 
                               size="sm"
+                              className="hover:bg-blue-50"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -605,6 +571,7 @@ export default function CompanyProfilePage() {
                             <Button 
                               variant="ghost" 
                               size="sm"
+                              className="hover:bg-green-50"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -618,6 +585,7 @@ export default function CompanyProfilePage() {
                             <Button 
                               variant="ghost" 
                               size="sm"
+                              className="hover:bg-blue-50"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -628,7 +596,8 @@ export default function CompanyProfilePage() {
                             </Button>
                           )}
                           <Button variant="outline" size="sm" asChild>
-                            <Link href={`/contacts/${contact.id}`}>
+                            <Link href={`/orgs/contacts/${contact.id}`}>
+                              <ExternalLink className="w-3 h-3 mr-1" />
                               View Profile
                             </Link>
                           </Button>
@@ -637,8 +606,12 @@ export default function CompanyProfilePage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    No contacts found for this company.
+                  <div className="text-center py-12 text-gray-500">
+                    <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">No Team Members</h3>
+                    <p className="text-gray-600">
+                      No team members have been added to {company.name} yet.
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -804,15 +777,16 @@ export default function CompanyProfilePage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="forum">
+          {/* Renamed Activity Tab */}
+          <TabsContent value="activity">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MessageSquare className="w-5 h-5" />
-                  <span>Forum Discussions</span>
+                  <span>Recent Activity</span>
                 </CardTitle>
                 <p className="text-sm text-gray-600">
-                  Posts where {company.name} was mentioned or posts from company employees
+                  Forum posts, company updates, and team member activity
                 </p>
               </CardHeader>
               <CardContent>
@@ -825,73 +799,6 @@ export default function CompanyProfilePage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="overview">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Company Details */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Company Details</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-sm font-medium text-gray-500">Company Type</div>
-                      <div className="text-sm">{company.companyType.replace(/_/g, ' ')}</div>
-                    </div>
-                    {company.agencyType && (
-                      <div>
-                        <div className="text-sm font-medium text-gray-500">Agency Type</div>
-                        <div className="text-sm">{company.agencyType.replace(/_/g, ' ')}</div>
-                      </div>
-                    )}
-                    {company.industry && (
-                      <div>
-                        <div className="text-sm font-medium text-gray-500">Industry</div>
-                        <div className="text-sm">{company.industry}</div>
-                      </div>
-                    )}
-                    {company.website && (
-                      <div>
-                        <div className="text-sm font-medium text-gray-500">Website</div>
-                        <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
-                          {company.website}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Contact Info */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contact Information</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {company.address && (
-                      <div>
-                        <div className="text-sm font-medium text-gray-500">Address</div>
-                        <div className="text-sm">{company.address}</div>
-                      </div>
-                    )}
-                    {company.phone && (
-                      <div>
-                        <div className="text-sm font-medium text-gray-500">Phone</div>
-                        <div className="text-sm">{company.phone}</div>
-                      </div>
-                    )}
-                    {company.email && (
-                      <div>
-                        <div className="text-sm font-medium text-gray-500">Email</div>
-                        <div className="text-sm">{company.email}</div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
 
           {company._count?.subsidiaries > 0 && (
             <TabsContent value="subsidiaries">

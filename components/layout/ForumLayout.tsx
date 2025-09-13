@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { Button } from '@/components/ui/button';
 import { UserProfileCard } from './UserProfileCard';
 import {
@@ -38,12 +39,6 @@ const navigationItems: NavigationItem[] = [
     path: '/forum'
   },
   {
-    id: 'search',
-    label: 'Search',
-    icon: Search,
-    path: '/search'
-  },
-  {
     id: 'organizations', 
     label: 'Organizations',
     icon: Building2,
@@ -68,7 +63,8 @@ export function ForumLayout({ children }: ForumLayoutProps) {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
 
   useEffect(() => {
     setMounted(true);

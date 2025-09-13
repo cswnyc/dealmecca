@@ -1,15 +1,19 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useAuth } from '@/lib/auth/firebase-auth'
+import { auth } from '@/lib/firebase'
+import { signOut as firebaseSignOut } from 'firebase/auth'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { User, LogOut, Settings, BarChart3 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function AuthHeader() {
-  const { data: session, status } = useSession()
+  const { user: firebaseUser, loading } = useAuth()
   const [showDropdown, setShowDropdown] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setIsClient(true)
@@ -25,7 +29,7 @@ export default function AuthHeader() {
     )
   }
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className="flex items-center space-x-4">
         <div className="animate-pulse bg-gray-200 rounded h-8 w-16"></div>
@@ -34,12 +38,12 @@ export default function AuthHeader() {
     )
   }
 
-  if (session?.user) {
+  if (firebaseUser) {
     return (
       <div className="flex items-center space-x-4">
         {/* Welcome Message */}
         <span className="text-sm text-gray-600 hidden md:block">
-          Welcome, {session.user.name || session.user.email}
+          Welcome, {firebaseUser.displayName || firebaseUser.email}
         </span>
         
         {/* User Menu */}
@@ -50,7 +54,7 @@ export default function AuthHeader() {
             onClick={() => setShowDropdown(!showDropdown)}
           >
             <User className="w-4 h-4" />
-            <span className="hidden md:block">{session.user.subscriptionTier}</span>
+            <span className="hidden md:block">User</span>
           </Button>
           
           {showDropdown && (
@@ -64,7 +68,14 @@ export default function AuthHeader() {
                 Settings
               </Link>
               <button 
-                onClick={() => signOut({ callbackUrl: '/' })}
+                onClick={async () => {
+                  try {
+                    await firebaseSignOut(auth);
+                    router.push('/auth/firebase-signin');
+                  } catch (error) {
+                    console.error('Error signing out:', error);
+                  }
+                }}
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 <LogOut className="w-4 h-4 inline mr-2" />
@@ -80,12 +91,12 @@ export default function AuthHeader() {
   // Not logged in - show login buttons
   return (
     <div className="flex items-center space-x-4">
-      <Link href="/auth/signin">
+      <Link href="/auth/firebase-signin">
         <Button variant="ghost" className="text-gray-700 hover:text-primary font-medium">
           Sign In
         </Button>
       </Link>
-      <Link href="/auth/signup">
+      <Link href="/auth/firebase-signin">
         <Button className="bg-accent hover:bg-accent-700 text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
           Get Started
         </Button>

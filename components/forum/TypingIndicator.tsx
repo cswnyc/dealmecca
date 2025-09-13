@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { pusherClient, PUSHER_EVENTS, PUSHER_CHANNELS } from '@/lib/pusher';
 import { debounce } from 'lodash';
 
@@ -17,13 +18,14 @@ interface TypingIndicatorProps {
 }
 
 export function TypingIndicator({ postId }: TypingIndicatorProps) {
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
 
   // Debounced function to stop typing indicator
   const debouncedStopTyping = useCallback(
     debounce(async () => {
-      if (session?.user) {
+      if (firebaseUser) {
         await fetch(`/api/forum/posts/${postId}/typing`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -31,7 +33,7 @@ export function TypingIndicator({ postId }: TypingIndicatorProps) {
         });
       }
     }, 2000),
-    [postId, session]
+    [postId, firebaseUser]
   );
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export function TypingIndicator({ postId }: TypingIndicatorProps) {
     const channel = pusherClient.subscribe(PUSHER_CHANNELS.FORUM_POST(postId));
 
     channel.bind(PUSHER_EVENTS.USER_TYPING, (data: any) => {
-      if (data.user.id === session?.user?.id) return; // Don't show own typing
+      if (data.user.id === firebaseUser?.uid) return; // Don't show own typing
 
       setTypingUsers(prev => {
         const filtered = prev.filter(u => u.id !== data.user.id);
@@ -66,7 +68,7 @@ export function TypingIndicator({ postId }: TypingIndicatorProps) {
         pusherClient.unsubscribe(PUSHER_CHANNELS.FORUM_POST(postId));
       }
     };
-  }, [postId, session]);
+  }, [postId, firebaseUser]);
 
   if (typingUsers.length === 0) return null;
 
@@ -95,11 +97,12 @@ export function TypingIndicator({ postId }: TypingIndicatorProps) {
 
 // Export the handleTyping function for use in comment forms
 export const useTypingIndicator = (postId: string) => {
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   
   const debouncedStopTyping = useCallback(
     debounce(async () => {
-      if (session?.user) {
+      if (firebaseUser) {
         await fetch(`/api/forum/posts/${postId}/typing`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -107,11 +110,11 @@ export const useTypingIndicator = (postId: string) => {
         });
       }
     }, 2000),
-    [postId, session]
+    [postId, firebaseUser]
   );
 
   const handleTyping = async () => {
-    if (session?.user) {
+    if (firebaseUser) {
       await fetch(`/api/forum/posts/${postId}/typing`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

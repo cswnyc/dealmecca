@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { canUserSearch, recordSearch } from '@/lib/auth'
+// Firebase auth handled by middleware - removed @/lib/auth import
 import { PrismaClient } from '@prisma/client'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
 

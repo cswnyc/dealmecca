@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ Manual login successful for:', email, 'Role:', user.role);
     
     // Create JWT token manually
-    const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret');
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret');
     const token = await new SignJWT({
       sub: user.id,
       email: user.email,
@@ -62,12 +62,11 @@ export async function POST(request: NextRequest) {
     // Set the session cookie manually
     const isProduction = process.env.NODE_ENV === 'production';
     response.cookies.set({
-      name: 'next-auth.session-token',
+      name: 'dealmecca-session',
       value: token,
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
-      ...(isProduction && { domain: '.getmecca.com' }),
       path: '/',
       maxAge: 30 * 24 * 60 * 60 // 30 days
     });

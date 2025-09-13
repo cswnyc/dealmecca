@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useFirebaseSession } from '@/hooks/useFirebaseSession'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -47,10 +49,20 @@ interface IntelligenceMetric {
 }
 
 export default function IntelligencePage() {
-  const { data: session } = useSession()
+  const hasFirebaseSession = useFirebaseSession()
+  const { user: firebaseUser, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [activeSection, setActiveSection] = useState<'overview' | 'connections' | 'market' | 'contacts'>('overview')
   const [isLoading, setIsLoading] = useState(true)
   const [suggestions, setSuggestions] = useState<any[]>([])
+
+  // Authentication check
+  useEffect(() => {
+    if (!authLoading && !firebaseUser && !hasFirebaseSession) {
+      console.log('❌ No Firebase authentication found in intelligence page, redirecting to signin');
+      router.push('/auth/firebase-signin');
+    }
+  }, [authLoading, firebaseUser, hasFirebaseSession, router]);
 
   // Mock data for demonstration
   const mockTargetCompany = {

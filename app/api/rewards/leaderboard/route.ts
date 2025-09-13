@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

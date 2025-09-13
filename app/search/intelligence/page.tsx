@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { 
   Search, Filter, X, Building2, Users, MapPin, Target, Star, 
@@ -101,7 +101,7 @@ const QUICK_FILTER_ICONS: Record<string, string> = {
 }
 
 function SearchIntelligenceContent() {
-  const { data: session } = useSession()
+  const { user: firebaseUser } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   

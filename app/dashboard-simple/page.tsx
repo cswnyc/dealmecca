@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useAuth } from "@/lib/auth/firebase-auth";;
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ForumLayout } from '@/components/layout/ForumLayout';
@@ -32,17 +32,17 @@ interface UserProfile {
 
 export default function SimpleDashboardPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'authenticated' && session) {
+    if (!authLoading && user) {
       fetchProfile();
-    } else if (status === 'unauthenticated') {
+    } else if (!authLoading && !user) {
       router.push('/auth/signin');
     }
-  }, [session, status, router]);
+  }, [user, authLoading, router]);
 
   const fetchProfile = async () => {
     try {
@@ -58,7 +58,7 @@ export default function SimpleDashboardPage() {
     }
   };
 
-  if (loading || status === 'loading') {
+  if (loading || loading) {
     return (
       <ForumLayout>
         <div className="flex items-center justify-center min-h-screen">

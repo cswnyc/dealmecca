@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
 import { analyzeCode } from '@/lib/claude-code-sdk';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     // Check user's subscription for rate limiting
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: request.headers.get('x-user-id') },
       include: {
         _count: {
           select: {
@@ -95,7 +94,7 @@ export async function POST(request: NextRequest) {
       // Record the code analysis in the database
       await prisma.search.create({
         data: {
-          userId: session.user.id,
+          userId: request.headers.get('x-user-id'),
           query: `Code analysis: ${analysisType}`,
           resultsCount: 1,
           searchType: 'code_analysis',
@@ -103,7 +102,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Log the code analysis for analytics
-      console.log(`Code analysis successful for user ${session.user.id}:`, {
+      console.log(`Code analysis successful for user ${request.headers.get('x-user-id')}:`, {
         language,
         analysisType,
         codeLength: code.length,
@@ -173,7 +172,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -183,7 +182,7 @@ export async function GET(request: NextRequest) {
 
     // Get user's current usage stats
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: request.headers.get('x-user-id') },
       include: {
         _count: {
           select: {

@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
+import { auth } from '@/lib/firebase';
+import { signOut as firebaseSignOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,16 +34,17 @@ export function UserProfileCard() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { data: session, status } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'authenticated' && session) {
+    if (!authLoading && firebaseUser && hasFirebaseSession) {
       fetchProfile();
-    } else if (status === 'unauthenticated') {
+    } else if (!authLoading && !firebaseUser && !hasFirebaseSession) {
       setLoading(false);
     }
-  }, [session, status]);
+  }, [firebaseUser, hasFirebaseSession, authLoading]);
 
   const fetchProfile = async () => {
     try {
@@ -101,7 +105,8 @@ export function UserProfileCard() {
   };
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/auth/signin' });
+    await firebaseSignOut(auth);
+    router.push('/auth/firebase-signin');
   };
 
   const handleNavigation = (path: string) => {
@@ -123,11 +128,11 @@ export function UserProfileCard() {
     );
   }
 
-  if (status === 'unauthenticated' || !profile) {
+  if ((!authLoading && !firebaseUser && !hasFirebaseSession) || !profile) {
     return (
       <div className="p-3">
         <Button
-          onClick={() => router.push('/auth/signin')}
+          onClick={() => router.push('/auth/firebase-signin')}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         >
           Sign In

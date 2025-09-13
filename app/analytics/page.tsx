@@ -1,6 +1,7 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useFirebaseSession } from '@/hooks/useFirebaseSession'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,10 +10,17 @@ import { BarChart3, TrendingUp, Users, Crown } from 'lucide-react'
 import Link from 'next/link'
 
 export default function AnalyticsPage() {
-  const { data: session, status } = useSession()
+  const hasFirebaseSession = useFirebaseSession()
+  const { user: firebaseUser, loading: authLoading } = useAuth()
   const router = useRouter()
 
-  // Allow access without NextAuth session for testing purposes
+  // Authentication check
+  useEffect(() => {
+    if (!authLoading && !firebaseUser && !hasFirebaseSession) {
+      console.log('❌ No Firebase authentication found in analytics page, redirecting to signin');
+      router.push('/auth/firebase-signin');
+    }
+  }, [authLoading, firebaseUser, hasFirebaseSession, router]);
 
   return (
     <div className="min-h-screen bg-gray-50">

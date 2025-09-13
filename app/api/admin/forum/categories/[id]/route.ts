@@ -6,12 +6,6 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check admin permissions here
-    const userId = request.headers.get('x-user-id');
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
     const body = await request.json();
     const { name, slug, description, color, icon, order, isActive } = body;
@@ -61,12 +55,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check admin permissions here
-    const userId = request.headers.get('x-user-id');
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
 
     // Check if category has posts
@@ -88,7 +76,11 @@ export async function DELETE(
 
     if (category._count.posts > 0) {
       return NextResponse.json(
-        { error: 'Cannot delete category with existing posts' },
+        { 
+          error: `Cannot delete category "${category.name}" - it contains ${category._count.posts} posts. Please move or delete the posts first.`,
+          canDelete: false,
+          postCount: category._count.posts
+        },
         { status: 400 }
       );
     }

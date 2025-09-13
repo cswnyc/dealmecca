@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
     // Check if user is authenticated (all authenticated users can submit)
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
     if (!session?.user) {
       return NextResponse.json(
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check if user is authenticated and has admin privileges
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
     if (!session?.user || !['ADMIN', 'TEAM'].includes((session.user as any).role)) {
       return NextResponse.json(

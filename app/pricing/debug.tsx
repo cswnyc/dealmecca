@@ -1,10 +1,10 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from "@/lib/auth/firebase-auth";;
 import { useEffect, useState } from 'react';
 
 export function SessionDebugComponent() {
-  const { data: session, status } = useSession();
+  const { user, loading } = useAuth();
   const [cookieInfo, setCookieInfo] = useState<any>(null);
   const [serverSession, setServerSession] = useState<any>(null);
   const [showDebug, setShowDebug] = useState(false);
@@ -46,7 +46,7 @@ export function SessionDebugComponent() {
     );
   }
 
-  const hasValidSession = session?.user;
+  const hasValidSession = user;
   const canAccessAdmin = hasValidSession && (session.user.role === 'ADMIN' || session.user.role === 'PRO');
 
   return (
@@ -69,8 +69,8 @@ export function SessionDebugComponent() {
             <h3 className="font-semibold mb-2">🖥️ Client Session</h3>
             <div className="text-sm space-y-1">
               <div><strong>Status:</strong> <span className={`px-2 py-1 rounded text-xs ${
-                status === 'authenticated' ? 'bg-green-100 text-green-800' :
-                status === 'loading' ? 'bg-yellow-100 text-yellow-800' :
+                !loading && user ? 'bg-green-100 text-green-800' :
+                loading ? 'bg-yellow-100 text-yellow-800' :
                 'bg-red-100 text-red-800'
               }`}>{status}</span></div>
               

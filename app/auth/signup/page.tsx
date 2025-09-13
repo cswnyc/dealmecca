@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+// Removed NextAuth signIn import
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -69,7 +69,7 @@ export default function SignUpPage() {
         if (result?.error) {
           setError('Registration successful, but login failed. Please try signing in.')
         } else {
-          router.push('/dashboard')
+          router.push('/forum')
         }
       } else {
         const data = await response.json()

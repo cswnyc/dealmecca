@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useFirebaseSession } from '@/hooks/useFirebaseSession'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -84,7 +85,8 @@ interface EventFilters {
 }
 
 export default function EventsPage() {
-  const { data: session, status } = useSession()
+  const hasFirebaseSession = useFirebaseSession()
+  const { user: firebaseUser, loading: authLoading } = useAuth()
   const router = useRouter()
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
@@ -259,7 +261,7 @@ export default function EventsPage() {
       .replace(/\b\w/g, l => l.toUpperCase())
   }
 
-  if (status === 'loading') {
+  if (authLoading) {
     return (
       <ForumLayout>
         <div className="min-h-screen flex items-center justify-center">

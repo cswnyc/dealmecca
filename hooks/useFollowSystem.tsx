@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/auth/firebase-auth';
 // Using simple alerts for now - can be upgraded to toast later
 const toast = {
   success: (message: string) => alert(`✅ ${message}`),
@@ -23,7 +23,7 @@ export function useFollowSystem({
   initialIsFavorite = false,
   initialFollowerCount = 0
 }: UseFollowSystemProps) {
-  const { data: session } = useSession();
+  const { user: firebaseUser } = useAuth();
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [followerCount, setFollowerCount] = useState(initialFollowerCount);

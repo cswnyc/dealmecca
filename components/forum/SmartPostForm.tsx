@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { generateMetadata } from '@/lib/ai-tagging';
 import { parseMentions } from '@/lib/mention-utils';
-import { MentionTextarea } from './MentionTextarea';
+import { CategoryOnlyMentionTextarea } from './CategoryOnlyMentionTextarea';
 import { CodeGenerationInterface } from '@/components/code/CodeGenerationInterface';
 import { TagIcon, MapPinIcon, ExclamationTriangleIcon, BuildingOfficeIcon, CalendarIcon } from '@heroicons/react/24/outline';
 
@@ -358,10 +358,10 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                 Content *
               </label>
-              <MentionTextarea
+              <CategoryOnlyMentionTextarea
                 value={formData.content}
                 onChange={(content) => setFormData(prev => ({ ...prev, content }))}
-                placeholder="Share details, context, or ask your question... Use @company or @contact to mention organizations or people"
+                placeholder="Share details, context, or ask your question... Use @topic to mention categories"
                 rows={6}
               />
             </div>
@@ -432,7 +432,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                 Additional Context (Optional)
               </label>
-              <MentionTextarea
+              <CategoryOnlyMentionTextarea
                 value={formData.content}
                 onChange={(content) => setFormData(prev => ({ ...prev, content }))}
                 placeholder="Add any additional context, questions, or discussion points about this code..."
@@ -692,17 +692,35 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         </div>
 
         {/* Anonymous Option */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="anonymous"
-            checked={formData.isAnonymous}
-            onChange={(e) => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
-            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-          />
-          <label htmlFor="anonymous" className="ml-2 text-sm text-gray-700">
-            Post anonymously (your identity will be hidden)
-          </label>
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="anonymous"
+              checked={formData.isAnonymous}
+              onChange={(e) => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <label htmlFor="anonymous" className="ml-2 text-sm text-gray-700">
+              Post anonymously
+            </label>
+          </div>
+          
+          {formData.isAnonymous && (
+            <div className="ml-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center space-x-2 text-sm">
+                <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                  <span className="text-xs font-medium text-gray-600">?</span>
+                </div>
+                <span className="text-gray-600">Will be posted as:</span>
+                <span className="font-medium text-gray-900">Anonymous User</span>
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Anonymous</span>
+              </div>
+              <div className="text-xs text-blue-700 mt-2">
+                💡 Set an anonymous handle in your profile to maintain consistency across anonymous posts
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Submit Button */}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, useSession } from 'next-auth/react'
+// Removed NextAuth import - using Firebase auth
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export default function TestLoginSimple() {
-  const { data: session, status } = useSession()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [email, setEmail] = useState('admin@dealmecca.com')
   const [password, setPassword] = useState('AdminPass123!')
@@ -41,7 +41,7 @@ export default function TestLoginSimple() {
     }
   }
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

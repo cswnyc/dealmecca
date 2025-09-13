@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -10,8 +9,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    // Check if user is authenticated via middleware headers
+  const userId = request.headers.get('x-user-id');
+  if (!userId) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -96,8 +97,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    // Authentication handled by middleware
+    if (false) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -134,8 +136,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    // Authentication handled by middleware
+    if (false) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
-import { authOptions } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    // Get user data from middleware headers
+    const userEmail = request.headers.get('x-user-email');
+    const userId = request.headers.get('x-user-id');
     
-    if (!session?.user?.email) {
+    if (!userEmail || !userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: { id: userId }
     });
 
     if (!user) {
@@ -156,9 +157,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    // Get user data from middleware headers
+    const userEmail = request.headers.get('x-user-email');
+    const userId = request.headers.get('x-user-id');
     
-    if (!session?.user?.email) {
+    if (!userEmail || !userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -166,7 +169,7 @@ export async function GET(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: { id: userId }
     });
 
     if (!user) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useAuth } from "@/lib/auth/firebase-auth";
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AdvancedSearch from '@/components/search/AdvancedSearch'
@@ -73,7 +73,7 @@ interface EnhancedSearchCompany {
 }
 
 export default function EnhancedSearchPage() {
-  const { data: session, status } = useSession()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [companies, setCompanies] = useState<EnhancedSearchCompany[]>([])
@@ -91,7 +91,7 @@ export default function EnhancedSearchPage() {
   })
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!loading && !user) {
       router.push('/auth/signin')
     }
   }, [status, router])
@@ -139,13 +139,13 @@ export default function EnhancedSearchPage() {
 
   const handleSearch = async (query: string, filters: SearchFilters, page = 1) => {
     // Prevent search if still loading authentication
-    if (status === 'loading') {
+    if (loading) {
       setError('Please wait while we verify your authentication...')
       return
     }
 
     // Ensure user is authenticated before searching
-    if (status === 'unauthenticated' || !session) {
+    if (!loading && !user || !session) {
       setError('Please sign in to use search functionality')
       router.push('/auth/signin')
       return
@@ -422,7 +422,7 @@ export default function EnhancedSearchPage() {
     return differentiators[type as keyof typeof differentiators] || ['Market presence', 'Service quality']
   }
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

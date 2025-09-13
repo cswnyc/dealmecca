@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from "@/lib/auth/firebase-auth";;
 import {
   Building2,
   Users,
@@ -76,10 +76,10 @@ interface CompanyDetailTabsProps {
 }
 
 export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
-  const isAdmin = session?.user && ['ADMIN', 'TEAM'].includes(session.user.role as string);
+  const isAdmin = user && ['ADMIN', 'TEAM'].includes(session.user.role as string);
 
   const tabs = [
     { id: 'overview' as TabType, label: 'Overview', icon: <Building2 className="w-4 h-4" /> },

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt'
+// Removed NextAuth JWT import - using Firebase auth via middleware
 import { jwtVerify } from 'jose'
 
 export async function GET(request: NextRequest) {
   try {
-    // Check NextAuth token
-    const nextAuthToken = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+    // NextAuth removed - only check custom session cookie
     
     // Check custom session cookie
     const sessionCookie = request.cookies.get('dealmecca-session')
@@ -13,7 +12,7 @@ export async function GET(request: NextRequest) {
     
     if (sessionCookie?.value) {
       try {
-        const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret')
         const { payload } = await jwtVerify(sessionCookie.value, secret)
         customToken = {
           sub: payload.sub,
@@ -34,17 +33,12 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      nextAuthToken: nextAuthToken ? {
-        sub: nextAuthToken.sub,
-        email: nextAuthToken.email,
-        role: nextAuthToken.role,
-        subscriptionTier: nextAuthToken.subscriptionTier
-      } : null,
+      nextAuthToken: null, // NextAuth removed
       customToken,
       hasSessionCookie: !!sessionCookie,
       sessionCookieLength: sessionCookie?.value?.length || 0,
       cookies: allCookies,
-      activeToken: nextAuthToken || customToken,
+      activeToken: customToken,
       timestamp: new Date().toISOString()
     })
     

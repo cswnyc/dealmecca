@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { 
   Upload,
   Download,
@@ -55,7 +56,8 @@ interface ImportLog {
 }
 
 export default function ImportPage() {
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -69,7 +71,18 @@ export default function ImportPage() {
   const [showLogs, setShowLogs] = useState(false);
   
   // Check admin access
-  if (!session || session.user?.role !== 'ADMIN') {
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!firebaseUser) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network, Filter, Plus, MapPin, ChevronDown, X, Globe, User, Briefcase, BarChart3, Tv, Satellite, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -34,6 +35,32 @@ interface Company {
   _count: {
     contacts: number;
   };
+}
+
+interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  title: string;
+  email?: string;
+  phone?: string;
+  linkedinUrl?: string;
+  logoUrl?: string;
+  department?: string;
+  seniority: string;
+  verified: boolean;
+  isActive: boolean;
+  company: {
+    id: string;
+    name: string;
+    city: string;
+    state: string;
+    companyType: string;
+    logoUrl?: string;
+    verified: boolean;
+  };
+  createdAt: string;
 }
 
 interface UserSession {
@@ -166,11 +193,15 @@ const INDUSTRY_COLORS: Record<string, string> = {
 }
 
 export default function OrgsPage() {
-  const { data: session, status } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const router = useRouter();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
+  const [contactsLoading, setContactsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -201,6 +232,14 @@ export default function OrgsPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<BulkUploadResult | null>(null);
   const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(new Set());
+
+  // Authentication check - redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !firebaseUser && !hasFirebaseSession) {
+      console.log('❌ No Firebase authentication found in orgs page, redirecting to signin');
+      router.push('/auth/firebase-signin');
+    }
+  }, [authLoading, firebaseUser, hasFirebaseSession, router]);
 
   // Helper functions for agency view
   const getAgencyTypeLabel = (type: string) => {
@@ -276,6 +315,36 @@ export default function OrgsPage() {
     fetchCompanies();
   }, []);
 
+  // Fetch contacts data when People tab is accessed
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (activeTab !== 'people') return;
+      
+      try {
+        setContactsLoading(true);
+        const response = await fetch('/api/orgs/contacts?limit=50');
+        if (!response.ok) {
+          throw new Error('Failed to fetch contacts');
+        }
+        const data = await response.json();
+        console.log('Contacts API response:', data);
+        if (data.success && Array.isArray(data.contacts)) {
+          setContacts(data.contacts);
+          setFilteredContacts(data.contacts);
+        } else {
+          throw new Error(data.error || 'Invalid response format');
+        }
+      } catch (err) {
+        console.error('Error fetching contacts:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch contacts');
+      } finally {
+        setContactsLoading(false);
+      }
+    };
+
+    fetchContacts();
+  }, [activeTab]);
+
   // Filter companies based on search and filters
   useEffect(() => {
     if (!Array.isArray(companies)) {
@@ -319,12 +388,12 @@ export default function OrgsPage() {
     setFilteredCompanies(filtered);
   }, [searchQuery, companies, filterState]);
 
-  // Set admin status
+  // Set admin status based on Firebase user
   useEffect(() => {
-    if (session?.user?.role === 'ADMIN') {
-      setIsAdmin(true);
-    }
-  }, [session]);
+    // For now, we'll skip admin privileges for Firebase users
+    // This can be implemented later by fetching user profile or checking custom claims
+    setIsAdmin(false);
+  }, [firebaseUser]);
 
   // Agency filtering
   useEffect(() => {
@@ -354,8 +423,80 @@ export default function OrgsPage() {
     setFilteredAgencies(filtered);
   }, [searchQuery, agencies, filterState.agencyType, filterState.geography]);
 
-  // Early return for loading state - must come after all hooks
-  if (status === 'loading') {
+  // Filter contacts based on search and filters
+  useEffect(() => {
+    if (!Array.isArray(contacts)) {
+      setFilteredContacts([]);
+      return;
+    }
+    
+    let filtered = [...contacts];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const searchTerm = searchQuery.toLowerCase();
+      filtered = filtered.filter(contact =>
+        (contact.fullName && contact.fullName.toLowerCase().includes(searchTerm)) ||
+        (contact.firstName && contact.firstName.toLowerCase().includes(searchTerm)) ||
+        (contact.lastName && contact.lastName.toLowerCase().includes(searchTerm)) ||
+        (contact.title && contact.title.toLowerCase().includes(searchTerm)) ||
+        (contact.company.name && contact.company.name.toLowerCase().includes(searchTerm)) ||
+        (contact.company.city && contact.company.city.toLowerCase().includes(searchTerm)) ||
+        (contact.department && contact.department.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Apply company type filter
+    if (filterState.agencyType !== 'all') {
+      filtered = filtered.filter(contact =>
+        contact.company.companyType === filterState.agencyType
+      );
+    }
+
+    // Apply geography filter
+    if (filterState.geography !== 'all') {
+      filtered = filtered.filter(contact =>
+        contact.company.state === filterState.geography
+      );
+    }
+
+    setFilteredContacts(filtered);
+  }, [searchQuery, contacts, filterState]);
+
+  // Helper functions for contacts
+  const getSeniorityBadgeColor = (seniority: string) => {
+    switch (seniority) {
+      case 'C_LEVEL': return 'bg-purple-100 text-purple-800';
+      case 'VP_LEVEL': return 'bg-indigo-100 text-indigo-800';
+      case 'DIRECTOR': return 'bg-blue-100 text-blue-800';
+      case 'MANAGER': return 'bg-green-100 text-green-800';
+      case 'SENIOR': return 'bg-yellow-100 text-yellow-800';
+      case 'ASSOCIATE': return 'bg-orange-100 text-orange-800';
+      case 'JUNIOR': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getSeniorityLabel = (seniority: string) => {
+    switch (seniority) {
+      case 'C_LEVEL': return 'C-Level';
+      case 'VP_LEVEL': return 'VP Level';
+      case 'DIRECTOR': return 'Director';
+      case 'MANAGER': return 'Manager';
+      case 'SENIOR': return 'Senior';
+      case 'ASSOCIATE': return 'Associate';
+      case 'JUNIOR': return 'Junior';
+      default: return seniority.replace(/_/g, ' ');
+    }
+  };
+
+  const getDepartmentLabel = (department?: string) => {
+    if (!department) return 'General';
+    return department.replace(/_/g, ' ');
+  };
+
+  // Early return for loading state - must come after all hooks  
+  if (authLoading) {
     return (
       <ForumLayout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -725,17 +866,219 @@ export default function OrgsPage() {
         )}
 
         {activeTab === 'people' && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5" />
-                <span>People</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">People directory coming soon...</p>
-            </CardContent>
-          </Card>
+          <div className="w-full">
+            {/* People Stats Bar */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
+                      <User className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Total Contacts</p>
+                      <p className="text-2xl font-bold text-gray-900">{Array.isArray(contacts) ? contacts.length : 0}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Verified</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {Array.isArray(contacts) ? contacts.filter(c => c.verified).length : 0}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
+                      <Building2 className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Companies</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {Array.isArray(contacts) 
+                          ? new Set(contacts.map(c => c.company.id)).size
+                          : 0}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Filter Toggle */}
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200"
+                >
+                  <Filter className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">Filters</span>
+                  <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Contacts Directory */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {searchQuery ? `Search Results (${Array.isArray(filteredContacts) ? filteredContacts.length : 0})` : 'People Directory'}
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {searchQuery ? `Found ${Array.isArray(filteredContacts) ? filteredContacts.length : 0} contacts matching your search` : 'Connect with industry professionals'}
+                </p>
+              </div>
+              <div className="p-6">
+                {contactsLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading contacts...</p>
+                  </div>
+                ) : error && activeTab === 'people' ? (
+                  <div className="text-center py-12">
+                    <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <Button onClick={() => window.location.reload()} variant="outline">
+                      Try Again
+                    </Button>
+                  </div>
+                ) : !Array.isArray(filteredContacts) || filteredContacts.length === 0 ? (
+                  <div className="text-center py-12">
+                    <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2">No contacts found</p>
+                    <p className="text-sm text-gray-500">Try adjusting your search or filters</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {Array.isArray(filteredContacts) ? filteredContacts.slice(0, 20).map((contact) => (
+                      <div key={contact.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-4 flex-1">
+                            {/* Contact Avatar/Logo */}
+                            <div className="flex-shrink-0">
+                              {contact.logoUrl ? (
+                                <img 
+                                  src={contact.logoUrl} 
+                                  alt={`${contact.fullName} profile`}
+                                  className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+                                  {contact.firstName?.[0]}{contact.lastName?.[0]}
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-start justify-between mb-2">
+                                <div>
+                                  <Link href={`/orgs/contacts/${contact.id}`} className="group">
+                                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                                      <SearchHighlight 
+                                        text={contact.fullName || `${contact.firstName} ${contact.lastName}`} 
+                                        searchTerm={searchQuery}
+                                        highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-semibold"
+                                      />
+                                    </h3>
+                                  </Link>
+                                  <p className="text-sm font-medium text-gray-600 mb-1">
+                                    <SearchHighlight 
+                                      text={contact.title} 
+                                      searchTerm={searchQuery}
+                                      highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                    />
+                                  </p>
+                                  <div className="flex items-center space-x-2 mt-2">
+                                    <Link href={`/orgs/companies/${contact.company.id}`} className="hover:underline">
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                        <Building2 className="w-3 h-3 mr-1" />
+                                        <SearchHighlight 
+                                          text={contact.company.name}
+                                          searchTerm={searchQuery}
+                                          highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                        />
+                                      </span>
+                                    </Link>
+                                    {(contact.company.city || contact.company.state) && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <MapPin className="w-3 h-3 mr-1" />
+                                        <SearchHighlight 
+                                          text={`${contact.company.city || ''}, ${contact.company.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
+                                          searchTerm={searchQuery}
+                                          highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                        />
+                                      </span>
+                                    )}
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeniorityBadgeColor(contact.seniority)}`}>
+                                      {getSeniorityLabel(contact.seniority)}
+                                    </span>
+                                    {contact.department && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-700">
+                                        <SearchHighlight 
+                                          text={getDepartmentLabel(contact.department)}
+                                          searchTerm={searchQuery}
+                                          highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                        />
+                                      </span>
+                                    )}
+                                    {contact.verified && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                        <CheckCircle className="w-3 h-3 mr-1" />
+                                        Verified
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Contact Actions */}
+                              <div className="flex items-center space-x-2 mt-4">
+                                {contact.email && (
+                                  <a 
+                                    href={`mailto:${contact.email}`}
+                                    className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                  >
+                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    Email
+                                  </a>
+                                )}
+                                {contact.linkedinUrl && (
+                                  <a 
+                                    href={contact.linkedinUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors"
+                                  >
+                                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clipRule="evenodd" />
+                                    </svg>
+                                    LinkedIn
+                                  </a>
+                                )}
+                                {contact.phone && (
+                                  <a 
+                                    href={`tel:${contact.phone}`}
+                                    className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 transition-colors"
+                                  >
+                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                    Call
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )) : null}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         )}
 
         {activeTab === 'industries' && (
@@ -802,8 +1145,9 @@ export default function OrgsPage() {
             entityType={selectedEntityType}
             onEntityAdded={(entity) => {
               console.log('Entity added:', entity);
-              // Refresh the companies list to show the new entity
-              const fetchCompanies = async () => {
+              
+              // Refresh companies list for company-related entities
+              const refreshCompanies = async () => {
                 try {
                   const response = await fetch('/api/orgs/companies');
                   if (response.ok) {
@@ -818,9 +1162,27 @@ export default function OrgsPage() {
                 }
               };
               
-              // Only refresh for companies (agencies/advertisers), not people
-              if (selectedEntityType !== 'person') {
-                fetchCompanies();
+              // Refresh contacts list for person entities
+              const refreshContacts = async () => {
+                try {
+                  const response = await fetch('/api/orgs/contacts?limit=50');
+                  if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.contacts)) {
+                      setContacts(data.contacts);
+                      setFilteredContacts(data.contacts);
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error refreshing contacts:', error);
+                }
+              };
+              
+              // Refresh appropriate data based on entity type
+              if (selectedEntityType === 'person') {
+                refreshContacts();
+              } else {
+                refreshCompanies();
               }
             }}
           />

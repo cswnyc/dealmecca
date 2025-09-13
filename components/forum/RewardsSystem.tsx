@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { 
   Trophy, 
   Crown, 
@@ -105,18 +106,19 @@ const TIER_REQUIREMENTS = {
 };
 
 export function RewardsSystem() {
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBonuses, setShowBonuses] = useState(false);
 
   useEffect(() => {
-    if (session?.user) {
+    if (firebaseUser) {
       fetchUserStats();
       fetchLeaderboard();
     }
-  }, [session]);
+  }, [firebaseUser]);
 
   const fetchUserStats = async () => {
     try {

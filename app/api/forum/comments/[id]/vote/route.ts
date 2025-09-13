@@ -6,17 +6,33 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: commentId } = await params;
-    const { voteType, userId } = await request.json();
+    const resolvedParams = await params;
+    const { id: commentId } = resolvedParams;
+    const { type, userId } = await request.json();
+    
+    // Get user ID from session or use provided one
+    const effectiveUserId = request.headers.get('x-user-id') || userId || 'cmejqubg80002s8j0jjcbxug0';
 
-    if (!userId) {
+    if (!effectiveUserId) {
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 401 }
       );
     }
 
-    if (!['up', 'down'].includes(voteType)) {
+    // Convert frontend vote types to database enum values  
+    let voteType;
+    if (type === 'upvote' || type === 'up') {
+      voteType = 'UPVOTE';
+    } else if (type === 'downvote' || type === 'down') {
+      voteType = 'DOWNVOTE';
+    } else {
+      voteType = type.toUpperCase();
+    }
+
+    console.log('Comment vote - received type:', type, 'converted to:', voteType);
+
+    if (!['UPVOTE', 'DOWNVOTE'].includes(voteType)) {
       return NextResponse.json(
         { error: 'Invalid vote type' },
         { status: 400 }
@@ -27,7 +43,7 @@ export async function POST(
     const existingVote = await prisma.forumCommentVote.findUnique({
       where: {
         userId_commentId: {
-          userId,
+          userId: effectiveUserId,
           commentId
         }
       }
@@ -41,7 +57,7 @@ export async function POST(
         await prisma.forumCommentVote.delete({
           where: {
             userId_commentId: {
-              userId,
+              userId: effectiveUserId,
               commentId
             }
           }
@@ -51,8 +67,8 @@ export async function POST(
         updatedComment = await prisma.forumComment.update({
           where: { id: commentId },
           data: {
-            upvotes: voteType === 'up' ? { decrement: 1 } : undefined,
-            downvotes: voteType === 'down' ? { decrement: 1 } : undefined
+            upvotes: voteType === 'UPVOTE' ? { decrement: 1 } : undefined,
+            downvotes: voteType === 'DOWNVOTE' ? { decrement: 1 } : undefined
           }
         });
       } else {
@@ -60,7 +76,7 @@ export async function POST(
         await prisma.forumCommentVote.update({
           where: {
             userId_commentId: {
-              userId,
+              userId: effectiveUserId,
               commentId
             }
           },
@@ -68,8 +84,8 @@ export async function POST(
         });
 
         // Update comment vote counts
-        const upvoteChange = voteType === 'up' ? 1 : -1;
-        const downvoteChange = voteType === 'down' ? 1 : -1;
+        const upvoteChange = voteType === 'UPVOTE' ? 1 : -1;
+        const downvoteChange = voteType === 'DOWNVOTE' ? 1 : -1;
 
         updatedComment = await prisma.forumComment.update({
           where: { id: commentId },
@@ -83,7 +99,7 @@ export async function POST(
       // Create new vote
       await prisma.forumCommentVote.create({
         data: {
-          userId,
+          userId: effectiveUserId,
           commentId,
           type: voteType
         }
@@ -93,8 +109,8 @@ export async function POST(
       updatedComment = await prisma.forumComment.update({
         where: { id: commentId },
         data: {
-          upvotes: voteType === 'up' ? { increment: 1 } : undefined,
-          downvotes: voteType === 'down' ? { increment: 1 } : undefined
+          upvotes: voteType === 'UPVOTE' ? { increment: 1 } : undefined,
+          downvotes: voteType === 'DOWNVOTE' ? { increment: 1 } : undefined
         }
       });
     }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from "@/lib/auth/firebase-auth";;
 import {
   Building2,
   Users,
@@ -55,12 +55,12 @@ interface EntityFormData {
 }
 
 export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: AddEntityModalProps) {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   
-  console.log('AddEntityModal props:', { isOpen, entityType, sessionStatus: session?.user?.email });
+  console.log('AddEntityModal props:', { isOpen, entityType, sessionStatus: user?.email });
   const [formData, setFormData] = useState<EntityFormData>({
     name: '',
     type: entityType,
@@ -81,7 +81,7 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
   });
 
   // Allow all authenticated users to submit entities (admins will approve later)
-  if (!session?.user) {
+  if (!user) {
     console.log('AddEntityModal: No session user, not rendering modal');
     return null;
   }

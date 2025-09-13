@@ -1,10 +1,10 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from "@/lib/auth/firebase-auth";;
 import { useEffect, useState } from 'react';
 
 export default function SessionStatusPage() {
-  const { data: session, status } = useSession();
+  const { user, loading } = useAuth();
   const [cookieInfo, setCookieInfo] = useState<any>(null);
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
@@ -56,8 +56,8 @@ export default function SessionStatusPage() {
           <h2 className="text-xl font-semibold mb-4">🖥️ Client Session (useSession)</h2>
           <div className="space-y-2 text-sm">
             <div><strong>Status:</strong> <span className={`font-mono px-2 py-1 rounded ${
-              status === 'authenticated' ? 'bg-green-100 text-green-800' :
-              status === 'loading' ? 'bg-yellow-100 text-yellow-800' :
+              !loading && user ? 'bg-green-100 text-green-800' :
+              loading ? 'bg-yellow-100 text-yellow-800' :
               'bg-red-100 text-red-800'
             }`}>{status}</span></div>
             

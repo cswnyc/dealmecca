@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { findCompanyDuplicates } from '@/lib/bulk-import/duplicate-detection';
 import { prepareCompanyForDatabase } from '@/lib/normalization-utils';
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  // Get user info from headers set by middleware
+  const userRole = request.headers.get('x-user-role');
+  const userId = request.headers.get('x-user-id');
   
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!userId || userRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -37,7 +37,47 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           _count: {
-            select: { contacts: true }
+            select: { 
+              contacts: true,
+              agencyPartnerships: { where: { isActive: true } },
+              advertiserPartnerships: { where: { isActive: true } }
+            }
+          },
+          agencyPartnerships: {
+            where: { isActive: true },
+            include: {
+              advertiser: {
+                select: {
+                  id: true,
+                  name: true,
+                  companyType: true,
+                  logoUrl: true,
+                  city: true,
+                  state: true,
+                  verified: true
+                }
+              }
+            },
+            take: 10,
+            orderBy: { createdAt: 'desc' }
+          },
+          advertiserPartnerships: {
+            where: { isActive: true },
+            include: {
+              agency: {
+                select: {
+                  id: true,
+                  name: true,
+                  companyType: true,
+                  logoUrl: true,
+                  city: true,
+                  state: true,
+                  verified: true
+                }
+              }
+            },
+            take: 10,
+            orderBy: { createdAt: 'desc' }
           }
         },
         orderBy: { name: 'asc' }
@@ -68,9 +108,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  // Get user info from headers set by middleware
+  const userRole = request.headers.get('x-user-role');
+  const userId = request.headers.get('x-user-id');
   
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!userId || userRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -49,10 +49,46 @@ export async function GET(
           },
           orderBy: { name: 'asc' }
         },
+        agencyPartnerships: {
+          where: { isActive: true },
+          include: {
+            advertiser: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                verified: true,
+                companyType: true,
+                city: true,
+                state: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        },
+        advertiserPartnerships: {
+          where: { isActive: true },
+          include: {
+            agency: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                verified: true,
+                companyType: true,
+                city: true,
+                state: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        },
         _count: {
           select: {
             contacts: { where: { isActive: true } },
-            subsidiaries: true
+            subsidiaries: true,
+            agencyPartnerships: { where: { isActive: true } },
+            advertiserPartnerships: { where: { isActive: true } }
           }
         }
       }

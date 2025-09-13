@@ -6,11 +6,14 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: postId } = await params;
+    const resolvedParams = await params;
+    const { id: postId } = resolvedParams;
     const { type, userId } = await request.json();
 
     // Get user ID from session or use provided one
     const effectiveUserId = request.headers.get('x-user-id') || userId || 'cmejqubg80002s8j0jjcbxug0';
+
+    console.log('Post vote - received type:', type, 'userId:', userId, 'effectiveUserId:', effectiveUserId);
 
     if (!['UPVOTE', 'DOWNVOTE'].includes(type)) {
       return NextResponse.json(
@@ -32,7 +35,7 @@ export async function POST(
     let updatedPost;
 
     if (existingVote) {
-      if (existingVote.voteType === type) {
+      if (existingVote.type === type) {
         // Remove vote if clicking the same button
         await prisma.forumVote.delete({
           where: {
@@ -60,7 +63,7 @@ export async function POST(
               postId
             }
           },
-          data: { voteType: type }
+          data: { type: type }
         });
 
         // Update post vote counts
@@ -81,7 +84,7 @@ export async function POST(
         data: {
           userId: effectiveUserId,
           postId,
-          voteType: type
+          type: type
         }
       });
 
@@ -97,7 +100,7 @@ export async function POST(
 
     return NextResponse.json({ 
       post: updatedPost,
-      userVote: existingVote?.voteType === type ? null : type
+      userVote: existingVote?.type === type ? null : type
     });
 
   } catch (error) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { jwtVerify } from 'jose'
+// Removed NextAuth import - using Firebase authentication now
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -22,9 +23,14 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
   
-  // Always allow NextAuth API routes
-  if (pathname.startsWith('/api/auth/')) {
-    console.log('🔵 Allowing NextAuth route:', pathname)
+  // Allow specific Firebase-compatible auth routes only
+  const allowedAuthRoutes = [
+    '/api/auth/firebase-sync',
+    '/api/auth/verify-session',
+    '/api/auth/error'
+  ]
+  if (allowedAuthRoutes.some(route => pathname === route)) {
+    console.log('🔥 Allowing Firebase auth route:', pathname)
     return NextResponse.next()
   }
   
@@ -36,7 +42,8 @@ export async function middleware(req: NextRequest) {
     '/api/check-env',
     '/api/disable-sw',
     '/api/companies',
-    '/api/forum/categories'
+    '/api/forum/categories',
+    '/api/forum/mentions/topics'
   ]
   
   // Routes that are public only for GET requests
@@ -64,6 +71,7 @@ export async function middleware(req: NextRequest) {
     '/',
     '/login',
     '/auth/signin',
+    '/auth/firebase-signin',
     '/auth/signup', 
     '/auth/error',
     '/auth/verify-request',
@@ -87,51 +95,52 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
   
-  // Get NextAuth token
-  console.log('🔐 Checking authentication token...')
+  // Check for Firebase authentication (dealmecca-session cookie)
+  console.log('🔐 Checking Firebase authentication token...')
   
-  // Try NextAuth's getToken first
-  let token = await getToken({ 
-    req, 
-    secret: process.env.NEXTAUTH_SECRET,
-    cookieName: 'next-auth.session-token'
-  })
+  let token = null
+  const manualSessionCookie = req.cookies.get('dealmecca-session')?.value
   
-  // If NextAuth token doesn't work, try manually decoding our JWT
-  if (!token) {
-    console.log('🔐 NextAuth getToken failed, trying manual JWT decode...')
-    const sessionCookie = req.cookies.get('next-auth.session-token')
-    
-    if (sessionCookie) {
-      try {
-        const { jwtVerify } = await import('jose')
-        const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
-        
-        const { payload } = await jwtVerify(sessionCookie.value, secret)
-        token = payload as any
-        console.log('✅ Manual JWT decode successful')
-      } catch (jwtError) {
-        console.log('❌ Manual JWT decode failed:', jwtError)
+  if (manualSessionCookie) {
+    try {
+      // Ensure we have a proper JWT secret
+      const jwtSecret = process.env.JWT_SECRET
+      if (!jwtSecret) {
+        console.error('❌ JWT_SECRET environment variable not set!')
+        throw new Error('JWT_SECRET not configured')
       }
-    }
-  }
-  
-  // ALSO check for manual authentication (dealmecca-session cookie)
-  if (!token) {
-    console.log('🔐 Checking for dealmecca-session cookie...')
-    const manualSessionCookie = req.cookies.get('dealmecca-session')?.value
-    
-    if (manualSessionCookie) {
-      try {
-        const { jwtVerify } = await import('jose')
-        const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
-        const { payload } = await jwtVerify(manualSessionCookie, secret)
-        token = payload as any
-        console.log('✅ Manual session verified:', { userId: payload.sub, email: payload.email })
-      } catch (error) {
-        console.log('⚠️ Manual session verification failed:', error)
+      
+      const secret = new TextEncoder().encode(jwtSecret)
+      const { payload } = await jwtVerify(manualSessionCookie, secret, {
+        algorithms: ['HS256'] // Explicitly specify the algorithm
+      })
+      
+      token = payload as any
+      
+      // Verify token hasn't expired
+      const now = Math.floor(Date.now() / 1000)
+      if (payload.exp && payload.exp < now) {
+        console.log('⚠️ JWT token has expired')
+        token = null
+      } else {
+        console.log('✅ Firebase session verified:', { 
+          userId: payload.sub, 
+          email: payload.email,
+          expiresAt: payload.exp ? new Date(payload.exp * 1000).toISOString() : 'no expiration'
+        })
       }
+    } catch (error) {
+      console.log('⚠️ Firebase session verification failed:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        errorName: error instanceof Error ? error.name : 'Unknown',
+        cookiePresent: !!manualSessionCookie,
+        cookieLength: manualSessionCookie?.length || 0,
+        jwtSecretSet: !!process.env.JWT_SECRET
+      })
+      token = null
     }
+  } else {
+    console.log('🔍 No dealmecca-session cookie found')
   }
   
   console.log('🔐 Token result:', {
@@ -160,10 +169,10 @@ export async function middleware(req: NextRequest) {
       }, { status: 401 })
     }
     
-    // For pages, redirect to login
-    const loginUrl = new URL('/login', req.url)
+    // For pages, redirect to Firebase signin
+    const loginUrl = new URL('/auth/firebase-signin', req.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
-    console.log('🔵 Redirecting to login:', loginUrl.href)
+    console.log('🔵 Redirecting to Firebase signin:', loginUrl.href)
     return NextResponse.redirect(loginUrl)
   }
   

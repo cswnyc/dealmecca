@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { 
   ChatBubbleLeftIcon,
   BookmarkIcon,
@@ -112,6 +113,9 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   const [replyText, setReplyText] = useState('');
   const [showMentions, setShowMentions] = useState(false);
   const [tagsExpanded, setTagsExpanded] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
   // Helper functions to parse JSON string fields
   const parseListItems = (listItems?: string): string[] => {
@@ -136,7 +140,8 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   const pollChoicesArray = parsePollChoices(post.pollChoices);
   const [mentionQuery, setMentionQuery] = useState('');
   const [mentionSuggestions, setMentionSuggestions] = useState<any[]>([]);
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const urgencyColors = {
     LOW: 'text-gray-500',
     MEDIUM: 'text-blue-500', 
@@ -150,6 +155,27 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
       fetchComments();
     }
   }, [expandable]);
+
+  // Load user's follow/bookmark status
+  useEffect(() => {
+    const loadUserStatus = async () => {
+      if (!firebaseUser?.uid) return;
+      
+      try {
+        // Check follow status
+        const followResponse = await fetch(`/api/forum/posts/${post.id}/status?userId=${firebaseUser.uid}`);
+        if (followResponse.ok) {
+          const followData = await followResponse.json();
+          setIsFollowing(followData.isFollowing || false);
+          setIsBookmarked(followData.isBookmarked || false);
+        }
+      } catch (error) {
+        console.error('Failed to load user status:', error);
+      }
+    };
+
+    loadUserStatus();
+  }, [post.id, firebaseUser?.uid]);
 
   const urgencyLabels = {
     LOW: 'Low Priority',
@@ -278,7 +304,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          voteType,
+          type: voteType,
           userId
         }),
       });
@@ -335,6 +361,96 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
       }
     } catch (error) {
       console.error('Failed to post reply:', error);
+    }
+  };
+
+  const handleFollow = async () => {
+    try {
+      const response = await fetch(`/api/forum/posts/${post.id}/follow`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: session?.user?.id,
+          follow: !isFollowing
+        }),
+      });
+
+      if (response.ok) {
+        setIsFollowing(!isFollowing);
+      }
+    } catch (error) {
+      console.error('Failed to toggle follow:', error);
+    }
+  };
+
+  const handleBookmark = async () => {
+    try {
+      const response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: session?.user?.id,
+          bookmark: !isBookmarked
+        }),
+      });
+
+      if (response.ok) {
+        setIsBookmarked(!isBookmarked);
+        onBookmark?.(post.id);
+      }
+    } catch (error) {
+      console.error('Failed to toggle bookmark:', error);
+    }
+  };
+
+  const handleShare = async (shareType: 'copy' | 'twitter' | 'linkedin') => {
+    const postUrl = `${window.location.origin}/forum/posts/${post.slug}`;
+    
+    switch (shareType) {
+      case 'copy':
+        try {
+          await navigator.clipboard.writeText(postUrl);
+          // Show success feedback (you could add a toast notification here)
+          alert('Link copied to clipboard!');
+        } catch (error) {
+          console.error('Failed to copy to clipboard:', error);
+        }
+        break;
+      case 'twitter':
+        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.content.substring(0, 100) + '...')}`;
+        window.open(twitterUrl, '_blank');
+        break;
+      case 'linkedin':
+        const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`;
+        window.open(linkedinUrl, '_blank');
+        break;
+    }
+    setShowShareMenu(false);
+  };
+
+  const handlePostVote = async (type: 'upvote' | 'downvote') => {
+    try {
+      const response = await fetch(`/api/forum/posts/${post.id}/vote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: type.toUpperCase(),
+          userId: session?.user?.id || 'anonymous-user-' + Math.random().toString(36).substr(2, 9)
+        }),
+      });
+
+      if (response.ok) {
+        // Force page refresh to show updated vote counts
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Failed to vote on post:', error);
     }
   };
 
@@ -400,83 +516,65 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                       )}
                     </div>
                   ) : (
-                    // Fallback to author name when no company
+                    // Fallback to category when no company - NEVER show username as main header
                     <span className="font-semibold text-gray-900 text-lg">
-                      {post.author.name}
+                      {post.category.name}
                     </span>
                   )}
                   
-                  {/* Enhanced Tag Display */}
-                  {(post.companyMentions && post.companyMentions.length > 1) || tags.length > 0 ? (
+                  {/* Simplified Tag Display - Show only most important tags */}
+                  {((post.companyMentions && post.companyMentions.length > 1) || tags.length > 0 || (post.contactMentions && post.contactMentions.length > 0)) ? (
                     <>
-                      <span className="text-gray-400">+</span>
+                      <span className="text-gray-400">•</span>
                       <div className="flex items-center space-x-1">
-                        {/* Additional Company Mentions (after first one used in @ format) */}
-                        {post.companyMentions && post.companyMentions.slice(1, 3).map((mention, index) => (
-                          <Link
-                            key={mention.company.id}
-                            href={`/orgs/companies/${mention.company.id}`}
-                            className="inline-flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-colors"
-                          >
-                            {mention.company.logoUrl ? (
-                              <img 
-                                src={mention.company.logoUrl} 
-                                alt={`${mention.company.name} logo`}
-                                className="w-3 h-3 rounded object-cover"
-                              />
-                            ) : (
-                              <BuildingOfficeIcon className="w-3 h-3" />
-                            )}
-                            <span>{mention.company.name}</span>
-                          </Link>
-                        ))}
-                        
-                        {/* Custom Tags */}
-                        {tags.slice(0, 2).map((tag, index) => (
-                          <span key={index} className="inline-flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-colors">
-                            <TagIcon className="w-3 h-3" />
-                            <span>{tag}</span>
-                          </span>
-                        ))}
-                        
-                        {/* Expandable "more" indicator */}
-                        {(post.companyMentions && post.companyMentions.length > 3) || tags.length > 2 || (post.contactMentions && post.contactMentions.length > 0) ? (
-                          <button 
-                            onClick={() => setTagsExpanded(!tagsExpanded)}
-                            className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors"
-                          >
-                            {tagsExpanded ? '- less' : `+ ${Math.max(0, ((post.companyMentions?.length || 0) - 3) + Math.max(0, (tags.length - 2)) + (post.contactMentions?.length || 0))} more`}
-                          </button>
-                        ) : null}
+                        {/* Show total count instead of individual tags to reduce clutter */}
+                        <button 
+                          onClick={() => setTagsExpanded(!tagsExpanded)}
+                          className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors"
+                        >
+                          <TagIcon className="w-3 h-3 mr-1" />
+                          {tagsExpanded ? 'Show less' : `${((post.companyMentions?.length || 0) - 1) + (tags.length) + (post.contactMentions?.length || 0)} related`}
+                        </button>
                       </div>
                     </>
                   ) : null}
                 </div>
               ) : (
                 <span className="font-semibold text-gray-900 text-lg">
-                  {post.anonymousHandle}
+                  {post.category.name}
                 </span>
               )}
             </div>
           
-          {/* Expanded Tags Section - Enhanced UX */}
+          {/* Expanded Tags Section - Clean and organized */}
           {tagsExpanded && (
-            <div className="mt-4 p-4 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-xl border border-blue-100/50">
-              <div className="space-y-4">
-                {/* Companies Section */}
-                {post.companyMentions && post.companyMentions.slice(3).length > 0 && (
+            <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-sm font-semibold text-gray-800">Related Information</h3>
+                <button 
+                  onClick={() => setTagsExpanded(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  aria-label="Close expanded view"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="space-y-3">
+                {/* All Companies Section (excluding first one in header) */}
+                {post.companyMentions && post.companyMentions.length > 1 && (
                   <div>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <BuildingOfficeIcon className="w-4 h-4 text-blue-600" />
-                      <h4 className="text-sm font-medium text-blue-800">Additional Companies</h4>
-                      <div className="flex-1 h-px bg-blue-200"></div>
-                    </div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <BuildingOfficeIcon className="w-4 h-4 mr-2" />
+                      Related Companies
+                    </h4>
                     <div className="flex flex-wrap gap-2">
-                      {post.companyMentions.slice(3).map((mention) => (
+                      {post.companyMentions.slice(1).map((mention) => (
                         <Link
                           key={mention.company.id}
                           href={`/orgs/companies/${mention.company.id}`}
-                          className="inline-flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-all duration-200 hover:shadow-sm border border-blue-100"
+                          className="inline-flex items-center space-x-1 px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs rounded-full hover:border-blue-300 hover:text-blue-700 transition-colors"
                         >
                           {mention.company.logoUrl ? (
                             <img 
@@ -487,7 +585,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                           ) : (
                             <BuildingOfficeIcon className="w-3 h-3" />
                           )}
-                          <span className="font-medium">{mention.company.name}</span>
+                          <span>{mention.company.name}</span>
                           {mention.company.verified && (
                             <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
                           )}
@@ -500,22 +598,21 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                 {/* Contacts Section */}
                 {post.contactMentions && post.contactMentions.length > 0 && (
                   <div>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <UserIcon className="w-4 h-4 text-blue-600" />
-                      <h4 className="text-sm font-medium text-blue-800">Key Contacts</h4>
-                      <div className="flex-1 h-px bg-blue-200"></div>
-                    </div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <UserIcon className="w-4 h-4 mr-2" />
+                      Key Contacts
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       {post.contactMentions.map((mention) => (
                         <Link
                           key={mention.contact.id}
                           href={`/orgs/contacts/${mention.contact.id}`}
-                          className="inline-flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-all duration-200 hover:shadow-sm border border-blue-100"
+                          className="inline-flex items-center space-x-1 px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs rounded-full hover:border-blue-300 hover:text-blue-700 transition-colors"
                         >
                           <UserIcon className="w-3 h-3" />
-                          <span className="font-medium">{mention.contact.fullName}</span>
+                          <span>{mention.contact.fullName}</span>
                           {mention.contact.title && (
-                            <span className="text-blue-600 text-xs">• {mention.contact.title}</span>
+                            <span className="text-gray-500 text-xs">• {mention.contact.title}</span>
                           )}
                         </Link>
                       ))}
@@ -523,53 +620,56 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                   </div>
                 )}
 
-                {/* Category Tags Section */}
-                {tags.slice(2).length > 0 && (
+                {/* Tags Section */}
+                {tags.length > 0 && (
                   <div>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <TagIcon className="w-4 h-4 text-blue-600" />
-                      <h4 className="text-sm font-medium text-blue-800">Additional Tags</h4>
-                      <div className="flex-1 h-px bg-blue-200"></div>
-                    </div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <TagIcon className="w-4 h-4 mr-2" />
+                      Topic Tags
+                    </h4>
                     <div className="flex flex-wrap gap-2">
-                      {tags.slice(2).map((tag, index) => (
-                        <span key={index} className="inline-flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 transition-all duration-200 border border-blue-100">
+                      {tags.map((tag, index) => (
+                        <span key={index} className="inline-flex items-center space-x-1 px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs rounded-full">
                           <TagIcon className="w-3 h-3" />
-                          <span className="font-medium">{tag}</span>
+                          <span>{tag}</span>
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
-
-                {/* Collapse Button */}
-                <div className="pt-2 border-t border-blue-200/50">
-                  <button 
-                    onClick={() => setTagsExpanded(false)}
-                    className="w-full text-center py-2 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                  >
-                    ↑ Show less
-                  </button>
-                </div>
               </div>
             </div>
           )}
-            <button className="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors flex items-center space-x-1">
-              <span>Follow</span>
+            <button 
+              onClick={handleFollow}
+              className={`px-3 py-1 text-sm rounded-full transition-colors flex items-center space-x-1 ${
+                isFollowing 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+              }`}
+            >
+              {isFollowing ? (
+                <>
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>Following</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span>Follow</span>
+                </>
+              )}
             </button>
           </div>
           
-          {/* Categories */}
+          {/* Category Only - Clean display */}
           <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
             <span>in</span>
-            <span className="text-blue-600">{post.category.name}</span>
-            {tags.length > 0 && (
-              <>
-                <span>,</span>
-                <span className="text-blue-600">{tags.slice(0, 2).join(', ')}</span>
-                {tags.length > 2 && <span>+{tags.length - 2} more</span>}
-              </>
-            )}
+            <span className="text-blue-600 font-medium">{post.category.name}</span>
           </div>
         </div>
           </div>
@@ -665,7 +765,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
               </span>
             </div>
             <span className="text-sm text-gray-600">
-              {post.isAnonymous ? post.anonymousHandle : post.author.name.split(' ')[0]} 
+              {post.isAnonymous ? post.anonymousHandle : post.author.name} 
             </span>
             <span className="text-sm text-gray-400">•</span>
             <span className="text-sm text-gray-500">
@@ -673,20 +773,66 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
             </span>
           </div>
 
-          {/* Bookmark */}
+          {/* Bookmark Button */}
           <button
-            onClick={() => onBookmark?.(post.id)}
-            className="flex items-center space-x-1 text-gray-500 hover:text-yellow-600 transition-colors"
+            onClick={handleBookmark}
+            className={`flex items-center space-x-1 transition-colors ${
+              isBookmarked 
+                ? 'text-yellow-600 hover:text-yellow-700' 
+                : 'text-gray-500 hover:text-yellow-600'
+            }`}
+            title={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
           >
-            <BookmarkIcon className="w-4 h-4" />
+            <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-yellow-500' : ''}`} />
+            <span className="text-xs">{isBookmarked ? 'Saved' : 'Save'}</span>
           </button>
 
-          {/* Share/Actions Icon */}
-          <button className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-            </svg>
-          </button>
+          {/* Share Button */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowShareMenu(!showShareMenu)}
+              className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors"
+              title="Share post"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+              </svg>
+              <span className="text-xs">Share</span>
+            </button>
+            
+            {/* Share Menu */}
+            {showShareMenu && (
+              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[140px]">
+                <button
+                  onClick={() => handleShare('copy')}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  <span>Copy link</span>
+                </button>
+                <button
+                  onClick={() => handleShare('twitter')}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  </svg>
+                  <span>Twitter</span>
+                </button>
+                <button
+                  onClick={() => handleShare('linkedin')}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                  <span>LinkedIn</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
           {/* Real-time Votes */}
@@ -694,7 +840,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
             postId={post.id}
             initialUpvotes={post.upvotes}
             initialDownvotes={post.downvotes}
-            onVote={onVote ? (type) => onVote(post.id, type) : () => {}}
+            onVote={handlePostVote}
             userVote={userVote}
           />
       </div>
@@ -722,48 +868,64 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                   e.target.style.height = 'auto';
                   e.target.style.height = e.target.scrollHeight + 'px';
                   
-                  // Simple @mention detection
+                  // Topic @mention detection for two-tiered system
                   const lastWord = value.split(' ').pop() || '';
                   if (lastWord.startsWith('@') && lastWord.length > 1) {
-                    setMentionQuery(lastWord.slice(1));
+                    const query = lastWord.slice(1);
+                    setMentionQuery(query);
                     setShowMentions(true);
-                    // Mock suggestions for now
-                    setMentionSuggestions([
-                      { name: 'John Doe', company: 'Nike' },
-                      { name: 'Jane Smith', company: 'Adidas' },
-                      { name: 'Mike Johnson', company: 'Pepsi' }
-                    ].filter(user => user.name.toLowerCase().includes(lastWord.slice(1).toLowerCase())));
+                    
+                    // Fetch topic suggestions from API
+                    if (query.length >= 2) {
+                      fetch(`/api/forum/mentions/topics?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                          setMentionSuggestions((data.topics || []).map(topic => ({
+                            name: topic.name,
+                            type: 'topic',
+                            description: topic.description
+                          })));
+                        })
+                        .catch(() => {
+                          // Fallback to mock suggestions
+                          setMentionSuggestions([
+                            { name: 'Programmatic', type: 'topic', description: 'Automated advertising' },
+                            { name: 'CTV', type: 'topic', description: 'Connected TV' },
+                            { name: 'Retail Media', type: 'topic', description: 'Retail advertising' }
+                          ].filter(topic => topic.name.toLowerCase().includes(query.toLowerCase())));
+                        });
+                    }
                   } else {
                     setShowMentions(false);
                   }
                 }}
-                placeholder="Add a comment... Use @username to mention someone"
+                placeholder="Add a comment... Use @topic to mention categories"
                 className="w-full p-3 border border-gray-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300"
                 rows={2}
                 disabled={submittingComment}
                 style={{ minHeight: '60px', maxHeight: '150px' }}
               />
               
-              {/* Mention Suggestions */}
+              {/* Topic Mention Suggestions */}
               {showMentions && mentionSuggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
-                  {mentionSuggestions.map((user, index) => (
+                  {mentionSuggestions.map((topic, index) => (
                     <button
                       key={index}
                       onClick={() => {
                         const words = commentText.split(' ');
-                        words[words.length - 1] = `@${user.name}`;
+                        words[words.length - 1] = `@${topic.name}`;
                         setCommentText(words.join(' ') + ' ');
                         setShowMentions(false);
                       }}
                       className="w-full text-left px-3 py-2 hover:bg-gray-100 flex items-center space-x-2"
                     >
-                      <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-xs">👤</span>
+                      <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                        <TagIcon className="w-3 h-3 text-purple-600" />
                       </div>
                       <div>
-                        <div className="font-medium text-sm">{user.name}</div>
-                        <div className="text-xs text-gray-500">{user.company}</div>
+                        <div className="font-medium text-sm">{topic.name}</div>
+                        <div className="text-xs text-gray-500">{topic.description}</div>
                       </div>
                     </button>
                   ))}
@@ -908,11 +1070,6 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                             className="text-xs text-gray-500 hover:text-blue-600 transition-colors"
                           >
                             Reply
-                          </button>
-                          
-                          {/* Share button */}
-                          <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
-                            Share
                           </button>
                         </div>
         </div>

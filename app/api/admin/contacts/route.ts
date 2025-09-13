@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createSuccessResponse, createAuthError, createInternalError } from '@/lib/api-responses'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import type { Prisma } from '@prisma/client';
 import { findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
 
@@ -72,10 +70,12 @@ function mapSeniorityValue(inputSeniority?: string): string | undefined {
 // GET /api/admin/contacts - Get all contacts (admin only)
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    // Get user info from headers set by middleware
+    const userRole = request.headers.get('x-user-role');
+    const userId = request.headers.get('x-user-id');
     
-    if (!session?.user) {
-      return createAuthError()
+    if (!userId || userRole !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url)
@@ -144,9 +144,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  // Get user info from headers set by middleware
+  const userRole = request.headers.get('x-user-role');
+  const userId = request.headers.get('x-user-id');
   
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!userId || userRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

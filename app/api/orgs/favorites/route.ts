@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
+    const userId = request.headers.get('x-user-id');
 
     if (action === 'favorite') {
       // Create favorite relationship
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
       // Return user's favorites list
       const favorites = await prisma.userConnection.findMany({
         where: {
-          followerId: session.user.id,
+          followerId: request.headers.get('x-user-id'),
           connectionType: 'FAVORITE'
         },
         include: {
@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
+    const userId = request.headers.get('x-user-id');
 
     // Get favorite status
     const isFavorite = await prisma.userConnection.findFirst({

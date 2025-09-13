@@ -1,19 +1,32 @@
-# 🔐 Vercel Environment Variables Setup
+# 🔥 Vercel Environment Variables Setup (Firebase Migration)
 
-## 📋 COPY THESE TO VERCEL DASHBOARD
+## ⚠️ UPDATED FOR FIREBASE AUTHENTICATION
 
 **Go to:** [Vercel Dashboard](https://vercel.com/dashboard) → Your Project → Settings → Environment Variables
 
-### Required Variables (Copy exactly):
+### 🚨 CRITICAL: Remove Old NextAuth Variables First:
+- ❌ Remove `NEXTAUTH_URL` (no longer needed)
+- ❌ Remove any OAuth provider variables (Google/LinkedIn client IDs/secrets)
+
+### 🔥 Required Firebase Variables (Copy exactly):
 
 ```bash
+# Database (keep existing)
 DATABASE_URL=postgresql://neondb_owner:npg_B3Sdq4aviYgN@ep-wild-lake-afcy495t-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 DIRECT_URL=postgresql://neondb_owner:npg_B3Sdq4aviYgN@ep-wild-lake-afcy495t-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
-NEXTAUTH_SECRET=4WBgfMl+Z+5LXSYwQlY7Pgya3vsJBV6BpHZxC/4uXzs=
+# JWT Secret (rename from NEXTAUTH_SECRET)
+JWT_SECRET=4WBgfMl+Z+5LXSYwQlY7Pgya3vsJBV6BpHZxC/4uXzs=
 
-NEXTAUTH_URL=https://website-qszx7bymm-cws-projects-e62034bb.vercel.app
+# Firebase Configuration (NEW - REQUIRED)
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyBDw_eWB7SfwD3ACzER3_GJwge9hJFNnbY
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dealmecca-6cea8.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=dealmecca-6cea8
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=dealmecca-6cea8.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1006862468059
+NEXT_PUBLIC_FIREBASE_APP_ID=1:1006862468059:web:55b82a0407900fc5b59dfe
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-32DLKJENW3
 ```
 
 ### Optional Variables (for full features):

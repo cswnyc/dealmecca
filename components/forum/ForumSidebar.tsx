@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect, useRef } from 'react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { 
   Trophy, 
   Crown, 
@@ -39,26 +40,59 @@ interface QuickStat {
 }
 
 export function ForumSidebar() {
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const isFetchingRef = useRef(false);
 
   useEffect(() => {
-    if (session) {
-      fetchUserStats();
+    console.log('🎯 ForumSidebar: Firebase user state:', { firebaseUser: !!firebaseUser, authLoading, hasFirebaseSession });
+    if (authLoading) {
+      console.log('🎯 ForumSidebar: Auth still loading, waiting...');
+      return;
     }
-  }, [session]);
+    
+    if (firebaseUser) {
+      console.log('🎯 ForumSidebar: Firebase user found, fetching stats');
+      fetchUserStats();
+    } else {
+      console.log('🎯 ForumSidebar: No firebaseUser, setting loading to false');
+      setLoading(false);
+    }
+  }, [firebaseUser, authLoading]);
 
   const fetchUserStats = async () => {
+    if (isFetchingRef.current) {
+      console.log('🎯 ForumSidebar: Already fetching, skipping...');
+      return;
+    }
+    
+    isFetchingRef.current = true;
     try {
-      const response = await fetch('/api/rewards/stats');
+      console.log('🎯 ForumSidebar: Fetching user stats...');
+      const response = await fetch('/api/rewards/stats', {
+        credentials: 'include',  // Include cookies
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log('🎯 ForumSidebar: Response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('🎯 ForumSidebar: Received data:', data);
         setUserStats(data);
+      } else {
+        console.error('🎯 ForumSidebar: API response not ok:', response.status, response.statusText);
+        if (response.status === 401) {
+          console.log('🎯 ForumSidebar: Unauthorized - user might not be properly authenticated');
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch user stats:', error);
+      console.error('🎯 ForumSidebar: Failed to fetch user stats:', error);
     } finally {
+      console.log('🎯 ForumSidebar: Setting loading to false');
+      isFetchingRef.current = false;
       setLoading(false);
     }
   };
@@ -80,7 +114,17 @@ export function ForumSidebar() {
     { label: 'Online Now', value: '156', icon: <Eye className="w-4 h-4" />, color: 'text-purple-600' },
   ];
 
-  if (loading && session) {
+  console.log('🎯 ForumSidebar: Render state check:', { 
+    loading, 
+    firebaseUser: !!firebaseUser, 
+    userStats: !!userStats, 
+    authLoading,
+    hasFirebaseSession 
+  });
+
+  // Show loading skeleton only if we're waiting for user stats after confirming user exists
+  if (loading && firebaseUser && !authLoading) {
+    console.log('🎯 ForumSidebar: Showing skeleton loading state');
     return (
       <div className="space-y-4">
         <Card>
@@ -99,7 +143,7 @@ export function ForumSidebar() {
   return (
     <div className="space-y-4">
       {/* User Stats Card */}
-      {session && userStats && (
+      {firebaseUser && userStats && (
         <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center space-x-2">

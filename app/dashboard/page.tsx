@@ -1,8 +1,11 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useFirebaseSession } from '@/hooks/useFirebaseSession'
+import { useAuth } from '@/lib/auth/firebase-auth'
+import { auth } from '@/lib/firebase'
+import { signOut as firebaseSignOut } from 'firebase/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge';
@@ -77,30 +80,34 @@ interface UserProfile {
 }
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession()
+  const hasFirebaseSession = useFirebaseSession()
+  const { user: firebaseUser, loading: authLoading } = useAuth()
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (status === 'loading') {
-      return // Wait for session to load
+    // Wait for auth to finish loading
+    if (authLoading) {
+      console.log('🔄 Waiting for Firebase auth to load...')
+      return
     }
-    
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
+
+    // Check for Firebase authentication (user object is more reliable than session hook)
+    if (firebaseUser || hasFirebaseSession) {
+      console.log('🔥 Firebase user detected in dashboard, fetching profile...', { 
+        hasUser: !!firebaseUser, 
+        hasSession: hasFirebaseSession 
+      })
+      fetchProfile()
       return
     }
     
-    if (session && status === 'authenticated') {
-      // Add a small delay to ensure session is fully established after OAuth
-      const timeoutId = setTimeout(() => {
-        fetchProfile()
-      }, 100)
-      
-      return () => clearTimeout(timeoutId)
-    }
-  }, [session, status, router])
+    // If no Firebase authentication, redirect to Firebase signin
+    console.log('❌ No Firebase authentication found, redirecting to signin')
+    router.push('/auth/firebase-signin')
+  }, [router, hasFirebaseSession, firebaseUser, authLoading])
 
   const fetchProfile = async (retryCount = 0) => {
     try {
@@ -123,7 +130,16 @@ export default function DashboardPage() {
           }, (retryCount + 1) * 500)
           return
         }
-        router.push('/auth/signin')
+        
+        // Before redirecting to signin, check if we have a Firebase user
+        if (firebaseUser || hasFirebaseSession) {
+          console.log('⚠️ 401 for Firebase user - session sync may still be in progress');
+          setError('Session is still loading. Please wait a moment or refresh the page.');
+          return
+        }
+        
+        console.log('❌ No session found, redirecting to Firebase signin');
+        router.push('/auth/firebase-signin')
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
@@ -179,12 +195,36 @@ export default function DashboardPage() {
   const usagePercentage = profile ? getUsagePercentage(profile.searchesUsedThisMonth, profile.searchLimit) : 0
   const isNearLimit = profile?.subscriptionTier === 'FREE' && usagePercentage >= 75
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading your dashboard...</p>
+          <p className="text-gray-600 text-lg">
+            {authLoading ? 'Authenticating...' : 'Loading your dashboard...'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertTriangle className="h-12 w-12 text-amber-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Session Loading</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button 
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              fetchProfile();
+            }}
+            className="bg-sky-600 hover:bg-sky-700"
+          >
+            Try Again
+          </Button>
         </div>
       </div>
     )
@@ -208,7 +248,14 @@ export default function DashboardPage() {
           )}
           <Button 
             variant="outline" 
-            onClick={() => signOut()}
+            onClick={async () => {
+              try {
+                await firebaseSignOut(auth);
+                router.push('/auth/firebase-signin');
+              } catch (error) {
+                console.error('Error signing out:', error);
+              }
+            }}
             className="flex items-center gap-2"
           >
             <LogOut className="w-4 h-4" />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -67,7 +67,7 @@ export default function SubscriptionManager() {
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
-  const { data: session } = useSession()
+  const { user: firebaseUser } = useAuth()
 
   useEffect(() => {
     if (session?.user?.email) {

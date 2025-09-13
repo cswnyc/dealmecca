@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useAuth } from "@/lib/auth/firebase-auth";;
 import {
   Building2,
   Users,
@@ -82,7 +82,7 @@ interface EnhancedOrgChartsProps {
 export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChartsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
@@ -164,7 +164,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
     }
   };
 
-  const isAdmin = session?.user && ['ADMIN', 'TEAM'].includes(session.user.role as string);
+  const isAdmin = user && ['ADMIN', 'TEAM'].includes(session.user.role as string);
 
   const tabs = [
     { id: 'companies' as TabType, label: 'Companies', count: totalCount },

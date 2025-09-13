@@ -2,7 +2,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { ForumPostCard } from '@/components/forum/ForumPostCard';
 import { SmartPostForm } from '@/components/forum/SmartPostForm';
 import { IntelligenceSharing } from '@/components/forum/IntelligenceSharing';
@@ -146,7 +147,8 @@ function ForumContent() {
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
 
   useEffect(() => {
     fetchCategories();
@@ -191,8 +193,8 @@ function ForumContent() {
       }
       
       // Add filtering parameters
-      if (activeTab === 'my' && session?.user?.id) {
-        params.append('authorId', session.user.id);
+      if (activeTab === 'my' && firebaseUser?.uid) {
+        params.append('authorId', firebaseUser.uid);
       }
       
       if (selectedCategory && selectedCategory !== '') {

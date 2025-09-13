@@ -5,9 +5,15 @@ export async function GET(request: NextRequest) {
   try {
     // Get user info from middleware headers
     const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only allow ADMIN role to access mention search for admin purposes
+    if (userRole !== 'ADMIN') {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

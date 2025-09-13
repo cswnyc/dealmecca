@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
 import { findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
 // We'll use Prisma's auto-generated cuid() for IDs
@@ -48,8 +47,8 @@ const validateLinkedIn = (url: string): boolean => {
 export async function POST(request: NextRequest) {
   try {
     // Authentication check
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    if (!session?.user || request.headers.get('x-user-role') !== 'ADMIN') {
       return NextResponse.json(
         { success: false, error: 'Unauthorized access' },
         { status: 401 }
@@ -251,7 +250,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log the import activity
-    console.log(`Bulk import completed by ${session.user.email}: ${results.imported} imported, ${results.failed} failed`);
+    console.log(`Bulk import completed by ${request.headers.get('x-user-email')}: ${results.imported} imported, ${results.failed} failed`);
 
     return NextResponse.json({
       success: true,

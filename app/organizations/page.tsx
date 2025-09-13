@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, Building2, Users, MapPin, Filter, Plus, Eye, Star } from 'lucide-react'
@@ -28,7 +28,7 @@ interface Company {
 }
 
 export default function OrganizationsPage() {
-  const { data: session, status } = useSession()
+  const { user: firebaseUser, loading: authLoading } = useAuth()
   const router = useRouter()
   const [companies, setCompanies] = useState<Company[]>([])
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([])

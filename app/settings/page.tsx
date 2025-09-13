@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,7 @@ interface UserProfile {
 }
 
 export default function SettingsPage() {
-  const { data: session, status } = useSession()
+  const { user: firebaseUser, loading: authLoading } = useAuth()
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,15 +35,20 @@ export default function SettingsPage() {
   const [name, setName] = useState('')
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
+    // Wait for auth to finish loading
+    if (authLoading) {
+      return
+    }
+
+    if (!firebaseUser) {
+      router.push('/auth/firebase-signin')
       return
     }
     
-    if (session) {
+    if (firebaseUser) {
       fetchProfile()
     }
-  }, [session, status, router])
+  }, [firebaseUser, authLoading, router])
 
   const fetchProfile = async () => {
     try {
@@ -119,7 +124,7 @@ export default function SettingsPage() {
     }
   }
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

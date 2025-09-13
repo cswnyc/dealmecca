@@ -34,13 +34,24 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/auth/me', {
+      // Use Firebase-compatible profile endpoint instead of NextAuth /api/auth/me
+      const response = await fetch('/api/users/profile', {
         credentials: 'include'
       });
 
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData.user);
+        // Map profile data to User interface
+        setUser({
+          id: userData.id,
+          email: userData.email,
+          name: userData.name,
+          role: userData.role as UserRole,
+          isActive: true,
+          teamId: userData.teamId,
+          teamName: userData.teamName,
+          profilePicture: userData.profilePicture
+        });
       } else if (response.status === 401) {
         // User not authenticated
         setUser(null);

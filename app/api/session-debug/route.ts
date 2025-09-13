@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { getToken } from 'next-auth/jwt';
+// Removed getServerSession - using Firebase auth via middleware headers
+// Removed NextAuth JWT import - using Firebase auth via middleware
 
 export async function GET(request: NextRequest) {
   console.log('🔍 SESSION DEBUG: Starting comprehensive session check...');
@@ -9,14 +8,11 @@ export async function GET(request: NextRequest) {
   try {
     // 1. Check NextAuth getServerSession
     console.log('1️⃣ Checking getServerSession...');
-    const session = await getServerSession(authOptions);
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
-    // 2. Check JWT token directly
-    console.log('2️⃣ Checking JWT token...');
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
-    });
+    // 2. Skip NextAuth JWT token - removed
+    console.log('2️⃣ NextAuth JWT token check - REMOVED');
+    const token = null;
     
     // 3. Check cookies manually
     console.log('3️⃣ Checking cookies...');
@@ -44,7 +40,7 @@ export async function GET(request: NextRequest) {
     if (sessionToken) {
       try {
         const { jwtVerify } = await import('jose');
-        const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback');
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback');
         const { payload } = await jwtVerify(sessionToken, secret);
         manualDecode = payload;
         console.log('5️⃣ Manual JWT decode successful');
@@ -64,13 +60,10 @@ export async function GET(request: NextRequest) {
       host,
       origin,
       
-      // Session checks
+      // Session checks - NextAuth removed
       nextAuthSession: {
-        exists: !!session,
-        userId: session?.user?.id || null,
-        email: session?.user?.email || null,
-        role: session?.user?.role || null,
-        expires: session?.expires || null
+        exists: false,
+        note: 'NextAuth removed - using Firebase + JWT'
       },
       
       // JWT token
@@ -103,8 +96,8 @@ export async function GET(request: NextRequest) {
       // Environment
       environment: {
         nodeEnv: process.env.NODE_ENV,
-        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-        secretLength: process.env.NEXTAUTH_SECRET?.length || 0
+        hasJWTSecret: !!process.env.JWT_SECRET,
+        secretLength: process.env.JWT_SECRET?.length || 0
       },
       
       // Diagnosis

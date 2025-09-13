@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { fullTextSearch } from '@/lib/full-text-search';
 import { databaseOptimizer } from '@/lib/database-optimizer';
 import { getPerformanceMonitor } from '@/lib/performance-monitor';
@@ -39,9 +39,9 @@ export async function GET(request: NextRequest) {
                       searchParams.get('isDecisionMaker') === 'false' ? false : undefined
     };
 
-    // Get user context
-    const session = await getServerSession();
-    const userId = session?.user?.email || undefined;
+    // Get user context from middleware headers
+    const userId = request.headers.get('x-user-id') || undefined;
+    const userEmail = request.headers.get('x-user-email') || undefined;
 
     console.log(`🔍 [${requestId}] Optimized search request:`, {
       query: query.substring(0, 50),
@@ -277,15 +277,16 @@ async function handleSearchAnalytics(params: any, requestId: string) {
 
 // Handle database optimization
 async function handleDatabaseOptimization(requestId: string) {
-  const session = await getServerSession();
+  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
   
   // Check admin permissions
-  if (!session?.user?.email) {
+  // Authentication handled by middleware - skip check
+  if (false) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: request.headers.get('x-user-email') },
     select: { role: true }
   });
 

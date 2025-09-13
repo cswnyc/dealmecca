@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { 
   PencilIcon, 
@@ -17,6 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
+import { EditablePostCard } from '@/components/admin/EditablePostCard';
 
 interface ForumPost {
   id: string;
@@ -87,7 +89,8 @@ interface ForumPost {
 }
 
 export default function AdminForumPostsPage() {
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
@@ -96,6 +99,7 @@ export default function AdminForumPostsPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [showTagEditor, setShowTagEditor] = useState<string | null>(null);
   const [editingTags, setEditingTags] = useState('');
+  const [editingPost, setEditingPost] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPosts();
@@ -165,13 +169,19 @@ export default function AdminForumPostsPage() {
 
   const handleUpdateTags = async (postId: string, newTags: string) => {
     try {
+      // Convert comma-separated string to array
+      const tagsArray = newTags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+      
       const response = await fetch(`/api/admin/forum/posts/${postId}/tags`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tags: newTags,
+          tags: JSON.stringify(tagsArray),
         }),
       });
 
@@ -182,6 +192,57 @@ export default function AdminForumPostsPage() {
       }
     } catch (error) {
       console.error('Failed to update tags:', error);
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/admin/forum/posts/bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'delete',
+          postIds: [postId],
+        }),
+      });
+
+      if (response.ok) {
+        await fetchPosts();
+      } else {
+        alert('Failed to delete post');
+      }
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('Failed to delete post');
+    }
+  };
+
+  const handleUpdatePost = async (postId: string, updates: any) => {
+    try {
+      const response = await fetch(`/api/admin/forum/posts/${postId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (response.ok) {
+        await fetchPosts();
+        setEditingPost(null);
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to update post: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to update post:', error);
+      alert('Failed to update post');
     }
   };
 
@@ -301,7 +362,14 @@ export default function AdminForumPostsPage() {
             {filteredPosts.map((post) => {
               const tags = parseTags(post.tags);
               
-              return (
+              return editingPost === post.id ? (
+                <EditablePostCard
+                  key={post.id}
+                  post={post}
+                  onUpdate={handleUpdatePost}
+                  onCancel={() => setEditingPost(null)}
+                />
+              ) : (
                 <div key={post.id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-start space-x-4">
                     <input
@@ -314,36 +382,29 @@ export default function AdminForumPostsPage() {
                     <div className="flex-1 min-w-0">
                       {/* Header */}
                       <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="text-lg font-medium text-gray-900 hover:text-blue-600">
-                            <Link href={`/forum/post/${post.slug}`}>
-                              {post.title}
+                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <span>by</span>
+                          {!post.isAnonymous && post.author.company ? (
+                            <Link 
+                              href={`/orgs/companies/${post.author.company.id}`}
+                              className="font-medium hover:text-blue-600 flex items-center space-x-1"
+                            >
+                              <span>{post.author.company.name}</span>
+                              {post.author.company.verified && (
+                                <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
+                              )}
                             </Link>
-                          </h4>
-                          <div className="flex items-center space-x-2 text-sm text-gray-600 mt-1">
-                            <span>by</span>
-                            {!post.isAnonymous && post.author.company ? (
-                              <Link 
-                                href={`/orgs/companies/${post.author.company.id}`}
-                                className="font-medium hover:text-blue-600 flex items-center space-x-1"
-                              >
-                                <span>{post.author.company.name}</span>
-                                {post.author.company.verified && (
-                                  <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
-                                )}
-                              </Link>
-                            ) : (
-                              <span className="font-medium">
-                                {post.isAnonymous ? post.anonymousHandle : post.author.name}
-                              </span>
-                            )}
-                            <span>•</span>
-                            <span>{formatDistanceToNow(new Date(post.createdAt))} ago</span>
-                            <span>•</span>
-                            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                              {post.category.name}
+                          ) : (
+                            <span className="font-medium">
+                              {post.isAnonymous ? post.anonymousHandle : post.author.name}
                             </span>
-                          </div>
+                          )}
+                          <span>•</span>
+                          <span>{formatDistanceToNow(new Date(post.createdAt))} ago</span>
+                          <span>•</span>
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            {post.category.name}
+                          </span>
                         </div>
                         
                         <div className="flex items-center space-x-2">
@@ -357,6 +418,20 @@ export default function AdminForumPostsPage() {
                               Featured
                             </span>
                           )}
+                          <button
+                            onClick={() => handleDeletePost(post.id)}
+                            className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+                            title="Delete post"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setEditingPost(editingPost === post.id ? null : post.id)}
+                            className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded"
+                            title="Edit post"
+                          >
+                            <PencilIcon className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                       
@@ -393,52 +468,64 @@ export default function AdminForumPostsPage() {
                           ))}
                           
                           {/* Tags */}
-                          {tags.slice(0, 3).map((tag, index) => (
-                            <span key={index} className="inline-flex items-center space-x-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                              <TagIcon className="w-3 h-3" />
-                              <span>{tag}</span>
-                            </span>
-                          ))}
+                          {tags.length > 0 ? (
+                            tags.slice(0, 5).map((tag, index) => (
+                              <span key={index} className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                                {tag}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-xs text-gray-400 italic">No tags</span>
+                          )}
+                          {tags.length > 5 && (
+                            <span className="text-xs text-gray-500">+{tags.length - 5} more</span>
+                          )}
                           
                           {/* Edit Tags Button */}
                           <button
                             onClick={() => {
                               setShowTagEditor(post.id);
-                              setEditingTags(post.tags);
+                              setEditingTags(tags.join(', '));
                             }}
                             className="inline-flex items-center space-x-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200"
                           >
                             <PencilIcon className="w-3 h-3" />
-                            <span>Edit Tags</span>
+                            <span>Tags</span>
                           </button>
                         </div>
                         
                         {/* Tag Editor */}
                         {showTagEditor === post.id && (
                           <div className="mt-2 p-3 bg-gray-50 rounded-lg border">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="text"
-                                value={editingTags}
-                                onChange={(e) => setEditingTags(e.target.value)}
-                                placeholder="Enter tags as JSON array or comma-separated"
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
-                              />
-                              <button
-                                onClick={() => handleUpdateTags(post.id, editingTags)}
-                                className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                              >
-                                Save
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setShowTagEditor(null);
-                                  setEditingTags('');
-                                }}
-                                className="px-3 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
-                              >
-                                Cancel
-                              </button>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium text-gray-700">Edit Tags</label>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="text"
+                                  value={editingTags}
+                                  onChange={(e) => setEditingTags(e.target.value)}
+                                  placeholder="Enter tags separated by commas (e.g., automotive, CTV, Detroit)"
+                                  className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                                />
+                                <button
+                                  onClick={() => handleUpdateTags(post.id, editingTags)}
+                                  className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setShowTagEditor(null);
+                                    setEditingTags('');
+                                  }}
+                                  className="px-3 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                              <p className="text-xs text-gray-500">
+                                Current tags: {tags.length > 0 ? tags.join(', ') : 'None'}
+                              </p>
                             </div>
                           </div>
                         )}

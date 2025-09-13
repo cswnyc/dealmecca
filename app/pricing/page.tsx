@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/lib/auth/firebase-auth'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -152,7 +152,7 @@ import { SessionDebugComponent } from './debug';
 export default function PricingPage() {
   const [billingInterval, setBillingInterval] = useState<'monthly' | 'annual'>('monthly')
   const [isLoading, setIsLoading] = useState<string | null>(null)
-  const { data: session } = useSession()
+  const { user: firebaseUser } = useAuth()
   const router = useRouter()
 
   const handleUpgrade = async (tier: string) => {

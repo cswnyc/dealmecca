@@ -1,12 +1,12 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useAuth } from "@/lib/auth/firebase-auth";
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function TestAuthFixed() {
-  const { data: session, status } = useSession()
+  const { user, loading: authLoading } = useAuth()
   const [testResults, setTestResults] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -83,7 +83,7 @@ export default function TestAuthFixed() {
               
               <Button 
                 onClick={runTests} 
-                disabled={loading || status === 'loading'}
+                disabled={loading || loading}
                 className="w-full"
               >
                 {loading ? 'Running Tests...' : 'Test API Authentication'}

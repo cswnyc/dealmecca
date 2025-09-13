@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useAuth } from "@/lib/auth/firebase-auth";
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, Building2, Users, MapPin, Globe, Mail, Phone, Star } from 'lucide-react'
@@ -56,7 +56,7 @@ interface Contact {
 }
 
 export default function FixedSearchPage() {
-  const { data: session, status } = useSession()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [companies, setCompanies] = useState<Company[]>([])
   const [contacts, setContacts] = useState<Contact[]>([])
@@ -69,14 +69,14 @@ export default function FixedSearchPage() {
 
   // Authentication check
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!loading && !user) {
       router.push('/auth/signin')
     }
   }, [status, router])
 
   // Initial data load - copy the working pattern from orgs page
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (!loading && user) {
       fetchInitialData()
     }
   }, [status])
@@ -195,7 +195,7 @@ export default function FixedSearchPage() {
     }
   }
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <PageLayout title="Search Database" description="Loading...">
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">

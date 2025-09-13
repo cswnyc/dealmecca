@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Search, Edit, Shield, Building2 } from 'lucide-react';
 import { AdminPageLayout } from '@/components/navigation/PageLayout';
+import { EnhancedCompanyCard } from '@/components/admin/EnhancedCompanyCard';
 
 interface Company {
   id: string;
@@ -15,8 +16,39 @@ interface Company {
   companyType: string;
   city?: string;
   state?: string;
+  logoUrl?: string;
   verified: boolean;
-  _count: { contacts: number };
+  _count: { 
+    contacts: number;
+    agencyPartnerships?: number;
+    advertiserPartnerships?: number;
+  };
+  agencyPartnerships?: Array<{
+    id: string;
+    relationshipType: string;
+    advertiser: {
+      id: string;
+      name: string;
+      companyType: string;
+      logoUrl?: string;
+      city?: string;
+      state?: string;
+      verified: boolean;
+    };
+  }>;
+  advertiserPartnerships?: Array<{
+    id: string;
+    relationshipType: string;
+    agency: {
+      id: string;
+      name: string;
+      companyType: string;
+      logoUrl?: string;
+      city?: string;
+      state?: string;
+      verified: boolean;
+    };
+  }>;
   createdAt: string;
 }
 
@@ -118,61 +150,31 @@ export default function CompaniesAdminPage() {
 
         {/* Companies List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {companies.map((company) => (
-            <Card key={company.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    {company.logoUrl ? (
-                      <img 
-                        src={company.logoUrl} 
-                        alt={`${company.name} logo`}
-                        className="w-8 h-8 rounded object-cover border border-gray-200"
-                      />
-                    ) : (
-                      <Building2 className="w-8 h-8 text-blue-600" />
-                    )}
-                    <div>
-                      <CardTitle className="text-lg">{company.name}</CardTitle>
-                      <p className="text-sm text-gray-600">
-                        {company.companyType.replace(/_/g, ' ')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col space-y-1">
-                    <Badge variant={company.verified ? "default" : "secondary"}>
-                      {company.verified ? "Verified" : "Unverified"}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="space-y-2 text-sm text-gray-600">
-                  <p>📍 {company.city}, {company.state}</p>
-                  <p>👥 {company._count.contacts} contacts</p>
-                  <p>📅 Added {new Date(company.createdAt).toLocaleDateString()}</p>
-                </div>
-                
-                <div className="flex space-x-2 mt-4">
-                  <Link href={`/admin/orgs/companies/${company.id}/edit`}>
-                    <Button variant="outline" size="sm">
-                      <Edit className="w-3 h-3 mr-1" />
-                      Edit
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => toggleVerification(company.id, company.verified)}
-                  >
-                    <Shield className="w-3 h-3 mr-1" />
-                    {company.verified ? 'Unverify' : 'Verify'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {companies.map((company) => {
+            // Transform partnerships to match EnhancedCompanyCard interface
+            const transformedCompany = {
+              ...company,
+              agencyPartnerships: company.agencyPartnerships?.map(p => ({
+                ...p,
+                partner: p.advertiser,
+                currentCompanyRole: 'agency' as const
+              })),
+              advertiserPartnerships: company.advertiserPartnerships?.map(p => ({
+                ...p,
+                partner: p.agency,
+                currentCompanyRole: 'advertiser' as const
+              }))
+            };
+
+            return (
+              <EnhancedCompanyCard
+                key={company.id}
+                company={transformedCompany}
+                createdAt={company.createdAt}
+                onToggleVerification={toggleVerification}
+              />
+            );
+          })}
         </div>
 
         {companies.length === 0 && !loading && (

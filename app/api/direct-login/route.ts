@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ Authentication successful for:', user.email);
     
     // Create a simple JWT token
-    const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret');
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret');
     
     const token = await new SignJWT({
       sub: user.id,

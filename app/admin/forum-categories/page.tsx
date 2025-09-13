@@ -144,7 +144,10 @@ export default function ForumCategoriesAdmin() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this category?')) return;
+    const category = categories.find(cat => cat.id === id);
+    const categoryName = category?.name || 'this category';
+    
+    if (!confirm(`Are you sure you want to delete "${categoryName}"?`)) return;
     
     try {
       const response = await fetch(`/api/admin/forum/categories/${id}`, {
@@ -153,9 +156,14 @@ export default function ForumCategoriesAdmin() {
 
       if (response.ok) {
         await fetchCategories();
+        alert(`Category "${categoryName}" deleted successfully!`);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || `Failed to delete category "${categoryName}"`);
       }
     } catch (error) {
       console.error('Failed to delete category:', error);
+      alert(`Error deleting category "${categoryName}". Please try again.`);
     }
   };
 

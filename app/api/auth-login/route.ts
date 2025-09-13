@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ Credentials validated successfully')
     
     // Step 2: Create NextAuth-compatible JWT token
-    const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret')
     
     const payload = {
       sub: user.id,
@@ -94,18 +94,9 @@ export async function POST(request: NextRequest) {
       ...(isProduction && { domain: '.getmecca.com' }) // Only set domain in production
     }
     
-    response.cookies.set('next-auth.session-token', token, cookieOptions)
+    response.cookies.set('dealmecca-session', token, cookieOptions)
     
-    // Also set CSRF token cookie for compatibility
-    const csrfToken = Math.random().toString(36).substring(2) + Date.now().toString(36)
-    response.cookies.set('next-auth.csrf-token', csrfToken, {
-      httpOnly: true,
-      secure: isProduction, // Only secure in production
-      sameSite: 'lax' as const,
-      maxAge: 60 * 60, // 1 hour
-      path: '/',
-      ...(isProduction && { domain: '.getmecca.com' }) // Only set domain in production
-    })
+    // Removed CSRF token - not needed for Firebase/JWT auth
     
     console.log('✅ Session cookies set successfully')
     console.log('🔐 === AUTH LOGIN COMPLETE ===')

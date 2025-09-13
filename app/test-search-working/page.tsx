@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from "@/lib/auth/firebase-auth";
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 export default function TestSearchWorking() {
-  const { data: session, status } = useSession()
+  const { user, loading: authLoading } = useAuth()
   const [query, setQuery] = useState('WPP')
   const [debugResult, setDebugResult] = useState<any>(null)
   const [searchResult, setSearchResult] = useState<any>(null)

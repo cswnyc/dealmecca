@@ -14,11 +14,12 @@
 ### **Tech Stack**
 - **Framework**: Next.js 15 with React 18 and TypeScript
 - **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: NextAuth.js with role-based access
+- **Authentication**: firebase with role-based access
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **Deployment**: Vercel (production) + Neon PostgreSQL
 
 ### **Key URLs**
+
 - **Production**: https://www.getmecca.com
 - **Local Dev**: http://localhost:3002
 - **Admin Panel**: /admin (admin@dealmecca.pro / password123)

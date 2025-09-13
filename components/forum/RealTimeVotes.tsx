@@ -58,7 +58,10 @@ export function RealTimeVotes({
   return (
     <div className="flex items-center space-x-2">
       <button
-        onClick={() => onVote('upvote')}
+        onClick={() => {
+          console.log('🔥 RealTimeVotes upvote button clicked for post:', postId);
+          onVote('upvote');
+        }}
         className={`flex items-center space-x-1 px-2 py-1 rounded transition-all duration-200 ${
           userVote === 'UPVOTE'
             ? 'bg-blue-100 text-blue-700'
@@ -72,7 +75,10 @@ export function RealTimeVotes({
       </button>
 
       <button
-        onClick={() => onVote('downvote')}
+        onClick={() => {
+          console.log('🔥 RealTimeVotes downvote button clicked for post:', postId);
+          onVote('downvote');
+        }}
         className={`flex items-center space-x-1 px-2 py-1 rounded transition-all duration-200 ${
           userVote === 'DOWNVOTE'
             ? 'bg-red-600 text-white'

@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+// Removed NextAuth - using Firebase auth via middleware
 import { stripe, STRIPE_PRICES, getPriceId } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
+    // Authentication handled by middleware
+    const userEmail = request.headers.get('x-user-email');
+    const userId = request.headers.get('x-user-id');
+    
+    if (!userEmail || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: request.headers.get('x-user-email') },
     })
 
     if (!user) {
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
     // Create Stripe customer if doesn't exist
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: session.user.email,
+        email: request.headers.get('x-user-email'),
         name: session.user.name || undefined,
         metadata: {
           userId: user.id,

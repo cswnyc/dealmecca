@@ -1,8 +1,11 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, Menu } from 'lucide-react';
+import { useAuth } from '@/lib/auth/firebase-auth';
+import { auth } from '@/lib/firebase';
+import { signOut as firebaseSignOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 interface AdminHeaderProps {
   user?: {
@@ -17,8 +20,15 @@ interface AdminHeaderProps {
 }
 
 export function AdminHeader({ user, title, subtitle, onMenuClick }: AdminHeaderProps) {
-  const handleSignOut = () => {
-    signOut({ callbackUrl: '/auth/signin' });
+  const router = useRouter();
+  
+  const handleSignOut = async () => {
+    try {
+      await firebaseSignOut(auth);
+      router.push('/auth/firebase-signin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (

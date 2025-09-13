@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useFirebaseSession } from '@/hooks/useFirebaseSession';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { Upload, Users, Building2, DollarSign, Calendar, MapPin, Eye, EyeOff, FileText, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -54,7 +55,8 @@ const TIMELINE_OPTIONS = [
 ];
 
 export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingProps) {
-  const { data: session } = useSession();
+  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState<IntelligenceData>({
     title: '',
     company: '',

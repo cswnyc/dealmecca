@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// Removed getServerSession - using Firebase auth via middleware headers
 import { prisma } from '@/lib/prisma';
 
 interface BulkOperation {
@@ -27,7 +26,7 @@ interface BulkResult {
 // GET /api/admin/contacts/bulk - Export contacts
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -121,7 +120,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/contacts/bulk - Bulk operations
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
