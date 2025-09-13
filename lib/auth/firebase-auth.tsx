@@ -68,6 +68,14 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
 
   // Handle auth state changes
   useEffect(() => {
+    // Handle case where Firebase is not configured
+    if (!auth) {
+      console.log('🔥 Firebase not configured, using demo mode');
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const authUser = convertFirebaseUser(firebaseUser);
@@ -86,6 +94,12 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   // Check for redirect result on mount
   useEffect(() => {
     const checkRedirectResult = async () => {
+      // Handle case where Firebase is not configured
+      if (!auth) {
+        console.log('🔥 Firebase not configured, skipping redirect check');
+        return;
+      }
+
       try {
         const result = await getRedirectResult(auth);
         if (result) {
@@ -153,6 +167,12 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       setError(null);
       setLoading(true);
       
+      // Handle case where Firebase is not configured
+      if (!auth) {
+        setError('Authentication is not configured. Please contact support.');
+        return null;
+      }
+      
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
@@ -186,6 +206,12 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     try {
       setError(null);
       setLoading(true);
+      
+      // Handle case where Firebase is not configured
+      if (!auth) {
+        setError('Authentication is not configured. Please contact support.');
+        return null;
+      }
       
       // Create LinkedIn OAuth provider - this should match your Firebase Console configuration
       // The provider ID should be exactly as configured in Firebase Console (e.g., 'oidc.linkedin')
@@ -229,6 +255,13 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   // Sign Out
   const signOut = async () => {
     try {
+      // Handle case where Firebase is not configured
+      if (!auth) {
+        console.log('🔥 Firebase not configured, clearing user state');
+        setUser(null);
+        return;
+      }
+
       await firebaseSignOut(auth);
       setUser(null);
       console.log('🔥 Firebase Auth: Sign out successful');
