@@ -33,9 +33,11 @@ interface PerformanceGates {
 
 export async function GET(request: NextRequest) {
   try {
-    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
     
-    if (!userId || (session.user as any).role !== 'ADMIN') {
+    if (!userId || userRole !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 403 }
@@ -153,7 +155,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response);
 
   } catch (error) {
-    logger.error('Scaling monitor API error:', error);
+    logger.error('performance', 'Scaling monitor API error', error);
     return NextResponse.json(
       { error: 'Failed to fetch scaling metrics' },
       { status: 500 }
@@ -163,9 +165,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
     
-    if (!userId || (session.user as any).role !== 'ADMIN') {
+    if (!userId || userRole !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 403 }
@@ -204,7 +208,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    logger.error('Scaling monitor POST error:', error);
+    logger.error('performance', 'Scaling monitor POST error', error);
     return NextResponse.json(
       { error: 'Failed to process request' },
       { status: 500 }
@@ -267,7 +271,7 @@ async function startNewBatch(data: any) {
 
 async function completeBatch(data: any) {
   // Record batch completion metrics
-  logger.info('Batch completed:', data);
+  logger.info('performance', 'Batch completed', data);
   
   // Would save to database in production
   return {
@@ -279,7 +283,7 @@ async function completeBatch(data: any) {
 
 async function recordPerformanceMetrics(data: any) {
   // Record performance metrics during batch processing
-  logger.info('Performance metrics recorded:', data);
+  logger.info('performance', 'Performance metrics recorded', data);
   
   // In production, would store in performance monitoring table
   // For now, just log the data

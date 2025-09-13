@@ -4,7 +4,8 @@ import { prisma } from '@/lib/prisma';
 
 // Get all partnerships with filtering
 export async function GET(request: NextRequest) {
-  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
   if (!userId || request.headers.get('x-user-role') !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -91,7 +92,8 @@ export async function GET(request: NextRequest) {
 
 // Create new partnership
 export async function POST(request: NextRequest) {
-  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
+  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
   if (!userId || request.headers.get('x-user-role') !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
