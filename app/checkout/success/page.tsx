@@ -1,104 +1,42 @@
 'use client'
 
-import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle } from 'lucide-react'
-
-function CheckoutSuccessContent() {
-  const searchParams = useSearchParams()
-  const sessionId = searchParams.get('session_id')
-  const [session, setSession] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (sessionId) {
-      // Fetch session details to show success information
-      fetch(`/api/stripe/checkout?session_id=${sessionId}`)
-        .then(res => res.json())
-        .then(data => {
-          setSession(data)
-          setLoading(false)
-        })
-        .catch(err => {
-          console.error('Error fetching session:', err)
-          setLoading(false)
-        })
-    } else {
-      setLoading(false)
-    }
-  }, [sessionId])
-
-  if (loading) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Loading...</CardTitle>
-        </CardHeader>
-      </Card>
-    )
-  }
-
-  return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full w-fit">
-          <CheckCircle className="h-8 w-8 text-green-600" />
-        </div>
-        <CardTitle className="text-2xl font-bold text-gray-900">
-          Payment Successful!
-        </CardTitle>
-        <CardDescription className="text-gray-600">
-          Thank you for your subscription to DealMecca.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {session && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="text-sm text-green-800">
-              Your subscription is now active. You can start using all pro features immediately.
-            </p>
-          </div>
-        )}
-        
-        <div className="space-y-2">
-          <Button asChild className="w-full">
-            <Link href="/dashboard">
-              Go to Dashboard
-            </Link>
-          </Button>
-          
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/search">
-              Start Searching
-            </Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
 
 export default function CheckoutSuccessPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center p-4">
-      <Suspense fallback={
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full w-fit">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">
-              Loading...
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      }>
-        <CheckoutSuccessContent />
-      </Suspense>
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-teal-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 p-6">
+        <div className="text-center">
+          <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full w-fit">
+            <div className="h-8 w-8 text-green-700">✓</div>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Payment Successful
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Thank you for your purchase!
+          </p>
+        </div>
+        
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-yellow-800">
+            ⚠️ Payment processing is temporarily disabled during deployment migration.
+            Enhanced checkout functionality will be restored soon.
+          </p>
+        </div>
+        
+        <div className="text-center">
+          <Link href="/dashboard" className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Go to Dashboard
+          </Link>
+        </div>
+        
+        <div className="mt-4 text-center">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
+            ← Return to Home
+          </Link>
+        </div>
+      </div>
     </div>
   )
-} 
+}

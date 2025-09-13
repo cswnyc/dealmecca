@@ -639,4 +639,4 @@ export default function ForumPage() {
       <ForumContent />
     </Suspense>
   );
-} 
+}

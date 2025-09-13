@@ -1,15 +1,7 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import AuthProvider from '@/components/providers/session-provider';
-import ConditionalUserProvider from '@/components/providers/conditional-user-provider';
-import PWAProvider from '@/components/providers/pwa-provider';
-import { CacheInvalidator } from '@/components/providers/cache-invalidator';
-import FirebaseGlobalSuppressor from '@/components/providers/firebase-global-suppressor';
-import { FirebaseProvider } from '@/components/providers/FirebaseProvider';
-import MobileNavigation from '@/components/mobile/MobileNavigation';
 import './globals.css';
-import './navigation-polish.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -115,24 +107,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} min-h-screen bg-gray-50`}>
-        <FirebaseGlobalSuppressor />
-        <AuthProvider>
-          <FirebaseProvider>
-            <ConditionalUserProvider>
-              <PWAProvider>
-                <div className="min-h-screen">
-                  {/* Main content with bottom padding for mobile navigation */}
-                  <main className="pb-16 md:pb-0">
-                    {children}
-                  </main>
-                  
-                  {/* Mobile Navigation - only visible on mobile */}
-                  <MobileNavigation />
-                </div>
-              </PWAProvider>
-            </ConditionalUserProvider>
-          </FirebaseProvider>
-        </AuthProvider>
+        <div className="min-h-screen">
+          <main>
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );

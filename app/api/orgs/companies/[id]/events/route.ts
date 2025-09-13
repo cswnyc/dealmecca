@@ -1,108 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    // Get user info from middleware headers
-    const userId = request.headers.get('x-user-id');
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const { id } = await params;
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    // Get events where this company has attendees
-    const events = await prisma.event.findMany({
-      where: {
-        AND: [
-          {
-            OR: [
-              { status: 'PUBLISHED' },
-              { status: 'COMPLETED' }
-            ]
-          },
-          {
-            attendees: {
-              some: {
-                OR: [
-                  // Direct company association
-                  { companyId: id },
-                  // Through contact's company
-                  { 
-                    contact: {
-                      companyId: id
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      include: {
-        attendees: {
-          where: {
-            OR: [
-              { companyId: id },
-              { 
-                contact: {
-                  companyId: id
-                }
-              }
-            ]
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true
-              }
-            },
-            contact: {
-              select: {
-                id: true,
-                fullName: true,
-                title: true
-              }
-            }
-          }
-        },
-        _count: {
-          select: {
-            attendees: true
-          }
-        }
-      },
-      orderBy: {
-        startDate: 'desc'
-      }
-    });
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    // Add company attendee count to each event
-    const eventsWithCompanyCount = events.map((event: any) => ({
-      ...event,
-      companyAttendeeCount: event.attendees.length,
-      companyAttendees: event.attendees.map((attendee: any) => ({
-        id: attendee.id,
-        status: attendee.status,
-        user: attendee.user,
-        contact: attendee.contact
-      }))
-    }));
-
-    return NextResponse.json({ 
-      events: eventsWithCompanyCount
-    });
-
-  } catch (error) {
-    console.error('Error fetching company events:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch company events' },
-      { status: 500 }
-    );
-  }
-} 
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}

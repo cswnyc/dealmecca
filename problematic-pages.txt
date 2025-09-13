@@ -1,0 +1,123 @@
+📋 Problematic Pages Found:
+=========================
+
+🚨 Pages with @/components/ui/ imports:
+---
+  ❌ app/organizations/page.tsx
+  ❌ app/settings/page.tsx
+  ❌ app/test-search-working/page.tsx
+  ❌ app/upgrade/page.tsx
+  ❌ app/intelligence/page.tsx
+  ❌ app/signup/page.tsx
+  ❌ app/admin/orgs/contacts/import/page.tsx
+  ❌ app/test-login-simple/page.tsx
+  ❌ app/test-rich-editor/page.tsx
+  ❌ app/orgs/contacts/[id]/page.tsx
+  ❌ app/orgs/enhanced/page.tsx
+  ❌ app/orgs/page.tsx
+  ❌ app/orgs/companies/[id]/page.tsx
+  ❌ app/search/intelligence/page.tsx
+  ❌ app/search/fixed/page.tsx
+  ❌ app/search/mobile/page.tsx
+  ❌ app/search/enhanced/page.tsx
+  ❌ app/test-confetti/page.tsx
+  ❌ app/test-simple/page.tsx
+  ❌ app/org-charts/page.tsx
+  ❌ app/org-charts/[slug]/page.tsx
+  ❌ app/org-charts/debug/page.tsx
+  ❌ app/profile/[id]/page.tsx
+  ❌ app/test-components/page.tsx
+  ❌ app/test-auth-fixed/page.tsx
+  ❌ app/manual-login/page.tsx
+  ❌ app/events/page.tsx
+  ❌ app/page.tsx
+  ❌ app/pricing/page.tsx
+  ❌ app/login/page.tsx
+
+🚨 Pages with @/lib/auth/firebase-auth imports:
+---
+  ❌ app/organizations/page.tsx
+  ❌ app/settings/page.tsx
+  ❌ app/test-search-working/page.tsx
+  ❌ app/intelligence/page.tsx
+  ❌ app/session-status/page.tsx
+  ❌ app/orgs/page.tsx
+  ❌ app/search/intelligence/page.tsx
+  ❌ app/search/fixed/page.tsx
+  ❌ app/search/enhanced/page.tsx
+  ❌ app/forum/page.tsx
+  ❌ app/profile/[id]/page.tsx
+  ❌ app/test-auth-fixed/page.tsx
+  ❌ app/events/page.tsx
+  ❌ app/pricing/debug.tsx
+  ❌ app/pricing/page.tsx
+
+🚨 Pages with @/hooks/useFirebaseSession imports:
+---
+  ❌ app/intelligence/page.tsx
+  ❌ app/orgs/page.tsx
+  ❌ app/forum/page.tsx
+  ❌ app/events/page.tsx
+
+🚨 Pages with @/components/layout/ForumLayout imports:
+---
+  ❌ app/orgs/contacts/[id]/page.tsx
+  ❌ app/orgs/page.tsx
+  ❌ app/forum/page.tsx
+  ❌ app/org-charts/page.tsx
+  ❌ app/org-charts/[slug]/page.tsx
+  ❌ app/events/page.tsx
+
+🚨 Pages with @/components/dashboard/ imports:
+---
+  ❌ app/intelligence/page.tsx
+  ❌ app/profile/[id]/page.tsx
+
+🚨 Pages with @/components/events/ imports:
+---
+  ❌ app/events/page.tsx
+
+🚨 Pages with @/components/admin/ imports:
+---
+  ❌ app/admin/orgs/contacts/import/page.tsx
+  ❌ app/test-components/page.tsx
+
+📊 Summary:
+----------
+📈 Total problematic pages:       33
+
+📄 Complete List of Files to Fix:
+=================================
+  📄 app/admin/orgs/contacts/import/page.tsx
+  📄 app/events/page.tsx
+  📄 app/forum/page.tsx
+  📄 app/intelligence/page.tsx
+  📄 app/login/page.tsx
+  📄 app/manual-login/page.tsx
+  📄 app/org-charts/[slug]/page.tsx
+  📄 app/org-charts/debug/page.tsx
+  📄 app/org-charts/page.tsx
+  📄 app/organizations/page.tsx
+  📄 app/orgs/companies/[id]/page.tsx
+  📄 app/orgs/contacts/[id]/page.tsx
+  📄 app/orgs/enhanced/page.tsx
+  📄 app/orgs/page.tsx
+  📄 app/page.tsx
+  📄 app/pricing/debug.tsx
+  📄 app/pricing/page.tsx
+  📄 app/profile/[id]/page.tsx
+  📄 app/search/enhanced/page.tsx
+  📄 app/search/fixed/page.tsx
+  📄 app/search/intelligence/page.tsx
+  📄 app/search/mobile/page.tsx
+  📄 app/session-status/page.tsx
+  📄 app/settings/page.tsx
+  📄 app/signup/page.tsx
+  📄 app/test-auth-fixed/page.tsx
+  📄 app/test-components/page.tsx
+  📄 app/test-confetti/page.tsx
+  📄 app/test-login-simple/page.tsx
+  📄 app/test-rich-editor/page.tsx
+  📄 app/test-search-working/page.tsx
+  📄 app/test-simple/page.tsx
+  📄 app/upgrade/page.tsx

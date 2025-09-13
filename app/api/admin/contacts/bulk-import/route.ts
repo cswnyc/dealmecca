@@ -1,271 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-// Removed getServerSession - using Firebase auth via middleware headers
-import { prisma } from '@/lib/prisma';
-import { findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
-// We'll use Prisma's auto-generated cuid() for IDs
-
-interface ImportContact {
-  id: string;
-  firstName: string;
-  lastName: string;
-  title: string;
-  email?: string;
-  phone?: string;
-  linkedinUrl?: string;
-  department?: string;
-  company: string;
-  companyId?: string;
-  isValid: boolean;
-}
-
-interface ImportResult {
-  imported: number;
-  failed: number;
-  errors: Array<{
-    row: number;
-    contact: string;
-    error: string;
-  }>;
-}
-
-// Validation functions
-const validateEmail = (email: string): boolean => {
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailPattern.test(email);
-};
-
-const validatePhone = (phone: string): boolean => {
-  const phonePattern = /^[\+]?[1-9][\d]{0,15}$/;
-  return phonePattern.test(phone);
-};
-
-const validateLinkedIn = (url: string): boolean => {
-  const linkedinPattern = /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
-  return linkedinPattern.test(url);
-};
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  try {
-    
-  const userId = request.headers.get('x-user-id');
-  const userRole = request.headers.get('x-user-role');
-    if (!userId || userRole !== 'ADMIN') {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized access' },
-        { status: 401 }
-      );
-    }
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const { contacts }: { contacts: ImportContact[] } = await request.json();
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    if (!contacts || !Array.isArray(contacts)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid contacts data' },
-        { status: 400 }
-      );
-    }
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const results: ImportResult = {
-      imported: 0,
-      failed: 0,
-      errors: []
-    };
-
-    // Process each contact
-    for (let i = 0; i < contacts.length; i++) {
-      const contact = contacts[i];
-
-      try {
-        // Skip invalid contacts
-        if (!contact.isValid) {
-          results.failed++;
-          results.errors.push({
-            row: i + 1,
-            contact: `${contact.firstName} ${contact.lastName}`,
-            error: 'Contact failed validation'
-          });
-          continue;
-        }
-
-        // Additional server-side validation
-        const validationErrors: string[] = [];
-
-        // Required fields
-        if (!contact.firstName?.trim()) validationErrors.push('First name is required');
-        if (!contact.lastName?.trim()) validationErrors.push('Last name is required');
-        if (!contact.title?.trim()) validationErrors.push('Title is required');
-        if (!contact.companyId) validationErrors.push('Valid company is required');
-
-        // Optional field validation
-        if (contact.email && !validateEmail(contact.email)) {
-          validationErrors.push('Invalid email format');
-        }
-        if (contact.phone && !validatePhone(contact.phone)) {
-          validationErrors.push('Invalid phone format');
-        }
-        if (contact.linkedinUrl && !validateLinkedIn(contact.linkedinUrl)) {
-          validationErrors.push('Invalid LinkedIn URL format');
-        }
-
-        if (validationErrors.length > 0) {
-          results.failed++;
-          results.errors.push({
-            row: i + 1,
-            contact: `${contact.firstName} ${contact.lastName}`,
-            error: validationErrors.join(', ')
-          });
-          continue;
-        }
-
-
-
-        // Verify company exists
-        const company = await prisma.company.findUnique({
-          where: { id: contact.companyId }
-        });
-
-        if (!company) {
-          results.failed++;
-          results.errors.push({
-            row: i + 1,
-            contact: `${contact.firstName} ${contact.lastName}`,
-            error: 'Company not found'
-          });
-          continue;
-        }
-
-        // Determine seniority level based on title
-        const getSeniorityLevel = (title: string) => {
-          const titleLower = title.toLowerCase();
-          if (titleLower.includes('ceo') || titleLower.includes('president') || titleLower.includes('founder')) {
-            return 'C_LEVEL' as const;
-          } else if (titleLower.includes('vp') || titleLower.includes('vice president')) {
-            return 'VP' as const;
-          } else if (titleLower.includes('director')) {
-            return 'DIRECTOR' as const;
-          } else if (titleLower.includes('manager') || titleLower.includes('lead') || titleLower.includes('head')) {
-            return 'MANAGER' as const;
-          } else if (titleLower.includes('senior') || titleLower.includes('sr')) {
-            return 'SENIOR_SPECIALIST' as const;
-          } else if (titleLower.includes('junior') || titleLower.includes('jr') || titleLower.includes('associate')) {
-            return 'COORDINATOR' as const;
-          } else {
-            return 'SPECIALIST' as const;
-          }
-        };
-
-        // Map department string to enum value
-        const getDepartment = (dept?: string) => {
-          if (!dept) return null;
-          const deptUpper = dept.toUpperCase().replace(/[^A-Z]/g, '_');
-          const validDepartments = [
-            'MEDIA_PLANNING', 'MEDIA_BUYING', 'DIGITAL_MARKETING', 'PROGRAMMATIC', 
-            'SOCIAL_MEDIA', 'SEARCH_MARKETING', 'STRATEGY_PLANNING', 'ANALYTICS_INSIGHTS',
-            'CREATIVE_SERVICES', 'ACCOUNT_MANAGEMENT', 'BUSINESS_DEVELOPMENT', 'OPERATIONS',
-            'TECHNOLOGY', 'FINANCE', 'LEADERSHIP', 'HUMAN_RESOURCES', 'SALES', 'MARKETING',
-            'PRODUCT', 'DATA_SCIENCE'
-          ];
-          return validDepartments.includes(deptUpper) ? deptUpper as any : 'MARKETING';
-        };
-
-        // Check for duplicates using smart detection
-        const existingContact = await findContactDuplicates({
-          firstName: contact.firstName.trim(),
-          lastName: contact.lastName.trim(),
-          email: contact.email?.trim(),
-          companyId: contact.companyId!
-        });
-
-        if (existingContact) {
-          // Update existing contact with new data if we have better information
-          const updateData: any = {
-            updatedAt: new Date()
-          };
-
-          // Only update fields that have new/better data
-          if (contact.email?.trim() && (!existingContact.email || contact.email.trim() !== existingContact.email)) {
-            updateData.email = contact.email.trim();
-          }
-          if (contact.phone?.trim() && (!existingContact.phone || contact.phone.trim() !== existingContact.phone)) {
-            updateData.phone = contact.phone.trim();
-          }
-          if (contact.title?.trim() && contact.title.trim() !== existingContact.title) {
-            updateData.title = contact.title.trim();
-          }
-          if (contact.department && getDepartment(contact.department) !== existingContact.department) {
-            updateData.department = getDepartment(contact.department);
-          }
-          if (getSeniorityLevel(contact.title) !== existingContact.seniority) {
-            updateData.seniority = getSeniorityLevel(contact.title);
-          }
-          if (contact.linkedinUrl?.trim() && (!existingContact.linkedinUrl || contact.linkedinUrl.trim() !== existingContact.linkedinUrl)) {
-            updateData.linkedinUrl = contact.linkedinUrl.trim();
-          }
-
-          // Only update if there are actual changes
-          if (Object.keys(updateData).length > 1) { // More than just updatedAt
-            await prisma.contact.update({
-              where: { id: existingContact.id },
-              data: updateData
-            });
-            results.imported++; // Count updates as imports
-          } else {
-            // No changes needed, but still count as successful processing
-            results.imported++;
-          }
-        } else {
-          // Create new contact
-          await prisma.contact.create({
-            data: {
-              firstName: contact.firstName.trim(),
-              lastName: contact.lastName.trim(),
-              fullName: `${contact.firstName.trim()} ${contact.lastName.trim()}`,
-              title: contact.title.trim(),
-              email: contact.email?.trim() || null,
-              phone: contact.phone?.trim() || null,
-              linkedinUrl: contact.linkedinUrl?.trim() || null,
-              department: getDepartment(contact.department),
-              seniority: getSeniorityLevel(contact.title),
-              company: {
-                connect: { id: contact.companyId }
-              },
-              verified: false,
-              isActive: true,
-              isDecisionMaker: false,
-              preferredContact: contact.email ? 'EMAIL' : 'PHONE',
-              dataQuality: 'BASIC'
-            }
-          });
-          results.imported++;
-        }
-
-      } catch (error) {
-        console.error(`Error importing contact ${i + 1}:`, error);
-        results.failed++;
-        results.errors.push({
-          row: i + 1,
-          contact: `${contact.firstName} ${contact.lastName}`,
-          error: 'Database error during import'
-        });
-      }
-    }
-
-    // Log the import activity
-    console.log(`Bulk import completed by ${request.headers.get('x-user-email')}: ${results.imported} imported, ${results.failed} failed`);
-
-    return NextResponse.json({
-      success: true,
-      imported: results.imported,
-      failed: results.failed,
-      errors: results.errors,
-      message: `Successfully imported ${results.imported} contacts`
-    });
-
-  } catch (error) {
-    console.error('Bulk import error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error during bulk import' },
-      { status: 500 }
-    );
-  }
-} 
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}

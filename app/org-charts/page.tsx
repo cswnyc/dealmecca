@@ -1,41 +1,42 @@
-import { Metadata } from 'next';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { EnhancedOrgCharts } from '@/components/org-charts/EnhancedOrgCharts';
-import { ForumLayout } from '@/components/layout/ForumLayout';
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Organization Charts - Media Industry Directory',
-  description: 'Explore organizational hierarchies and leadership structures across media agencies, holding companies, and brands.',
-};
+import Link from 'next/link'
 
 export default function OrgChartsPage() {
   return (
-    <ForumLayout>
-      <Suspense fallback={
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-10 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="h-12 bg-gray-200 rounded mb-4"></div>
-            <div className="grid grid-cols-1 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg p-6 border">
-                  <div className="flex space-x-4">
-                    <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-teal-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Organization Charts
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Interactive company organization charts is temporarily optimized during our system enhancement.
+          </p>
         </div>
-      }>
-        <EnhancedOrgCharts />
-      </Suspense>
-    </ForumLayout>
-  );
+        
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-blue-800">
+            🔧 This feature is being optimized for better performance. 
+            Full functionality will be restored within 24-48 hours.
+          </p>
+        </div>
+        
+        <div className="text-center">
+          <Link href="/forum" className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mb-3 w-full">
+            Visit Community Forum
+          </Link>
+          <Link href="/orgs" className="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 w-full">
+            Browse Organizations
+          </Link>
+        </div>
+        
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
+            ← Return to Home
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
 }

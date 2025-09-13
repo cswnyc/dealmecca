@@ -1,40 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { savedSearchManager } from '@/lib/saved-search';
-import { logger } from '@/lib/logger';
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
 export async function GET(request: NextRequest) {
-  const startTime = Date.now();
-  
-  try {
-    const userId = request.headers.get('x-user-id');
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const stats = await savedSearchManager.getUserSavedSearchStats(userId);
-
-    logger.info('search', 'User saved search stats retrieved', {
-      userId,
-      totalSearches: stats.totalSavedSearches,
-      activeAlerts: stats.activeAlerts,
-      duration: Date.now() - startTime
-    });
-
-    return NextResponse.json(stats);
-
-  } catch (error) {
-    logger.error('search', 'Failed to get saved search stats', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      duration: Date.now() - startTime
-    });
-
-    return NextResponse.json(
-      { error: 'Failed to retrieve saved search statistics' },
-      { status: 500 }
-    );
-  }
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
 }

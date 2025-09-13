@@ -1,567 +1,94 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useFirebaseSession } from '@/hooks/useFirebaseSession'
-import { useAuth } from '@/lib/auth/firebase-auth'
-import { auth } from '@/lib/firebase'
-import { signOut as firebaseSignOut } from 'firebase/auth'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  Users, 
-  Building, 
-  BarChart3, 
-  Settings, 
-  LogOut, 
-  Crown, 
-  TrendingUp, 
-  Calendar,
-  AlertTriangle,
-  Star,
-  Zap,
-  Target,
-  Activity,
-  Building2,
-  Brain,
-  CalendarDays,
-  MessageSquare,
-  Plus
-} from 'lucide-react'
-
-// Import our new dashboard components
-import MetricsOverview from '@/components/dashboard/MetricsOverview'
-import SearchUsageWidget from '@/components/dashboard/SearchUsageWidget'
-import UpcomingEventsWidget from '@/components/dashboard/UpcomingEventsWidget'
-import MarketInsightsWidget from '@/components/dashboard/MarketInsightsWidget';
-import { NetworkingActivityWidget } from '@/components/dashboard/NetworkingActivityWidget'
-import { DashboardPageLayout } from '@/components/navigation/PageLayout';
-
-interface UserProfile {
-  id: string
-  email: string
-  name: string
-  role: string
-  subscriptionTier: string
-  searchLimit: number
-  searchesRemaining: number
-  searchesUsedThisMonth: number
-  searchesResetAt: string
-  createdAt: string
-  searchesByDay: Record<string, number>
-  searchStats: {
-    total: number
-    thisMonth: number
-    avgResultsPerSearch: number
-  }
-  searches: Array<{
-    id: string
-    query: string
-    resultsCount: number
-    searchType: string
-    createdAt: string
-  }>
-  posts: Array<{
-    id: string
-    title: string
-    category: string
-    votes: number
-    createdAt: string
-    _count: {
-      comments: number
-    }
-  }>
-  _count: {
-    posts: number
-    comments: number
-  }
-}
+import Link from 'next/link'
 
 export default function DashboardPage() {
-  const hasFirebaseSession = useFirebaseSession()
-  const { user: firebaseUser, loading: authLoading } = useAuth()
-  const router = useRouter()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    // Wait for auth to finish loading
-    if (authLoading) {
-      console.log('🔄 Waiting for Firebase auth to load...')
-      return
-    }
-
-    // Check for Firebase authentication (user object is more reliable than session hook)
-    if (firebaseUser || hasFirebaseSession) {
-      console.log('🔥 Firebase user detected in dashboard, fetching profile...', { 
-        hasUser: !!firebaseUser, 
-        hasSession: hasFirebaseSession 
-      })
-      fetchProfile()
-      return
-    }
-    
-    // If no Firebase authentication, redirect to Firebase signin
-    console.log('❌ No Firebase authentication found, redirecting to signin')
-    router.push('/auth/firebase-signin')
-  }, [router, hasFirebaseSession, firebaseUser, authLoading])
-
-  const fetchProfile = async (retryCount = 0) => {
-    try {
-      const response = await fetch('/api/users/profile', {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setProfile(data)
-      } else if (response.status === 401) {
-        // If unauthorized and this is the first retry, wait a bit for session to sync
-        if (retryCount < 3) {
-          console.log(`Session not ready, retrying in ${(retryCount + 1) * 500}ms...`)
-          setTimeout(() => {
-            fetchProfile(retryCount + 1)
-          }, (retryCount + 1) * 500)
-          return
-        }
-        
-        // Before redirecting to signin, check if we have a Firebase user
-        if (firebaseUser || hasFirebaseSession) {
-          console.log('⚠️ 401 for Firebase user - session sync may still be in progress');
-          setError('Session is still loading. Please wait a moment or refresh the page.');
-          return
-        }
-        
-        console.log('❌ No session found, redirecting to Firebase signin');
-        router.push('/auth/firebase-signin')
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-      if (retryCount < 2) {
-        setTimeout(() => {
-          fetchProfile(retryCount + 1)
-        }, 1000)
-        return
-      }
-    } finally {
-      if (retryCount === 0) {
-        setLoading(false)
-      }
-    }
-  }
-
-  const getSubscriptionBadge = (tier: string) => {
-    switch (tier) {
-      case 'FREE':
-        return (
-          <span className="bg-gray-100 text-gray-800 px-3 py-1.5 rounded-full text-sm font-medium">
-            Free Plan
-          </span>
-        )
-      case 'PRO':
-        return (
-          <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1">
-            <Crown className="w-3 h-3" /> Pro Plan
-          </span>
-        )
-      case 'TEAM':
-        return (
-          <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1">
-            <Crown className="w-3 h-3" /> Team Plan
-          </span>
-        )
-      case 'ADMIN':
-        return (
-          <span className="bg-orange-100 text-orange-800 px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1">
-            <Star className="w-3 h-3" /> Admin
-          </span>
-        )
-      default:
-        return null
-    }
-  }
-
-  const getUsagePercentage = (used: number, limit: number) => {
-    if (limit === -1) return 0 // Unlimited
-    return Math.min((used / limit) * 100, 100)
-  }
-
-  const usagePercentage = profile ? getUsagePercentage(profile.searchesUsedThisMonth, profile.searchLimit) : 0
-  const isNearLimit = profile?.subscriptionTier === 'FREE' && usagePercentage >= 75
-
-  if (loading || authLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-teal-50">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-4">
+              <Link href="/" className="text-xl font-bold text-gray-900">
+                DealMecca
+              </Link>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Link href="/auth/signin" className="text-gray-600 hover:text-gray-900">
+                Sign In
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">
-            {authLoading ? 'Authenticating...' : 'Loading your dashboard...'}
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Dashboard
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Full dashboard functionality is temporarily disabled during deployment migration.
           </p>
         </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <AlertTriangle className="h-12 w-12 text-amber-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Session Loading</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <Button 
-            onClick={() => {
-              setError(null);
-              setLoading(true);
-              fetchProfile();
-            }}
-            className="bg-sky-600 hover:bg-sky-700"
-          >
-            Try Again
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <DashboardPageLayout
-      title="Dashboard"
-      description={`Welcome back, ${profile?.name || 'User'}`}
-      actions={
-        <div className="flex items-center gap-4">
-          {profile && getSubscriptionBadge(profile.subscriptionTier)}
-          {profile?.subscriptionTier === 'FREE' && (
-            <Button 
-              onClick={() => router.push('/upgrade')}
-              className="bg-gradient-to-r from-sky-600 to-teal-600 hover:from-sky-700 hover:to-teal-700"
-            >
-              <Zap className="w-4 h-4 mr-2" />
-              Upgrade to Pro
-            </Button>
-          )}
-          <Button 
-            variant="outline" 
-            onClick={async () => {
-              try {
-                await firebaseSignOut(auth);
-                router.push('/auth/firebase-signin');
-              } catch (error) {
-                console.error('Error signing out:', error);
-              }
-            }}
-            className="flex items-center gap-2"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </Button>
-        </div>
-      }
-    >
-      {/* Upgrade Alert for Free Users Near Limit */}
-      {isNearLimit && (
-        <Card className="mb-6 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-600" />
-              <div className="flex-1">
-                <h3 className="font-medium text-yellow-800">
-                  Approaching Search Limit
-                </h3>
-                <p className="text-sm text-yellow-700 mt-1">
-                  You've used {Math.round(usagePercentage)}% of your monthly searches. 
-                  <Button 
-                    variant="link" 
-                    className="h-auto p-0 ml-1 text-yellow-800 underline"
-                    onClick={() => router.push('/upgrade')}
-                  >
-                    Upgrade to Pro
-                  </Button> for unlimited searches.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Quick Actions Bar */}
-      <Card className="mb-8 bg-gradient-to-r from-sky-50 to-teal-50 border-sky-200">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-sky-600" />
-            Quick Actions
-          </CardTitle>
-          <CardDescription>
-            Your daily tools for media sales success
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <Button 
-              variant="outline" 
-              className="h-auto py-4 px-4 bg-white hover:bg-sky-50 border-sky-200"
-              onClick={() => router.push('/search')}
-            >
-              <div className="text-center">
-                <Search className="w-6 h-6 mx-auto mb-2 text-sky-600" />
-                <p className="font-medium">Search Database</p>
-                <p className="text-xs text-gray-600">Find prospects</p>
-              </div>
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="h-auto py-4 px-4 bg-white hover:bg-blue-50 border-blue-200"
-              onClick={() => router.push('/intelligence')}
-            >
-              <div className="text-center">
-                <Brain className="w-6 h-6 mx-auto mb-2 text-purple-600" />
-                <p className="font-medium">Intelligence</p>
-                <p className="text-xs text-gray-600">AI insights</p>
-              </div>
-            </Button>
-
-            <Button 
-              variant="outline" 
-              className="h-auto py-4 px-4 bg-white hover:bg-emerald-50 border-emerald-200"
-              onClick={() => router.push('/orgs')}
-            >
-              <div className="text-center relative">
-                <Building2 className="w-6 h-6 mx-auto mb-2 text-green-600" />
-                <p className="font-medium">Organizations</p>
-                <p className="text-xs text-gray-600">Org charts</p>
-                <span className="absolute -top-1 -right-1 bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 rounded-full">New</span>
-              </div>
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="h-auto py-4 px-4 bg-white hover:bg-indigo-50 border-indigo-200"
-              onClick={() => router.push('/events')}
-            >
-              <div className="text-center">
-                <CalendarDays className="w-6 h-6 mx-auto mb-2 text-orange-600" />
-                <p className="font-medium">Events</p>
-                <p className="text-xs text-gray-600">Track ROI</p>
-              </div>
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="h-auto py-4 px-4 bg-white hover:bg-teal-50 border-teal-200"
-              onClick={() => router.push('/forum')}
-            >
-              <div className="text-center">
-                <MessageSquare className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-                <p className="font-medium">Community</p>
-                <p className="text-xs text-gray-600">Network</p>
-              </div>
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="h-auto py-4 px-4 bg-white hover:bg-purple-50 border-purple-200"
-              onClick={() => router.push('/analytics')}
-            >
-              <div className="text-center">
-                <TrendingUp className="w-6 h-6 mx-auto mb-2 text-red-600" />
-                <p className="font-medium">Analytics</p>
-                <p className="text-xs text-gray-600">Insights</p>
-              </div>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Main Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        {/* Metrics Overview - Takes 2 columns */}
-        <div className="lg:col-span-2">
-          <MetricsOverview userId={profile?.id || ''} period="month" />
+        
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-yellow-800">
+            ⚠️ Dashboard functionality is temporarily disabled during deployment migration.
+            Enhanced dashboard with metrics, search analytics, and user insights will be restored soon.
+          </p>
         </div>
         
-        {/* Search Usage Widget - Takes 1 column */}
-        <div className="lg:col-span-1">
-          <SearchUsageWidget userId={profile?.id || ''} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Link href="/search" className="block bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Search</h3>
+              <p className="text-sm text-gray-600">Find companies and contacts</p>
+            </div>
+          </Link>
+          
+          <Link href="/orgs" className="block bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 8h1m-1 4h1m4-4h1m-1 4h1" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Organizations</h3>
+              <p className="text-sm text-gray-600">Browse company database</p>
+            </div>
+          </Link>
+          
+          <Link href="/forum" className="block bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Forum</h3>
+              <p className="text-sm text-gray-600">Community discussions</p>
+            </div>
+          </Link>
+        </div>
+        
+        <div className="text-center">
+          <Link href="/auth/signin" className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Sign In to Continue
+          </Link>
+        </div>
+        
+        <div className="mt-4 text-center">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
+            ← Return to Home
+          </Link>
         </div>
       </div>
-
-      {/* Upcoming Events Widget - Full width */}
-      <div className="mb-8">
-        <UpcomingEventsWidget userId={profile?.id || ''} />
-      </div>
-
-      {/* Networking Activity Widget - Full width */}
-      <div className="mb-8">
-        <NetworkingActivityWidget userId={profile?.id || ''} />
-      </div>
-
-      {/* Activity Feed Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Recent Searches */}
-        <Card className="bg-white/60 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-sky-600" />
-                Recent Searches
-              </span>
-              <TrendingUp className="w-5 h-5 text-gray-700" />
-            </CardTitle>
-            <CardDescription>Your latest search activity</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {profile?.searches?.length ? (
-              <div className="space-y-3">
-                {profile.searches.slice(0, 5).map((search) => (
-                  <div key={search.id} className="flex justify-between items-center p-3 bg-white rounded-lg hover:bg-sky-50 transition-colors border border-gray-100">
-                    <div>
-                      <p className="font-medium text-gray-900">{search.query}</p>
-                      <p className="text-sm text-gray-600">
-                        {search.resultsCount} results • {new Date(search.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <span className="text-xs bg-sky-100 text-sky-800 px-2 py-1 rounded-full">
-                      {search.searchType}
-                    </span>
-                  </div>
-                ))}
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full mt-4"
-                  onClick={() => router.push('/search')}
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  New Search
-                </Button>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Search className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-700">No searches yet</p>
-                <p className="text-sm text-gray-600 mb-4">Start exploring our database!</p>
-                <Button 
-                  onClick={() => router.push('/search')}
-                  className="bg-gradient-to-r from-sky-600 to-teal-600 hover:from-sky-700 hover:to-teal-700"
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  Start Searching
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Forum Posts */}
-        <Card className="bg-white/60 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-gray-700" />
-              </span>
-              <Users className="w-5 h-5 text-gray-400" />
-            </CardTitle>
-            <CardDescription>Your community contributions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {profile?.posts?.length ? (
-              <div className="space-y-3">
-                {profile.posts.slice(0, 4).map((post) => (
-                  <div key={post.id} className="p-3 bg-white rounded-lg hover:bg-teal-50 transition-colors border border-gray-100">
-                    <h4 className="font-medium text-gray-900 mb-1 line-clamp-1">{post.title}</h4>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs">
-                        {post.category.replace('_', ' ')}
-                      </span>
-                      <span>{post.votes} votes</span>
-                      <span>{post._count.comments} comments</span>
-                    </div>
-                  </div>
-                ))}
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full mt-4"
-                  onClick={() => router.push('/forum')}
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Visit Forum
-                </Button>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-700">No forum posts yet</p>
-                <p className="text-sm text-gray-600 mb-4">Join the conversation!</p>
-                <Button 
-                  onClick={() => router.push('/forum')}
-                  className="bg-gradient-to-r from-teal-600 to-sky-600 hover:from-teal-700 hover:to-sky-700"
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Join Community
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Account Overview Card */}
-      <Card className="bg-gradient-to-r from-gray-50 to-slate-50 border-gray-200">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="w-5 h-5 text-gray-600" />
-            Account Overview
-          </CardTitle>
-          <CardDescription>
-            Manage your DealMecca experience
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center p-4 bg-white rounded-lg">
-              <Crown className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-              <p className="text-sm text-gray-600">Plan</p>
-              <p className="font-semibold text-gray-900">{profile?.subscriptionTier}</p>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg">
-              <Calendar className="w-8 h-8 mx-auto mb-2 text-sky-600" />
-              <p className="text-sm text-gray-600">Member Since</p>
-              <p className="font-semibold text-gray-900">
-                {profile?.createdAt 
-                  ? new Date(profile.createdAt).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      year: 'numeric' 
-                    })
-                  : 'N/A'}
-              </p>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg">
-              <BarChart3 className="w-8 h-8 mx-auto mb-2 text-teal-600" />
-              <p className="text-sm text-gray-600">Forum Posts</p>
-              <p className="font-semibold text-gray-900">{profile?._count?.posts || 0}</p>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => router.push('/settings')}
-                className="w-full"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </DashboardPageLayout>
+    </div>
   )
-} 
+}

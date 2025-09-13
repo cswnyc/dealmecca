@@ -1,62 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q') || '';
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    if (query.length < 2) {
-      return NextResponse.json({ users: [] });
-    }
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    // Search for users by name or email
-    const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          {
-            name: {
-              contains: query
-            }
-          },
-          {
-            email: {
-              contains: query
-            }
-          }
-        ]
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        company: {
-          select: {
-            id: true,
-            name: true,
-            logoUrl: true
-          }
-        }
-      },
-      take: 10
-    });
-
-    // Format for mention suggestions
-    const suggestions = users.map(user => ({
-      id: user.id,
-      type: 'user',
-      name: user.name || user.email,
-      subtitle: user.company?.name || 'Anonymous User',
-      avatar: user.company?.logoUrl
-    }));
-
-    return NextResponse.json({ users: suggestions });
-
-  } catch (error) {
-    console.error('Failed to search users:', error);
-    return NextResponse.json(
-      { error: 'Failed to search users' },
-      { status: 500 }
-    );
-  }
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
 }

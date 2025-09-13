@@ -38,20 +38,10 @@ export default function OrganizationsPage() {
   const [selectedIndustry, setSelectedIndustry] = useState('')
   const [selectedCompanyType, setSelectedCompanyType] = useState('')
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-      return
-    }
-  }, [status, router])
-
   // Fetch companies data
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetchCompanies()
-    }
-  }, [status])
+    fetchCompanies()
+  }, [])
 
   // Filter companies based on search and filters
   useEffect(() => {
@@ -109,7 +99,7 @@ export default function OrganizationsPage() {
     setSelectedCompanyType('')
   }
 
-  if (status === 'loading') {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -118,10 +108,6 @@ export default function OrganizationsPage() {
         </div>
       </div>
     )
-  }
-
-  if (status === 'unauthenticated') {
-    return null // Will redirect in useEffect
   }
 
   return (
@@ -145,7 +131,7 @@ export default function OrganizationsPage() {
                 <Badge variant="secondary" className="text-sm">
                   {filteredCompanies.length} companies
                 </Badge>
-                {session?.user?.role === 'ADMIN' && (
+                {firebaseUser && (
                   <Button>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Company
@@ -354,4 +340,4 @@ export default function OrganizationsPage() {
       </div>
     </div>
   )
-} 
+}

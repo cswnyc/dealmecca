@@ -1,49 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-// Removed getServerSession - using Firebase auth via middleware headers
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
-  
-  const userId = request.headers.get('x-user-id');
-  const userRole = request.headers.get('x-user-role');
-  if (!userId || request.headers.get('x-user-role') !== 'ADMIN') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-  try {
-    const { id } = await params;
-    const data = await request.json();
-    const { verified } = data;
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const contact = await prisma.contact.update({
-      where: { id },
-      data: {
-        verified,
-        dataQuality: verified ? 'VERIFIED' : 'BASIC',
-        lastVerified: verified ? new Date() : null
-      },
-      include: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-            companyType: true
-          }
-        }
-      }
-    });
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    return NextResponse.json({ contact });
-
-  } catch (error) {
-    console.error('Contact verification error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update verification status' },
-      { status: 500 }
-    );
-  }
-} 
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}

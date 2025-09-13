@@ -1,154 +1,49 @@
 'use client'
 
-import { useState } from 'react'
-// Removed NextAuth import - using Firebase auth
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Link from 'next/link'
 
-export default function TestLoginSimple() {
-  const { user, loading: authLoading } = useAuth()
-  const router = useRouter()
-  const [email, setEmail] = useState('admin@dealmecca.com')
-  const [password, setPassword] = useState('AdminPass123!')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
-    try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError('Invalid credentials')
-      } else if (result?.ok) {
-        // Success - redirect to test page
-        router.push('/test-auth-fixed')
-      }
-    } catch (error) {
-      setError('Login failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (session) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-md mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>✅ Authenticated</CardTitle>
-              <CardDescription>You are now logged in</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <strong>Email:</strong> {session.user?.email}
-              </div>
-              <div>
-                <strong>Role:</strong> {session.user?.role}
-              </div>
-              <div className="space-y-2">
-                <Button 
-                  onClick={() => router.push('/test-auth-fixed')}
-                  className="w-full"
-                >
-                  Test API Authentication
-                </Button>
-                <Button 
-                  onClick={() => router.push('/search')}
-                  className="w-full"
-                  variant="outline"
-                >
-                  Go to Search Page
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
+export default function LoginTestPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>🔐 Test Login</CardTitle>
-          <CardDescription>
-            Login to test the fixed authentication system
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@dealmecca.com"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                required
-              />
-            </div>
-
-            {error && (
-              <div className="text-red-700 text-sm text-center bg-red-50 p-2 rounded-lg border border-red-200">
-                {error}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-
-          <div className="mt-4 text-center text-sm text-gray-600">
-            <p className="mb-2">Test Credentials:</p>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-left">
-              <p><strong>Admin:</strong> admin@dealmecca.com / AdminPass123!</p>
-              <p><strong>User:</strong> test@dealmecca.com / TestPass123!</p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-white rounded-lg border border-gray-200 p-6">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </div>
-        </CardContent>
-      </Card>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Login Test
+          </h1>
+          <p className="text-gray-600 mb-6">
+            This test tool is temporarily disabled during system optimization.
+          </p>
+        </div>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-gray-700">
+            🔧 <strong>System Enhancement in Progress</strong><br/>
+            test tools and admin features are being optimized. 
+            These will be restored once core user features are fully operational.
+          </p>
+        </div>
+        
+        <div className="space-y-3">
+          <Link href="/forum" className="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Visit Community Forum
+          </Link>
+          <Link href="/orgs" className="block w-full text-center px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+            Browse Organizations
+          </Link>
+        </div>
+        
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
+            ← Return to Home
+          </Link>
+        </div>
+      </div>
     </div>
   )
-} 
+}

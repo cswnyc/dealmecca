@@ -1,147 +1,49 @@
 'use client'
 
-import { useAuth } from "@/lib/auth/firebase-auth";
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Link from 'next/link'
 
-export default function TestAuthFixed() {
-  const { user, loading: authLoading } = useAuth()
-  const [testResults, setTestResults] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
-
-  const testAPI = async (endpoint: string, description: string) => {
-    try {
-      const response = await fetch(endpoint, {
-        credentials: 'include'
-      })
-      const data = await response.json()
-      
-      return {
-        endpoint,
-        description,
-        status: response.status,
-        success: response.ok,
-        data: response.ok ? data : data.error,
-        error: response.ok ? null : data.error
-      }
-    } catch (error) {
-      return {
-        endpoint,
-        description,
-        status: 0,
-        success: false,
-        data: null,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      }
-    }
-  }
-
-  const runTests = async () => {
-    setLoading(true)
-    setTestResults([])
-    
-    const tests = [
-      { endpoint: '/api/health', description: 'Health Check (Public)' },
-      { endpoint: '/api/companies?q=WPP&limit=2', description: 'Companies Search (Auth Required)' },
-      { endpoint: '/api/contacts?q=marketing&limit=2', description: 'Contacts Search (Auth Required)' },
-      { endpoint: '/api/search/suggestions?q=test&limit=3', description: 'Search Suggestions (Auth Required)' },
-      { endpoint: '/api/dashboard/metrics', description: 'Dashboard Metrics (Auth Required)' },
-    ]
-
-    const results = []
-    for (const test of tests) {
-      const result = await testAPI(test.endpoint, test.description)
-      results.push(result)
-      setTestResults([...results]) // Update UI progressively
-    }
-    
-    setLoading(false)
-  }
-
+export default function AuthTestPage() {
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>🔍 Authentication Test - Fixed Version</CardTitle>
-            <CardDescription>
-              Testing NextAuth session and API authentication with credentials: 'include'
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <strong>Session Status:</strong> {status}
-              </div>
-              
-              {session && (
-                <div>
-                  <strong>User:</strong> {session.user?.email} ({session.user?.role})
-                </div>
-              )}
-              
-              <Button 
-                onClick={runTests} 
-                disabled={loading || loading}
-                className="w-full"
-              >
-                {loading ? 'Running Tests...' : 'Test API Authentication'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {testResults.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Test Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {testResults.map((result, index) => (
-                  <div 
-                    key={index}
-                    className={`p-4 rounded-lg border ${
-                      result.success 
-                        ? 'bg-green-50 border-green-200' 
-                        : 'bg-red-50 border-red-200'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-medium">{result.description}</h3>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        result.success 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {result.status} {result.success ? 'SUCCESS' : 'FAILED'}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-600 mb-2">
-                      <strong>Endpoint:</strong> {result.endpoint}
-                    </div>
-                    {result.error && (
-                      <div className="text-sm text-red-700">
-                        <strong>Error:</strong> {result.error}
-                      </div>
-                    )}
-                    {result.success && result.data && (
-                      <div className="text-sm text-gray-700">
-                        <strong>Response:</strong> 
-                        <pre className="mt-1 p-2 bg-gray-100 rounded text-xs overflow-x-auto">
-                          {JSON.stringify(result.data, null, 2).substring(0, 300)}
-                          {JSON.stringify(result.data, null, 2).length > 300 ? '...' : ''}
-                        </pre>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-white rounded-lg border border-gray-200 p-6">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Auth Test
+          </h1>
+          <p className="text-gray-600 mb-6">
+            This test tool is temporarily disabled during system optimization.
+          </p>
+        </div>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-gray-700">
+            🔧 <strong>System Enhancement in Progress</strong><br/>
+            test tools and admin features are being optimized. 
+            These will be restored once core user features are fully operational.
+          </p>
+        </div>
+        
+        <div className="space-y-3">
+          <Link href="/forum" className="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Visit Community Forum
+          </Link>
+          <Link href="/orgs" className="block w-full text-center px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+            Browse Organizations
+          </Link>
+        </div>
+        
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
+            ← Return to Home
+          </Link>
+        </div>
       </div>
     </div>
   )
-} 
+}

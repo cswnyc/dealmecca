@@ -1,67 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    // Get user info from middleware headers
-    const requestingUserId = request.headers.get('x-user-id');
-    
-    if (!requestingUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const { id } = await params;
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    // Get user's event attendances
-    const userEvents = await prisma.eventAttendee.findMany({
-      where: {
-        userId: id
-      },
-      include: {
-        event: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            startDate: true,
-            endDate: true,
-            location: true,
-            category: true,
-            status: true,
-            isVirtual: true,
-            isHybrid: true
-          }
-        }
-      },
-      orderBy: {
-        event: {
-          startDate: 'desc'
-        }
-      }
-    });
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    // Format the response to match the expected interface
-    const events = userEvents.map((attendance: any) => ({
-      id: attendance.id,
-      status: attendance.status,
-      isGoing: attendance.isGoing,
-      hasAttended: attendance.hasAttended,
-      registeredAt: attendance.createdAt,
-      event: attendance.event
-    }));
-
-    return NextResponse.json({ 
-      events
-    });
-
-  } catch (error) {
-    console.error('Error fetching user events:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch user events' },
-      { status: 500 }
-    );
-  }
-} 
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}

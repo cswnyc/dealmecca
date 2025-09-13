@@ -1,113 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-// Removed NextAuth - using Firebase auth via middleware
-import { stripe, STRIPE_PRICES, getPriceId } from '@/lib/stripe'
-import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
-  try {
-    // Authentication handled by middleware
-    const userEmail = request.headers.get('x-user-email');
-    const userId = request.headers.get('x-user-id');
-    
-    if (!userEmail || !userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const body = await request.json()
-    const { tier, interval = 'monthly', successUrl, cancelUrl } = body
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    // Validate input
-    if (!tier || !['PRO', 'TEAM'].includes(tier)) {
-      return NextResponse.json({ error: 'Invalid subscription tier' }, { status: 400 })
-    }
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    if (!['monthly', 'annual'].includes(interval)) {
-      return NextResponse.json({ error: 'Invalid billing interval' }, { status: 400 })
-    }
-
-    // Get the price ID for the selected tier and interval
-    const priceId = getPriceId(tier, interval)
-    if (!priceId) {
-      return NextResponse.json(
-        { error: 'Price not configured for this plan' },
-        { status: 400 }
-      )
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: request.headers.get('x-user-email') },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Check if user already has an active subscription
-    if (user.subscriptionTier !== 'FREE') {
-      return NextResponse.json(
-        { error: 'User already has an active subscription' },
-        { status: 400 }
-      )
-    }
-
-    let customerId = user.stripeCustomerId
-
-    // Create Stripe customer if doesn't exist
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: request.headers.get('x-user-email'),
-        name: session.user.name || undefined,
-        metadata: {
-          userId: user.id,
-        },
-      })
-
-      customerId = customer.id
-
-      // Update user with Stripe customer ID
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { stripeCustomerId: customerId },
-      })
-    }
-
-    // Create Stripe checkout session
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      payment_method_types: ['card'],
-      billing_address_collection: 'required',
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      mode: 'subscription',
-      success_url: successUrl || `${process.env.NEXTAUTH_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${process.env.NEXTAUTH_URL}/pricing`,
-      metadata: {
-        userId: user.id,
-        tier,
-        interval,
-      },
-      subscription_data: {
-        metadata: {
-          userId: user.id,
-          tier,
-        },
-      },
-    })
-
-    return NextResponse.json({
-      sessionId: checkoutSession.id,
-      url: checkoutSession.url,
-    })
-  } catch (error) {
-    console.error('Stripe checkout error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    )
-  }
-} 
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}

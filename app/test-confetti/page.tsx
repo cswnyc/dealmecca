@@ -1,135 +1,49 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ConfettiCelebration, useConfettiCelebration, CelebrationType } from '@/components/auth/ConfettiCelebration';
+import Link from 'next/link'
 
-export default function TestConfettiPage() {
-  const { initTrigger, celebrate, reset } = useConfettiCelebration();
-
-  const celebrationTypes: { type: CelebrationType; label: string; description: string }[] = [
-    {
-      type: 'welcome-new-user',
-      label: '🎆 New User Welcome',
-      description: 'Massive explosion for first-time users'
-    },
-    {
-      type: 'welcome-back',
-      label: '✨ Welcome Back',
-      description: 'Gentle sparkle for returning users'
-    },
-    {
-      type: 'google-signin',
-      label: '🔵 Google Sign-In',
-      description: 'Google brand colors'
-    },
-    {
-      type: 'linkedin-signin',
-      label: '💼 LinkedIn Sign-In', 
-      description: 'LinkedIn blue theme'
-    },
-    {
-      type: 'subscription-upgrade',
-      label: '🏆 Premium Upgrade',
-      description: 'Golden premium effect'
-    },
-    {
-      type: 'custom',
-      label: '🌈 Custom Effect',
-      description: 'Custom gradient colors'
-    }
-  ];
-
-  const handleCelebration = (type: CelebrationType) => {
-    console.log(`🎉 Triggering celebration: ${type}`);
-    
-    if (type === 'custom') {
-      celebrate(type, {
-        particleCount: 150,
-        angle: 90,
-        spread: 100,
-        startVelocity: 60,
-        colors: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe']
-      });
-    } else {
-      celebrate(type);
-    }
-  };
-
+export default function ConfettiTestPage() {
   return (
-    <>
-      {/* Confetti Canvas */}
-      <ConfettiCelebration onInit={initTrigger} />
-      
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-3xl font-bold text-center">
-                🎉 Confetti Celebration Test
-              </CardTitle>
-              <p className="text-center text-gray-600">
-                Test different confetti animations for authentication celebrations
-              </p>
-            </CardHeader>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {celebrationTypes.map((celebration) => (
-              <Card key={celebration.type} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-lg">{celebration.label}</CardTitle>
-                  <p className="text-sm text-gray-600">{celebration.description}</p>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    onClick={() => handleCelebration(celebration.type)}
-                    className="w-full"
-                    variant={celebration.type === 'subscription-upgrade' ? 'default' : 'outline'}
-                  >
-                    Trigger {celebration.type === 'custom' ? 'Custom' : 'Animation'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-white rounded-lg border border-gray-200 p-6">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </div>
-
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Controls</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button 
-                onClick={reset}
-                variant="outline"
-                className="w-full"
-              >
-                🧹 Reset Canvas
-              </Button>
-              
-              <div className="text-sm text-gray-600 space-y-2">
-                <p><strong>Tip:</strong> Open browser console to see celebration logs</p>
-                <p><strong>Usage:</strong> These celebrations trigger automatically during OAuth sign-in</p>
-                <p><strong>Customization:</strong> Edit celebration presets in ConfettiCelebration.tsx</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="mt-8 text-center">
-            <p className="text-gray-600">
-              Ready to test Firebase authentication? 
-              <br />
-              <a 
-                href="/auth/firebase-signin" 
-                className="text-blue-600 hover:text-blue-700 font-medium underline ml-2"
-              >
-                Try Firebase Sign-In →
-              </a>
-            </p>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Confetti Test
+          </h1>
+          <p className="text-gray-600 mb-6">
+            This test tool is temporarily disabled during system optimization.
+          </p>
+        </div>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-gray-700">
+            🔧 <strong>System Enhancement in Progress</strong><br/>
+            test tools and admin features are being optimized. 
+            These will be restored once core user features are fully operational.
+          </p>
+        </div>
+        
+        <div className="space-y-3">
+          <Link href="/forum" className="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Visit Community Forum
+          </Link>
+          <Link href="/orgs" className="block w-full text-center px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+            Browse Organizations
+          </Link>
+        </div>
+        
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
+            ← Return to Home
+          </Link>
         </div>
       </div>
-    </>
-  );
+    </div>
+  )
 }

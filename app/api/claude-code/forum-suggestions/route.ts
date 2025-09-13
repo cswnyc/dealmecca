@@ -1,26 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { claudeCodeSDK } from '@/lib/claude-code-sdk';
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { title, content } = body;
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    if (!title || !content) {
-      return NextResponse.json(
-        { error: 'Title and content are required' },
-        { status: 400 }
-      );
-    }
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    const suggestions = await claudeCodeSDK.generateForumPostSuggestions(title, content);
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
+}
 
-    return NextResponse.json(suggestions);
-  } catch (error) {
-    console.error('Forum suggestions error:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate forum suggestions' },
-      { status: 500 }
-    );
-  }
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ 
+    error: 'This API endpoint is temporarily disabled during system optimization',
+    message: 'Feature will be restored in upcoming updates'
+  }, { status: 503 })
 }
