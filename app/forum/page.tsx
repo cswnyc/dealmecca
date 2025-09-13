@@ -121,26 +121,12 @@ interface PaginationInfo {
 }
 
 export default function ForumPage() {
-  // Handle cases where Firebase provider might not be available (e.g., during build)
-  let searchParams = null;
-  let companyId = null;
-  let eventId = null;
-  let firebaseUser = null;
-  let authLoading = false;
-  let hasFirebaseSession = false;
+  const searchParams = useSearchParams();
+  const companyId = searchParams.get('company');
+  const eventId = searchParams.get('event');
   
-  try {
-    searchParams = useSearchParams();
-    companyId = searchParams ? searchParams.get('company') : null;
-    eventId = searchParams ? searchParams.get('event') : null;
-    
-    const authContext = useAuth();
-    firebaseUser = authContext.user;
-    authLoading = authContext.loading;
-    hasFirebaseSession = useFirebaseSession();
-  } catch (error) {
-    console.log('ForumPage: Firebase context not available, using defaults');
-  }
+  const { user: firebaseUser, loading: authLoading } = useAuth();
+  const hasFirebaseSession = useFirebaseSession();
   
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [categories, setCategories] = useState<ForumCategory[]>([]);
