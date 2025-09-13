@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+// Removed getServerSession - using Firebase auth via middleware headers
 import { PrismaClient, InteractionType } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -11,8 +11,9 @@ export async function GET(
 ) {
   const { id: contactId } = await params
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
-  if (!userId?.id) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -34,7 +35,7 @@ export async function GET(
     const interactions = await prisma.contactInteraction.findMany({
       where: {
         contactId,
-        userId: request.headers.get('x-user-id')
+        userId: request.headers.get('x-user-id') || undefined
       },
       orderBy: { createdAt: 'desc' }
     })
@@ -65,8 +66,9 @@ export async function POST(
 ) {
   const { id: contactId } = await params
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
-  if (!userId?.id) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -107,7 +109,7 @@ export async function POST(
     const interaction = await prisma.contactInteraction.create({
       data: {
         contactId,
-        userId: request.headers.get('x-user-id'),
+        userId: userId!,
         type,
         notes,
         outcome,
@@ -126,7 +128,7 @@ export async function POST(
       await prisma.contactStatus.create({
         data: {
           contactId,
-          userId: request.headers.get('x-user-id'),
+          userId: userId!,
           status: 'CONTACTED',
           lastActivity: new Date()
         }
@@ -162,8 +164,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
-  if (!userId?.id) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -182,7 +185,7 @@ export async function PUT(
     const existingInteraction = await prisma.contactInteraction.findFirst({
       where: {
         id: interactionId,
-        userId: request.headers.get('x-user-id')
+        userId: request.headers.get('x-user-id') || undefined
       }
     })
 

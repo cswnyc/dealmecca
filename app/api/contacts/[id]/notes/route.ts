@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+// Removed getServerSession - using Firebase auth via middleware headers
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -11,8 +11,9 @@ export async function GET(
 ) {
   const { id: contactId } = await params
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
-  if (!userId?.id) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -34,7 +35,7 @@ export async function GET(
     const notes = await prisma.contactNote.findMany({
       where: {
         contactId,
-        userId: request.headers.get('x-user-id')
+        userId: userId!
       },
       orderBy: { createdAt: 'desc' }
     })
@@ -65,8 +66,9 @@ export async function POST(
 ) {
   const { id: contactId } = await params
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
-  if (!userId?.id) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -98,7 +100,7 @@ export async function POST(
     const note = await prisma.contactNote.create({
       data: {
         contactId,
-        userId: request.headers.get('x-user-id'),
+        userId: userId!,
         content: content.trim(),
         isPrivate: isPrivate || false,
         tags: tags || []
@@ -126,8 +128,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
-  if (!userId?.id) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -146,7 +149,7 @@ export async function PUT(
     const existingNote = await prisma.contactNote.findFirst({
       where: {
         id: noteId,
-        userId: request.headers.get('x-user-id')
+        userId: userId!
       }
     })
 
@@ -188,8 +191,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
+  const userId = request.headers.get('x-user-id');
   
-  if (!userId?.id) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -208,7 +212,7 @@ export async function DELETE(
     const existingNote = await prisma.contactNote.findFirst({
       where: {
         id: noteId,
-        userId: request.headers.get('x-user-id')
+        userId: userId!
       }
     })
 

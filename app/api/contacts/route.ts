@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-// Firebase auth handled by middleware - removed @/lib/auth import
+import { recordSearch, canUserSearch } from '@/lib/auth'
 import { createAuthError, createSearchLimitError, createInternalError } from '@/lib/api-responses'
 import type { Prisma } from '@prisma/client'
 import { findContactDuplicates } from '@/lib/bulk-import/duplicate-detection'

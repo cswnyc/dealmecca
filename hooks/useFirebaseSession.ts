@@ -7,21 +7,32 @@ export function useFirebaseSession() {
   
   // Function to check session state
   const checkFirebaseSession = () => {
-    // Check if user has a Firebase session cookie (set by our firebase-sync API)
-    const hasSessionCookie = document.cookie.includes('dealmecca-session');
-    
-    // Also check if Firebase user is signed in by checking localStorage
-    // Firebase Auth persists session data in localStorage
-    const firebaseAuthKey = `firebase:authUser:${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}:[DEFAULT]`;
-    const hasFirebaseAuth = localStorage.getItem(firebaseAuthKey);
-    
-    console.log('🔍 Firebase session check:', {
-      hasSessionCookie,
-      hasFirebaseAuth: !!hasFirebaseAuth,
-      firebaseAuthKey: firebaseAuthKey.substring(0, 50) + '...'
-    });
-    
-    return hasSessionCookie || !!hasFirebaseAuth;
+    try {
+      // Check if user has a Firebase session cookie (set by our firebase-sync API)
+      const hasSessionCookie = document.cookie.includes('dealmecca-session');
+      
+      // Also check if Firebase user is signed in by checking localStorage
+      // Firebase Auth persists session data in localStorage
+      const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+      if (!apiKey || apiKey === 'demo-api-key') {
+        console.log('🔍 Firebase not configured, skipping auth check');
+        return false;
+      }
+      
+      const firebaseAuthKey = `firebase:authUser:${apiKey}:[DEFAULT]`;
+      const hasFirebaseAuth = localStorage.getItem(firebaseAuthKey);
+      
+      console.log('🔍 Firebase session check:', {
+        hasSessionCookie,
+        hasFirebaseAuth: !!hasFirebaseAuth,
+        firebaseAuthKey: firebaseAuthKey.substring(0, 50) + '...'
+      });
+      
+      return hasSessionCookie || !!hasFirebaseAuth;
+    } catch (error) {
+      console.warn('Firebase session check failed:', error);
+      return false;
+    }
   };
   
   useEffect(() => {
