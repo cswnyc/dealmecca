@@ -12,7 +12,7 @@ export async function GET(
   const { id: contactId } = await params
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  if (!userId?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -66,7 +66,7 @@ export async function POST(
   const { id: contactId } = await params
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  if (!userId?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -127,7 +127,7 @@ export async function PUT(
 ) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  if (!userId?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -189,7 +189,7 @@ export async function DELETE(
 ) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session?.user?.id) {
+  if (!userId?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

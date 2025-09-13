@@ -8,7 +8,9 @@ export async function PATCH(
 ) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
   
-  if (!session || request.headers.get('x-user-role') !== 'ADMIN') {
+  const userId = request.headers.get('x-user-id');
+  const userRole = request.headers.get('x-user-role');
+  if (!userId || request.headers.get('x-user-role') !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

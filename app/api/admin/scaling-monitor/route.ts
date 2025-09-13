@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   try {
     // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!userId || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 403 }
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
   try {
     // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!userId || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 403 }

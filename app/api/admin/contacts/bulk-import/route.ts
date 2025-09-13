@@ -46,9 +46,10 @@ const validateLinkedIn = (url: string): boolean => {
 
 export async function POST(request: NextRequest) {
   try {
-    // Authentication check
-    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
-    if (!session?.user || request.headers.get('x-user-role') !== 'ADMIN') {
+    
+  const userId = request.headers.get('x-user-id');
+  const userRole = request.headers.get('x-user-role');
+    if (!userId || userRole !== 'ADMIN') {
       return NextResponse.json(
         { success: false, error: 'Unauthorized access' },
         { status: 401 }

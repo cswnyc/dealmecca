@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { action: string } }
+  { params }: { params: Promise<{ action: string }> }
 ) {
   try {
     // Authenticate user
@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const { action } = params;
+    const { action } = await params;
     const user = authResult.user;
 
     // Validate action

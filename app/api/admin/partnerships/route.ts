@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 export async function GET(request: NextRequest) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
   
-  if (!session || request.headers.get('x-user-role') !== 'ADMIN') {
+  if (!userId || request.headers.get('x-user-role') !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
   
-  if (!session || request.headers.get('x-user-role') !== 'ADMIN') {
+  if (!userId || request.headers.get('x-user-role') !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

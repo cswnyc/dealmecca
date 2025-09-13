@@ -30,9 +30,9 @@ import {
 } from 'lucide-react';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 interface Contact {
@@ -126,7 +126,8 @@ async function getCompanyWithOrgChart(slug: string): Promise<Company | null> {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const company = await getCompanyWithOrgChart(params.slug);
+  const { slug } = await params;
+  const company = await getCompanyWithOrgChart(slug);
   
   if (!company) {
     return {
@@ -313,7 +314,9 @@ async function OrgChartContent({ slug }: { slug: string }) {
   );
 }
 
-export default function CompanyOrgChartPage({ params }: PageProps) {
+export default async function CompanyOrgChartPage({ params }: PageProps) {
+  const { slug } = await params;
+  
   return (
     <Suspense fallback={
       <ForumLayout>
@@ -353,7 +356,7 @@ export default function CompanyOrgChartPage({ params }: PageProps) {
         </div>
       </ForumLayout>
     }>
-      <OrgChartContent slug={params.slug} />
+      <OrgChartContent slug={slug} />
     </Suspense>
   );
 }

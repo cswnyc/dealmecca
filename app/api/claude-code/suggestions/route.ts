@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
     
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized', message: 'Authentication required' }, 
         { status: 401 }

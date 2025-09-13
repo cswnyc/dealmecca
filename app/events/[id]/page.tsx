@@ -725,6 +725,7 @@ export default function EventDetailPage() {
           </div>
         </div>
       </div>
+      </div>
     </ForumLayout>
   );
 } 

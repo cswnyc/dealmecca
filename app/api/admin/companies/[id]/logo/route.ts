@@ -6,16 +6,17 @@ const prisma = new PrismaClient();
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check authentication and admin role
-    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
-    if (!session?.user || request.headers.get('x-user-role') !== 'ADMIN') {
+    
+  const userId = request.headers.get('x-user-id');
+  const userRole = request.headers.get('x-user-role');
+    if (!userId || userRole !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const { logoUrl } = await request.json();
 
     // Validate company exists
@@ -57,16 +58,17 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check authentication and admin role
-    // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
-    if (!session?.user || request.headers.get('x-user-role') !== 'ADMIN') {
+    
+  const userId = request.headers.get('x-user-id');
+  const userRole = request.headers.get('x-user-role');
+    if (!userId || userRole !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Remove company logo
     const updatedCompany = await prisma.company.update({

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rbacMiddleware, withRBAC, RBAC_CONFIGS } from '@/middleware/rbac';
 import { PrismaClient } from '@prisma/client';
-import { logger } from '@/lib/logger';
 
 const prisma = new PrismaClient();
 
-export const GET = withRBAC(RBAC_CONFIGS.USER_MANAGEMENT)(
-  async (request: NextRequest, user) => {
+export async function GET(request: NextRequest) {
     try {
+      
+      if (!userId || userRole !== 'ADMIN') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+
       const searchParams = request.nextUrl.searchParams;
       const page = parseInt(searchParams.get('page') || '1');
       const limit = parseInt(searchParams.get('limit') || '50');
@@ -80,8 +82,8 @@ export const GET = withRBAC(RBAC_CONFIGS.USER_MANAGEMENT)(
         isActive: team.isActive
       }));
 
-      logger.info('admin', 'Teams list accessed', {
-        adminUserId: user.id,
+      console.log('Teams list accessed', {
+        adminUserId: userId,
         totalTeams: total,
         filteredTeams: teams.length
       });
@@ -97,11 +99,12 @@ export const GET = withRBAC(RBAC_CONFIGS.USER_MANAGEMENT)(
       });
 
     } catch (error) {
-      logger.error('admin', 'Failed to fetch teams', { error, adminUserId: user.id });
+      console.error('Failed to fetch teams', error);
       return NextResponse.json(
         { error: 'Failed to fetch teams' },
         { status: 500 }
       );
+    } finally {
+      await prisma.$disconnect();
     }
-  }
-);
+}

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
 import { processBulkImport, ImportData } from '@/lib/bulk-import/enhanced-processor'
 
 export async function POST(request: NextRequest) {
-  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session || request.headers.get('x-user-role') !== 'ADMIN') {
+  const userId = request.headers.get('x-user-id');
+  const userRole = request.headers.get('x-user-role');
+  if (!userId || userRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -75,9 +75,10 @@ export async function POST(request: NextRequest) {
 
 // GET endpoint to provide information about the enhanced import format
 export async function GET(request: NextRequest) {
-  // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role)
   
-  if (!session || request.headers.get('x-user-role') !== 'ADMIN') {
+  const userId = request.headers.get('x-user-id');
+  const userRole = request.headers.get('x-user-role');
+  if (!userId || userRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

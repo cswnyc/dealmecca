@@ -410,15 +410,7 @@ export default function ContactsAdminPage() {
             <CardContent>
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex items-center space-x-2">
-                  {contact.company.logoUrl ? (
-                    <img 
-                      src={contact.company.logoUrl} 
-                      alt={`${contact.company.name} logo`}
-                      className="w-4 h-4 rounded object-cover"
-                    />
-                  ) : (
-                    <Building2 className="w-4 h-4" />
-                  )}
+                  <Building2 className="w-4 h-4" />
                   <span>{contact.company.name}</span>
                 </div>
                 <div className="flex items-center space-x-2">

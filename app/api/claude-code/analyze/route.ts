@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication
     // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -173,7 +173,7 @@ export async function GET(request: NextRequest) {
   try {
     // Check authentication
     // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }

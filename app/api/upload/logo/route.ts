@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication
     // Session data now comes from middleware headers (x-user-id, x-user-email, x-user-role);
-    if (!session?.user || request.headers.get('x-user-role') !== 'ADMIN') {
+    if (!userId || request.headers.get('x-user-role') !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

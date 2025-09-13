@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: request.headers.get('x-user-email') },
+      where: { email: request.headers.get('x-user-email') || undefined },
       select: { role: true }
     });
 
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: request.headers.get('x-user-email') },
+      where: { email: request.headers.get('x-user-email') || undefined },
       select: { role: true }
     });
 

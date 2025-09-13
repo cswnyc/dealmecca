@@ -12,7 +12,7 @@ import {
   AlertTriangle, 
   TrendingUp, 
   Server,
-  Memory,
+  HardDrive,
   Zap,
   CheckCircle,
   XCircle,
@@ -336,12 +336,12 @@ export default function PerformanceDashboard() {
             </CardContent>
           </Card>
 
-          {/* Memory Usage */}
+          {/* HardDrive Usage */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-                <Memory className="h-4 w-4 mr-2" />
-                Memory Usage
+                <HardDrive className="h-4 w-4 mr-2" />
+                HardDrive Usage
               </CardTitle>
             </CardHeader>
             <CardContent>
