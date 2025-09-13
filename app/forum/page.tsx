@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFirebaseSession } from '@/hooks/useFirebaseSession';
 import { useAuth } from '@/lib/auth/firebase-auth';
@@ -120,10 +120,27 @@ interface PaginationInfo {
   pages: number;
 }
 
-function ForumContent() {
-  const searchParams = useSearchParams();
-  const companyId = searchParams.get('company');
-  const eventId = searchParams.get('event');
+export default function ForumPage() {
+  // Handle cases where Firebase provider might not be available (e.g., during build)
+  let searchParams = null;
+  let companyId = null;
+  let eventId = null;
+  let firebaseUser = null;
+  let authLoading = false;
+  let hasFirebaseSession = false;
+  
+  try {
+    searchParams = useSearchParams();
+    companyId = searchParams ? searchParams.get('company') : null;
+    eventId = searchParams ? searchParams.get('event') : null;
+    
+    const authContext = useAuth();
+    firebaseUser = authContext.user;
+    authLoading = authContext.loading;
+    hasFirebaseSession = useFirebaseSession();
+  } catch (error) {
+    console.log('ForumPage: Firebase context not available, using defaults');
+  }
   
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [categories, setCategories] = useState<ForumCategory[]>([]);
@@ -146,9 +163,6 @@ function ForumContent() {
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  
-  const hasFirebaseSession = useFirebaseSession();
-  const { user: firebaseUser, loading: authLoading } = useAuth();
 
   useEffect(() => {
     fetchCategories();
@@ -624,19 +638,3 @@ function ForumContent() {
   );
 }
 
-export default function ForumPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-      </div>
-    }>
-      <ForumContent />
-    </Suspense>
-  );
-}
