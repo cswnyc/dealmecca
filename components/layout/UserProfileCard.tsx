@@ -82,9 +82,37 @@ export function UserProfileCard() {
       if (response.ok) {
         const data = await response.json();
         setUserStats(data);
+      } else {
+        console.log('Rewards API not available, using default stats');
+        // Use default stats when API fails
+        setUserStats({
+          gems: 0,
+          rank: 1,
+          contributions: 0,
+          streak: 0,
+          tier: 'BRONZE',
+          nextTierGems: 100,
+          totalPosts: 0,
+          totalComments: 0,
+          totalVotes: 0,
+          totalBookmarks: 0
+        });
       }
     } catch (error) {
-      console.error('Error fetching user stats:', error);
+      console.log('Error fetching user stats, using defaults:', error);
+      // Use default stats when API fails
+      setUserStats({
+        gems: 0,
+        rank: 1,
+        contributions: 0,
+        streak: 0,
+        tier: 'BRONZE',
+        nextTierGems: 100,
+        totalPosts: 0,
+        totalComments: 0,
+        totalVotes: 0,
+        totalBookmarks: 0
+      });
     }
   };
 
@@ -164,7 +192,7 @@ export function UserProfileCard() {
     );
   }
 
-  if ((!authLoading && !firebaseUser && !hasFirebaseSession) || !profile) {
+  if (!authLoading && !firebaseUser && !hasFirebaseSession) {
     return (
       <div className="p-3">
         <Button
@@ -201,7 +229,7 @@ export function UserProfileCard() {
         {/* User Name - Clean and prominent */}
         <div className="flex-1 text-left">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {profile.name || firebaseUser?.displayName || 'User'}
+            {profile?.name || firebaseUser?.displayName || firebaseUser?.email?.split('@')[0] || 'User'}
           </p>
         </div>
 
