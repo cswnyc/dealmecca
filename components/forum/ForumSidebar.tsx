@@ -45,6 +45,7 @@ export function ForumSidebar() {
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const isFetchingRef = useRef(false);
+  const [syncedUser, setSyncedUser] = useState(false);
 
   useEffect(() => {
     console.log('🎯 ForumSidebar: Firebase user state:', { firebaseUser: !!firebaseUser, authLoading, hasFirebaseSession });
@@ -53,14 +54,53 @@ export function ForumSidebar() {
       return;
     }
     
-    if (firebaseUser) {
-      console.log('🎯 ForumSidebar: Firebase user found, fetching stats');
+    if (firebaseUser && !syncedUser) {
+      console.log('🎯 ForumSidebar: Firebase user found, syncing to database...');
+      syncFirebaseUser();
+    } else if (firebaseUser && syncedUser) {
+      console.log('🎯 ForumSidebar: Firebase user already synced, fetching stats');
       fetchUserStats();
     } else {
       console.log('🎯 ForumSidebar: No firebaseUser, setting loading to false');
       setLoading(false);
     }
-  }, [firebaseUser, authLoading]);
+  }, [firebaseUser, authLoading, syncedUser]);
+
+  const syncFirebaseUser = async () => {
+    if (!firebaseUser) return;
+    
+    try {
+      console.log('🔥 Syncing Firebase user to database...');
+      const response = await fetch('/api/auth/firebase-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          providerId: firebaseUser.providerId,
+          isNewUser: false // We'll handle new user logic elsewhere
+        }),
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        console.log('🔥 Firebase user synced successfully');
+        setSyncedUser(true);
+        // Now fetch user stats
+        fetchUserStats();
+      } else {
+        console.error('🔥 Failed to sync Firebase user:', response.status);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('🔥 Error syncing Firebase user:', error);
+      setLoading(false);
+    }
+  };
 
   const fetchUserStats = async () => {
     if (isFetchingRef.current) {

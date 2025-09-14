@@ -273,7 +273,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
         body: JSON.stringify({
           content: commentText.trim(),
           isAnonymous: commentAnonymous,
-          authorId: session?.user?.id,
+          authorId: firebaseUser?.uid,
           anonymousHandle: commentAnonymous ? `User${Math.floor(Math.random() * 1000)}` : null
         })
       });
@@ -295,8 +295,8 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
 
   const handleCommentVote = async (commentId: string, voteType: 'up' | 'down') => {
     try {
-      // Use session user ID or create anonymous user ID
-      const userId = session?.user?.id || 'anonymous-user-' + Math.random().toString(36).substr(2, 9);
+      // Use Firebase user ID or create anonymous user ID
+      const userId = firebaseUser?.uid || 'anonymous-user-' + Math.random().toString(36).substr(2, 9);
       
       const response = await fetch(`/api/forum/comments/${commentId}/vote`, {
         method: 'POST',
@@ -348,7 +348,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           content: replyText,
           parentId: replyingTo,
           isAnonymous: true,
-          authorId: session?.user?.id,
+          authorId: firebaseUser?.uid,
           anonymousHandle: `User${Math.floor(Math.random() * 1000)}`
         }),
       });
@@ -372,7 +372,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: session?.user?.id,
+          userId: firebaseUser?.uid,
           follow: !isFollowing
         }),
       });
@@ -386,6 +386,11 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   };
 
   const handleBookmark = async () => {
+    if (!firebaseUser) {
+      console.log('🔥 User not authenticated, cannot bookmark');
+      return;
+    }
+
     try {
       const response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
         method: 'POST',
@@ -393,14 +398,17 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: session?.user?.id,
+          userId: firebaseUser.uid,
           bookmark: !isBookmarked
         }),
+        credentials: 'include'
       });
 
       if (response.ok) {
         setIsBookmarked(!isBookmarked);
         onBookmark?.(post.id);
+      } else {
+        console.error('Failed to toggle bookmark:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Failed to toggle bookmark:', error);
@@ -433,6 +441,11 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   };
 
   const handlePostVote = async (type: 'upvote' | 'downvote') => {
+    if (!firebaseUser) {
+      console.log('🔥 User not authenticated, cannot vote');
+      return;
+    }
+
     try {
       const response = await fetch(`/api/forum/posts/${post.id}/vote`, {
         method: 'POST',
@@ -441,13 +454,16 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
         },
         body: JSON.stringify({
           type: type.toUpperCase(),
-          userId: session?.user?.id || 'anonymous-user-' + Math.random().toString(36).substr(2, 9)
+          userId: firebaseUser.uid
         }),
+        credentials: 'include'
       });
 
       if (response.ok) {
         // Force page refresh to show updated vote counts
         window.location.reload();
+      } else {
+        console.error('Failed to vote on post:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Failed to vote on post:', error);

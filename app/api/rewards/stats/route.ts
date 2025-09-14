@@ -3,12 +3,19 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user ID from request (you may need to implement proper auth middleware)
-    const userId = request.headers.get('x-user-id') || request.nextUrl.searchParams.get('userId');
+    // Try multiple ways to get user ID:
+    // 1. From session cookie (preferred)
+    // 2. From query parameters 
+    // 3. From headers
+    const sessionUserId = request.cookies.get('dealmecca-session')?.value;
+    const queryUserId = request.nextUrl.searchParams.get('userId');
+    const headerUserId = request.headers.get('x-user-id');
+    
+    const userId = sessionUserId || queryUserId || headerUserId;
     
     if (!userId) {
       return NextResponse.json({ 
-        error: 'User ID required' 
+        error: 'User authentication required' 
       }, { status: 401 });
     }
 
