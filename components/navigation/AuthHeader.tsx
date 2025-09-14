@@ -26,6 +26,7 @@ export default function AuthHeader() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     setIsClient(true)
@@ -39,6 +40,11 @@ export default function AuthHeader() {
         <div className="animate-pulse bg-gray-200 rounded h-8 w-20"></div>
       </div>
     )
+  }
+
+  // Hide AuthHeader on forum pages to avoid duplicate user menus (UserProfileCard handles it)
+  if (pathname === '/forum' || pathname.startsWith('/forum/')) {
+    return null;
   }
 
   if (loading) {
