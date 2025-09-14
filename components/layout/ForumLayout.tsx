@@ -6,6 +6,7 @@ import { useFirebaseSession } from '@/hooks/useFirebaseSession';
 import { useAuth } from '@/lib/auth/firebase-auth';
 import { Button } from '@/components/ui/button';
 import { UserProfileCard } from './UserProfileCard';
+import { ForumSidebar } from '@/components/forum/ForumSidebar';
 import {
   MessageSquare,
   Search,
@@ -171,9 +172,14 @@ export function ForumLayout({ children }: ForumLayoutProps) {
           </nav>
         </div>
 
-        {/* User Profile Card at Bottom */}
-        <div className="border-t border-gray-200 p-4">
-          <UserProfileCard />
+        {/* User Profile Card and Forum Stats at Bottom */}
+        <div className="border-t border-gray-200 p-4 space-y-4">
+          {/* Only show ForumSidebar stats on forum pages */}
+          {pathname === '/forum' || pathname.startsWith('/forum/') ? (
+            <ForumSidebar />
+          ) : (
+            <UserProfileCard />
+          )}
         </div>
       </div>
 

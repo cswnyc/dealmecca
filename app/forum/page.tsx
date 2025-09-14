@@ -563,10 +563,10 @@ export default function ForumPage() {
           </div>
         </div>
 
-        {/* Main Content Area */}
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        {/* Main Content Area - Full Width since sidebar moved to bottom left */}
+        <div className="w-full">
           {/* Posts Feed */}
-          <div className="xl:col-span-3 space-y-4">
+          <div className="space-y-4">
             {loading ? (
               <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (
@@ -610,13 +610,6 @@ export default function ForumPage() {
                 </button>
               </div>
             )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="xl:col-span-1">
-            <div className="sticky top-6">
-              <ForumSidebar />
-            </div>
           </div>
         </div>
       </div>

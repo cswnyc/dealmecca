@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { User, LogOut, Settings, BarChart3 } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 export default function AuthHeader() {
   // Handle cases where Firebase provider might not be available (e.g., during build)
@@ -26,6 +26,14 @@ export default function AuthHeader() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
+
+  // Hide AuthHeader on forum pages since ForumLayout has its own user management
+  const isForumPage = pathname === '/forum' || pathname.startsWith('/forum/')
+  
+  if (isForumPage) {
+    return null
+  }
 
   useEffect(() => {
     setIsClient(true)
