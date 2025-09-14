@@ -8,6 +8,11 @@ export function useFirebaseSession() {
   // Function to check session state
   const checkFirebaseSession = () => {
     try {
+      // Server-side or SSR check
+      if (typeof window === 'undefined') {
+        return false;
+      }
+      
       // Check if user has a Firebase session cookie (set by our firebase-sync API)
       const hasSessionCookie = document.cookie.includes('dealmecca-session');
       
