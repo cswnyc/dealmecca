@@ -28,7 +28,9 @@ export async function GET(request: NextRequest) {
       icon: category.icon || 'MessageSquare',
       color: category.color || '#3B82F6',
       isActive: category.isActive,
-      postCount: category._count.posts,
+      _count: {
+        posts: category._count.posts
+      },
       createdAt: category.createdAt.toISOString(),
       updatedAt: category.updatedAt.toISOString()
     }));
