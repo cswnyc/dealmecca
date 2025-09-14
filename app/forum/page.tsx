@@ -120,6 +120,9 @@ interface PaginationInfo {
   pages: number;
 }
 
+// Force dynamic rendering for user-specific content
+export const dynamic = 'force-dynamic';
+
 export default function ForumPage() {
   const searchParams = useSearchParams();
   const companyId = searchParams.get('company');
