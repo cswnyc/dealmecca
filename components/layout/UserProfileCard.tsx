@@ -18,7 +18,8 @@ import {
   HelpCircle,
   LogOut,
   Crown,
-  User
+  User,
+  Gem
 } from 'lucide-react';
 
 interface UserProfile {
@@ -30,9 +31,23 @@ interface UserProfile {
   createdAt: string;
 }
 
+interface UserStats {
+  gems: number;
+  rank: number;
+  contributions: number;
+  streak: number;
+  tier: 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND';
+  nextTierGems: number;
+  totalPosts: number;
+  totalComments: number;
+  totalVotes: number;
+  totalBookmarks: number;
+}
+
 export function UserProfileCard() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const hasFirebaseSession = useFirebaseSession();
   const { user: firebaseUser, loading: authLoading } = useAuth();
@@ -41,6 +56,7 @@ export function UserProfileCard() {
   useEffect(() => {
     if (!authLoading && firebaseUser && hasFirebaseSession) {
       fetchProfile();
+      fetchUserStats();
     } else if (!authLoading && !firebaseUser && !hasFirebaseSession) {
       setLoading(false);
     }
@@ -57,6 +73,18 @@ export function UserProfileCard() {
       console.error('Error fetching profile:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUserStats = async () => {
+    try {
+      const response = await fetch('/api/rewards/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setUserStats(data);
+      }
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
     }
   };
 
@@ -95,13 +123,21 @@ export function UserProfileCard() {
     }
   };
 
-  const getMemberSince = (createdAt: string) => {
-    if (!createdAt) return 'Recent';
-    const date = new Date(createdAt);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      year: '2-digit'
-    });
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'BRONZE':
+        return 'text-amber-600';
+      case 'SILVER':
+        return 'text-gray-500';
+      case 'GOLD':
+        return 'text-yellow-500';
+      case 'PLATINUM':
+        return 'text-blue-500';
+      case 'DIAMOND':
+        return 'text-purple-500';
+      default:
+        return 'text-gray-400';
+    }
   };
 
   const handleSignOut = async () => {
@@ -121,8 +157,8 @@ export function UserProfileCard() {
           <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
           <div className="flex-1">
             <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
-            <div className="h-3 bg-gray-200 rounded w-16"></div>
           </div>
+          <div className="w-6 h-4 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
@@ -143,48 +179,70 @@ export function UserProfileCard() {
 
   const subscriptionInfo = getSubscriptionInfo(profile.subscriptionTier);
   const SubscriptionIcon = subscriptionInfo.icon;
+  const gems = userStats?.gems || 0;
+  const tier = userStats?.tier || 'BRONZE';
 
   return (
     <div className="w-full">
-      {/* Expandable Profile Card */}
+      {/* SellerCrowd-Style Profile Widget */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+        className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group"
       >
         {/* Avatar */}
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-          <User className="w-5 h-5 text-white" />
+        <div className="relative">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <User className="w-5 h-5 text-white" />
+          </div>
+          {/* Online indicator - small dot */}
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
         </div>
         
-        {/* User Info */}
-        <div className="flex-1 min-w-0 text-left">
+        {/* User Name - Clean and prominent */}
+        <div className="flex-1 text-left">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {profile.name || 'User'}
+            {profile.name || firebaseUser?.displayName || 'User'}
           </p>
-          <div className="flex items-center space-x-2 mt-0.5">
-            <p className="text-xs text-gray-500">
-              Member since {getMemberSince(profile.createdAt)}
-            </p>
-          </div>
         </div>
 
-        {/* Subscription Badge & Expand Arrow */}
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-xs text-gray-600">0</span>
-          </div>
-          {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
-          )}
+        {/* Gems with Icon - SellerCrowd style */}
+        <div className="flex items-center space-x-1">
+          <Gem className={`w-4 h-4 ${getTierColor(tier)}`} />
+          <span className="text-sm font-medium text-gray-700">{gems}</span>
         </div>
+
+        {/* Dropdown Arrow */}
+        {isExpanded ? (
+          <ChevronUp className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+        )}
       </button>
 
-      {/* Expanded Menu */}
+      {/* Expanded Menu - Improved styling */}
       {isExpanded && (
         <div className="mt-2 py-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+          {/* User Stats Summary */}
+          {userStats && (
+            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div>
+                  <p className="text-lg font-semibold text-gray-900">{userStats.rank}</p>
+                  <p className="text-xs text-gray-500">Rank</p>
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-gray-900">{userStats.contributions}</p>
+                  <p className="text-xs text-gray-500">Contributions</p>
+                </div>
+              </div>
+              <div className="mt-2 text-center">
+                <Badge className={`${getTierColor(tier)} bg-transparent border-current font-medium`}>
+                  {tier} Tier
+                </Badge>
+              </div>
+            </div>
+          )}
+
           {/* Subscription Info */}
           <div className="px-4 py-3 border-b border-gray-100">
             <div className="flex items-center justify-center">
@@ -198,7 +256,7 @@ export function UserProfileCard() {
                 onClick={() => handleNavigation('/upgrade')}
                 className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm h-8"
               >
-                Invite to my paid plan
+                Upgrade Plan
               </Button>
             )}
           </div>
@@ -253,7 +311,7 @@ export function UserProfileCard() {
               className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
             >
               <LogOut className="w-4 h-4 mr-3" />
-              Log out
+              Sign Out
             </button>
           </div>
 
