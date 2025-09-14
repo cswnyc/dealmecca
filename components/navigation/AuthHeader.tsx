@@ -26,14 +26,6 @@ export default function AuthHeader() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const router = useRouter()
-  const pathname = usePathname()
-
-  // Hide AuthHeader on forum pages since ForumLayout has its own user management
-  const isForumPage = pathname === '/forum' || pathname.startsWith('/forum/')
-  
-  if (isForumPage) {
-    return null
-  }
 
   useEffect(() => {
     setIsClient(true)
