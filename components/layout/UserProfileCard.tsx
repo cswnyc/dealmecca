@@ -205,7 +205,7 @@ export function UserProfileCard() {
     );
   }
 
-  const subscriptionInfo = getSubscriptionInfo(profile.subscriptionTier);
+  const subscriptionInfo = getSubscriptionInfo(profile?.subscriptionTier || 'FREE');
   const SubscriptionIcon = subscriptionInfo.icon;
   const gems = userStats?.gems || 0;
   const tier = userStats?.tier || 'BRONZE';
@@ -279,7 +279,7 @@ export function UserProfileCard() {
                 {subscriptionInfo.label}
               </Badge>
             </div>
-            {profile.subscriptionTier === 'FREE' && (
+            {(profile?.subscriptionTier || 'FREE') === 'FREE' && (
               <Button
                 onClick={() => handleNavigation('/upgrade')}
                 className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm h-8"

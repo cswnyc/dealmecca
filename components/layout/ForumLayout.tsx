@@ -117,14 +117,11 @@ export function ForumLayout({ children }: ForumLayoutProps) {
         />
       )}
 
-      {/* Left Sidebar */}
-      <div className={`
-        fixed md:static inset-y-0 left-0 z-50 
+      {/* Left Sidebar - Always visible on desktop */}
+      <div className="
         w-64 bg-white border-r border-gray-200 
-        transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0 transition-transform duration-200 ease-in-out
-        flex flex-col
-      `}>
+        flex flex-col h-full
+      ">
         {/* Mobile Close Button */}
         <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Menu</h2>

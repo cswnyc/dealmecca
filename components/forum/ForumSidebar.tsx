@@ -123,13 +123,28 @@ export function ForumSidebar() {
         console.log('🎯 ForumSidebar: Received data:', data);
         setUserStats(data);
       } else {
-        console.error('🎯 ForumSidebar: API response not ok:', response.status, response.statusText);
-        if (response.status === 401) {
-          console.log('🎯 ForumSidebar: Unauthorized - user might not be properly authenticated');
-        }
+        console.log('🎯 ForumSidebar: Rewards API not available, using default stats');
+        // Use default stats when API fails
+        setUserStats({
+          gems: 0,
+          rank: 1,
+          contributions: 0,
+          streak: 0,
+          tier: 'BRONZE',
+          nextTierGems: 100
+        });
       }
     } catch (error) {
-      console.error('🎯 ForumSidebar: Failed to fetch user stats:', error);
+      console.log('🎯 ForumSidebar: Error fetching user stats, using defaults:', error);
+      // Use default stats when API fails
+      setUserStats({
+        gems: 0,
+        rank: 1,
+        contributions: 0,
+        streak: 0,
+        tier: 'BRONZE',
+        nextTierGems: 100
+      });
     } finally {
       console.log('🎯 ForumSidebar: Setting loading to false');
       isFetchingRef.current = false;
