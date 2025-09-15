@@ -7,6 +7,10 @@ import { Search, Building2, Users, MapPin, Filter, Plus, Eye, Star } from 'lucid
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { MainLayout } from '@/components/layout/MainLayout'
+
+// Force dynamic rendering for user-specific content
+export const dynamic = 'force-dynamic'
 
 interface Company {
   id: string
@@ -123,39 +127,40 @@ export default function OrganizationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                  <Building2 className="h-8 w-8 mr-3 text-sky-600" />
-                  Organizations
-                </h1>
-                <p className="mt-1 text-gray-600">
-                  Explore companies and their contact information
-                </p>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <Badge variant="secondary" className="text-sm">
-                  {filteredCompanies.length} companies
-                </Badge>
-                {firebaseUser && (
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Company
-                  </Button>
-                )}
+    <MainLayout>
+      <div className="min-h-full bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                    <Building2 className="h-8 w-8 mr-3 text-sky-600" />
+                    Organizations
+                  </h1>
+                  <p className="mt-1 text-gray-600">
+                    Explore companies and their contact information
+                  </p>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <Badge variant="secondary" className="text-sm">
+                    {filteredCompanies.length} companies
+                  </Badge>
+                  {firebaseUser && (
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Company
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Search and Filters */}
         <Card className="mb-6">
           <CardHeader>
@@ -349,7 +354,8 @@ export default function OrganizationsPage() {
             )}
           </>
         )}
+        </div>
       </div>
-    </div>
+    </MainLayout>
   )
 }

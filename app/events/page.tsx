@@ -1,42 +1,37 @@
 'use client'
 
 import Link from 'next/link'
+import { MainLayout } from '@/components/layout/MainLayout'
+import { Calendar } from 'lucide-react'
+
+// Force dynamic rendering for user-specific content
+export const dynamic = 'force-dynamic'
 
 export default function EventsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-teal-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                DealMecca
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/forum" className="text-gray-600 hover:text-gray-900">
-                Forum
-              </Link>
-              <Link href="/orgs" className="text-gray-600 hover:text-gray-900">
-                Organizations
-              </Link>
-              <Link href="/events" className="text-gray-600 hover:text-gray-900">
-                Events
-              </Link>
-              <Link href="/auth/signin" className="text-gray-600 hover:text-gray-900">
-                Sign In
-              </Link>
+    <MainLayout>
+      <div className="min-h-full bg-gradient-to-br from-sky-50 to-teal-50">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                    <Calendar className="h-8 w-8 mr-3 text-sky-600" />
+                    Events
+                  </h1>
+                  <p className="mt-1 text-gray-600">
+                    Industry events and networking opportunities
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Events
-          </h1>
           <p className="text-gray-600 mb-6">
             Industry events and networking opportunities is currently being optimized for better performance.
           </p>
@@ -107,7 +102,8 @@ export default function EventsPage() {
             ← Return to Home
           </Link>
         </div>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   )
 }
