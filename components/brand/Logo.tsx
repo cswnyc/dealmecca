@@ -1,6 +1,7 @@
 'use client';
 
 import { brandConfig } from '@/lib/brand-config';
+import { DiamondIconDetailed } from '@/components/ui/diamond-icon';
 
 interface LogoProps {
   variant?: 'default' | 'white' | 'dark' | 'gradient';
@@ -61,10 +62,10 @@ export function Logo({
 
   const logoElement = (
     <div className={`flex flex-col ${className}`}>
-      <div 
+      <div
         className={`
-          font-headline font-bold tracking-tight
-          ${sizeClasses[size]} 
+          font-headline font-semibold tracking-normal
+          ${sizeClasses[size]}
           ${getLogoColorClasses()}
           ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity duration-200' : ''}
         `}
@@ -119,23 +120,33 @@ export function LogoWithIcon({
     }
   };
 
-  const Icon = () => (
-    <div className={`
-      ${iconSizeClasses[props.size || 'md']} 
-      ${getIconColorClasses()}
-      flex items-center justify-center
-      rounded-lg bg-gradient-primary
-    `}>
-      <svg 
-        viewBox="0 0 24 24" 
-        fill="currentColor" 
-        className="w-2/3 h-2/3 text-white"
-      >
-        <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 9.899C16.16 26.739 20 22.55 20 17V7l-8-5z"/>
-        <path d="M12 6L6 9v8c0 3.31 2.69 6 6 6s6-2.69 6-6V9l-6-3z" fill="rgba(255,255,255,0.3)"/>
-      </svg>
-    </div>
-  );
+  const Icon = () => {
+    // Make diamond bigger than the text - increase size significantly
+    const iconSize = {
+      sm: 24,    // was 16
+      md: 32,    // was 20
+      lg: 40,    // was 24
+      xl: 48,    // was 28
+      '2xl': 56  // was 32
+    }[props.size || 'md'];
+
+    return (
+      <div className={`
+        flex items-center justify-center
+        ${props.size === 'sm' ? 'w-6 h-6' :
+          props.size === 'md' ? 'w-8 h-8' :
+          props.size === 'lg' ? 'w-10 h-10' :
+          props.size === 'xl' ? 'w-12 h-12' : 'w-16 h-16'}
+      `}>
+        <DiamondIconDetailed
+          size={iconSize}
+          strokeWidth={1.5}
+          animated={true}
+          className="drop-shadow-sm"
+        />
+      </div>
+    );
+  };
 
   if (!showIcon) {
     return <Logo {...props} />;
@@ -182,10 +193,10 @@ export function LogoCompact({
   };
 
   return (
-    <div 
+    <div
       className={`
-        font-headline font-bold tracking-tight
-        ${sizeClasses[size]} 
+        font-headline font-semibold tracking-normal
+        ${sizeClasses[size]}
         ${getColorClasses()}
         ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity duration-200' : ''}
         ${className}

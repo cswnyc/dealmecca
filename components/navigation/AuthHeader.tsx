@@ -42,8 +42,8 @@ export default function AuthHeader() {
     )
   }
 
-  // Hide AuthHeader on forum pages to avoid duplicate user menus (UserProfileCard handles it)
-  if (pathname === '/forum' || pathname.startsWith('/forum/')) {
+  // Hide AuthHeader on homepage, forum, organizations, and events pages to avoid duplicate user menus
+  if (pathname === '/' || pathname === '/forum' || pathname.startsWith('/forum/') || pathname === '/organizations' || pathname === '/events') {
     return null;
   }
 

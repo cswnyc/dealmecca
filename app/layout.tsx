@@ -5,6 +5,7 @@ import './globals.css';
 import { FirebaseProvider } from '@/components/providers/FirebaseProvider';
 import AuthHeader from '@/components/navigation/AuthHeader';
 import ConditionalUserProvider from '@/components/providers/conditional-user-provider';
+import { ThemeProvider } from '@/lib/theme-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -109,17 +110,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} min-h-screen bg-gray-50`}>
-        <FirebaseProvider>
-          <ConditionalUserProvider>
-            <div className="min-h-screen">
-              <AuthHeader />
-              <main>
-                {children}
-              </main>
-            </div>
-          </ConditionalUserProvider>
-        </FirebaseProvider>
+      <body className={`${inter.className} min-h-screen bg-background text-foreground transition-colors duration-300`}>
+        <ThemeProvider>
+          <FirebaseProvider>
+            <ConditionalUserProvider>
+              <div className="min-h-screen">
+                <AuthHeader />
+                <main>
+                  {children}
+                </main>
+              </div>
+            </ConditionalUserProvider>
+          </FirebaseProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { useFirebaseSession } from '@/hooks/useFirebaseSession';
 import { useAuth } from '@/lib/auth/firebase-auth';
 import { Button } from '@/components/ui/button';
 import { UserProfileCard } from './UserProfileCard';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import {
   MessageSquare,
   Search,
@@ -171,9 +172,12 @@ export function MainLayout({ children }: MainLayoutProps) {
           </nav>
         </div>
 
-        {/* User Profile Card at Bottom */}
+        {/* User Profile Card and Theme Toggle at Bottom */}
         <div className="border-t border-gray-200 p-4 space-y-4">
-          <UserProfileCard />
+          <div className="flex items-center justify-between">
+            <UserProfileCard />
+            <ThemeToggle />
+          </div>
         </div>
       </div>
 
