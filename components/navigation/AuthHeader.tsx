@@ -59,11 +59,6 @@ export default function AuthHeader() {
   if (firebaseUser) {
     return (
       <div className="flex items-center space-x-4">
-        {/* Welcome Message */}
-        <span className="text-sm text-gray-600 hidden md:block">
-          Welcome, {firebaseUser.displayName || firebaseUser.email}
-        </span>
-        
         {/* User Menu */}
         <div className="relative">
           <Button 
