@@ -155,7 +155,7 @@ export function AdminBreadcrumbs({ currentPage }: { currentPage?: string }) {
 
 export function OrgsBreadcrumbs({ currentPage }: { currentPage?: string }) {
   const items: BreadcrumbItem[] = [
-    { label: 'Organizations', href: '/orgs' }
+    { label: 'Organizations', href: '/organizations' }
   ]
 
   if (currentPage) {

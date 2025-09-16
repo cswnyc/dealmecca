@@ -52,7 +52,7 @@ export default function DashboardPage() {
             </div>
           </Link>
           
-          <Link href="/orgs" className="block bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+          <Link href="/organizations" className="block bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
             <div className="text-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

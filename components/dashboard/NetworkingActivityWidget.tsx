@@ -381,7 +381,7 @@ export function NetworkingActivityWidget({
               <div className="bg-gray-50 p-3 rounded-lg">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Quick Actions</h4>
                 <div className="space-y-2">
-                  <Link href="/orgs" className="block">
+                  <Link href="/organizations" className="block">
                     <Button variant="outline" size="sm" className="w-full justify-start">
                       <Building2 className="w-4 h-4 mr-2" />
                       Explore Companies

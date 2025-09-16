@@ -57,7 +57,7 @@ export default function MobileBottomNav({
       id: 'contacts',
       label: 'Contacts',
       icon: Users,
-      path: '/orgs/contacts',
+      path: '/organizations/contacts',
       color: 'text-green-600'
     },
     {

@@ -27,7 +27,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/orgs" className="text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/organizations" className="text-gray-600 hover:text-gray-900 transition-colors">
                   Agency Directory
                 </Link>
               </li>

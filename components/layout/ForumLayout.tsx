@@ -42,7 +42,7 @@ const navigationItems: NavigationItem[] = [
     id: 'organizations', 
     label: 'Organizations',
     icon: Building2,
-    path: '/orgs'
+    path: '/organizations'
   },
   {
     id: 'events',

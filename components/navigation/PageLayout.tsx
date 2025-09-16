@@ -135,7 +135,7 @@ export function OrgsPageLayout(props: Omit<PageLayoutProps, 'breadcrumbItems'> &
   const { currentPage, ...rest } = props
   
   const breadcrumbItems = [
-    { label: 'Organizations', href: '/orgs' },
+    { label: 'Organizations', href: '/organizations' },
     ...(currentPage ? [{ label: currentPage, href: '#', current: true }] : [])
   ]
 
