@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth/firebase-auth';
 import { useConfettiCelebration, getCelebrationTypeForUser } from '@/components/auth/ConfettiCelebration';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 // Pre-load confetti component
 import { ConfettiCelebration } from '@/components/auth/ConfettiCelebration';
@@ -17,12 +17,17 @@ export default function FirebaseSignInPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [useRedirect, setUseRedirect] = useState(false);
-  
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
   // Handle cases where Firebase provider might not be available (e.g., during build)
   let user = null;
   let authLoading = false;
   let signInWithGoogle = null;
   let signInWithLinkedIn = null;
+  let signInWithEmail = null;
   
   try {
     const authContext = useAuth();
@@ -30,6 +35,7 @@ export default function FirebaseSignInPage() {
     authLoading = authContext.loading;
     signInWithGoogle = authContext.signInWithGoogle;
     signInWithLinkedIn = authContext.signInWithLinkedIn;
+    signInWithEmail = authContext.signInWithEmail;
   } catch (error) {
     // If useAuth fails (e.g., during build), just use defaults
     console.log('FirebaseSignInPage: Firebase context not available, using defaults');
@@ -130,6 +136,49 @@ export default function FirebaseSignInPage() {
     }
   }, [useRedirect, router, celebrate]);
 
+  // Handle Email/Password Sign In
+  const handleEmailSignIn = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!signInWithEmail) {
+      setError('Email authentication is not available. Please try again later.');
+      return;
+    }
+
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      console.log('🔐 Starting email authentication...');
+
+      const result = await signInWithEmail(email, password);
+
+      if (result?.user) {
+        console.log('✅ Email authentication successful:', result.user.email);
+
+        // Show success message
+        setSuccess('Welcome back! ✨');
+
+        // Direct redirect for email login (no confetti celebration)
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 500);
+      }
+
+    } catch (error: any) {
+      console.error('❌ Email authentication failed:', error);
+      setError(error?.message || 'Failed to sign in with email');
+    } finally {
+      setLoading(false);
+    }
+  }, [email, password, signInWithEmail, router]);
+
   // Show loading spinner while checking auth state
   if (authLoading) {
     return (
@@ -223,6 +272,106 @@ export default function FirebaseSignInPage() {
                 )}
               </Button>
             </div>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-slate-500">Or continue with email</span>
+              </div>
+            </div>
+
+            {/* Email/Password Form */}
+            {!showEmailForm ? (
+              <Button
+                onClick={() => setShowEmailForm(true)}
+                variant="outline"
+                className="w-full h-12 text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200"
+              >
+                <Mail className="w-5 h-5 mr-3" />
+                Sign in with Email
+              </Button>
+            ) : (
+              <form onSubmit={handleEmailSignIn} className="space-y-4">
+                <div className="space-y-3">
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                      Email address
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+                      <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="admin@dealmecca.pro"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+                      <input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full pl-10 pr-12 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="Enter your password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex space-x-3">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setShowEmailForm(false);
+                      setEmail('');
+                      setPassword('');
+                      setError('');
+                    }}
+                    variant="outline"
+                    className="flex-1"
+                    disabled={loading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={loading || !email || !password}
+                    className="flex-1 bg-slate-700 hover:bg-slate-800"
+                  >
+                    {loading ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Signing in...
+                      </div>
+                    ) : (
+                      'Sign In'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            )}
 
             {/* Redirect Option */}
             <div className="flex items-center justify-center space-x-2 py-2">

@@ -1,9 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  User as FirebaseUser, 
-  onAuthStateChanged, 
+import {
+  User as FirebaseUser,
+  onAuthStateChanged,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
   signInWithPopup,
@@ -11,7 +11,9 @@ import {
   getRedirectResult,
   OAuthProvider,
   UserCredential,
-  AuthError
+  AuthError,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -31,6 +33,8 @@ export interface AuthContextType {
   error: string | null;
   signInWithGoogle: (useRedirect?: boolean) => Promise<{ user: AuthUser; isNewUser: boolean } | null>;
   signInWithLinkedIn: (useRedirect?: boolean) => Promise<{ user: AuthUser; isNewUser: boolean } | null>;
+  signInWithEmail: (email: string, password: string) => Promise<{ user: AuthUser; isNewUser: boolean } | null>;
+  signUpWithEmail: (email: string, password: string) => Promise<{ user: AuthUser; isNewUser: boolean } | null>;
   signOut: () => Promise<void>;
   clearError: () => void;
 }
@@ -252,6 +256,62 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     }
   };
 
+  // Sign In with Email and Password
+  const signInWithEmail = async (email: string, password: string) => {
+    if (!auth) {
+      console.error('🔥 Firebase not configured');
+      setError('Authentication service not available');
+      return null;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const authUser = convertFirebaseUser(result.user);
+      const isNewUser = result.user.metadata.creationTime === result.user.metadata.lastSignInTime;
+
+      console.log('🔥 Email Sign-In Success:', { authUser, isNewUser });
+
+      return { user: authUser, isNewUser };
+
+    } catch (error) {
+      handleAuthError(error as AuthError);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Sign Up with Email and Password
+  const signUpWithEmail = async (email: string, password: string) => {
+    if (!auth) {
+      console.error('🔥 Firebase not configured');
+      setError('Authentication service not available');
+      return null;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const authUser = convertFirebaseUser(result.user);
+      const isNewUser = true; // Always true for sign up
+
+      console.log('🔥 Email Sign-Up Success:', { authUser, isNewUser });
+
+      return { user: authUser, isNewUser };
+
+    } catch (error) {
+      handleAuthError(error as AuthError);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Sign Out
   const signOut = async () => {
     try {
@@ -280,6 +340,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     error,
     signInWithGoogle,
     signInWithLinkedIn,
+    signInWithEmail,
+    signUpWithEmail,
     signOut,
     clearError
   };
