@@ -278,7 +278,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
 
     } catch (error) {
       handleAuthError(error as AuthError);
-      return null;
+      throw error; // Re-throw the error so calling functions can handle it
     } finally {
       setLoading(false);
     }

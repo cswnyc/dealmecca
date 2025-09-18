@@ -148,7 +148,6 @@ export default function ForumPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('latest');
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [createType, setCreateType] = useState<'post' | 'list' | 'poll' | 'intel'>('post');
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -446,58 +445,7 @@ export default function ForumPage() {
         {/* Create Post Section */}
         <div className="mb-6">
           {!showCreateForm ? (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center space-x-4 mb-4">
-                <span className="text-gray-600 font-medium">What are you creating?</span>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setCreateType('post')}
-                    className={`flex items-center space-x-1 px-4 py-2 rounded-full text-sm transition-colors ${
-                      createType === 'post'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span>Post</span>
-                  </button>
-                  <button
-                    onClick={() => setCreateType('list')}
-                    className={`flex items-center space-x-1 px-4 py-2 rounded-full text-sm transition-colors ${
-                      createType === 'list'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <List className="w-4 h-4" />
-                    <span>List</span>
-                  </button>
-                  <button
-                    onClick={() => setCreateType('poll')}
-                    className={`flex items-center space-x-1 px-4 py-2 rounded-full text-sm transition-colors ${
-                      createType === 'poll'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <BarChart3 className="w-4 h-4" />
-                    <span>Poll</span>
-                  </button>
-                  <button
-                    onClick={() => setCreateType('intel')}
-                    className={`flex items-center space-x-1 px-4 py-2 rounded-full text-sm transition-colors ${
-                      createType === 'intel'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
-                    }`}
-                  >
-                    <Target className="w-4 h-4" />
-                    <span>Share Intel</span>
-                    <Gift className="w-3 h-3 text-blue-500" />
-                  </button>
-                </div>
-              </div>
-              
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
               <button
                 onClick={() => setShowCreateForm(true)}
                 className="w-full text-left p-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
@@ -508,7 +456,7 @@ export default function ForumPage() {
           ) : (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium">Create New {createType.charAt(0).toUpperCase() + createType.slice(1)}</h3>
+                <h3 className="text-lg font-medium">Create New Post</h3>
                 <button
                   onClick={() => setShowCreateForm(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -516,26 +464,14 @@ export default function ForumPage() {
                   ✕
                 </button>
               </div>
-              
-              {createType === 'intel' ? (
-                <IntelligenceSharing
-                  onSubmit={(intelligence) => {
-                    console.log('Intelligence shared:', intelligence);
-                    setShowCreateForm(false);
-                    fetchPosts(); // Refresh posts after creation
-                  }}
-                  onClose={() => setShowCreateForm(false)}
-                />
-              ) : (
-                <SmartPostForm 
-                  categories={categories as any} 
-                  postType={createType}
-                  onSuccess={() => {
-                    setShowCreateForm(false);
-                    fetchPosts(); // Refresh posts after creation
-                  }}
-                />
-              )}
+
+              <SmartPostForm
+                categories={categories as any}
+                onSuccess={() => {
+                  setShowCreateForm(false);
+                  fetchPosts(); // Refresh posts after creation
+                }}
+              />
             </div>
           )}
         </div>

@@ -192,7 +192,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/companies?limit=1000'); // Get more companies for search
+      const response = await fetch('/api/orgs/companies?limit=1000'); // Get more companies for search
       const data = await response.json();
       setCompanies(data.companies || []);
     } catch (error) {
@@ -293,8 +293,8 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
         });
       } else {
         // Default save logic
-        const url = mode === 'create' ? '/api/admin/contacts' : `/api/admin/contacts/${contact?.id}`;
-        const method = mode === 'create' ? 'POST' : 'PATCH';
+        const url = mode === 'create' ? '/api/orgs/contacts' : `/api/orgs/contacts/${contact?.id}`;
+        const method = mode === 'create' ? 'POST' : 'PUT';
         
         const response = await fetch(url, {
           method,
@@ -306,8 +306,15 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || 'Failed to save contact');
+          let errorMessage = 'Failed to save contact';
+          try {
+            const error = await response.json();
+            errorMessage = error.error || error.message || errorMessage;
+          } catch (jsonError) {
+            // If response isn't JSON, use the status text
+            errorMessage = response.statusText || errorMessage;
+          }
+          throw new Error(errorMessage);
         }
 
         router.push('/admin/orgs/contacts');

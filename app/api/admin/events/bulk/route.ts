@@ -4,11 +4,11 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, postIds } = body;
+    const { action, eventIds } = body;
 
-    if (!action || !postIds || !Array.isArray(postIds) || postIds.length === 0) {
+    if (!action || !eventIds || !Array.isArray(eventIds) || eventIds.length === 0) {
       return NextResponse.json(
-        { error: 'Action and postIds are required' },
+        { error: 'Action and eventIds are required' },
         { status: 400 }
       );
     }
@@ -22,36 +22,21 @@ export async function POST(request: NextRequest) {
       case 'unpublish':
         updateData = { status: 'DRAFT' };
         break;
-      case 'flag':
-        updateData = { status: 'FLAGGED' };
+      case 'cancel':
+        updateData = { status: 'CANCELLED' };
         break;
-      case 'feature':
-        updateData = { isFeatured: true };
-        break;
-      case 'unfeature':
-        updateData = { isFeatured: false };
-        break;
-      case 'pin':
-        updateData = { isPinned: true };
-        break;
-      case 'unpin':
-        updateData = { isPinned: false };
-        break;
-      case 'lock':
-        updateData = { isLocked: true };
-        break;
-      case 'unlock':
-        updateData = { isLocked: false };
+      case 'postpone':
+        updateData = { status: 'POSTPONED' };
         break;
       case 'delete':
-        // Delete the posts
-        await prisma.forumPost.deleteMany({
+        // Delete the events
+        await prisma.event.deleteMany({
           where: {
-            id: { in: postIds }
+            id: { in: eventIds }
           }
         });
         return NextResponse.json({
-          message: `${postIds.length} posts deleted successfully`
+          message: `${eventIds.length} events deleted successfully`
         });
       default:
         return NextResponse.json(
@@ -60,16 +45,16 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    // Update the posts
-    const result = await prisma.forumPost.updateMany({
+    // Update the events
+    const result = await prisma.event.updateMany({
       where: {
-        id: { in: postIds }
+        id: { in: eventIds }
       },
       data: updateData
     });
 
     return NextResponse.json({
-      message: `${result.count} posts updated with ${action} action`,
+      message: `${result.count} events updated with ${action} action`,
       count: result.count
     });
 

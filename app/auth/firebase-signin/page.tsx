@@ -22,13 +22,24 @@ export default function FirebaseSignInPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // Helper function to check if an email is an admin email
+  const isAdminEmail = (email: string) => {
+    const adminEmails = [
+      'admin@dealmecca.pro',
+      'chris@dealmecca.com',
+      'csw@dealmecca.com'
+    ];
+    return adminEmails.includes(email);
+  };
+
   // Handle cases where Firebase provider might not be available (e.g., during build)
   let user = null;
   let authLoading = false;
   let signInWithGoogle = null;
   let signInWithLinkedIn = null;
   let signInWithEmail = null;
-  
+  let signUpWithEmail = null;
+
   try {
     const authContext = useAuth();
     user = authContext.user;
@@ -36,6 +47,7 @@ export default function FirebaseSignInPage() {
     signInWithGoogle = authContext.signInWithGoogle;
     signInWithLinkedIn = authContext.signInWithLinkedIn;
     signInWithEmail = authContext.signInWithEmail;
+    signUpWithEmail = authContext.signUpWithEmail;
   } catch (error) {
     // If useAuth fails (e.g., during build), just use defaults
     console.log('FirebaseSignInPage: Firebase context not available, using defaults');
@@ -47,10 +59,11 @@ export default function FirebaseSignInPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!authLoading && user) {
-      console.log('👤 User already authenticated, redirecting to dashboard');
-      router.push('/dashboard');
+      const isAdmin = isAdminEmail(user.email || '');
+      console.log('👤 User already authenticated:', user.email, 'isAdmin:', isAdmin, 'redirecting to', isAdmin ? 'admin' : 'dashboard');
+      router.push(isAdmin ? '/admin' : '/dashboard');
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, isAdminEmail]);
   
   const handleSignIn = useCallback(async (provider: 'google' | 'linkedin') => {
     if (!signInWithGoogle || !signInWithLinkedIn) {
@@ -97,23 +110,27 @@ export default function FirebaseSignInPage() {
           // Celebrate based on user type
           const isNewUser = syncData?.isNewUser || false;
           const celebrationType = getCelebrationTypeForUser(isNewUser, provider);
-          
+
           console.log('🎉 Triggering celebration:', { celebrationType, isNewUser, provider });
           celebrate(celebrationType);
 
+          // Check if user is admin
+          const isAdmin = isAdminEmail(result.user.email || '');
+
           // Show success message
-          setSuccess(isNewUser ? 'Welcome to DealMecca! 🎉' : 'Welcome back! ✨');
+          setSuccess(isNewUser ? 'Welcome to DealMecca! 🎉' : isAdmin ? 'Welcome back, Admin! ✨' : 'Welcome back! ✨');
 
           // Delay redirect to show confetti
           setTimeout(() => {
-            router.push('/dashboard');
+            router.push(isAdmin ? '/admin' : '/dashboard');
           }, 1500);
 
         } catch (syncError) {
           console.error('❌ User sync failed:', syncError);
           // Still redirect even if sync fails
+          const isAdmin = isAdminEmail(result.user.email || '');
           setTimeout(() => {
-            router.push('/dashboard');
+            router.push(isAdmin ? '/admin' : '/dashboard');
           }, 1000);
         }
       }
@@ -140,7 +157,7 @@ export default function FirebaseSignInPage() {
   const handleEmailSignIn = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!signInWithEmail) {
+    if (!signInWithEmail || !signUpWithEmail) {
       setError('Email authentication is not available. Please try again later.');
       return;
     }
@@ -163,21 +180,44 @@ export default function FirebaseSignInPage() {
         console.log('✅ Email authentication successful:', result.user.email);
 
         // Show success message
-        setSuccess('Welcome back! ✨');
+        const isAdmin = isAdminEmail(result.user.email || '');
+        setSuccess(isAdmin ? 'Welcome back, Admin! ✨' : 'Welcome back! ✨');
 
-        // Direct redirect for email login (no confetti celebration)
+        // Redirect based on user type
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push(isAdmin ? '/admin' : '/dashboard');
         }, 500);
       }
 
     } catch (error: any) {
       console.error('❌ Email authentication failed:', error);
+
+      // If it's invalid credentials and this is the admin account, try to create it
+      if (error?.code === 'auth/invalid-credential' && email === 'admin@dealmecca.pro' && signUpWithEmail) {
+        setError('Admin account not found. Creating admin account...');
+        try {
+          const signUpResult = await signUpWithEmail(email, password);
+
+          if (signUpResult?.user) {
+            console.log('✅ Admin account created and signed in:', signUpResult.user.email);
+            setSuccess('Admin account created! Welcome! 🎉');
+            setTimeout(() => {
+              router.push('/admin');
+            }, 1000);
+            return;
+          }
+        } catch (signUpError: any) {
+          console.error('❌ Failed to create admin account:', signUpError);
+          setError('Failed to create admin account: ' + (signUpError?.message || 'Unknown error'));
+          return;
+        }
+      }
+
       setError(error?.message || 'Failed to sign in with email');
     } finally {
       setLoading(false);
     }
-  }, [email, password, signInWithEmail, router]);
+  }, [email, password, signInWithEmail, signUpWithEmail, router]);
 
   // Show loading spinner while checking auth state
   if (authLoading) {

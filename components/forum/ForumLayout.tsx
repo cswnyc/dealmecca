@@ -90,7 +90,7 @@ export function ForumLayout({
                 >
                   All Posts
                 </Link>
-                {categories.map((category) => (
+                {(categories || []).map((category) => (
                   <Link
                     key={category.id}
                     href={`/forum/category/${category.slug}`}

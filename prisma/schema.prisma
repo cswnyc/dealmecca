@@ -153,6 +153,7 @@ model Company {
   introduction_requests introduction_requests[]
   agencyPartnerships    CompanyPartnership[] @relation("AgencyPartnership")
   advertiserPartnerships CompanyPartnership[] @relation("AdvertiserPartnership")
+  topicCompanies        TopicCompany[]       @relation("TopicCompanies")
 
   @@index([name])
   @@index([companyType])
@@ -228,6 +229,7 @@ model Contact {
   viewedBy              ViewedContact[]
   company               Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
   introduction_requests introduction_requests[]
+  topicContacts         TopicContact[]          @relation("TopicContacts")
 
   @@unique([firstName, lastName, companyId], map: "unique_contact_per_company")
   @@index([companyId])
@@ -610,6 +612,7 @@ model ForumCategory {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   posts       ForumPost[]
+  topics      Topic[]     @relation("TopicCategory")
 
   @@index([slug])
   @@index([order])
@@ -637,6 +640,9 @@ model ForumPost {
   isPinned           Boolean          @default(false)
   isLocked           Boolean          @default(false)
   isFeatured         Boolean          @default(false)
+  status             PostStatus       @default(PENDING)
+  approvedAt         DateTime?
+  approvedBy         String?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   lastActivityAt     DateTime         @default(now())
@@ -660,6 +666,7 @@ model ForumPost {
   generatedCode      String?                           // The actual generated code
   companyMentions    CompanyMention[] @relation("PostCompanyMentions")
   contactMentions    ContactMention[] @relation("PostContactMentions")
+  topicMentions      TopicMention[]   @relation("PostTopicMentions")
   bookmarkedBy       ForumBookmark[]
   comments           ForumComment[]
   author             User             @relation("ForumPosts", fields: [authorId], references: [id], onDelete: Cascade)
@@ -740,6 +747,76 @@ model ForumBookmark {
 
   @@unique([userId, postId])
   @@index([userId])
+}
+
+model Topic {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  categoryId  String?
+  context     String?          // e.g., "AstraZeneca @ Healix NY"
+  color       String?          @default("#3B82F6")
+  icon        String?
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  category    ForumCategory?   @relation("TopicCategory", fields: [categoryId], references: [id])
+  mentions    TopicMention[]
+  companies   TopicCompany[]
+  contacts    TopicContact[]
+
+  @@index([categoryId])
+  @@index([name])
+  @@index([isActive])
+}
+
+model TopicMention {
+  id        String    @id @default(cuid())
+  postId    String
+  topicId   String
+  order     Int       @default(0) // For display ordering
+  createdAt DateTime  @default(now())
+  post      ForumPost @relation("PostTopicMentions", fields: [postId], references: [id], onDelete: Cascade)
+  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, topicId])
+  @@index([postId])
+  @@index([topicId])
+  @@index([order])
+}
+
+model TopicCompany {
+  id        String    @id @default(cuid())
+  topicId   String
+  companyId String
+  role      String?   // e.g., "client", "agency", "vendor"
+  context   String?   // e.g., "@ Healix NY"
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  company   Company   @relation("TopicCompanies", fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, companyId])
+  @@index([topicId])
+  @@index([companyId])
+  @@index([order])
+}
+
+model TopicContact {
+  id        String    @id @default(cuid())
+  topicId   String
+  contactId String
+  role      String?   // e.g., "contact", "lead", "decision_maker"
+  context   String?   // Additional context about this contact in the topic
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  contact   Contact   @relation("TopicContacts", fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, contactId])
+  @@index([topicId])
+  @@index([contactId])
+  @@index([order])
 }
 
 model CompanyMention {
@@ -1357,6 +1434,13 @@ enum IntroductionStatus {
   DECLINED
   COMPLETED
   CANCELLED
+}
+
+enum PostStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DRAFT
 }
 
 model CodeGeneration {

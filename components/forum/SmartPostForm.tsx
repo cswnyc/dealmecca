@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import { generateMetadata } from '@/lib/ai-tagging';
 import { parseMentions } from '@/lib/mention-utils';
-import { CategoryOnlyMentionTextarea } from './CategoryOnlyMentionTextarea';
+import { EnhancedMentionTextarea } from './EnhancedMentionTextarea';
 import { CodeGenerationInterface } from '@/components/code/CodeGenerationInterface';
 import { TagIcon, MapPinIcon, ExclamationTriangleIcon, BuildingOfficeIcon, CalendarIcon } from '@heroicons/react/24/outline';
 
@@ -26,6 +27,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
+  const { user: firebaseUser, loading: authLoading } = useAuth();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -225,8 +227,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     if (postType === 'list' && formData.listItems.filter(item => item.trim()).length === 0) return;
     if (postType === 'poll' && formData.pollChoices.filter(choice => choice.trim()).length < 2) return;
     if (postType === 'code' && !formData.generatedCode && !formData.content) return;
-    
+
     if (!formData.categoryId) return;
+
+    // Check authentication
+    if (!firebaseUser?.uid) {
+      alert('You must be signed in to create a post.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -277,6 +285,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         ...formData,
         title: autoTitle,
         content,
+        authorId: firebaseUser?.uid,
         ...additionalData,
         tags: JSON.stringify(formData.tags),
         mediaType: JSON.stringify(formData.mediaType),
@@ -358,10 +367,10 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                 Content *
               </label>
-              <CategoryOnlyMentionTextarea
+              <EnhancedMentionTextarea
                 value={formData.content}
                 onChange={(content) => setFormData(prev => ({ ...prev, content }))}
-                placeholder="Share details, context, or ask your question... Use @topic to mention categories"
+                placeholder="Share details, context, or ask your question... Use @company, @contact, or @topic mentions"
                 rows={6}
               />
             </div>
@@ -432,7 +441,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                 Additional Context (Optional)
               </label>
-              <CategoryOnlyMentionTextarea
+              <EnhancedMentionTextarea
                 value={formData.content}
                 onChange={(content) => setFormData(prev => ({ ...prev, content }))}
                 placeholder="Add any additional context, questions, or discussion points about this code..."

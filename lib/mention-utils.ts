@@ -43,7 +43,7 @@ export function detectMentionTrigger(text: string, cursorPosition: number): {
   startIndex: number;
 } | null {
   const beforeCursor = text.substring(0, cursorPosition);
-  
+
   // Check for partial mention patterns
   const partialMatch = beforeCursor.match(/@(company|contact|topic)\s+([^@\s]*)\s*$/);
   if (partialMatch) {
@@ -53,17 +53,17 @@ export function detectMentionTrigger(text: string, cursorPosition: number): {
       startIndex: beforeCursor.lastIndexOf(partialMatch[0])
     };
   }
-  
-  // Check for trigger patterns (just @company or @contact)
-  const triggerMatch = beforeCursor.match(/@(company|contact)\s*$/);
+
+  // Check for trigger patterns (just @company, @contact, or @topic)
+  const triggerMatch = beforeCursor.match(/@(company|contact|topic)\s*$/);
   if (triggerMatch) {
     return {
-      type: triggerMatch[1] as 'company' | 'contact',
+      type: triggerMatch[1] as 'company' | 'contact' | 'topic',
       query: '',
       startIndex: beforeCursor.lastIndexOf(triggerMatch[0])
     };
   }
-  
+
   return null;
 }
 
@@ -71,20 +71,20 @@ export function detectMentionTrigger(text: string, cursorPosition: number): {
  * Insert mention into text at cursor position
  */
 export function insertMention(
-  text: string, 
-  cursorPosition: number, 
+  text: string,
+  cursorPosition: number,
   mention: MentionSuggestion,
-  triggerInfo: { startIndex: number; type: 'company' | 'contact' }
+  triggerInfo: { startIndex: number; type: 'company' | 'contact' | 'topic' }
 ): { newText: string; newCursorPosition: number } {
   const beforeMention = text.substring(0, triggerInfo.startIndex);
   const afterMention = text.substring(cursorPosition);
-  
+
   // Format mention as markdown-style link
   const mentionText = `@${triggerInfo.type}[${mention.name}](${mention.id})`;
-  
+
   const newText = beforeMention + mentionText + afterMention;
   const newCursorPosition = beforeMention.length + mentionText.length;
-  
+
   return { newText, newCursorPosition };
 }
 
@@ -144,11 +144,11 @@ export function formatMentionsForDisplay(text: string): string {
  * Search for mention suggestions from API
  */
 export async function searchMentionSuggestions(
-  type: 'company' | 'contact' | 'topic', 
+  type: 'company' | 'contact' | 'topic',
   query: string
 ): Promise<MentionSuggestion[]> {
   if (!query || query.length < 2) return [];
-  
+
   try {
     let endpoint;
     if (type === 'company') {
@@ -158,27 +158,51 @@ export async function searchMentionSuggestions(
     } else {
       endpoint = `/api/forum/mentions/topics?q=${encodeURIComponent(query)}`;
     }
-    
+
     const response = await fetch(endpoint);
-    
+
     if (!response.ok) throw new Error('Failed to fetch suggestions');
-    
+
     const data = await response.json();
-    
+
     if (type === 'company') {
       return data.companies.map((company: any) => ({
-        ...company,
-        type: 'company' as const
+        id: company.id,
+        name: company.name,
+        displayName: company.name,
+        type: 'company' as const,
+        logo: company.logoUrl,
+        verified: company.verified,
+        description: company.description || `${company.companyType} in ${company.industry}`,
+        title: company.companyType,
+        company: {
+          id: company.id,
+          name: company.name,
+          logo: company.logoUrl
+        }
       }));
     } else if (type === 'contact') {
       return data.contacts.map((contact: any) => ({
-        ...contact,
-        type: 'contact' as const
+        id: contact.id,
+        name: contact.fullName,
+        displayName: contact.fullName,
+        type: 'contact' as const,
+        verified: contact.verified,
+        title: contact.title,
+        description: contact.displaySubtext,
+        company: contact.company ? {
+          id: contact.company.id,
+          name: contact.company.name,
+          logo: contact.company.logoUrl
+        } : undefined
       }));
     } else {
       return data.topics.map((topic: any) => ({
-        ...topic,
-        type: 'topic' as const
+        id: topic.id,
+        name: topic.name,
+        displayName: topic.name,
+        type: 'topic' as const,
+        description: topic.description
       }));
     }
   } catch (error) {

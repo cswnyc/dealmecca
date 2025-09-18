@@ -26,6 +26,12 @@ export default function AdminLayout({
                 <a href="/admin/orgs/contacts" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   Contacts
                 </a>
+                <a href="/admin/forum/posts" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                  Forum
+                </a>
+                <a href="/admin/events" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                  Events
+                </a>
                 <a href="/" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   ← Exit Admin
                 </a>

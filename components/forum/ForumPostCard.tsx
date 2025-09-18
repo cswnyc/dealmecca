@@ -16,7 +16,9 @@ import {
   UserIcon
 } from '@heroicons/react/24/outline';
 import { RealTimeVotes } from './RealTimeVotes';
-import { MentionDisplayReact } from './MentionDisplay';
+import { RichContentRenderer } from './RichContentRenderer';
+import { TopicChip } from './TopicChip';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 interface ForumPost {
   id: string;
@@ -86,6 +88,49 @@ interface ForumPost {
         name: string;
         logoUrl?: string;
       };
+    };
+  }>;
+  topicMentions?: Array<{
+    id: string;
+    topic: {
+      id: string;
+      name: string;
+      description?: string;
+      context?: string;
+      color?: string;
+      icon?: string;
+      companies: Array<{
+        id: string;
+        company: {
+          id: string;
+          name: string;
+          logoUrl?: string;
+          verified: boolean;
+          companyType?: string;
+          industry?: string;
+          city?: string;
+          state?: string;
+        };
+        context?: string;
+        role?: string;
+        order: number;
+      }>;
+      contacts: Array<{
+        id: string;
+        contact: {
+          id: string;
+          fullName: string;
+          title?: string;
+          company?: {
+            id: string;
+            name: string;
+            logoUrl?: string;
+          };
+        };
+        context?: string;
+        role?: string;
+        order: number;
+      }>;
     };
   }>;
   _count: {
@@ -503,10 +548,19 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
             <div className="flex items-center space-x-2 flex-1 min-w-0">
               {!post.isAnonymous ? (
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  {/* Primary Company Display - Most Prominent */}
-                  {post.author.company ? (
+                  {/* Primary Display - Prioritize Topics */}
+                  {post.topicMentions && post.topicMentions.length > 0 ? (
+                    // Display expandable topics
+                    <div className="w-full">
+                      <MultiTopicDisplay
+                        topicMentions={post.topicMentions}
+                        className="w-full"
+                      />
+                    </div>
+                  ) : post.author.company ? (
+                    // Fallback to company display when no topics
                     <div className="flex items-center space-x-2">
-                      <Link 
+                      <Link
                         href={`/orgs/companies/${post.author.company.id}`}
                         className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center space-x-1"
                       >
@@ -538,13 +592,13 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                     </span>
                   )}
                   
-                  {/* Simplified Tag Display - Show only most important tags */}
-                  {((post.companyMentions && post.companyMentions.length > 1) || tags.length > 0 || (post.contactMentions && post.contactMentions.length > 0)) ? (
+                  {/* Simplified Tag Display - Only show for legacy posts without topics */}
+                  {(!post.topicMentions || post.topicMentions.length === 0) && ((post.companyMentions && post.companyMentions.length > 1) || tags.length > 0 || (post.contactMentions && post.contactMentions.length > 0)) ? (
                     <>
                       <span className="text-gray-400">•</span>
                       <div className="flex items-center space-x-1">
                         {/* Show total count instead of individual tags to reduce clutter */}
-                        <button 
+                        <button
                           onClick={() => setTagsExpanded(!tagsExpanded)}
                           className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors"
                         >
@@ -739,12 +793,19 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
             )}
           </div>
         ) : (
-          <MentionDisplayReact content={post.content} showIcons={false} />
+          <RichContentRenderer
+            content={post.content}
+            mentions={{
+              companies: post.companyMentions?.map(cm => cm.company) || [],
+              contacts: post.contactMentions?.map(cm => cm.contact) || []
+            }}
+          />
         )}
       </div>
 
-      {/* Contact Mentions Section - Enhanced Display */}
-      {post.contactMentions && post.contactMentions.length > 0 && (
+
+      {/* Contact Mentions Section - Enhanced Display (only for legacy posts without topics) */}
+      {(!post.topicMentions || post.topicMentions.length === 0) && post.contactMentions && post.contactMentions.length > 0 && (
         <div className="bg-gray-50 rounded-lg p-3 mb-4">
           <div className="text-sm text-gray-600 mb-2">few in house contacts</div>
           <div className="space-y-1">
@@ -1046,7 +1107,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                             </span>
                           </div>
                         </div>
-                        <MentionDisplayReact content={comment.content} showIcons={false} />
+                        <RichContentRenderer content={comment.content} />
                         
                         {/* Comment Actions */}
                         <div className="flex items-center space-x-4 mt-2 pt-2 border-t border-gray-200">
@@ -1128,6 +1189,64 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           </div>
 
 
+        </div>
+      )}
+    </div>
+  );
+}
+
+// MultiTopicDisplay component - Clean, modern UX focused on simplicity
+function MultiTopicDisplay({
+  topicMentions,
+  className = ''
+}: {
+  topicMentions: any[],
+  className?: string
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (!topicMentions || topicMentions.length === 0) return null;
+
+  const primaryTopic = topicMentions[0];
+  const hasMultipleTopics = topicMentions.length > 1;
+  const remainingTopics = topicMentions.slice(1);
+
+  return (
+    <div className={`${className}`}>
+      {/* Clean Topic Display */}
+      <div className="flex items-center gap-2">
+        {/* Primary Topic Name - Large, Clickable, Clean */}
+        <Link
+          href={`/forum?topic=${encodeURIComponent(primaryTopic.topic.name)}`}
+          className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 no-underline"
+        >
+          {primaryTopic.topic.name}
+        </Link>
+
+        {/* Minimal Expansion Indicator */}
+        {hasMultipleTopics && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 font-medium"
+          >
+            +{remainingTopics.length} more
+          </button>
+        )}
+      </div>
+
+      {/* Simple Expanded List */}
+      {isExpanded && hasMultipleTopics && (
+        <div className="mt-3 space-y-1 animate-in slide-in-from-top-1 duration-200">
+          {remainingTopics.map((tm, index) => (
+            <div key={tm.topic.id}>
+              <Link
+                href={`/forum?topic=${encodeURIComponent(tm.topic.name)}`}
+                className="text-blue-600 hover:text-blue-800 transition-colors duration-200 no-underline font-medium"
+              >
+                {tm.topic.name}
+              </Link>
+            </div>
+          ))}
         </div>
       )}
     </div>

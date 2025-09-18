@@ -1,62 +1,94 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const resolvedParams = await params;
+    const { id: postId } = await params;
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
-    
-    if (!userId) {
-      return NextResponse.json({ 
-        isFollowing: false, 
-        isBookmarked: false 
-      });
+
+    if (!postId) {
+      return NextResponse.json(
+        { error: 'Post ID is required' },
+        { status: 400 }
+      );
     }
 
-    const postId = resolvedParams.id;
+    // Get post status and user interaction data
+    const post = await prisma.forumPost.findUnique({
+      where: { id: postId },
+      select: {
+        id: true,
+        status: true,
+        authorId: true,
+        upvotes: true,
+        downvotes: true,
+        bookmarks: true,
+        views: true
+      }
+    });
 
-    // For now, return false since the database tables don't exist yet
-    // This will prevent errors while still allowing the UI to work
-    try {
-      // Check if user is following this post
-      const followRecord = await prisma.postFollow.findFirst({
+    if (!post) {
+      return NextResponse.json(
+        { error: 'Post not found' },
+        { status: 404 }
+      );
+    }
+
+    let userVote = null;
+    let isBookmarked = false;
+
+    if (userId) {
+      // Check if user has voted on this post
+      const vote = await prisma.forumVote.findUnique({
         where: {
-          userId,
-          postId,
+          userId_postId: {
+            userId,
+            postId
+          }
         },
+        select: {
+          type: true
+        }
       });
+
+      userVote = vote?.type || null;
 
       // Check if user has bookmarked this post
-      const bookmarkRecord = await prisma.postBookmark.findFirst({
+      const bookmark = await prisma.forumBookmark.findUnique({
         where: {
-          userId,
-          postId,
-        },
+          userId_postId: {
+            userId,
+            postId
+          }
+        }
       });
 
-      return NextResponse.json({ 
-        isFollowing: !!followRecord,
-        isBookmarked: !!bookmarkRecord 
-      });
-    } catch (dbError) {
-      // Database tables don't exist yet, return defaults
-      console.log('Database tables not yet created, returning defaults');
-      return NextResponse.json({ 
-        isFollowing: false, 
-        isBookmarked: false 
-      });
+      isBookmarked = !!bookmark;
     }
-  } catch (error) {
-    console.error('Status check error:', error);
-    return NextResponse.json({ 
-      isFollowing: false, 
-      isBookmarked: false 
+
+    return NextResponse.json({
+      postId: post.id,
+      status: post.status,
+      isAuthor: userId === post.authorId,
+      userVote,
+      isBookmarked,
+      stats: {
+        upvotes: post.upvotes,
+        downvotes: post.downvotes,
+        bookmarks: post.bookmarks,
+        views: post.views
+      }
     });
+
+  } catch (error) {
+    console.error('Error fetching post status:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch post status' },
+      { status: 500 }
+    );
   }
 }

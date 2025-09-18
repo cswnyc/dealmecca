@@ -34,7 +34,8 @@ export function AdminGuard({ children, fallbackUrl = '/auth/firebase-signin' }: 
       const adminEmails = [
         'admin@dealmecca.pro',
         'chris@dealmecca.com',
-        'csw@dealmecca.com'
+        'csw@dealmecca.com',
+        'cswnyc@gmail.com'
       ];
 
       const isAdmin = adminEmails.includes(user.email || '');
