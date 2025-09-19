@@ -170,7 +170,7 @@ export default function Home() {
                       Sign In
                     </Button>
                   </Link>
-                  <Link href="/auth/firebase-signin">
+                  <Link href="/auth/signup">
                     <Button className="bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
                       Get Started
                     </Button>
