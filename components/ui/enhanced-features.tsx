@@ -13,7 +13,9 @@ import {
   TrendingUp,
   Globe,
   MessageSquare,
-  Building2
+  Building2,
+  Bell,
+  Eye
 } from 'lucide-react';
 
 interface FeatureCardProps {
@@ -87,39 +89,39 @@ export function EnhancedFeatures() {
 
   const features = [
     {
-      icon: Database,
-      title: 'Pipeline Intelligence',
-      description: 'AI-powered deal scoring and opportunity identification. Know which prospects are most likely to close and when.',
+      icon: Target,
+      title: 'Verified Contact Intelligence',
+      description: 'Direct emails & phone numbers for decision-makers. 98% accuracy rate, verified within 30 days. Skip gatekeepers, reach budget holders directly.',
       gradient: 'bg-gradient-to-br from-emerald-500 to-emerald-600'
     },
     {
-      icon: BarChart3,
-      title: 'CRM Integration',
-      description: 'Seamlessly sync with Salesforce, HubSpot, and Pipedrive. Your existing data, supercharged with intelligence.',
+      icon: Building2,
+      title: 'Real-Time Org Charts',
+      description: 'Live organizational structures with budget authority levels. Instant alerts when key personnel change. Decision-maker mapping for complex accounts.',
       gradient: 'bg-gradient-to-br from-blue-500 to-blue-600'
     },
     {
-      icon: Target,
-      title: 'Forecasting Engine',
-      description: 'Surgical accuracy in revenue forecasting. Predict deal closure with 94% confidence based on historical patterns.',
+      icon: Bell,
+      title: 'Deal Opportunity Alerts',
+      description: 'AI-powered notifications when accounts show buying signals. Budget cycle tracking and renewal alerts. Competitive displacement opportunities.',
       gradient: 'bg-gradient-to-br from-purple-500 to-purple-600'
     },
     {
       icon: TrendingUp,
-      title: 'Deal Tracking',
-      description: 'Real-time visibility into your entire sales pipeline. Track progression, identify bottlenecks, accelerate closure.',
+      title: 'Media Spend Intelligence',
+      description: 'Track competitor spending patterns and budget shifts. Industry benchmarking and rate insights. Revenue opportunity sizing for accounts.',
       gradient: 'bg-gradient-to-br from-orange-500 to-orange-600'
     },
     {
-      icon: BarChart3,
-      title: 'Revenue Analytics',
-      description: 'Deep insights into sales performance, team productivity, and market trends. Data-driven decisions, every time.',
+      icon: Users,
+      title: 'Seller-Only Community',
+      description: 'No buyers allowed - pure seller insights. Anonymous deal discussions and strategy sharing. 15,000+ media sales professionals.',
       gradient: 'bg-gradient-to-br from-teal-500 to-teal-600'
     },
     {
-      icon: Users,
-      title: 'Team Collaboration',
-      description: 'Share insights, coordinate efforts, and close deals faster. Built for high-performing media sales teams.',
+      icon: Zap,
+      title: 'Account Change Alerts',
+      description: 'Instant notifications when key personnel move or get promoted. New hire tracking at target accounts. Relationship mapping opportunities.',
       gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-600'
     }
   ];
@@ -140,9 +142,9 @@ export function EnhancedFeatures() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            Intelligence that transforms
+            Everything you need to dominate
             <span className="block text-gradient-primary">
-              your sales process
+              media sales
             </span>
           </motion.h2>
           <motion.p
@@ -151,8 +153,8 @@ export function EnhancedFeatures() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            From fragmented data to unified insights. From missed opportunities to closed deals.
-            DealMecca turns your sales intelligence into your competitive advantage.
+            Stop competing on price alone. Get the intelligence, contacts, and community insights
+            that help you close bigger deals faster.
           </motion.p>
         </motion.div>
 

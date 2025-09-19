@@ -30,13 +30,13 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
     >
       {words.map((word, index) => {
         const isHighlight = index === highlightIndex;
-        const isTypewriter = typewriterWords.includes(word.toLowerCase());
+        const isTypewriter = typewriterWords.some(tw => tw.toLowerCase() === word.toLowerCase());
 
         if (isHighlight) {
           return (
             <motion.span
               key={index}
-              className={`inline-block ${highlightClassName}`}
+              className={`inline-block mr-1 ${highlightClassName}`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{
                 opacity: 1,
@@ -75,7 +75,7 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
           return (
             <motion.span
               key={index}
-              className="inline-block"
+              className="inline-block mr-1"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.0 + index * 0.1 }}
@@ -89,7 +89,7 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
         return (
           <motion.span
             key={index}
-            className="inline-block"
+            className="inline-block mr-1"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -116,8 +116,11 @@ interface TypewriterTextProps {
 export function TypewriterText({ text, className = '', delay = 0 }: TypewriterTextProps) {
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isStarted, setIsStarted] = useState(false);
 
   useEffect(() => {
+    if (!isStarted) return;
+
     if (currentIndex < text.length) {
       const timeout = setTimeout(() => {
         setDisplayText(prev => prev + text[currentIndex]);
@@ -125,11 +128,20 @@ export function TypewriterText({ text, className = '', delay = 0 }: TypewriterTe
       }, 50 + Math.random() * 50); // Variable typing speed for natural feel
 
       return () => clearTimeout(timeout);
+    } else {
+      // When finished typing, wait 2 seconds then restart
+      const restartTimeout = setTimeout(() => {
+        setDisplayText('');
+        setCurrentIndex(0);
+      }, 2000);
+
+      return () => clearTimeout(restartTimeout);
     }
-  }, [currentIndex, text]);
+  }, [currentIndex, text, isStarted]);
 
   useEffect(() => {
     const startTimeout = setTimeout(() => {
+      setIsStarted(true);
       setCurrentIndex(0);
       setDisplayText('');
     }, delay);

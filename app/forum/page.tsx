@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFirebaseSession } from '@/hooks/useFirebaseSession';
 import { useAuth } from '@/lib/auth/firebase-auth';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { ForumPostCard } from '@/components/forum/ForumPostCard';
 import { SmartPostForm } from '@/components/forum/SmartPostForm';
 import { IntelligenceSharing } from '@/components/forum/IntelligenceSharing';
@@ -360,7 +361,8 @@ export default function ForumPage() {
   }
 
   return (
-    <ForumLayout>
+    <AuthGuard>
+      <ForumLayout>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header with Search */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
@@ -560,6 +562,7 @@ export default function ForumPage() {
         </div>
       </div>
     </ForumLayout>
+    </AuthGuard>
   );
 }
 

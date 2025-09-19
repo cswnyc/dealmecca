@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth/firebase-auth';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network, Filter, Plus, MapPin, ChevronDown, X, Globe, User, Briefcase, BarChart3, Tv, Satellite, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -517,7 +518,8 @@ export default function OrganizationsPage() {
   }
 
   return (
-    <MainLayout>
+    <AuthGuard>
+      <MainLayout>
       <div className="min-h-full bg-gray-50">
         {/* Header */}
         <div className="bg-white shadow-sm border-b">
@@ -1054,5 +1056,6 @@ export default function OrganizationsPage() {
         </div>
       </div>
     </MainLayout>
+    </AuthGuard>
   );
 }
