@@ -33,7 +33,7 @@ function FeatureCard({ icon: Icon, title, description, gradient, delay }: Featur
   return (
     <motion.div
       ref={ref}
-      className="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300"
+      className="group relative bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300"
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.6, delay, ease: "easeOut" }}
@@ -109,7 +109,7 @@ export function EnhancedFeatures() {
   ];
 
   return (
-    <section ref={ref} className="py-24 bg-slate-50 dark:bg-slate-900/50" id="features">
+    <section ref={ref} className="py-24 bg-slate-50 dark:bg-slate-950" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -163,7 +163,7 @@ export function HighlightedFeatures() {
   const isInView = useInView(ref, { once: true, amount: 0.1 });
 
   return (
-    <section ref={ref} className="py-20 bg-slate-50 dark:bg-slate-900/50">
+    <section ref={ref} className="py-20 bg-gradient-to-br from-slate-50 via-teal-50 to-purple-50 dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -196,7 +196,7 @@ export function HighlightedFeatures() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Forum Feature */}
           <motion.div
-            className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group"
+            className="bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -248,7 +248,7 @@ export function HighlightedFeatures() {
 
           {/* Org Charts Feature */}
           <motion.div
-            className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group"
+            className="bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.6, delay: 0.2 }}

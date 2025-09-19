@@ -109,7 +109,7 @@ export function StatsSection() {
   ];
 
   return (
-    <section ref={ref} className="py-20 bg-white dark:bg-slate-800">
+    <section ref={ref} className="py-20 bg-white dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -210,7 +210,7 @@ export function IntegrationsSection() {
   ];
 
   return (
-    <section ref={ref} className="py-20 bg-slate-50 dark:bg-slate-900/50">
+    <section ref={ref} className="py-20 bg-slate-50 dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -245,7 +245,7 @@ export function IntegrationsSection() {
           {integrations.map((integration, index) => (
             <motion.div
               key={integration.name}
-              className="bg-white dark:bg-slate-800 rounded-xl p-6 text-center shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 group"
+              className="bg-white dark:bg-slate-950 rounded-xl p-6 text-center shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 group"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.5, delay: index * 0.05 }}

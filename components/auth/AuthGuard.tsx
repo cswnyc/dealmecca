@@ -171,7 +171,7 @@ export function AuthGuard({
   // Show unauthorized message (fallback)
   if (!isAuthorized && requireAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-red-600 mb-2">Access Denied</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-4">You need to sign in to access this content.</p>

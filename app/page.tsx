@@ -142,7 +142,7 @@ export default function Home() {
                     </Button>
 
                     {showDropdown && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 z-50">
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-950 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 z-50">
                         <Link href={getRedirectUrl()}>
                           <button
                             className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-t-lg transition-colors"
@@ -182,7 +182,7 @@ export default function Home() {
       </header>
 
       {/* Clean Hero Section with White Background */}
-      <section className="relative pt-20 pb-32 overflow-hidden min-h-[90vh] flex items-center bg-white dark:bg-slate-900">
+      <section className="relative pt-20 pb-32 overflow-hidden min-h-[90vh] flex items-center bg-white dark:bg-slate-950">
         {/* Subtle Background Pattern */}
         <div className="absolute inset-0 bg-grid-slate-100/30 dark:bg-grid-slate-800/25 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]"></div>
 
@@ -215,15 +215,15 @@ export default function Home() {
 
             {/* Minimal Social Proof */}
             <div className="flex flex-wrap items-center justify-center gap-8 text-slate-600 dark:text-slate-400">
-              <div className="flex items-center gap-2 text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full">
+              <div className="flex items-center gap-2 text-sm bg-slate-100 dark:bg-slate-950 px-4 py-2 rounded-full">
                 <Shield className="w-4 h-4" />
                 <span>Enterprise Security</span>
               </div>
-              <div className="flex items-center gap-2 text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full">
+              <div className="flex items-center gap-2 text-sm bg-slate-100 dark:bg-slate-950 px-4 py-2 rounded-full">
                 <Users className="w-4 h-4" />
                 <span>500+ Sales Teams</span>
               </div>
-              <div className="flex items-center gap-2 text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full">
+              <div className="flex items-center gap-2 text-sm bg-slate-100 dark:bg-slate-950 px-4 py-2 rounded-full">
                 <BarChart3 className="w-4 h-4" />
                 <span>30% Faster Closure</span>
               </div>
@@ -236,7 +236,7 @@ export default function Home() {
       <HighlightedFeatures />
 
       {/* Forum Showcase Section */}
-      <section ref={forumRef} className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section ref={forumRef} className="py-24 bg-slate-50 dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Column - Content */}
@@ -309,7 +309,7 @@ export default function Home() {
 
             {/* Right Column - Visual */}
             <div className="relative">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="bg-white dark:bg-slate-950 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                 {/* Mock Forum Header */}
                 <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -366,14 +366,14 @@ export default function Home() {
               </div>
 
               {/* Floating Stats */}
-              <div className="absolute -top-6 -right-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
+              <div className="absolute -top-6 -right-6 bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
                 <div className="text-center">
                   <div className="text-2xl font-black text-slate-900 dark:text-white">15.2K</div>
                   <div className="text-sm text-slate-600 dark:text-slate-400">Active Members</div>
                 </div>
               </div>
 
-              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
+              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
                 <div className="text-center">
                   <div className="text-2xl font-black text-slate-900 dark:text-white">$840M</div>
                   <div className="text-sm text-slate-600 dark:text-slate-400">Deals Shared</div>
@@ -388,12 +388,12 @@ export default function Home() {
       <EnhancedFeatures />
 
       {/* Org Charts Showcase Section */}
-      <section ref={orgChartsRef} className="py-24 bg-white dark:bg-slate-800">
+      <section ref={orgChartsRef} className="py-24 bg-white dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Column - Visual */}
             <div className="relative">
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                 {/* Mock Org Chart Header */}
                 <div className="bg-gradient-to-r from-slate-900 to-slate-700 text-white p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -410,7 +410,7 @@ export default function Home() {
                 <div className="p-6">
                   {/* CEO Level */}
                   <div className="text-center mb-6">
-                    <div className="inline-block bg-white dark:bg-slate-800 border-2 border-slate-900 rounded-lg p-4 shadow-lg">
+                    <div className="inline-block bg-white dark:bg-slate-950 border-2 border-slate-900 rounded-lg p-4 shadow-lg">
                       <div className="w-12 h-12 rounded-full mx-auto mb-2" style={{background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)'}}></div>
                       <div className="font-bold text-slate-900 dark:text-white text-sm">Jennifer Walsh</div>
                       <div className="text-xs text-slate-600 dark:text-slate-400">CEO</div>
@@ -420,13 +420,13 @@ export default function Home() {
 
                   {/* VP Level */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg p-3 shadow">
+                    <div className="bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-600 rounded-lg p-3 shadow">
                       <div className="w-10 h-10 rounded-full mx-auto mb-2" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'}}></div>
                       <div className="font-bold text-slate-900 dark:text-white text-xs text-center">Mike Chen</div>
                       <div className="text-xs text-slate-600 dark:text-slate-400 text-center">VP Sales</div>
                       <div className="text-xs text-amber-600 dark:text-amber-400 text-center mt-1">📧 Premium contact</div>
                     </div>
-                    <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg p-3 shadow">
+                    <div className="bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-600 rounded-lg p-3 shadow">
                       <div className="w-10 h-10 rounded-full mx-auto mb-2" style={{background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}></div>
                       <div className="font-bold text-slate-900 dark:text-white text-xs text-center">Sarah Kim</div>
                       <div className="text-xs text-slate-600 dark:text-slate-400 text-center">VP Marketing</div>
@@ -456,14 +456,14 @@ export default function Home() {
               </div>
 
               {/* Floating Insights */}
-              <div className="absolute -top-6 -left-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
+              <div className="absolute -top-6 -left-6 bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
                 <div className="text-center">
                   <div className="text-2xl font-black text-slate-900 dark:text-white">98%</div>
                   <div className="text-sm text-slate-600 dark:text-slate-400">Accuracy Rate</div>
                 </div>
               </div>
 
-              <div className="absolute -bottom-6 -right-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
+              <div className="absolute -bottom-6 -right-6 bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4">
                 <div className="text-center">
                   <div className="text-2xl font-black text-slate-900 dark:text-white">24hr</div>
                   <div className="text-sm text-slate-600 dark:text-slate-400">Update Cycle</div>
@@ -549,7 +549,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-24 bg-slate-50 dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="heading-section text-slate-900 dark:text-slate-100 mb-6">
@@ -564,7 +564,7 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-center mb-6">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -585,7 +585,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-center mb-6">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -606,7 +606,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-center mb-6">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -631,7 +631,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-white dark:bg-slate-800">
+      <section id="pricing" className="py-24 bg-white dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="heading-section text-slate-900 dark:text-slate-100 mb-6">
@@ -647,7 +647,7 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Free Plan */}
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 group">
+            <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 group">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Free</h3>
                 <div className="text-5xl font-black text-slate-900 dark:text-slate-100 mb-2">$0</div>
@@ -679,7 +679,7 @@ export default function Home() {
             </div>
 
             {/* Pro Plan */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border-2 border-transparent shadow-xl hover:shadow-2xl transition-all duration-300 group relative" style={{borderImage: 'var(--gradient-accent) 1'}}>
+            <div className="bg-white dark:bg-slate-950 rounded-2xl p-8 border-2 border-transparent shadow-xl hover:shadow-2xl transition-all duration-300 group relative" style={{borderImage: 'var(--gradient-accent) 1'}}>
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg" style={{background: 'var(--gradient-accent)'}}>Most Popular</span>
               </div>
@@ -720,7 +720,7 @@ export default function Home() {
             </div>
 
             {/* Team Plan */}
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 group">
+            <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 group">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Team</h3>
                 <div className="text-5xl font-black text-slate-900 dark:text-slate-100 mb-2">
@@ -762,7 +762,7 @@ export default function Home() {
 
 
       {/* CTA Section */}
-      <section className="py-24 bg-slate-100 dark:bg-slate-800">
+      <section className="py-24 bg-slate-100 dark:bg-slate-950">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="heading-section text-slate-900 dark:text-slate-100 mb-6">
             Your deal pilgrimage
