@@ -166,7 +166,7 @@ export default function Home() {
               ) : (
                 <>
                   <Link href="/auth/firebase-signin">
-                    <Button variant="ghost" className="text-gray-700 hover:text-primary font-medium">
+                    <Button variant="ghost" className="text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary font-medium">
                       Sign In
                     </Button>
                   </Link>

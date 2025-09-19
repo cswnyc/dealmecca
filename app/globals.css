@@ -260,7 +260,7 @@
   }
 
   .nav-link {
-    @apply font-body text-neutral-700 hover:text-primary transition-colors duration-200;
+    @apply font-body text-neutral-700 dark:text-neutral-200 hover:text-primary dark:hover:text-primary transition-colors duration-200;
   }
 
   /* Premium Section Styles */

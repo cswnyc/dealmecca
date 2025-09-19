@@ -43,7 +43,7 @@ export function Logo({
       case 'gradient':
         return 'bg-gradient-primary bg-clip-text text-transparent';
       default:
-        return 'text-primary';
+        return 'text-primary dark:text-white';
     }
   };
 
@@ -116,7 +116,7 @@ export function LogoWithIcon({
       case 'gradient':
         return 'text-secondary';
       default:
-        return 'text-secondary';
+        return 'text-secondary dark:text-white';
     }
   };
 
@@ -188,7 +188,7 @@ export function LogoCompact({
       case 'gradient':
         return 'bg-gradient-primary bg-clip-text text-transparent';
       default:
-        return 'text-primary';
+        return 'text-primary dark:text-white';
     }
   };
 
