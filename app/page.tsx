@@ -13,7 +13,6 @@ import AuthHeader from "@/components/navigation/AuthHeader";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AnimatedText } from "@/components/ui/animated-text";
 import { EnhancedFeatures, HighlightedFeatures } from "@/components/ui/enhanced-features";
-import { StatsSection } from "@/components/ui/stats-section";
 import { useAuth } from "@/lib/auth/firebase-auth";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -549,8 +548,87 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats & Metrics Section */}
-      <StatsSection />
+      {/* Testimonials Section */}
+      <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="heading-section text-slate-900 dark:text-slate-100 mb-6">
+              Trusted by media sales
+              <span className="block text-gradient-primary">
+                professionals everywhere
+              </span>
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              See what sales teams are saying about DealMecca's impact on their success
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <p className="text-slate-700 dark:text-slate-300 mb-8 text-lg leading-relaxed">
+                "DealMecca has completely transformed how I prospect. The mobile app means I can research clients
+                on the go, and the AI recommendations have helped me find prospects I never would have discovered."
+              </p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-full mr-4 flex items-center justify-center" style={{background: 'var(--gradient-accent)'}}>
+                  <span className="text-white font-bold text-lg">SJ</span>
+                </div>
+                <div>
+                  <div className="font-bold text-slate-900 dark:text-slate-100">Sarah Johnson</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Account Executive, Radio Solutions</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <p className="text-slate-700 dark:text-slate-300 mb-8 text-lg leading-relaxed">
+                "Finally, a platform built for how we actually work. The pricing is fair, the data is accurate,
+                and the community insights have given us a real competitive edge in our market."
+              </p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-full mr-4 flex items-center justify-center" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'}}>
+                  <span className="text-white font-bold text-lg">MC</span>
+                </div>
+                <div>
+                  <div className="font-bold text-slate-900 dark:text-slate-100">Mike Chen</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Sales Director, Digital Media Group</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <p className="text-slate-700 dark:text-slate-300 mb-8 text-lg leading-relaxed">
+                "We switched from other platforms and immediately saved $4,000 per year while getting better features.
+                The team dashboard and CRM integration have streamlined our entire sales process."
+              </p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-full mr-4 flex items-center justify-center" style={{background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}>
+                  <span className="text-white font-bold text-lg">LR</span>
+                </div>
+                <div>
+                  <div className="font-bold text-slate-900 dark:text-slate-100">Lisa Rodriguez</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">VP Sales, Podcast Network</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Pricing Section */}
       <section id="pricing" className="py-24 bg-white dark:bg-slate-800">
@@ -682,87 +760,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="heading-section text-slate-900 dark:text-slate-100 mb-6">
-              Trusted by media sales
-              <span className="block text-gradient-primary">
-                professionals everywhere
-              </span>
-            </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-              See what sales teams are saying about DealMecca's impact on their success
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
-              <div className="flex items-center mb-6">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-slate-700 dark:text-slate-300 mb-8 text-lg leading-relaxed">
-                "DealMecca has completely transformed how I prospect. The mobile app means I can research clients
-                on the go, and the AI recommendations have helped me find prospects I never would have discovered."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 rounded-full mr-4 flex items-center justify-center" style={{background: 'var(--gradient-accent)'}}>
-                  <span className="text-white font-bold text-lg">SJ</span>
-                </div>
-                <div>
-                  <div className="font-bold text-slate-900 dark:text-slate-100">Sarah Johnson</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Account Executive, Radio Solutions</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
-              <div className="flex items-center mb-6">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-slate-700 dark:text-slate-300 mb-8 text-lg leading-relaxed">
-                "Finally, a platform built for how we actually work. The pricing is fair, the data is accurate,
-                and the community insights have given us a real competitive edge in our market."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 rounded-full mr-4 flex items-center justify-center" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'}}>
-                  <span className="text-white font-bold text-lg">MC</span>
-                </div>
-                <div>
-                  <div className="font-bold text-slate-900 dark:text-slate-100">Mike Chen</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Sales Director, Digital Media Group</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group">
-              <div className="flex items-center mb-6">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-slate-700 dark:text-slate-300 mb-8 text-lg leading-relaxed">
-                "We switched from other platforms and immediately saved $4,000 per year while getting better features.
-                The team dashboard and CRM integration have streamlined our entire sales process."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 rounded-full mr-4 flex items-center justify-center" style={{background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}>
-                  <span className="text-white font-bold text-lg">LR</span>
-                </div>
-                <div>
-                  <div className="font-bold text-slate-900 dark:text-slate-100">Lisa Rodriguez</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">VP Sales, Podcast Network</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-24 bg-slate-100 dark:bg-slate-800">

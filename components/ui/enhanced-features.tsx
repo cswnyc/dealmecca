@@ -90,39 +90,21 @@ export function EnhancedFeatures() {
   const features = [
     {
       icon: Target,
-      title: 'Verified Contact Intelligence',
-      description: 'Direct emails & phone numbers for decision-makers. 98% accuracy rate, verified within 30 days. Skip gatekeepers, reach budget holders directly.',
+      title: 'Verified Contacts',
+      description: 'Direct emails & phone numbers. 98% accuracy rate.',
       gradient: 'bg-gradient-to-br from-emerald-500 to-emerald-600'
     },
     {
       icon: Building2,
-      title: 'Real-Time Org Charts',
-      description: 'Live organizational structures with budget authority levels. Instant alerts when key personnel change. Decision-maker mapping for complex accounts.',
+      title: 'Live Org Charts',
+      description: 'Real-time decision-maker mapping. Instant personnel alerts.',
       gradient: 'bg-gradient-to-br from-blue-500 to-blue-600'
     },
     {
-      icon: Bell,
-      title: 'Deal Opportunity Alerts',
-      description: 'AI-powered notifications when accounts show buying signals. Budget cycle tracking and renewal alerts. Competitive displacement opportunities.',
-      gradient: 'bg-gradient-to-br from-purple-500 to-purple-600'
-    },
-    {
-      icon: TrendingUp,
-      title: 'Media Spend Intelligence',
-      description: 'Track competitor spending patterns and budget shifts. Industry benchmarking and rate insights. Revenue opportunity sizing for accounts.',
-      gradient: 'bg-gradient-to-br from-orange-500 to-orange-600'
-    },
-    {
       icon: Users,
-      title: 'Seller-Only Community',
-      description: 'No buyers allowed - pure seller insights. Anonymous deal discussions and strategy sharing. 15,000+ media sales professionals.',
-      gradient: 'bg-gradient-to-br from-teal-500 to-teal-600'
-    },
-    {
-      icon: Zap,
-      title: 'Account Change Alerts',
-      description: 'Instant notifications when key personnel move or get promoted. New hire tracking at target accounts. Relationship mapping opportunities.',
-      gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-600'
+      title: 'Deal Insights',
+      description: 'AI-powered opportunities. Community intelligence network.',
+      gradient: 'bg-gradient-to-br from-purple-500 to-purple-600'
     }
   ];
 
@@ -153,13 +135,12 @@ export function EnhancedFeatures() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Stop competing on price alone. Get the intelligence, contacts, and community insights
-            that help you close bigger deals faster.
+            Get the intelligence, contacts, and insights that close bigger deals faster.
           </motion.p>
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <FeatureCard
               key={feature.title}
@@ -208,7 +189,7 @@ export function HighlightedFeatures() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Beyond just sales intelligence - access real-time industry discussions and comprehensive organization data.
+            Access real-time industry discussions and comprehensive organization data.
           </motion.p>
         </motion.div>
 
@@ -244,12 +225,12 @@ export function HighlightedFeatures() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 items-start">
               <motion.a
-                href="/forum"
+                href="/auth/signup"
                 className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Join Discussions
+                Get Started - Join Discussions
                 <motion.div
                   className="ml-2"
                   animate={{ x: [0, 4, 0] }}
@@ -296,12 +277,12 @@ export function HighlightedFeatures() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 items-start">
               <motion.a
-                href="/organizations"
+                href="/auth/signup"
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Explore Organizations
+                Get Started - Explore Organizations
                 <motion.div
                   className="ml-2"
                   animate={{ x: [0, 4, 0] }}
