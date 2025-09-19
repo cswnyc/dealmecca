@@ -61,7 +61,7 @@ export default function FirebaseSignInPage() {
     if (!authLoading && user) {
       const isAdmin = isAdminEmail(user.email || '');
       console.log('👤 User already authenticated:', user.email, 'isAdmin:', isAdmin, 'redirecting to', isAdmin ? 'admin' : 'dashboard');
-      router.push(isAdmin ? '/admin' : '/dashboard');
+      router.push(isAdmin ? '/admin' : '/forum');
     }
   }, [user, authLoading, router, isAdminEmail]);
   
@@ -122,7 +122,7 @@ export default function FirebaseSignInPage() {
 
           // Delay redirect to show confetti
           setTimeout(() => {
-            router.push(isAdmin ? '/admin' : '/dashboard');
+            router.push(isAdmin ? '/admin' : '/forum');
           }, 1500);
 
         } catch (syncError) {
@@ -130,7 +130,7 @@ export default function FirebaseSignInPage() {
           // Still redirect even if sync fails
           const isAdmin = isAdminEmail(result.user.email || '');
           setTimeout(() => {
-            router.push(isAdmin ? '/admin' : '/dashboard');
+            router.push(isAdmin ? '/admin' : '/forum');
           }, 1000);
         }
       }
@@ -185,7 +185,7 @@ export default function FirebaseSignInPage() {
 
         // Redirect based on user type
         setTimeout(() => {
-          router.push(isAdmin ? '/admin' : '/dashboard');
+          router.push(isAdmin ? '/admin' : '/forum');
         }, 500);
       }
 
