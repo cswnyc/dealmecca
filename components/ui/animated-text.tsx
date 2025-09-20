@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 interface AnimatedTextProps {
   text: string;
-  highlightWord: string;
+  highlightWord?: string;
   className?: string;
   highlightClassName?: string;
   typewriterWords?: string[]; // Words to animate with typewriter effect
@@ -19,7 +19,7 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
   }, []);
 
   const words = text.split(' ');
-  const highlightIndex = words.findIndex(word => word.toLowerCase().includes(highlightWord.toLowerCase()));
+  const highlightIndex = highlightWord ? words.findIndex(word => word.toLowerCase().includes(highlightWord.toLowerCase())) : -1;
 
   return (
     <motion.div
@@ -30,7 +30,11 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
     >
       {words.map((word, index) => {
         const isHighlight = index === highlightIndex;
-        const isTypewriter = typewriterWords.some(tw => tw.toLowerCase() === word.toLowerCase());
+        // Check if this word is part of any typewriter phrase
+        const isTypewriter = typewriterWords.some(tw => {
+          const twWords = tw.toLowerCase().split(' ');
+          return twWords.includes(word.toLowerCase());
+        });
 
         if (isHighlight) {
           return (
