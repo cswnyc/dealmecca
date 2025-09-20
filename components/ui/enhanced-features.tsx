@@ -163,7 +163,7 @@ export function HighlightedFeatures() {
   const isInView = useInView(ref, { once: true, amount: 0.1 });
 
   return (
-    <section ref={ref} className="py-20 bg-gradient-to-br from-slate-50 via-teal-50 to-purple-50 dark:bg-slate-950">
+    <section ref={ref} className="py-20 bg-slate-50 dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
