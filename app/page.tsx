@@ -195,8 +195,8 @@ export default function Home() {
                 Deal<span className="text-gradient-primary">Mecca</span>
               </h1>
               <AnimatedText
-                text="close more deals with insider intelligence"
-                highlightWord="close"
+                text="Close more deals with Insider Intelligence"
+                highlightWord="Close"
                 typewriterWords={["Intelligence"]}
                 className="text-xl md:text-2xl text-slate-700 dark:text-slate-200 max-w-3xl mx-auto leading-relaxed"
                 highlightClassName="font-bold text-slate-900 dark:text-white"
