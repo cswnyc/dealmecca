@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Users, Database, MessageSquare, Smartphone, Zap, ArrowRight, Star, Shield, Target, BarChart3, Building2, Lock, LogOut, ChevronDown, TrendingUp, Eye, Clock, Award } from "lucide-react";
+import { CheckCircle, Users, Database, MessageSquare, Smartphone, Zap, ArrowRight, Star, Shield, Target, BarChart3, Building2, Lock, LogOut, ChevronDown, TrendingUp, Eye, Clock, Award, Mail } from "lucide-react";
 import Link from "next/link";
 import { Logo, LogoWithIcon } from "@/components/brand/Logo";
 import { Tagline, TaglineHero, RotatingTagline } from "@/components/brand/Tagline";
@@ -792,41 +792,36 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 rounded-lg" style={{background: 'var(--gradient-primary)'}}></div>
-                <span className="text-xl font-bold text-slate-900 dark:text-slate-100">DealMecca</span>
-              </div>
-              <p className="text-slate-600 dark:text-slate-300">
-                The mecca for media deals. The ultimate destination for media sales professionals.
+              <LogoWithIcon size="sm" />
+              <p className="text-slate-600 dark:text-slate-300 text-sm mt-4">
+                Insider Intelligence that closes deals. The premier platform for media sales professionals.
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4 text-slate-900 dark:text-slate-100">Product</h4>
               <ul className="space-y-2 text-slate-600 dark:text-slate-300">
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">API</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Mobile App</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-slate-900 dark:text-slate-100">Company</h4>
-              <ul className="space-y-2 text-slate-600 dark:text-slate-300">
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Contact</a></li>
+                <li><Link href="/organizations" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Organizations</Link></li>
+                <li><Link href="/events" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Events</Link></li>
+                <li><Link href="/forum" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Forum</Link></li>
+                <li><a href="#features" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Pricing</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4 text-slate-900 dark:text-slate-100">Support</h4>
               <ul className="space-y-2 text-slate-600 dark:text-slate-300">
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Community</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Terms</a></li>
+                <li><a href="mailto:support@getmecca.com" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center">
+                  <Mail className="w-4 h-4 mr-2" />
+                  Contact Us
+                </a></li>
+                <li><Link href="/settings" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Settings</Link></li>
+                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center">
+                  <Shield className="w-4 h-4 mr-2" />
+                  Privacy Policy
+                </a></li>
               </ul>
             </div>
+            <div></div>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-8 pt-8 text-center text-slate-500 dark:text-slate-400">
             <p>&copy; 2024 DealMecca. All rights reserved.</p>
