@@ -790,38 +790,45 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 py-12 px-4 transition-colors duration-300">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            {/* Logo and Description - spans wider on larger screens */}
+            <div className="md:col-span-1">
               <LogoWithIcon size="sm" />
-              <p className="text-slate-600 dark:text-slate-300 text-sm mt-4">
+              <p className="text-slate-600 dark:text-slate-300 text-sm mt-4 leading-relaxed">
                 Insider Intelligence that closes deals. The premier platform for media sales professionals.
               </p>
             </div>
+
+            {/* Product Links */}
             <div>
               <h4 className="font-semibold mb-4 text-slate-900 dark:text-slate-100">Product</h4>
-              <ul className="space-y-2 text-slate-600 dark:text-slate-300">
+              <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                <li><a href="#features" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Pricing</a></li>
                 <li><Link href="/organizations" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Organizations</Link></li>
                 <li><Link href="/events" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Events</Link></li>
                 <li><Link href="/forum" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Forum</Link></li>
-                <li><a href="#features" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Pricing</a></li>
               </ul>
             </div>
+
+            {/* Support Links */}
             <div>
               <h4 className="font-semibold mb-4 text-slate-900 dark:text-slate-100">Support</h4>
-              <ul className="space-y-2 text-slate-600 dark:text-slate-300">
-                <li><a href="mailto:support@getmecca.com" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center">
-                  <Mail className="w-4 h-4 mr-2" />
-                  Contact Us
-                </a></li>
-                <li><Link href="/settings" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Settings</Link></li>
-                <li><a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center">
-                  <Shield className="w-4 h-4 mr-2" />
-                  Privacy Policy
-                </a></li>
+              <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                <li>
+                  <a href="mailto:support@getmecca.com" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center group">
+                    <Mail className="w-4 h-4 mr-2 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors" />
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center group">
+                    <Shield className="w-4 h-4 mr-2 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors" />
+                    Privacy Policy
+                  </a>
+                </li>
               </ul>
             </div>
-            <div></div>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-8 pt-8 text-center text-slate-500 dark:text-slate-400">
             <p>&copy; 2024 DealMecca. All rights reserved.</p>
