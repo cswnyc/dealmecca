@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Users, Database, MessageSquare, Smartphone, Zap, ArrowRight, Star, Shield, Target, BarChart3, Building2, Lock, LogOut, ChevronDown, TrendingUp, Eye, Clock, Award, Mail } from "lucide-react";
+import { CheckCircle, Users, Database, MessageSquare, Smartphone, Zap, ArrowRight, Star, Shield, Target, BarChart3, Building2, Lock, LogOut, ChevronDown, TrendingUp, Eye, Clock, Award, Mail, FileText } from "lucide-react";
 import Link from "next/link";
 import { Logo, LogoWithIcon } from "@/components/brand/Logo";
 import { Tagline, TaglineHero, RotatingTagline } from "@/components/brand/Tagline";
@@ -825,6 +825,12 @@ export default function Home() {
                   <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center group">
                     <Shield className="w-4 h-4 mr-2 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors" />
                     Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center group">
+                    <FileText className="w-4 h-4 mr-2 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors" />
+                    Terms of Service
                   </Link>
                 </li>
               </ul>
