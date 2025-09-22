@@ -24,9 +24,11 @@ export default function InviteOnlyPage() {
         >
           <div className="max-w-7xl mx-auto flex justify-center md:justify-start">
             <div className="flex items-center">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-3">
-                <LogoWithIcon size="md" />
-              </div>
+              <LogoWithIcon
+                size="md"
+                variant="white"
+                className="drop-shadow-lg"
+              />
             </div>
           </div>
         </motion.header>
@@ -39,74 +41,6 @@ export default function InviteOnlyPage() {
 
             {/* Waitlist Form */}
             <WaitlistForm className="mt-16" />
-
-            {/* Additional Info */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 4.5, duration: 0.8 }}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center max-w-3xl mx-auto">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 5, duration: 0.6 }}
-                  className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6"
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">AI</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">AI-Powered Insights</h3>
-                  <p className="text-slate-400 text-sm">Intelligence that identifies the hottest prospects</p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 5.2, duration: 0.6 }}
-                  className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6"
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">⚡</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Real-Time Data</h3>
-                  <p className="text-slate-400 text-sm">Live updates on market movements and opportunities</p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 5.4, duration: 0.6 }}
-                  className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6"
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">📊</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Sales Intelligence</h3>
-                  <p className="text-slate-400 text-sm">Predictive analytics for media sales success</p>
-                </motion.div>
-              </div>
-
-              {/* Beta Access Info */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 5.6, duration: 0.8 }}
-                className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-6 max-w-2xl mx-auto"
-              >
-                <h4 className="text-xl font-semibold text-white mb-3">Why Invite-Only?</h4>
-                <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                  We're carefully onboarding media sales professionals to ensure the best possible experience.
-                  Early access members get priority support, exclusive features, and input on product development.
-                </p>
-                <div className="flex items-center justify-center space-x-6 text-xs text-slate-400">
-                  <span>🔒 Private Beta</span>
-                  <span>👥 Limited Access</span>
-                  <span>🚀 Early Features</span>
-                </div>
-              </motion.div>
-            </motion.div>
           </div>
         </main>
 

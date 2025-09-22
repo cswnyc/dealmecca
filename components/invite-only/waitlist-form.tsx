@@ -121,39 +121,6 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
           </motion.p>
         )}
       </form>
-
-      {/* Social proof */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 4, duration: 0.8 }}
-        className="text-center mt-6"
-      >
-        <p className="text-slate-400 text-sm">
-          Join <span className="text-emerald-400 font-semibold">500+</span> media sales professionals
-        </p>
-        <div className="flex justify-center items-center mt-3 space-x-1">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 4.2 + (i * 0.1), duration: 0.3 }}
-              className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold"
-            >
-              {String.fromCharCode(65 + i)}
-            </motion.div>
-          ))}
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 4.7, duration: 0.5 }}
-            className="text-slate-500 text-xs ml-2"
-          >
-            +495 others
-          </motion.span>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }
