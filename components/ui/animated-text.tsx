@@ -28,85 +28,111 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
-      {words.map((word, index) => {
-        const isHighlight = index === highlightIndex;
-        // Check if this word is part of any typewriter phrase
-        const isTypewriter = typewriterWords.some(tw => {
-          const twWords = tw.toLowerCase().split(' ');
-          return twWords.includes(word.toLowerCase());
+      {(() => {
+        // Find typewriter phrases and their positions
+        const typewriterSegments = [];
+        let processedWords = [...words];
+
+        typewriterWords.forEach(phrase => {
+          const phraseWords = phrase.toLowerCase().split(' ');
+          for (let i = 0; i <= processedWords.length - phraseWords.length; i++) {
+            const segment = processedWords.slice(i, i + phraseWords.length);
+            if (segment.every((word, idx) => word.toLowerCase() === phraseWords[idx])) {
+              typewriterSegments.push({
+                startIndex: i,
+                endIndex: i + phraseWords.length - 1,
+                text: processedWords.slice(i, i + phraseWords.length).join(' '),
+                originalPhrase: phrase
+              });
+              break;
+            }
+          }
         });
 
-        if (isHighlight) {
-          return (
-            <motion.span
-              key={index}
-              className={`inline-block mr-1 ${highlightClassName}`}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-              }}
-              transition={{
-                duration: 0.6,
-                delay: 0.8,
-                ease: "easeOut"
-              }}
-            >
+        const renderedElements = [];
+        let currentIndex = 0;
+
+        while (currentIndex < words.length) {
+          // Check if current word is start of a typewriter segment
+          const typewriterSegment = typewriterSegments.find(seg => seg.startIndex === currentIndex);
+
+          if (typewriterSegment) {
+            // Render typewriter segment as single unit
+            renderedElements.push(
               <motion.span
-                animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                }}
-                transition={{
-                  duration: 3,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  repeatDelay: 1
-                }}
-                className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent bg-[length:200%_100%]"
+                key={`typewriter-${currentIndex}`}
+                className="inline-block mr-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.0 }}
               >
-                {isTypewriter ? (
-                  <TypewriterText text={word} delay={1200 + index * 200} />
-                ) : (
-                  word
-                )}
+                <TypewriterText text={typewriterSegment.text} delay={1200} />
+                {typewriterSegment.endIndex < words.length - 1 && ' '}
               </motion.span>
-              {index < words.length - 1 && ' '}
-            </motion.span>
-          );
+            );
+            currentIndex = typewriterSegment.endIndex + 1;
+          } else {
+            // Render normal word
+            const word = words[currentIndex];
+            const isHighlight = currentIndex === highlightIndex;
+
+            if (isHighlight) {
+              renderedElements.push(
+                <motion.span
+                  key={currentIndex}
+                  className={`inline-block mr-1 ${highlightClassName}`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.8,
+                    ease: "easeOut"
+                  }}
+                >
+                  <motion.span
+                    animate={{
+                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                    }}
+                    transition={{
+                      duration: 3,
+                      ease: "easeInOut",
+                      repeat: Infinity,
+                      repeatDelay: 1
+                    }}
+                    className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent bg-[length:200%_100%]"
+                  >
+                    {word}
+                  </motion.span>
+                  {currentIndex < words.length - 1 && ' '}
+                </motion.span>
+              );
+            } else {
+              renderedElements.push(
+                <motion.span
+                  key={currentIndex}
+                  className="inline-block mr-1"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: currentIndex * 0.1 + 0.2,
+                    ease: "easeOut"
+                  }}
+                >
+                  {word}
+                  {currentIndex < words.length - 1 && ' '}
+                </motion.span>
+              );
+            }
+            currentIndex++;
+          }
         }
 
-        if (isTypewriter) {
-          return (
-            <motion.span
-              key={index}
-              className="inline-block mr-1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.0 + index * 0.1 }}
-            >
-              <TypewriterText text={word} delay={1200 + index * 200} />
-              {index < words.length - 1 && ' '}
-            </motion.span>
-          );
-        }
-
-        return (
-          <motion.span
-            key={index}
-            className="inline-block mr-1"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.5,
-              delay: index * 0.1 + 0.2,
-              ease: "easeOut"
-            }}
-          >
-            {word}
-            {index < words.length - 1 && ' '}
-          </motion.span>
-        );
-      })}
+        return renderedElements;
+      })()}
     </motion.div>
   );
 }
