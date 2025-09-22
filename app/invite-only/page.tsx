@@ -5,14 +5,11 @@ import Link from 'next/link';
 import { LogoWithIcon } from '@/components/brand/Logo';
 import { GradientHero } from '@/components/invite-only/gradient-hero';
 import { WaitlistForm } from '@/components/invite-only/waitlist-form';
-import { AnimatedBackground } from '@/components/invite-only/animated-bg';
 
 export default function InviteOnlyPage() {
   return (
-    <div className="min-h-screen bg-slate-900 text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <AnimatedBackground />
-
+    <div className="min-h-screen bg-slate-900 text-white relative overflow-hidden"
+         style={{ isolation: 'isolate', zIndex: 9999 }}>
       {/* Content Container */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Minimal Header */}
@@ -48,7 +45,7 @@ export default function InviteOnlyPage() {
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 6, duration: 0.8 }}
+          transition={{ delay: 3, duration: 0.6 }}
           className="p-6 md:p-8"
         >
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">

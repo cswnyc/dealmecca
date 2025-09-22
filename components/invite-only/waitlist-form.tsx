@@ -72,13 +72,12 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 3.5, duration: 0.8 }}
+      transition={{ delay: 2, duration: 0.6 }}
       className={`max-w-md mx-auto ${className}`}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur-xl"></div>
-          <div className="relative bg-slate-800/50 backdrop-blur-sm border border-slate-600/50 rounded-2xl p-1">
+          <div className="relative bg-slate-800/60 border border-slate-600/50 rounded-2xl p-1">
             <div className="flex items-center">
               <div className="flex-1 relative">
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />

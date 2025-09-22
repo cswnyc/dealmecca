@@ -61,9 +61,9 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     color: 'transparent',
-                    backgroundSize: '400% 400%',
-                    animation: 'gradientShift 3s ease-in-out infinite',
-                    animationDelay: `${letterIndex * 0.05}s`,
+                    backgroundSize: '200% 200%',
+                    animation: 'gradientShift 4s ease-in-out infinite',
+                    animationDelay: `${letterIndex * 0.02}s`,
                     textShadow: '0 0 30px rgba(16, 185, 129, 0.3)',
                     filter: 'brightness(1.2) contrast(1.1)'
                   }}
@@ -75,27 +75,20 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
           ))}
         </motion.div>
 
-        {/* Glowing background effect */}
-        <motion.div
-          className="absolute inset-0 -z-10"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 0.3, scale: 1 }}
-          transition={{ delay: 1, duration: 2 }}
-        >
+        {/* Static background effect */}
+        <div className="absolute inset-0 -z-10 opacity-20">
           <div
-            className="w-full h-full blur-3xl"
+            className="w-full h-full blur-2xl"
             style={{
               background: `radial-gradient(
                 ellipse at center,
-                rgba(16, 185, 129, 0.3) 0%,
-                rgba(59, 130, 246, 0.2) 25%,
-                rgba(139, 92, 246, 0.2) 50%,
-                rgba(236, 72, 153, 0.2) 75%,
+                rgba(16, 185, 129, 0.2) 0%,
+                rgba(59, 130, 246, 0.1) 50%,
                 transparent 100%
               )`
             }}
           />
-        </motion.div>
+        </div>
       </div>
 
       {/* Subtitle with typewriter effect */}
@@ -103,7 +96,7 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
         className="mt-8 md:mt-12"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2, duration: 0.8 }}
+        transition={{ delay: 1, duration: 0.6 }}
       >
         <p className="text-lg md:text-xl lg:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
           The intelligence platform that{' '}
@@ -111,7 +104,7 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
             className="text-emerald-400 font-semibold"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 2.5, duration: 0.5 }}
+            transition={{ delay: 1.5, duration: 0.4 }}
           >
             closes deals faster
           </motion.span>
@@ -121,7 +114,7 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
           className="text-md md:text-lg text-slate-400 mt-4 max-w-2xl mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 3, duration: 0.8 }}
+          transition={{ delay: 2, duration: 0.6 }}
         >
           Limited beta access for media sales professionals
         </motion.p>
@@ -129,25 +122,16 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
 
       <style jsx>{`
         @keyframes gradientShift {
-          0% {
+          0%, 100% {
             background-position: 0% 50%;
-          }
-          25% {
-            background-position: 100% 50%;
           }
           50% {
-            background-position: 100% 100%;
-          }
-          75% {
-            background-position: 0% 100%;
-          }
-          100% {
-            background-position: 0% 50%;
+            background-position: 100% 50%;
           }
         }
 
         .gradient-text {
-          background-size: 400% 400% !important;
+          background-size: 200% 200% !important;
           -webkit-background-clip: text !important;
           background-clip: text !important;
           -webkit-text-fill-color: transparent !important;

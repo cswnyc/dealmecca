@@ -42,6 +42,38 @@ export default function InviteOnlyLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Hide any potential global UI elements */
+            body::before,
+            body::after,
+            html::before,
+            html::after {
+              display: none !important;
+            }
+
+            /* Specifically target common auth/PWA button selectors */
+            button[aria-label*="Sign"],
+            button[aria-label*="Get Started"],
+            button[data-testid*="auth"],
+            div[data-testid*="auth"],
+            .auth-buttons,
+            .sign-in-button,
+            .get-started-button {
+              display: none !important;
+            }
+
+            /* Hide any fixed positioned elements at bottom */
+            *[style*="bottom: 0"],
+            *[style*="bottom:0"],
+            .fixed.bottom-0,
+            .fixed.bottom-4 {
+              display: none !important;
+            }
+          `
+        }} />
+      </head>
       <body className={`${inter.className} min-h-screen overflow-x-hidden`}>
         {children}
       </body>
