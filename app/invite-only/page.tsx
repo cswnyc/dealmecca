@@ -6,7 +6,6 @@ import { LogoWithIcon } from '@/components/brand/Logo';
 import { GradientHero } from '@/components/invite-only/gradient-hero';
 import { WaitlistForm } from '@/components/invite-only/waitlist-form';
 import { AnimatedBackground } from '@/components/invite-only/animated-bg';
-import { Linkedin, Twitter, Mail } from 'lucide-react';
 
 export default function InviteOnlyPage() {
   return (
@@ -23,41 +22,11 @@ export default function InviteOnlyPage() {
           transition={{ duration: 0.8 }}
           className="p-6 md:p-8"
         >
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <Link href="/" className="block">
-              <LogoWithIcon size="sm" />
-            </Link>
-
-            {/* Social Links */}
-            <div className="hidden md:flex items-center space-x-4">
-              <motion.a
-                href="https://linkedin.com/company/dealmecca"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-400 hover:text-emerald-400 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Linkedin className="w-5 h-5" />
-              </motion.a>
-              <motion.a
-                href="https://twitter.com/dealmecca"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-400 hover:text-emerald-400 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Twitter className="w-5 h-5" />
-              </motion.a>
-              <motion.a
-                href="mailto:hello@getmecca.com"
-                className="text-slate-400 hover:text-emerald-400 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Mail className="w-5 h-5" />
-              </motion.a>
+          <div className="max-w-7xl mx-auto flex justify-center md:justify-start">
+            <div className="flex items-center">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-3">
+                <LogoWithIcon size="md" />
+              </div>
             </div>
           </div>
         </motion.header>
@@ -158,28 +127,8 @@ export default function InviteOnlyPage() {
               </Link>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center">
               <span className="text-slate-500 text-sm">© 2024 DealMecca</span>
-
-              {/* Mobile Social Links */}
-              <div className="flex md:hidden items-center space-x-3">
-                <a
-                  href="https://linkedin.com/company/dealmecca"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-emerald-400 transition-colors"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://twitter.com/dealmecca"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-emerald-400 transition-colors"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-              </div>
             </div>
           </div>
         </motion.footer>

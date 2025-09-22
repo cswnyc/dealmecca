@@ -55,18 +55,17 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
                   initial="hidden"
                   animate={isVisible ? "visible" : "hidden"}
                   style={{
-                    background: `linear-gradient(
-                      45deg,
-                      hsl(${(wordIndex * 50 + letterIndex * 15) % 360}, 80%, 60%),
-                      hsl(${(wordIndex * 50 + letterIndex * 15 + 60) % 360}, 80%, 70%),
-                      hsl(${(wordIndex * 50 + letterIndex * 15 + 120) % 360}, 80%, 60%)
-                    )`,
+                    background: wordIndex === 0
+                      ? `linear-gradient(135deg, #10b981 0%, #3b82f6 25%, #8b5cf6 50%, #ef4444 75%, #f59e0b 100%)`
+                      : `linear-gradient(135deg, #06b6d4 0%, #8b5cf6 25%, #ec4899 50%, #10b981 75%, #3b82f6 100%)`,
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     color: 'transparent',
-                    backgroundSize: '300% 300%',
-                    animation: 'gradientShift 4s ease-in-out infinite',
-                    animationDelay: `${letterIndex * 0.1}s`
+                    backgroundSize: '400% 400%',
+                    animation: 'gradientShift 3s ease-in-out infinite',
+                    animationDelay: `${letterIndex * 0.05}s`,
+                    textShadow: '0 0 30px rgba(16, 185, 129, 0.3)',
+                    filter: 'brightness(1.2) contrast(1.1)'
                   }}
                 >
                   {letter}
@@ -130,16 +129,35 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
 
       <style jsx>{`
         @keyframes gradientShift {
-          0%, 100% {
+          0% {
             background-position: 0% 50%;
           }
-          50% {
+          25% {
             background-position: 100% 50%;
+          }
+          50% {
+            background-position: 100% 100%;
+          }
+          75% {
+            background-position: 0% 100%;
+          }
+          100% {
+            background-position: 0% 50%;
           }
         }
 
         .gradient-text {
-          background-size: 300% 300% !important;
+          background-size: 400% 400% !important;
+          -webkit-background-clip: text !important;
+          background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+        }
+
+        @supports not (-webkit-background-clip: text) {
+          .gradient-text {
+            background: linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6) !important;
+            color: #10b981 !important;
+          }
         }
       `}</style>
     </div>
