@@ -822,10 +822,10 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center group">
+                  <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center group">
                     <Shield className="w-4 h-4 mr-2 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors" />
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
