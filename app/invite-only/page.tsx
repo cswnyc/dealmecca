@@ -8,10 +8,10 @@ import { WaitlistForm } from '@/components/invite-only/waitlist-form';
 
 export default function InviteOnlyPage() {
   return (
-    <div className="min-h-screen bg-slate-900 text-white relative overflow-hidden"
+    <div className="h-screen bg-slate-900 text-white relative overflow-hidden"
          style={{ isolation: 'isolate', zIndex: 9999 }}>
       {/* Content Container */}
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 h-full flex flex-col">
         {/* Minimal Header */}
         <motion.header
           initial={{ opacity: 0, y: -20 }}

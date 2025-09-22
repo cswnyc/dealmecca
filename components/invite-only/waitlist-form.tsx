@@ -86,7 +86,7 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full bg-transparent text-white placeholder-slate-400 pl-12 pr-4 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm md:text-base"
+                  className="w-full bg-transparent text-white placeholder-slate-400 pl-12 pr-20 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm md:text-base"
                   required
                 />
               </div>
