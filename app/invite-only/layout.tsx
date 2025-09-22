@@ -45,6 +45,12 @@ export default function InviteOnlyLayout({
       <head>
         <style dangerouslySetInnerHTML={{
           __html: `
+            /* Force dark background for invite-only page */
+            body {
+              background-color: #0f172a !important; /* slate-900 */
+              background-image: none !important;
+            }
+
             /* Hide any potential global UI elements */
             body::before,
             body::after,
@@ -70,6 +76,13 @@ export default function InviteOnlyLayout({
             .fixed.bottom-0,
             .fixed.bottom-4 {
               display: none !important;
+            }
+
+            /* Override any white backgrounds that might appear */
+            main,
+            .main,
+            #__next {
+              background-color: transparent !important;
             }
           `
         }} />
