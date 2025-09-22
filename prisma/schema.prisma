@@ -1470,6 +1470,26 @@ model CodeGeneration {
   @@index([forumPostId])
 }
 
+model WaitlistEmail {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("invite-only")
+  status    WaitlistStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum WaitlistStatus {
+  PENDING
+  INVITED
+  REGISTERED
+  DECLINED
+}
+
 enum PartnershipType {
   AGENCY_CLIENT
   MEDIA_PARTNERSHIP

@@ -28,16 +28,35 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
     }
 
     try {
-      // Simulate API call - replace with actual endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          source: 'invite-only',
+        }),
+      });
 
-      // TODO: Replace with actual API call to save email
-      console.log('Waitlist email:', email);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to join waitlist');
+      }
+
+      // Handle already registered case
+      if (data.status === 'already_exists') {
+        setError('This email is already registered for early access');
+        setIsLoading(false);
+        return;
+      }
 
       setIsSubmitted(true);
       setEmail('');
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      console.error('Waitlist signup error:', err);
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
