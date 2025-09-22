@@ -86,14 +86,14 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full bg-transparent text-white placeholder-slate-400 pl-12 pr-20 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm md:text-base"
+                  className="w-full bg-transparent text-white placeholder-slate-400 pl-12 pr-4 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm md:text-base"
                   required
                 />
               </div>
               <motion.button
                 type="submit"
                 disabled={isLoading || !email}
-                className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-6 py-4 rounded-xl font-semibold text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 transition-all hover:shadow-lg hover:shadow-emerald-500/25"
+                className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-4 py-4 rounded-xl font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 transition-all hover:shadow-lg hover:shadow-emerald-500/25"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -101,7 +101,7 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Get Early Access</span>
+                    <span>Join</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
