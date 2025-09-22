@@ -8,7 +8,7 @@ import { WaitlistForm } from '@/components/invite-only/waitlist-form';
 
 export default function InviteOnlyPage() {
   return (
-    <div className="h-screen bg-slate-900 text-white relative overflow-hidden"
+    <div className="h-dvh bg-slate-900 text-white relative overflow-hidden"
          style={{ isolation: 'isolate', zIndex: 9999 }}>
       {/* Content Container */}
       <div className="relative z-10 h-full flex flex-col">
@@ -46,7 +46,7 @@ export default function InviteOnlyPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 3, duration: 0.6 }}
-          className="p-6 md:p-8"
+          className="pt-6 pb-4 px-6 md:pt-8 md:pb-6 md:px-8"
         >
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-6 text-slate-400 text-sm">
