@@ -161,7 +161,7 @@ export default function TermsPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">GENERAL TERMS</h2>
             <p className="text-slate-700 dark:text-slate-300 mb-4 leading-relaxed">
-              We may provide you with notices, including those regarding changes to the Terms of Service by email, regular mail or communications through the Service. If you wish to contact us, you may do so through your User account or by sending us an email at legal@dealmecca.com.
+              We may provide you with notices, including those regarding changes to the Terms of Service by email, regular mail or communications through the Service. If you wish to contact us, you may do so through your User account or by sending us an email at legal@getmecca.com.
             </p>
             <p className="text-slate-700 dark:text-slate-300 mb-4 leading-relaxed">
               These Terms of Service contain the entire agreement between you and us regarding the use of the Service, and supersede any prior agreement between you and us on such subject matter. Any failure on our part to exercise or enforce any right or provision of these Terms of Service does not constitute a waiver of such right or provision.
@@ -175,13 +175,13 @@ export default function TermsPage() {
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Contact Information</h2>
             <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg">
               <p className="text-slate-700 dark:text-slate-300 mb-2">
-                <strong>Legal inquiries:</strong> <a href="mailto:legal@dealmecca.com" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">legal@dealmecca.com</a>
+                <strong>Legal inquiries:</strong> <a href="mailto:legal@getmecca.com" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">legal@getmecca.com</a>
               </p>
               <p className="text-slate-700 dark:text-slate-300 mb-2">
-                <strong>Customer support:</strong> <a href="mailto:support@dealmecca.com" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">support@dealmecca.com</a>
+                <strong>Customer support:</strong> <a href="mailto:support@getmecca.com" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">support@getmecca.com</a>
               </p>
               <p className="text-slate-700 dark:text-slate-300">
-                <strong>General inquiries:</strong> <a href="mailto:hello@dealmecca.com" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">hello@dealmecca.com</a>
+                <strong>General inquiries:</strong> <a href="mailto:hello@getmecca.com" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">hello@getmecca.com</a>
               </p>
             </div>
             <p className="text-slate-600 dark:text-slate-400 text-sm mt-4 italic">

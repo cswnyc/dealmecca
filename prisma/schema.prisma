@@ -9,12 +9,21 @@ datasource db {
 
 model User {
   id                                                              String                   @id @default(cuid())
-  email                                                           String                   @unique
+  email                                                           String?                  @unique
+  firebaseUid                                                     String?                  @unique
   name                                                            String?
   password                                                        String?
   role                                                            Role                     @default(FREE)
   subscriptionTier                                                SubscriptionTier         @default(FREE)
+
+  // Anonymous user fields
+  isAnonymous                                                     Boolean                  @default(true)
+  anonymousUsername                                               String?                  @unique
+  avatarSeed                                                      String?
+
+  // Legacy field (keeping for backward compatibility)
   anonymousHandle                                                 String?                  @unique
+
   searchesUsed                                                    Int                      @default(0)
   searchesResetAt                                                 DateTime                 @default(now())
   createdAt                                                       DateTime                 @default(now())

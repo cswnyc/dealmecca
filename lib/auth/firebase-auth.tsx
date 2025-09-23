@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
-  User as FirebaseUser,
+  type User as FirebaseUser,
   onAuthStateChanged,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
@@ -157,6 +157,15 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         break;
       case 'auth/network-request-failed':
         errorMessage = 'Network error. Please check your connection and try again.';
+        break;
+      case 'auth/email-already-in-use':
+        errorMessage = 'An account with this email already exists. Please sign in instead or use a different email.';
+        break;
+      case 'auth/weak-password':
+        errorMessage = 'Password is too weak. Please choose a stronger password.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Please enter a valid email address.';
         break;
       default:
         errorMessage = `Authentication error: ${authError.message}`;

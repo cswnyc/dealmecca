@@ -1,15 +1,17 @@
 // Firebase configuration and initialization
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { 
-  getAuth, 
-  connectAuthEmulator, 
+import {
+  getAuth,
+  connectAuthEmulator,
   GoogleAuthProvider,
   OAuthProvider,
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   onAuthStateChanged,
-  signOut
+  signOut,
+  signInAnonymously,
+  linkWithPopup,
 } from 'firebase/auth';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
@@ -67,6 +69,28 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
 }
 */
 
+// Anonymous authentication functions
+export const signInUserAnonymously = async () => {
+  if (!auth) throw new Error('Firebase auth not initialized');
+  return await signInAnonymously(auth);
+};
+
+export const linkAnonymousToLinkedIn = async (user: any) => {
+  if (!auth) throw new Error('Firebase auth not initialized');
+  const provider = new OAuthProvider('linkedin.com');
+  provider.addScope('profile');
+  provider.addScope('email');
+  return await linkWithPopup(user, provider);
+};
+
+// LinkedIn OAuth provider setup
+export const createLinkedInProvider = () => {
+  const provider = new OAuthProvider('linkedin.com');
+  provider.addScope('profile');
+  provider.addScope('email');
+  return provider;
+};
+
 // Export auth functions for direct use
 export {
   GoogleAuthProvider,
@@ -75,8 +99,12 @@ export {
   signInWithRedirect,
   getRedirectResult,
   onAuthStateChanged,
-  signOut
+  signOut,
+  signInAnonymously,
+  linkWithPopup
 };
+
+// User type temporarily removed to fix import issues
 
 export { app };
 export default app;
