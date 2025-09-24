@@ -48,6 +48,9 @@ export async function GET(request: NextRequest) {
         subscriptionStatus: true,
         currentPeriodStart: true,
         currentPeriodEnd: true,
+        anonymousUsername: true,
+        avatarSeed: true,
+        isAnonymous: true,
         // Include some statistics
         _count: {
           select: {
@@ -88,6 +91,9 @@ export async function GET(request: NextRequest) {
       annualRevenueGoal: user.annualRevenueGoal,
       currentPeriodStart: user.currentPeriodStart?.toISOString(),
       currentPeriodEnd: user.currentPeriodEnd?.toISOString(),
+      anonymousUsername: user.anonymousUsername,
+      avatarSeed: user.avatarSeed,
+      isAnonymous: user.isAnonymous,
       stats: {
         forumPosts: user._count.forumPosts,
         forumComments: user._count.forumComments,

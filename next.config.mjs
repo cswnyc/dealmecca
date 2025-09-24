@@ -1,8 +1,14 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
+  // Disable host validation in development
+  ...(process.env.NODE_ENV === 'development' && {
+    experimental: {
+      allowedRevalidateHeaderKeys: [],
+    },
+  }),
   env: {
     NEXT_PUBLIC_APP_NAME: "DealMecca",
-    NEXT_PUBLIC_BRAND_NAME: "DealMecca", 
+    NEXT_PUBLIC_BRAND_NAME: "DealMecca",
     NEXT_PUBLIC_TAGLINE: "The mecca for media deals",
     NEXT_PUBLIC_SITE_URL: "https://dealmecca.com",
   },

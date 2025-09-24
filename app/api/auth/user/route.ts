@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { generateAnonymousProfile } from '@/lib/user-generator';
 
 const prisma = new PrismaClient();
 
@@ -45,13 +46,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create new user
+    // Generate anonymous profile if needed
+    const anonymousProfile = generateAnonymousProfile(firebaseUid);
+
+    // Create new user with anonymous profile
     user = await prisma.user.create({
       data: {
         firebaseUid,
         email: email || null,
         isAnonymous: isAnonymous ?? true,
-        // Don't generate username/avatar here - let the hook handle it
+        anonymousUsername: anonymousProfile.username,
+        avatarSeed: firebaseUid,
       },
     });
 

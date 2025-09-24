@@ -8,11 +8,12 @@ import { signOut as firebaseSignOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar } from '@/components/user/Avatar';
+import { generateAnonymousProfile } from '@/lib/user-generator';
 import {
   ChevronUp,
   ChevronDown,
   Star,
-  Download,
   Receipt,
   Settings,
   HelpCircle,
@@ -29,6 +30,9 @@ interface UserProfile {
   role: string;
   subscriptionTier: string;
   createdAt: string;
+  anonymousUsername?: string;
+  avatarSeed?: string;
+  isAnonymous?: boolean;
 }
 
 interface UserStats {
@@ -114,6 +118,28 @@ export function UserProfileCard() {
         totalBookmarks: 0
       });
     }
+  };
+
+  const getDisplayName = (): string => {
+    // Priority: Real name → Anonymous username → Display name → Email prefix → Default
+    if (profile?.name && !profile?.isAnonymous) {
+      return profile.name;
+    }
+    if (profile?.anonymousUsername) {
+      return profile.anonymousUsername;
+    }
+    if (firebaseUser?.displayName) {
+      return firebaseUser.displayName;
+    }
+    if (firebaseUser?.email) {
+      return firebaseUser.email.split('@')[0];
+    }
+    // Generate temporary anonymous name if none exists
+    if (firebaseUser?.uid || profile?.id) {
+      const tempProfile = generateAnonymousProfile(firebaseUser?.uid || profile?.id || 'temp');
+      return tempProfile.username;
+    }
+    return 'User';
   };
 
   const getSubscriptionInfo = (tier: string) => {
@@ -222,9 +248,23 @@ export function UserProfileCard() {
       >
         {/* Avatar */}
         <div className="relative">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-            <User className="w-5 h-5 text-white" />
-          </div>
+          {/* Use OAuth profile photo if available, otherwise generated avatar */}
+          {firebaseUser?.photoURL ? (
+            <img
+              src={firebaseUser.photoURL}
+              alt="Profile"
+              className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 flex-shrink-0">
+              <Avatar
+                userId={firebaseUser?.uid || profile?.id || 'default'}
+                size={40}
+                className="rounded-full"
+                alt="User avatar"
+              />
+            </div>
+          )}
           {/* Online indicator - small dot */}
           <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
         </div>
@@ -232,7 +272,7 @@ export function UserProfileCard() {
         {/* User Name - Clean and prominent */}
         <div className="flex-1 text-left">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {profile?.name || firebaseUser?.displayName || firebaseUser?.email?.split('@')[0] || 'User'}
+            {getDisplayName()}
           </p>
         </div>
 
@@ -301,15 +341,7 @@ export function UserProfileCard() {
               <Star className="w-4 h-4 mr-3" />
               My Rewards
             </button>
-            
-            <button
-              onClick={() => handleNavigation('/exports')}
-              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <Download className="w-4 h-4 mr-3" />
-              My Downloads
-            </button>
-            
+
             <button
               onClick={() => handleNavigation('/billing')}
               className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

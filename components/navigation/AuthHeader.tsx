@@ -42,7 +42,7 @@ export default function AuthHeader() {
     )
   }
 
-  // Hide AuthHeader on homepage, forum, organizations, events, admin, auth, privacy, terms, and invite-only pages to avoid duplicate user menus
+  // Hide AuthHeader on homepage, forum, organizations, events, admin, auth, privacy, terms, invite-only, and new user pages to avoid duplicate user menus
   if (pathname === '/' ||
       pathname === '/forum' ||
       pathname.startsWith('/forum/') ||
@@ -53,7 +53,12 @@ export default function AuthHeader() {
       pathname.startsWith('/auth/') ||
       pathname === '/privacy' ||
       pathname === '/terms' ||
-      pathname === '/invite-only') {
+      pathname === '/invite-only' ||
+      pathname === '/rewards' ||
+      pathname === '/billing' ||
+      pathname === '/help' ||
+      pathname === '/contact' ||
+      pathname === '/settings') {
     return null;
   }
 

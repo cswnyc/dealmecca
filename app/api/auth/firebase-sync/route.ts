@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { generateAnonymousProfile } from '@/lib/user-generator';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +20,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
+      // Generate anonymous profile for new users
+      const anonymousProfile = generateAnonymousProfile(uid);
+
       // Create new user in database
       user = await prisma.user.create({
         data: {
@@ -28,6 +32,9 @@ export async function POST(request: NextRequest) {
           role: 'FREE',
           subscriptionTier: 'FREE',
           subscriptionStatus: 'ACTIVE',
+          isAnonymous: !displayName, // Anonymous if no display name
+          anonymousUsername: anonymousProfile.username,
+          avatarSeed: uid,
           createdAt: new Date(),
           updatedAt: new Date()
         }
