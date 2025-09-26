@@ -179,13 +179,18 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     try {
       setError(null);
       setLoading(true);
-      
+
       // Handle case where Firebase is not configured
       if (!auth) {
         setError('Authentication is not configured. Please contact support.');
         return null;
       }
-      
+
+      // Debug logging for production
+      console.log('🔐 Firebase Auth Domain:', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN);
+      console.log('🔐 Firebase Project ID:', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+      console.log('🔐 Current URL:', typeof window !== 'undefined' ? window.location.href : 'server');
+
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
