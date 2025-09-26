@@ -1,0 +1,498 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import {
+  Download,
+  Users,
+  Search,
+  Filter,
+  MoreVertical,
+  Edit,
+  Mail,
+  Calendar,
+  Activity,
+  Crown,
+  Shield,
+  User
+} from 'lucide-react';
+
+interface UserData {
+  id: string;
+  email: string;
+  name: string;
+  firebaseUid: string;
+  role: 'FREE' | 'PREMIUM' | 'ADMIN';
+  subscriptionTier: 'FREE' | 'PREMIUM' | 'ENTERPRISE';
+  subscriptionStatus: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'PAST_DUE';
+  isAnonymous: boolean;
+  anonymousUsername: string;
+  searchesUsed: number;
+  dashboardVisits: number;
+  searchesThisMonth: number;
+  achievementPoints: number;
+  stripeCustomerId: string;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastDashboardVisit: string;
+  _count: {
+    comments: number;
+    posts: number;
+    bookmarks: number;
+    follows: number;
+  };
+}
+
+interface UserStats {
+  total: number;
+  activeUsers: number;
+  byRole: Record<string, number>;
+  bySubscriptionTier: Record<string, number>;
+  bySubscriptionStatus: Record<string, number>;
+}
+
+interface UsersResponse {
+  users: UserData[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  stats?: UserStats;
+}
+
+export default function UsersAdminPage() {
+  const [data, setData] = useState<UsersResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [subscriptionFilter, setSubscriptionFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [searchTerm, roleFilter, subscriptionFilter, statusFilter, currentPage]);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '20',
+        include_stats: currentPage === 1 ? 'true' : 'false'
+      });
+
+      if (searchTerm) params.append('search', searchTerm);
+      if (roleFilter) params.append('role', roleFilter);
+      if (subscriptionFilter) params.append('subscriptionTier', subscriptionFilter);
+      if (statusFilter) params.append('subscriptionStatus', statusFilter);
+
+      const response = await fetch(`/api/admin/users?${params.toString()}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+
+      const userData = await response.json();
+      setData(userData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const exportCSV = async () => {
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'export' })
+      });
+
+      if (!response.ok) throw new Error('Export failed');
+
+      const { users } = await response.json();
+
+      const csvContent = [
+        ['ID', 'Email', 'Name', 'Role', 'Subscription Tier', 'Status', 'Anonymous Username', 'Searches Used', 'Dashboard Visits', 'Created At'],
+        ...users.map((user: UserData) => [
+          user.id,
+          user.email || '',
+          user.name || '',
+          user.role,
+          user.subscriptionTier,
+          user.subscriptionStatus,
+          user.anonymousUsername || '',
+          user.searchesUsed || 0,
+          user.dashboardVisits || 0,
+          new Date(user.createdAt).toLocaleDateString()
+        ])
+      ].map(row => row.join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
+
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case 'ADMIN': return <Crown className="w-4 h-4 text-yellow-600" />;
+      case 'PREMIUM': return <Shield className="w-4 h-4 text-blue-600" />;
+      default: return <User className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'ADMIN': return 'bg-yellow-100 text-yellow-800';
+      case 'PREMIUM': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'ACTIVE': return 'bg-green-100 text-green-800';
+      case 'INACTIVE': return 'bg-gray-100 text-gray-800';
+      case 'CANCELLED': return 'bg-red-100 text-red-800';
+      case 'PAST_DUE': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  if (loading && !data) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+          <div className="h-96 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-red-800 font-semibold">Error</h3>
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={fetchUsers}
+            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+          <button
+            onClick={exportCSV}
+            className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export CSV</span>
+          </button>
+        </div>
+
+        {/* Stats Cards */}
+        {data?.stats && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-sm border"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center">
+                <Users className="w-8 h-8 text-emerald-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Total Users</p>
+                  <p className="text-2xl font-bold text-gray-900">{data.stats.total}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-sm border"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center">
+                <Activity className="w-8 h-8 text-green-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Active (30 days)</p>
+                  <p className="text-2xl font-bold text-gray-900">{data.stats.activeUsers}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-sm border"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center">
+                <Shield className="w-8 h-8 text-blue-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Premium Users</p>
+                  <p className="text-2xl font-bold text-gray-900">{data.stats.bySubscriptionTier.PREMIUM || 0}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-sm border"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center">
+                <Crown className="w-8 h-8 text-yellow-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Admin Users</p>
+                  <p className="text-2xl font-bold text-gray-900">{data.stats.byRole.ADMIN || 0}</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Search and Filters */}
+        <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-3 py-2 w-full border border-gray-300 rounded-md text-sm"
+              />
+            </div>
+
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="">All Roles</option>
+              <option value="FREE">Free</option>
+              <option value="PREMIUM">Premium</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+
+            <select
+              value={subscriptionFilter}
+              onChange={(e) => setSubscriptionFilter(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="">All Tiers</option>
+              <option value="FREE">Free Tier</option>
+              <option value="PREMIUM">Premium Tier</option>
+              <option value="ENTERPRISE">Enterprise Tier</option>
+            </select>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="">All Statuses</option>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+              <option value="CANCELLED">Cancelled</option>
+              <option value="PAST_DUE">Past Due</option>
+            </select>
+
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setRoleFilter('');
+                setSubscriptionFilter('');
+                setStatusFilter('');
+              }}
+              className="px-3 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-sm"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        {/* Users Table */}
+        <div className="bg-white rounded-lg shadow-sm border">
+          <div className="px-6 py-4 border-b">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Users ({data?.pagination.total || 0} total)
+            </h2>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Role & Tier
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Activity
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {data?.users.map((user) => (
+                  <motion.tr
+                    key={user.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+                          {getRoleIcon(user.role)}
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.name || user.email || 'Anonymous User'}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {user.email || user.anonymousUsername || 'No email'}
+                          </div>
+                          {user.isAnonymous && (
+                            <div className="text-xs text-purple-600">Anonymous</div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="space-y-1">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(user.role)}`}>
+                          {user.role}
+                        </span>
+                        <div className="text-xs text-gray-500">{user.subscriptionTier}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(user.subscriptionStatus)}`}>
+                        {user.subscriptionStatus}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="space-y-1">
+                        <div>{user.searchesThisMonth || 0} searches</div>
+                        <div>{user.dashboardVisits || 0} visits</div>
+                        <div>{user._count.posts || 0} posts</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="space-y-1">
+                        <div>{formatDate(user.createdAt)}</div>
+                        {user.lastDashboardVisit && (
+                          <div className="text-xs">Last: {formatDate(user.lastDashboardVisit)}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button className="text-gray-400 hover:text-gray-600">
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+
+            {data?.users.length === 0 && (
+              <div className="px-6 py-12 text-center">
+                <p className="text-gray-500">No users found matching the current filters.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination */}
+          {data?.pagination && data.pagination.pages > 1 && (
+            <div className="px-6 py-4 border-t flex items-center justify-between">
+              <div className="text-sm text-gray-500">
+                Showing {((data.pagination.page - 1) * data.pagination.limit) + 1} to{' '}
+                {Math.min(data.pagination.page * data.pagination.limit, data.pagination.total)} of{' '}
+                {data.pagination.total} users
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-sm border rounded disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1 text-sm">
+                  Page {currentPage} of {data.pagination.pages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(Math.min(data.pagination.pages, currentPage + 1))}
+                  disabled={currentPage === data.pagination.pages}
+                  className="px-3 py-1 text-sm border rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}

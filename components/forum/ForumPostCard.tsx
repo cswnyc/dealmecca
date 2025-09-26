@@ -157,10 +157,10 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showMentions, setShowMentions] = useState(false);
+  const [currentUserIdentity, setCurrentUserIdentity] = useState<{username: string, avatarId: string} | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [currentUserIdentity, setCurrentUserIdentity] = useState<{username: string, avatarId: string} | null>(null);
 
   // Helper functions to parse JSON string fields
   const parseListItems = (listItems?: string): string[] => {
@@ -203,22 +203,37 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
 
   // Fetch current user's anonymous identity for their own comments
   useEffect(() => {
+    console.log('🔄 ForumPostCard component loaded, Firebase user:', firebaseUser?.uid);
+
     const fetchCurrentUserIdentity = async () => {
       if (firebaseUser?.uid) {
+        console.log('🔍 Fetching user identity for UID:', firebaseUser.uid);
+
         try {
           const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+          console.log('📡 Identity API response status:', response.status);
+
           if (response.ok) {
             const data = await response.json();
+            console.log('📦 Identity API data:', data);
+
             if (data.currentUsername && data.currentAvatarId) {
               setCurrentUserIdentity({
                 username: data.currentUsername,
                 avatarId: data.currentAvatarId
               });
+              console.log('✅ User identity loaded:', data.currentUsername, data.currentAvatarId);
+            } else {
+              console.log('❌ User identity data incomplete:', data);
             }
+          } else {
+            console.log('❌ Identity API request failed:', response.status);
           }
         } catch (error) {
-          console.error('Error fetching user identity:', error);
+          console.error('💥 Error fetching user identity:', error);
         }
+      } else {
+        console.log('⚠️ No Firebase UID available');
       }
     };
 
@@ -311,8 +326,31 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
 
   const handleSubmitComment = async () => {
     if (!commentText.trim() || submittingComment) return;
+
+    // If anonymous comment is requested but user identity is not loaded yet, wait a bit
+    if (commentAnonymous && !currentUserIdentity) {
+      console.warn('⏳ User identity not loaded yet, retrying in 1 second...');
+      setTimeout(() => handleSubmitComment(), 1000);
+      return;
+    }
     
     setSubmittingComment(true);
+
+    const anonymousHandle = commentAnonymous ? 'Anonymous User' : null;
+    const anonymousAvatarId = commentAnonymous ? (currentUserIdentity?.avatarId || 'avatar_1') : null;
+
+    console.log('🚀 Submitting comment:', {
+      isAnonymous: commentAnonymous,
+      currentUserIdentity,
+      anonymousHandle,
+      anonymousAvatarId
+    });
+
+    // Temporary alert for debugging
+    if (commentAnonymous) {
+      alert(`Submitting as: ${anonymousHandle} with avatar: ${anonymousAvatarId}`);
+    }
+
     try {
       const response = await fetch(`/api/forum/posts/${post.id}/comments`, {
         method: 'POST',
@@ -321,7 +359,8 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           content: commentText.trim(),
           isAnonymous: commentAnonymous,
           authorId: firebaseUser?.uid,
-          anonymousHandle: commentAnonymous ? `User${Math.floor(Math.random() * 1000)}` : null
+          anonymousHandle,
+          anonymousAvatarId
         })
       });
 
@@ -396,7 +435,8 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           parentId: replyingTo,
           isAnonymous: true,
           authorId: firebaseUser?.uid,
-          anonymousHandle: `User${Math.floor(Math.random() * 1000)}`
+          anonymousHandle: currentUserIdentity?.username || 'Anonymous User',
+          anonymousAvatarId: currentUserIdentity?.avatarId || 'avatar_1'
         }),
       });
 
@@ -833,16 +873,9 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
 
       {/* Enhanced Comment Box */}
       <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex space-x-3">
-          {/* Anonymous User Avatar with hover effect */}
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center border border-gray-200 hover:scale-105 transition-transform cursor-pointer">
-            <span className="text-sm font-medium text-gray-600">
-              {Math.random() > 0.5 ? '👤' : '🎭'}
-            </span>
-          </div>
-          
+        <div>
           {/* Enhanced Comment Input */}
-          <div className="flex-1">
+          <div>
             <div className="relative">
               <textarea
                 value={commentText}
@@ -886,7 +919,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                   }
                 }}
                 placeholder="Add a comment... Use @topic to mention categories"
-                className="w-full p-3 border border-gray-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300"
+                className="w-full p-3 border border-gray-200 rounded-lg text-sm text-gray-900 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300"
                 rows={2}
                 disabled={submittingComment}
                 style={{ minHeight: '60px', maxHeight: '150px' }}
@@ -1026,9 +1059,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                             <span className="text-sm font-medium text-gray-900">
                               {comment.isAnonymous
                                 ? (comment.anonymousHandle || 'Anonymous User')
-                                : (comment.author.name === 'Christopher Wong'
-                                    ? 'Cloud Hawk'
-                                    : (comment.author.name || 'Unknown User'))
+                                : (comment.author.name || 'Unknown User')
                               }
                             </span>
                             <span className="text-xs text-gray-700">

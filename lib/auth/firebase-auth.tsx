@@ -29,6 +29,7 @@ export interface AuthUser {
 
 export interface AuthContextType {
   user: AuthUser | null;
+  idToken: string | null;
   loading: boolean;
   error: string | null;
   signInWithGoogle: (useRedirect?: boolean) => Promise<{ user: AuthUser; isNewUser: boolean } | null>;
@@ -50,6 +51,7 @@ interface FirebaseAuthProviderProps {
 export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [idToken, setIdToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -76,17 +78,27 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     if (!auth) {
       console.log('🔥 Firebase not configured, using demo mode');
       setUser(null);
+      setIdToken(null);
       setLoading(false);
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const authUser = convertFirebaseUser(firebaseUser);
-        setUser(authUser);
-        console.log('🔥 Firebase Auth: User signed in', authUser);
+        try {
+          const authUser = convertFirebaseUser(firebaseUser);
+          const token = await firebaseUser.getIdToken();
+          setUser(authUser);
+          setIdToken(token);
+          console.log('🔥 Firebase Auth: User signed in', authUser);
+        } catch (error) {
+          console.error('🔥 Firebase Auth: Failed to get ID token', error);
+          setUser(null);
+          setIdToken(null);
+        }
       } else {
         setUser(null);
+        setIdToken(null);
         console.log('🔥 Firebase Auth: User signed out');
       }
       setLoading(false);
@@ -333,11 +345,13 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       if (!auth) {
         console.log('🔥 Firebase not configured, clearing user state');
         setUser(null);
+        setIdToken(null);
         return;
       }
 
       await firebaseSignOut(auth);
       setUser(null);
+      setIdToken(null);
       console.log('🔥 Firebase Auth: Sign out successful');
     } catch (error) {
       console.error('🔥 Firebase Auth: Sign out error', error);
@@ -350,6 +364,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
 
   const value: AuthContextType = {
     user,
+    idToken,
     loading,
     error,
     signInWithGoogle,

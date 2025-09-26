@@ -100,7 +100,7 @@ export const viewport: Viewport = {
   minimumScale: 1,
   maximumScale: 5,
   viewportFit: 'cover',
-}
+};
 
 
 export default function RootLayout({

@@ -1,7 +1,8 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
-  // Disable host validation in development
+  // Development configuration
   ...(process.env.NODE_ENV === 'development' && {
+    // Allow all hosts in development
     experimental: {
       allowedRevalidateHeaderKeys: [],
     },

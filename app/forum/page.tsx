@@ -491,22 +491,6 @@ export default function ForumPage() {
           )}
         </div>
 
-        {/* Sort and Filter Controls */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-500">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => handleSortChange(e.target.value)}
-              className="text-sm border border-gray-200 rounded px-3 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="latest">Latest Posts</option>
-              <option value="popular">Most Popular</option>
-              <option value="trending">Trending</option>
-              <option value="comments">Most Comments</option>
-            </select>
-          </div>
-        </div>
 
         {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

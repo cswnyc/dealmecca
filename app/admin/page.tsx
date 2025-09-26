@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, BarChart3 } from 'lucide-react';
+import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, BarChart3, UserCheck, Shield } from 'lucide-react';
 
 interface DashboardStats {
   totalCompanies: number;
@@ -30,10 +30,14 @@ export default function AdminDashboard() {
         const contactsRes = await fetch('/api/orgs/contacts?limit=1');
         const contactsData = await contactsRes.json();
 
+        // Fetch real user stats
+        const usersRes = await fetch('/api/admin/users?include_stats=true&limit=1');
+        const usersData = await usersRes.json();
+
         setStats({
           totalCompanies: companiesData.total || 0,
           totalContacts: contactsData.total || 0,
-          activeUsers: 12, // Placeholder - implement user tracking later
+          activeUsers: usersData.stats?.activeUsers || 0,
           forumPosts: 24 // Placeholder - implement forum post counting later
         });
       } catch (error) {
@@ -61,6 +65,20 @@ export default function AdminDashboard() {
       href: '/admin/orgs/contacts',
       icon: Users,
       color: 'text-green-600 bg-green-50'
+    },
+    {
+      title: 'User Management',
+      description: 'Manage users, roles, and subscriptions',
+      href: '/admin/users',
+      icon: UserCheck,
+      color: 'text-purple-600 bg-purple-50'
+    },
+    {
+      title: 'Waitlist Management',
+      description: 'View and manage waitlist signups',
+      href: '/admin/waitlist',
+      icon: Shield,
+      color: 'text-cyan-600 bg-cyan-50'
     },
     {
       title: 'Bulk Import',
