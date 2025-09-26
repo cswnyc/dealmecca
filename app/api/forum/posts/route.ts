@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     const authorId = searchParams.get('authorId');
     const company = searchParams.get('company');
     const event = searchParams.get('event');
+    const topic = searchParams.get('topic');
     const sortBy = searchParams.get('sortBy') || 'latest';
     
     const skip = (page - 1) * limit;
@@ -65,6 +66,20 @@ export async function GET(request: NextRequest) {
     
     if (event) {
       where.eventId = event;
+    }
+
+    if (topic) {
+      // Filter by topic name - can be exact match or partial match
+      where.topicMentions = {
+        some: {
+          topic: {
+            name: {
+              contains: topic,
+              mode: 'insensitive'
+            }
+          }
+        }
+      };
     }
 
     // Build orderBy clause
@@ -403,7 +418,7 @@ export async function POST(request: NextRequest) {
         dealSize,
         location,
         mediaType,
-        status: 'APPROVED'
+        status: 'PENDING'
       },
       include: {
         author: {

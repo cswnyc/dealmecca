@@ -96,6 +96,7 @@ export async function GET(
           content: reply.content,
           isAnonymous: reply.isAnonymous,
           anonymousHandle: reply.anonymousHandle,
+          anonymousAvatarId: reply.anonymousAvatarId,
           author: reply.author,
           upvotes: replyUpvotes,
           downvotes: replyDownvotes,
@@ -109,6 +110,7 @@ export async function GET(
         content: comment.content,
         isAnonymous: comment.isAnonymous,
         anonymousHandle: comment.anonymousHandle,
+        anonymousAvatarId: comment.anonymousAvatarId,
         author: comment.author,
         upvotes,
         downvotes,
@@ -140,7 +142,7 @@ export async function POST(
   try {
     const { id: postId } = await params;
     const body = await request.json();
-    const { content, authorId, isAnonymous, anonymousHandle, parentId } = body;
+    const { content, authorId, isAnonymous, anonymousHandle, anonymousAvatarId, parentId } = body;
 
     if (!postId || !content || !authorId) {
       return NextResponse.json(
@@ -157,7 +159,8 @@ export async function POST(
         postId,
         parentId: parentId || null,
         isAnonymous: isAnonymous || false,
-        anonymousHandle: isAnonymous ? anonymousHandle : null
+        anonymousHandle: isAnonymous ? anonymousHandle : null,
+        anonymousAvatarId: isAnonymous ? anonymousAvatarId : null
       },
       include: {
         author: {
@@ -202,6 +205,7 @@ export async function POST(
       content: comment.content,
       isAnonymous: comment.isAnonymous,
       anonymousHandle: comment.anonymousHandle,
+      anonymousAvatarId: comment.anonymousAvatarId,
       author: comment.author,
       upvotes: 0,
       downvotes: 0,

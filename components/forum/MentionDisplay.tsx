@@ -122,7 +122,7 @@ export function MentionDisplayReact({
       }
       
       // Regular text
-      return <span key={index}>{segment}</span>;
+      return <span key={index} className="text-gray-800">{segment}</span>;
     });
   };
 

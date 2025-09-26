@@ -59,7 +59,6 @@ export interface ForumPost {
   categoryId: string
   authorId: string
   author?: User
-  tags: string[]
   urgency: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
   postType: 'post' | 'question' | 'discussion'
   slug: string

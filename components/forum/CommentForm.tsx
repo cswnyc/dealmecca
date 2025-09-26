@@ -59,13 +59,30 @@ export function CommentForm({
     setError('');
 
     try {
+      // Get user profile to get the user ID and anonymous handle
+      const userResponse = await fetch('/api/users/profile');
+      const userData = await userResponse.json();
+
+      // Get anonymous identity if posting anonymously
+      let anonymousHandle = null;
+      let anonymousAvatarId = null;
+      if (isAnonymous) {
+        const identityResponse = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+        const identityData = await identityResponse.json();
+        anonymousHandle = identityData.currentUsername;
+        anonymousAvatarId = identityData.currentAvatarId;
+      }
+
       const response = await fetch(`/api/forum/posts/${postSlug}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: content.trim(),
           parentId,
-          isAnonymous
+          authorId: userData.id,
+          isAnonymous,
+          anonymousHandle,
+          anonymousAvatarId
         })
       });
 

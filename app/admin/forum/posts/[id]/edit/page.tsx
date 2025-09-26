@@ -22,6 +22,31 @@ interface Category {
   icon?: string;
 }
 
+interface TopicSuggestion {
+  id: string;
+  name: string;
+  description?: string;
+  confidence: number;
+  isExisting: boolean;
+  context?: string;
+}
+
+interface EntitySuggestion {
+  id: string;
+  name: string;
+  type: 'company' | 'contact' | 'topic' | 'category';
+  description?: string;
+  confidence: number;
+  metadata?: {
+    title?: string;
+    industry?: string;
+    companyType?: string;
+    verified?: boolean;
+    city?: string;
+    state?: string;
+  };
+}
+
 interface ForumPost {
   id: string;
   title: string;
@@ -38,7 +63,6 @@ interface ForumPost {
   isPinned: boolean;
   isAnonymous: boolean;
   anonymousHandle?: string;
-  tags: string[];
   urgency?: string;
   dealSize?: string;
   location?: string;
@@ -49,6 +73,14 @@ interface ForumPost {
   lastActivityAt?: string;
   author: Author;
   category: Category;
+  topicMentions?: {
+    topic: {
+      id: string;
+      name: string;
+      description?: string;
+      context?: string;
+    };
+  }[];
   _count: {
     comments: number;
   };
@@ -66,18 +98,26 @@ export default function EditForumPost() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [topicSuggestions, setTopicSuggestions] = useState<TopicSuggestion[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [showTopicSuggestions, setShowTopicSuggestions] = useState(false);
+  const [manualTopicInput, setManualTopicInput] = useState('');
+  const [entitySuggestions, setEntitySuggestions] = useState<EntitySuggestion[]>([]);
+  const [showEntityDropdown, setShowEntityDropdown] = useState(false);
+  const [searchingEntities, setSearchingEntities] = useState(false);
 
   const [formData, setFormData] = useState({
     content: '',
     categoryId: '',
-    tags: [] as string[],
     isFeatured: false,
     isPinned: false,
     isLocked: false,
     isAnonymous: false,
     anonymousHandle: '',
     location: '',
-    status: 'PENDING'
+    status: 'PENDING',
+    topicIds: [] as string[]
   });
 
   useEffect(() => {
@@ -105,17 +145,20 @@ export default function EditForumPost() {
         setComments(commentsData.comments || []);
 
         // Populate form with existing data
+        const existingTopicIds = postData.topicMentions?.map((tm: any) => tm.topic.id) || [];
+        setSelectedTopics(existingTopicIds);
+
         setFormData({
           content: postData.content || '',
           categoryId: postData.categoryId || '',
-          tags: postData.tags || [],
           isFeatured: postData.isFeatured || false,
           isPinned: postData.isPinned || false,
           isLocked: postData.isLocked || false,
           isAnonymous: postData.isAnonymous || false,
           anonymousHandle: postData.anonymousHandle || '',
           location: postData.location || '',
-          status: postData.status || 'PENDING'
+          status: postData.status || 'PENDING',
+          topicIds: existingTopicIds
         });
 
       } catch (err) {
@@ -130,6 +173,199 @@ export default function EditForumPost() {
       fetchData();
     }
   }, [postId]);
+
+  // Fetch topic suggestions based on content
+  const fetchTopicSuggestions = async (content: string, title: string = '') => {
+    if (!content || content.trim().length < 10) {
+      setTopicSuggestions([]);
+      return;
+    }
+
+    try {
+      setLoadingSuggestions(true);
+      const response = await fetch('/api/admin/topics/suggest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content,
+          title: title || post?.title,
+          categoryId: formData.categoryId
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTopicSuggestions(data.suggestions || []);
+      }
+    } catch (error) {
+      console.error('Error fetching topic suggestions:', error);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  // Handle content change and auto-suggest topics
+  const handleContentChange = (value: string) => {
+    setFormData({ ...formData, content: value });
+
+    // Debounce topic suggestions
+    setTimeout(() => {
+      fetchTopicSuggestions(value);
+    }, 1000);
+  };
+
+  // Toggle topic selection
+  const toggleTopicSelection = (topicId: string) => {
+    const updatedSelectedTopics = selectedTopics.includes(topicId)
+      ? selectedTopics.filter(id => id !== topicId)
+      : [...selectedTopics, topicId];
+
+    setSelectedTopics(updatedSelectedTopics);
+    setFormData({ ...formData, topicIds: updatedSelectedTopics });
+  };
+
+  // Remove selected topic
+  const removeSelectedTopic = (topicId: string) => {
+    const updatedSelectedTopics = selectedTopics.filter(id => id !== topicId);
+    setSelectedTopics(updatedSelectedTopics);
+    setFormData({ ...formData, topicIds: updatedSelectedTopics });
+  };
+
+  // Add manual topic
+  const addManualTopic = (topicName: string) => {
+    if (!topicName.trim()) return;
+
+    const cleanName = topicName.trim();
+    const topicId = `manual-${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+
+    // Check if already exists
+    if (selectedTopics.includes(topicId)) return;
+
+    const updatedSelectedTopics = [...selectedTopics, topicId];
+    setSelectedTopics(updatedSelectedTopics);
+    setFormData({ ...formData, topicIds: updatedSelectedTopics });
+
+    // Add to suggestions for display
+    const manualSuggestion: TopicSuggestion = {
+      id: topicId,
+      name: cleanName,
+      confidence: 1.0,
+      isExisting: false
+    };
+
+    setTopicSuggestions(prev => {
+      const exists = prev.find(s => s.id === topicId);
+      if (!exists) {
+        return [manualSuggestion, ...prev];
+      }
+      return prev;
+    });
+
+    setManualTopicInput('');
+  };
+
+  // Search entities
+  const searchEntities = async (query: string) => {
+    if (!query || query.trim().length < 2) {
+      setEntitySuggestions([]);
+      setShowEntityDropdown(false);
+      return;
+    }
+
+    try {
+      setSearchingEntities(true);
+      const response = await fetch('/api/admin/topics/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query, limit: 15 }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setEntitySuggestions(data.suggestions || []);
+        setShowEntityDropdown(data.suggestions && data.suggestions.length > 0);
+      }
+    } catch (error) {
+      console.error('Error searching entities:', error);
+    } finally {
+      setSearchingEntities(false);
+    }
+  };
+
+  // Handle manual topic input change with search
+  const handleManualTopicChange = (value: string) => {
+    setManualTopicInput(value);
+
+    // Debounce search
+    setTimeout(() => {
+      searchEntities(value);
+    }, 300);
+  };
+
+  // Handle manual topic input
+  const handleManualTopicKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addManualTopic(manualTopicInput);
+      setShowEntityDropdown(false);
+    } else if (e.key === 'Escape') {
+      setShowEntityDropdown(false);
+    }
+  };
+
+  // Select entity from suggestions
+  const selectEntitySuggestion = (entity: EntitySuggestion) => {
+    const topicId = `entity-${entity.type}-${entity.id}`;
+
+    // Check if already selected
+    if (selectedTopics.includes(topicId)) return;
+
+    const updatedSelectedTopics = [...selectedTopics, topicId];
+    setSelectedTopics(updatedSelectedTopics);
+    setFormData({ ...formData, topicIds: updatedSelectedTopics });
+
+    // Add to suggestions for display
+    const entityTopicSuggestion: TopicSuggestion = {
+      id: topicId,
+      name: entity.name,
+      confidence: entity.confidence,
+      isExisting: true,
+      description: entity.description
+    };
+
+    setTopicSuggestions(prev => {
+      const exists = prev.find(s => s.id === topicId);
+      if (!exists) {
+        return [entityTopicSuggestion, ...prev];
+      }
+      return prev;
+    });
+
+    setManualTopicInput('');
+    setShowEntityDropdown(false);
+  };
+
+  // Get topic display name
+  const getTopicDisplayName = (topicId: string) => {
+    const suggestion = topicSuggestions.find(s => s.id === topicId);
+    const existingTopic = post?.topicMentions?.find(tm => tm.topic.id === topicId);
+
+    // Handle entity-based topics
+    if (topicId.startsWith('entity-')) {
+      return suggestion?.name || topicId.replace(/^entity-[^-]+-/, '');
+    }
+
+    // Handle manual topics
+    if (topicId.startsWith('manual-')) {
+      return suggestion?.name || topicId.replace('manual-', '').replace(/-/g, ' ');
+    }
+
+    return suggestion?.name || existingTopic?.topic.name || topicId;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,7 +498,7 @@ export default function EditForumPost() {
               </label>
               <MentionEditor
                 value={formData.content}
-                onChange={(value) => setFormData({ ...formData, content: value })}
+                onChange={handleContentChange}
                 placeholder="Enter post content... (use @ to mention companies, contacts, categories, and users)"
                 multiline={true}
                 className="min-h-[200px]"
@@ -287,21 +523,6 @@ export default function EditForumPost() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tags (comma-separated)
-              </label>
-              <input
-                type="text"
-                value={formData.tags.join(', ')}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)
-                })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="tag1, tag2, tag3"
-              />
-            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -330,6 +551,236 @@ export default function EditForumPost() {
                 />
               </div>
             )}
+          </div>
+
+          {/* Topics Management Section */}
+          <div className="border-t pt-6">
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Topics (Companies, Industries, DSPs/SSPs, Advertisers, etc.)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowTopicSuggestions(!showTopicSuggestions);
+                    if (!showTopicSuggestions && formData.content) {
+                      fetchTopicSuggestions(formData.content);
+                    }
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                  disabled={loadingSuggestions}
+                >
+                  {loadingSuggestions ? 'Loading...' : showTopicSuggestions ? 'Hide AI Suggestions' : 'Show AI Suggestions'}
+                </button>
+              </div>
+
+              {/* Manual Topic Entry */}
+              <div className="mb-4 relative">
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={manualTopicInput}
+                      onChange={(e) => handleManualTopicChange(e.target.value)}
+                      onKeyDown={handleManualTopicKeyPress}
+                      onFocus={() => {
+                        if (manualTopicInput.trim().length >= 2) {
+                          setShowEntityDropdown(true);
+                        }
+                      }}
+                      placeholder="Search companies, contacts, topics... (e.g., Nike, John Smith, Programmatic)"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+
+                    {/* Entity Suggestions Dropdown */}
+                    {showEntityDropdown && (
+                      <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        {searchingEntities ? (
+                          <div className="p-3 text-center text-gray-500">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mx-auto mb-1"></div>
+                            Searching database...
+                          </div>
+                        ) : entitySuggestions.length > 0 ? (
+                          <>
+                            {entitySuggestions.map((entity, index) => (
+                              <div
+                                key={`${entity.type}-${entity.id}-${index}`}
+                                className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                                onClick={() => selectEntitySuggestion(entity)}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-900">{entity.name}</span>
+                                      <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                        entity.type === 'company' ? 'bg-blue-100 text-blue-800' :
+                                        entity.type === 'contact' ? 'bg-green-100 text-green-800' :
+                                        entity.type === 'topic' ? 'bg-purple-100 text-purple-800' :
+                                        'bg-gray-100 text-gray-800'
+                                      }`}>
+                                        {entity.type.charAt(0).toUpperCase() + entity.type.slice(1)}
+                                      </span>
+                                      {entity.metadata?.verified && (
+                                        <span className="px-1.5 py-0.5 text-xs bg-green-100 text-green-800 rounded">
+                                          Verified
+                                        </span>
+                                      )}
+                                    </div>
+                                    {entity.description && (
+                                      <p className="text-sm text-gray-600 mt-1">{entity.description}</p>
+                                    )}
+                                    {entity.metadata && (
+                                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                                        {entity.metadata.industry && (
+                                          <span>{entity.metadata.industry}</span>
+                                        )}
+                                        {entity.metadata.title && (
+                                          <span>{entity.metadata.title}</span>
+                                        )}
+                                        {entity.metadata.city && entity.metadata.state && (
+                                          <span>{entity.metadata.city}, {entity.metadata.state}</span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {Math.round(entity.confidence * 100)}%
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        ) : manualTopicInput.trim().length >= 2 ? (
+                          <div className="p-3 text-center text-gray-500">
+                            No matching entities found. Press Enter to add as custom topic.
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addManualTopic(manualTopicInput);
+                      setShowEntityDropdown(false);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Add
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Type to search existing companies, contacts, topics, or add custom topics. Press Enter or click Add.
+                </p>
+              </div>
+
+              {/* Selected Topics */}
+              {selectedTopics.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs text-gray-600 mb-2">Selected Topics:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTopics.map((topicId) => (
+                      <div
+                        key={topicId}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                      >
+                        <span className="mr-2">{getTopicDisplayName(topicId)}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeSelectedTopic(topicId)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Topic Suggestions */}
+              {showTopicSuggestions && (
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                    Suggested Topics
+                    {loadingSuggestions && (
+                      <span className="ml-2 text-xs text-gray-500 animate-pulse">Analyzing content...</span>
+                    )}
+                  </h4>
+
+                  {topicSuggestions.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {topicSuggestions.map((suggestion) => (
+                        <div
+                          key={suggestion.id}
+                          className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                            selectedTopics.includes(suggestion.id)
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-100'
+                          }`}
+                          onClick={() => toggleTopicSelection(suggestion.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-gray-900 flex items-center">
+                                {suggestion.name}
+                                {suggestion.isExisting && (
+                                  <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-100 text-green-800 rounded">
+                                    Existing
+                                  </span>
+                                )}
+                                {!suggestion.isExisting && (
+                                  <span className="ml-2 px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded">
+                                    New
+                                  </span>
+                                )}
+                              </p>
+                              {suggestion.description && (
+                                <p className="text-xs text-gray-600 mt-1">{suggestion.description}</p>
+                              )}
+                              <div className="flex items-center mt-1">
+                                <div className="flex-1 bg-gray-200 rounded-full h-1">
+                                  <div
+                                    className="bg-blue-600 h-1 rounded-full"
+                                    style={{ width: `${suggestion.confidence * 100}%` }}
+                                  ></div>
+                                </div>
+                                <span className="ml-2 text-xs text-gray-500">
+                                  {Math.round(suggestion.confidence * 100)}%
+                                </span>
+                              </div>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={selectedTopics.includes(suggestion.id)}
+                              onChange={() => toggleTopicSelection(suggestion.id)}
+                              className="ml-3 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      {loadingSuggestions ? (
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <span className="ml-2">Analyzing content for topics...</span>
+                        </div>
+                      ) : (
+                        <p>
+                          {formData.content.trim().length < 10
+                            ? 'Enter some content to get topic suggestions'
+                            : 'No topic suggestions found for this content'}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="border-t pt-6">

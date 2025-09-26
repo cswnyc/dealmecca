@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Building2, User, ExternalLink } from 'lucide-react';
 
+// Cache for resolved mentions to avoid repeated API calls
+const mentionCache = new Map<string, any>();
+
 interface Company {
   id: string;
   name: string;
@@ -31,14 +34,20 @@ interface MentionChipProps {
   id: string;
   name: string;
   data?: Company | Contact;
+  resolved?: {
+    type: 'company' | 'contact';
+    id: string;
+    displayName: string;
+    confidence: number;
+  };
 }
 
-function MentionChip({ type, id, name, data }: MentionChipProps) {
+function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
   const [mentionData, setMentionData] = useState<Company | Contact | null>(data || null);
-  const [loading, setLoading] = useState(!data);
+  const [loading, setLoading] = useState(!data && !resolved);
 
   useEffect(() => {
-    if (!data) {
+    if (!data && !resolved) {
       // Fetch the entity data
       const fetchData = async () => {
         try {
@@ -57,7 +66,7 @@ function MentionChip({ type, id, name, data }: MentionChipProps) {
 
       fetchData();
     }
-  }, [type, id, data]);
+  }, [type, id, data, resolved]);
 
   if (loading) {
     return (
@@ -65,6 +74,19 @@ function MentionChip({ type, id, name, data }: MentionChipProps) {
         <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
         @{name}
       </span>
+    );
+  }
+
+  // Handle resolved mentions (smart detection results)
+  if (resolved) {
+    return (
+      <Link
+        href={resolved.type === 'company' ? `/orgs/companies/${resolved.id}` : `/contacts/${resolved.id}`}
+        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors no-underline"
+        title={`${resolved.displayName} (${Math.round(resolved.confidence * 100)}% match)`}
+      >
+        {name}
+      </Link>
     );
   }
 
@@ -150,6 +172,72 @@ export function RichContentRenderer({
   className = "",
   mentions
 }: RichContentRendererProps) {
+  const [resolvedMentions, setResolvedMentions] = useState<Record<string, any>>({});
+  const [mentionsResolved, setMentionsResolved] = useState(false);
+
+  // Extract and resolve plain @mentions on component mount
+  useEffect(() => {
+    const resolvePlainMentions = async () => {
+      // Find all plain @mentions (not already structured)
+      const plainMentionPattern = /@([a-zA-Z0-9\s&'"\-\.]+)(?=\s|$|[^a-zA-Z0-9\s&'"\-\.])/g;
+      const structuredMentionPattern = /@(?:(?:(company|contact)\[([^\]]+)\]\(([^)]+)\))|(?:\[([^\]]+)\]\((company|contact):([^)]+)\)))/g;
+
+      const plainMentions = [];
+      const structuredMentions = new Set();
+      let match;
+
+      // First, collect all structured mentions to avoid double-processing
+      const contentCopy = content;
+      while ((match = structuredMentionPattern.exec(contentCopy)) !== null) {
+        const mentionText = match[0];
+        structuredMentions.add(mentionText);
+      }
+
+      // Then find plain mentions that aren't already structured
+      structuredMentionPattern.lastIndex = 0; // Reset regex
+      while ((match = plainMentionPattern.exec(content)) !== null) {
+        const fullMatch = match[0];
+        const mentionName = match[1].trim();
+
+        // Skip if this looks like a structured mention or email
+        if (mentionName.includes('@') || mentionName.includes('(') || mentionName.includes(']')) continue;
+        if ([...structuredMentions].some(sm => sm.includes(mentionName))) continue;
+        if (mentionName.length < 2 || mentionName.length > 50) continue;
+
+        plainMentions.push(fullMatch);
+      }
+
+      if (plainMentions.length > 0) {
+        // Check cache first
+        const cacheKey = plainMentions.sort().join('|');
+        if (mentionCache.has(cacheKey)) {
+          setResolvedMentions(mentionCache.get(cacheKey));
+          setMentionsResolved(true);
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/forum/mentions/resolve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mentions: plainMentions }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            mentionCache.set(cacheKey, data.resolutions);
+            setResolvedMentions(data.resolutions);
+          }
+        } catch (error) {
+          console.warn('Failed to resolve mentions:', error);
+        }
+      }
+      setMentionsResolved(true);
+    };
+
+    resolvePlainMentions();
+  }, [content]);
+
   // Parse content and convert mentions to React components
   const parseContentWithMentions = (text: string) => {
     // First, detect and replace email addresses
@@ -158,27 +246,32 @@ export function RichContentRenderer({
       return `__EMAIL_${email}__`;
     });
 
-    // Updated pattern to match both old and new formats:
-    // Old: @company[name](id) or @contact[name](id)
-    // New: @[name](company:id) or @[name](contact:id)
-    const mentionPattern = /@(?:(?:(company|contact)\[([^\]]+)\]\(([^)]+)\))|(?:\[([^\]]+)\]\((company|contact):([^)]+)\)))/g;
+    // Process in multiple phases:
+    // 1. Handle structured mentions (@company[name](id) or @[name](company:id))
+    // 2. Handle plain @mentions using resolved data
+    // 3. Handle remaining text
 
-    let lastIndex = 0;
     const segments = [];
+    let processedText = textWithEmailPlaceholders;
+
+    // Phase 1: Handle structured mentions
+    const structuredMentionPattern = /@(?:(?:(company|contact)\[([^\]]+)\]\(([^)]+)\))|(?:\[([^\]]+)\]\((company|contact):([^)]+)\)))/g;
+    let lastIndex = 0;
     let match;
 
-    while ((match = mentionPattern.exec(textWithEmailPlaceholders)) !== null) {
+    const structuredSegments = [];
+    while ((match = structuredMentionPattern.exec(textWithEmailPlaceholders)) !== null) {
       // Add text before the mention
       if (match.index > lastIndex) {
-        const textSegment = textWithEmailPlaceholders.slice(lastIndex, match.index);
-        segments.push(
-          <span key={`text-${lastIndex}`}>
-            {processTextForEmails(textSegment)}
-          </span>
-        );
+        structuredSegments.push({
+          type: 'text',
+          content: textWithEmailPlaceholders.slice(lastIndex, match.index),
+          start: lastIndex,
+          end: match.index
+        });
       }
 
-      // Parse the mention
+      // Parse the structured mention
       let type: 'company' | 'contact';
       let name: string;
       let id: string;
@@ -205,30 +298,105 @@ export function RichContentRenderer({
         }
       }
 
-      segments.push(
-        <MentionChip
-          key={`mention-${match.index}`}
-          type={type}
-          id={id}
-          name={name}
-          data={existingData}
-        />
-      );
+      structuredSegments.push({
+        type: 'structured-mention',
+        mentionType: type,
+        id,
+        name,
+        data: existingData,
+        start: match.index,
+        end: match.index + match[0].length
+      });
 
       lastIndex = match.index + match[0].length;
     }
 
     // Add remaining text
     if (lastIndex < textWithEmailPlaceholders.length) {
-      const remainingText = textWithEmailPlaceholders.slice(lastIndex);
-      segments.push(
-        <span key={`text-${lastIndex}`}>
-          {processTextForEmails(remainingText)}
-        </span>
-      );
+      structuredSegments.push({
+        type: 'text',
+        content: textWithEmailPlaceholders.slice(lastIndex),
+        start: lastIndex,
+        end: textWithEmailPlaceholders.length
+      });
     }
 
-    return segments;
+    // Phase 2: Process plain @mentions in text segments only
+    const finalSegments = [];
+
+    for (const segment of structuredSegments) {
+      if (segment.type === 'structured-mention') {
+        finalSegments.push(
+          <MentionChip
+            key={`structured-mention-${segment.start}`}
+            type={segment.mentionType}
+            id={segment.id}
+            name={segment.name}
+            data={segment.data}
+          />
+        );
+      } else if (segment.type === 'text') {
+        // Process plain mentions in this text segment
+        const textContent = segment.content;
+        const plainMentionPattern = /@([a-zA-Z0-9\s&'"\-\.]+)(?=\s|$|[^a-zA-Z0-9\s&'"\-\.])/g;
+
+        let textLastIndex = 0;
+        let plainMatch;
+
+        while ((plainMatch = plainMentionPattern.exec(textContent)) !== null) {
+          // Add text before the plain mention
+          if (plainMatch.index > textLastIndex) {
+            const beforeText = textContent.slice(textLastIndex, plainMatch.index);
+            finalSegments.push(
+              <span key={`text-${segment.start}-${textLastIndex}`}>
+                {processTextForEmails(beforeText)}
+              </span>
+            );
+          }
+
+          const fullMatch = plainMatch[0];
+          const resolved = resolvedMentions[fullMatch];
+
+          if (resolved && mentionsResolved) {
+            // Render as clickable link
+            finalSegments.push(
+              <MentionChip
+                key={`plain-mention-${segment.start}-${plainMatch.index}`}
+                type={resolved.type}
+                id={resolved.id}
+                name={fullMatch}
+                resolved={resolved}
+              />
+            );
+          } else {
+            // Render as plain text or loading state
+            finalSegments.push(
+              <span
+                key={`unresolved-mention-${segment.start}-${plainMatch.index}`}
+                className={mentionsResolved ? "text-gray-600" : "text-blue-500 animate-pulse"}
+                title={mentionsResolved ? "Unknown mention" : "Resolving mention..."}
+              >
+                {fullMatch}
+              </span>
+            );
+          }
+
+          textLastIndex = plainMatch.index + plainMatch[0].length;
+        }
+
+        // Add remaining text in this segment
+        if (textLastIndex < textContent.length) {
+          const remainingText = textContent.slice(textLastIndex);
+          finalSegments.push(
+            <span key={`text-remaining-${segment.start}-${textLastIndex}`}>
+              {processTextForEmails(remainingText)}
+            </span>
+          );
+        }
+      }
+    }
+
+    return finalSegments;
   };
 
   return (

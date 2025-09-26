@@ -128,6 +128,8 @@ export default function ForumPage() {
   const searchParams = useSearchParams();
   const companyId = searchParams.get('company');
   const eventId = searchParams.get('event');
+  const topicFilter = searchParams.get('topic');
+  const categoryFilter = searchParams.get('category');
   
   const { user: firebaseUser, loading: authLoading } = useAuth();
   const hasFirebaseSession = useFirebaseSession();
@@ -150,16 +152,25 @@ export default function ForumPage() {
   const [sortBy, setSortBy] = useState('latest');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
+  // Initialize state from URL parameters
+  useEffect(() => {
+    if (categoryFilter && categories.length > 0) {
+      // Find category by slug and set its ID
+      const category = categories.find(cat => cat.slug === categoryFilter);
+      if (category) {
+        setSelectedCategory(category.id);
+      }
+    }
+  }, [categoryFilter, categories]);
+
   useEffect(() => {
     fetchPosts();
-  }, [companyId, eventId, activeTab, selectedCategory, sortBy, searchQuery]);
+  }, [companyId, eventId, topicFilter, categoryFilter, activeTab, selectedCategory, sortBy, searchQuery]);
 
   const fetchCategories = async () => {
     try {
@@ -194,7 +205,15 @@ export default function ForumPage() {
       if (eventId) {
         params.append('event', eventId);
       }
-      
+
+      if (topicFilter) {
+        params.append('topic', topicFilter);
+      }
+
+      if (categoryFilter) {
+        params.append('category', categoryFilter);
+      }
+
       // Add filtering parameters
       if (activeTab === 'my' && firebaseUser?.uid) {
         params.append('authorId', firebaseUser.uid);
@@ -224,12 +243,6 @@ export default function ForumPage() {
         pages: 0
       });
       
-      // Handle search suggestions if using search API
-      if (searchQuery.trim() && data.suggestions) {
-        setSearchSuggestions(data.suggestions);
-      } else {
-        setSearchSuggestions([]);
-      }
     } catch (error) {
       console.error('Failed to fetch posts:', error);
       setPagination({
@@ -368,7 +381,7 @@ export default function ForumPage() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
           <h1 className="text-2xl font-bold text-gray-900">Community Forum</h1>
           <div className="relative">
-            <GlobalSearchInput 
+            <GlobalSearchInput
               className="w-full lg:w-96"
               placeholder="Search companies, teams, contacts..."
               size="md"
@@ -491,15 +504,6 @@ export default function ForumPage() {
               <option value="popular">Most Popular</option>
               <option value="trending">Trending</option>
               <option value="comments">Most Comments</option>
-            </select>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-500">Show:</span>
-            <select className="text-sm border border-gray-200 rounded px-3 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>5 Categories</option>
-              <option>10 Categories</option>
-              <option>All Categories</option>
             </select>
           </div>
         </div>

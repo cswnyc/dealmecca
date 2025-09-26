@@ -700,6 +700,7 @@ model ForumComment {
   authorId        String
   isAnonymous     Boolean            @default(false)
   anonymousHandle String?
+  anonymousAvatarId String?
   postId          String
   parentId        String?
   depth           Int                @default(0)

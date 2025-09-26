@@ -21,8 +21,6 @@ import {
   XSquare,
   AlertCircle,
   Calendar,
-  Tag,
-  MoreHorizontal
 } from 'lucide-react';
 import MentionText from '@/components/ui/MentionText';
 
@@ -39,7 +37,6 @@ interface ForumPost {
   isFeatured: boolean;
   isLocked: boolean;
   isPinned: boolean;
-  tags: string[];
   createdAt: string;
   updatedAt: string;
   author: {
@@ -449,24 +446,6 @@ export default function ForumPostsAdmin() {
                               <p className="text-sm text-gray-500 truncate">
                                 <MentionText>{post.content?.substring(0, 100)}...</MentionText>
                               </p>
-                              {post.tags?.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {post.tags.slice(0, 2).map((tag, index) => (
-                                    <span
-                                      key={index}
-                                      className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                                    >
-                                      <Tag className="w-3 h-3 mr-1" />
-                                      {tag}
-                                    </span>
-                                  ))}
-                                  {post.tags.length > 2 && (
-                                    <span className="text-xs text-gray-500">
-                                      +{post.tags.length - 2} more
-                                    </span>
-                                  )}
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
@@ -568,9 +547,6 @@ export default function ForumPostsAdmin() {
                             className="text-red-600 hover:text-red-900"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
-                          <button className="text-gray-600 hover:text-gray-900">
-                            <MoreHorizontal className="w-4 h-4" />
                           </button>
                         </div>
                       </td>

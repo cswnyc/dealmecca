@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { useFirebaseSession } from '@/hooks/useFirebaseSession';
 import { useAuth } from '@/lib/auth/firebase-auth';
-import { 
+import {
   ChatBubbleLeftIcon,
   BookmarkIcon,
   ClockIcon,
@@ -15,6 +15,7 @@ import {
   TagIcon,
   UserIcon
 } from '@heroicons/react/24/outline';
+import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
 import { RealTimeVotes } from './RealTimeVotes';
 import { RichContentRenderer } from './RichContentRenderer';
 import { TopicChip } from './TopicChip';
@@ -27,7 +28,6 @@ interface ForumPost {
   slug: string;
   isAnonymous: boolean;
   anonymousHandle?: string;
-  tags: string;
   urgency: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   dealSize?: 'SMALL' | 'MEDIUM' | 'LARGE' | 'ENTERPRISE';
   location?: string;
@@ -157,10 +157,10 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showMentions, setShowMentions] = useState(false);
-  const [tagsExpanded, setTagsExpanded] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [currentUserIdentity, setCurrentUserIdentity] = useState<{username: string, avatarId: string} | null>(null);
 
   // Helper functions to parse JSON string fields
   const parseListItems = (listItems?: string): string[] => {
@@ -201,11 +201,35 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
     }
   }, [expandable]);
 
+  // Fetch current user's anonymous identity for their own comments
+  useEffect(() => {
+    const fetchCurrentUserIdentity = async () => {
+      if (firebaseUser?.uid) {
+        try {
+          const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.currentUsername && data.currentAvatarId) {
+              setCurrentUserIdentity({
+                username: data.currentUsername,
+                avatarId: data.currentAvatarId
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching user identity:', error);
+        }
+      }
+    };
+
+    fetchCurrentUserIdentity();
+  }, [firebaseUser?.uid]);
+
   // Load user's follow/bookmark status
   useEffect(() => {
     const loadUserStatus = async () => {
       if (!firebaseUser?.uid) return;
-      
+
       try {
         // Check follow status
         const followResponse = await fetch(`/api/forum/posts/${post.id}/status?userId=${firebaseUser.uid}`);
@@ -236,27 +260,6 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
     ENTERPRISE: 'Enterprise Deal'
   };
 
-  // Safe parsing for tags - handle various formats
-  const safeParseTags = (tagsData: any): string[] => {
-    if (!tagsData) return [];
-    
-    // If already an array, return it
-    if (Array.isArray(tagsData)) return tagsData;
-    
-    // If it's a string, try different parsing methods
-    if (typeof tagsData === 'string') {
-      // First try JSON parsing
-      try {
-        const parsed = JSON.parse(tagsData);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        // If JSON parsing fails, try comma-separated parsing
-        return tagsData.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-      }
-    }
-    
-    return [];
-  };
 
   // Safe parsing for media types - handle various formats  
   const safeParseMediaTypes = (mediaData: any): string[] => {
@@ -280,7 +283,6 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
     return [];
   };
 
-  const tags = safeParseTags(post.tags);
   const mediaTypes = safeParseMediaTypes(post.mediaType);
 
   const fetchComments = async () => {
@@ -543,7 +545,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
         )}
 
         <div className="flex-1 min-w-0">
-          {/* Primary Display: Company/Agency + Tags */}
+          {/* Primary Display: Company/Agency + Category */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center space-x-2 flex-1 min-w-0">
               {!post.isAnonymous ? (
@@ -587,129 +589,36 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                     </div>
                   ) : (
                     // Fallback to category when no company - NEVER show username as main header
-                    <span className="font-semibold text-gray-900 text-lg">
+                    <Link
+                      href={`/forum?category=${post.category.slug}`}
+                      className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors no-underline"
+                    >
                       {post.category.name}
-                    </span>
+                    </Link>
                   )}
                   
-                  {/* Simplified Tag Display - Only show for legacy posts without topics */}
-                  {(!post.topicMentions || post.topicMentions.length === 0) && ((post.companyMentions && post.companyMentions.length > 1) || tags.length > 0 || (post.contactMentions && post.contactMentions.length > 0)) ? (
+                  {/* Show mentions count for legacy posts without topics */}
+                  {(!post.topicMentions || post.topicMentions.length === 0) && ((post.companyMentions && post.companyMentions.length > 1) || (post.contactMentions && post.contactMentions.length > 0)) && (
                     <>
                       <span className="text-gray-400">•</span>
                       <div className="flex items-center space-x-1">
-                        {/* Show total count instead of individual tags to reduce clutter */}
-                        <button
-                          onClick={() => setTagsExpanded(!tagsExpanded)}
-                          className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors"
-                        >
-                          <TagIcon className="w-3 h-3 mr-1" />
-                          {tagsExpanded ? 'Show less' : `${((post.companyMentions?.length || 0) - 1) + (tags.length) + (post.contactMentions?.length || 0)} related`}
-                        </button>
+                        <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                          <BuildingOfficeIcon className="w-3 h-3 mr-1" />
+                          {((post.companyMentions?.length || 0) - 1) + (post.contactMentions?.length || 0)} related
+                        </span>
                       </div>
                     </>
-                  ) : null}
+                  )}
                 </div>
               ) : (
-                <span className="font-semibold text-gray-900 text-lg">
+                <Link
+                  href={`/forum?category=${post.category.slug}`}
+                  className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors no-underline"
+                >
                   {post.category.name}
-                </span>
+                </Link>
               )}
             </div>
-          
-          {/* Expanded Tags Section - Clean and organized */}
-          {tagsExpanded && (
-            <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-semibold text-gray-800">Related Information</h3>
-                <button 
-                  onClick={() => setTagsExpanded(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors p-1"
-                  aria-label="Close expanded view"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="space-y-3">
-                {/* All Companies Section (excluding first one in header) */}
-                {post.companyMentions && post.companyMentions.length > 1 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                      <BuildingOfficeIcon className="w-4 h-4 mr-2" />
-                      Related Companies
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {post.companyMentions.slice(1).map((mention) => (
-                        <Link
-                          key={mention.company.id}
-                          href={`/orgs/companies/${mention.company.id}`}
-                          className="inline-flex items-center space-x-1 px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs rounded-full hover:border-blue-300 hover:text-blue-700 transition-colors"
-                        >
-                          {mention.company.logoUrl ? (
-                            <img 
-                              src={mention.company.logoUrl} 
-                              alt={`${mention.company.name} logo`}
-                              className="w-3 h-3 rounded object-cover"
-                            />
-                          ) : (
-                            <BuildingOfficeIcon className="w-3 h-3" />
-                          )}
-                          <span>{mention.company.name}</span>
-                          {mention.company.verified && (
-                            <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Contacts Section */}
-                {post.contactMentions && post.contactMentions.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                      <UserIcon className="w-4 h-4 mr-2" />
-                      Key Contacts
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {post.contactMentions.map((mention) => (
-                        <Link
-                          key={mention.contact.id}
-                          href={`/orgs/contacts/${mention.contact.id}`}
-                          className="inline-flex items-center space-x-1 px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs rounded-full hover:border-blue-300 hover:text-blue-700 transition-colors"
-                        >
-                          <UserIcon className="w-3 h-3" />
-                          <span>{mention.contact.fullName}</span>
-                          {mention.contact.title && (
-                            <span className="text-gray-500 text-xs">• {mention.contact.title}</span>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Tags Section */}
-                {tags.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                      <TagIcon className="w-4 h-4 mr-2" />
-                      Topic Tags
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {tags.map((tag, index) => (
-                        <span key={index} className="inline-flex items-center space-x-1 px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs rounded-full">
-                          <TagIcon className="w-3 h-3" />
-                          <span>{tag}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
             <button 
               onClick={handleFollow}
               className={`px-3 py-1 text-sm rounded-full transition-colors flex items-center space-x-1 ${
@@ -737,7 +646,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           </div>
           
           {/* Category Only - Clean display */}
-          <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+          <div className="flex items-center space-x-2 text-sm text-gray-700 mb-2">
             <span>in</span>
             <span className="text-blue-600 font-medium">{post.category.name}</span>
           </div>
@@ -841,11 +750,11 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                 {['🎭', '👤', '🕶️', '🎪', '🎨', '🔮'][Math.floor(Math.random() * 6)]}
               </span>
             </div>
-            <span className="text-sm text-gray-600">
-              {post.isAnonymous ? post.anonymousHandle : post.author.name} 
+            <span className="text-sm text-gray-700">
+              {post.isAnonymous ? post.anonymousHandle : post.author.name}
             </span>
-            <span className="text-sm text-gray-400">•</span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-600">•</span>
+            <span className="text-sm text-gray-700">
               {formatDistanceToNow(new Date(post.createdAt))} ago
             </span>
           </div>
@@ -854,9 +763,9 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           <button
             onClick={handleBookmark}
             className={`flex items-center space-x-1 transition-colors ${
-              isBookmarked 
-                ? 'text-yellow-600 hover:text-yellow-700' 
-                : 'text-gray-500 hover:text-yellow-600'
+              isBookmarked
+                ? 'text-yellow-600 hover:text-yellow-700'
+                : 'text-gray-700 hover:text-yellow-600'
             }`}
             title={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
           >
@@ -868,7 +777,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
           <div className="relative">
             <button 
               onClick={() => setShowShareMenu(!showShareMenu)}
-              className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors"
+              className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors"
               title="Share post"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1027,17 +936,17 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
             
             <div className="flex justify-between items-center mt-2">
               <div className="flex items-center space-x-4">
-                <label className="flex items-center text-xs text-gray-600">
-                  <input 
-                    type="checkbox" 
-                    className="mr-2 w-4 h-4 rounded border-gray-300 focus:ring-blue-500" 
+                <label className="flex items-center text-xs text-gray-700">
+                  <input
+                    type="checkbox"
+                    className="mr-2 w-4 h-4 rounded border-gray-300 focus:ring-blue-500"
                     checked={commentAnonymous}
                     onChange={(e) => setCommentAnonymous(e.target.checked)}
                     disabled={submittingComment}
                   />
                   Anonymous
                 </label>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-600">
                   {commentText.length}/500
                 </span>
               </div>
@@ -1090,24 +999,46 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
               <div className="space-y-3">
                 {comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center border">
-                      <span className="text-xs">
-                        {['🎭', '👤', '🕶️', '🎪', '🎨', '🔮'][Math.floor(Math.random() * 6)]}
-                      </span>
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                      {comment.isAnonymous ? (
+                        <AvatarDisplay
+                          avatarId={comment.anonymousAvatarId}
+                          username={comment.anonymousHandle || 'Anonymous'}
+                          size={32}
+                        />
+                      ) : currentUserIdentity && comment.author.name === 'Christopher Wong' ? (
+                        <AvatarDisplay
+                          avatarId={currentUserIdentity.avatarId}
+                          username={currentUserIdentity.username}
+                          size={32}
+                        />
+                      ) : (
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                          <UserIcon className="w-4 h-4 text-gray-600" />
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1">
                       <div className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium">
-                              {comment.isAnonymous ? comment.anonymousHandle : comment.author.name}
+                            <span className="text-sm font-medium text-gray-900">
+                              {comment.isAnonymous
+                                ? (comment.anonymousHandle || 'Anonymous User')
+                                : (comment.author.name === 'Christopher Wong'
+                                    ? 'Cloud Hawk'
+                                    : (comment.author.name || 'Unknown User'))
+                              }
                             </span>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-700">
                               {formatDistanceToNow(new Date(comment.createdAt))} ago
                             </span>
                           </div>
                         </div>
-                        <RichContentRenderer content={comment.content} />
+                        <div className="text-sm text-gray-800">
+                          {comment.content}
+                        </div>
                         
                         {/* Comment Actions */}
                         <div className="flex items-center space-x-4 mt-2 pt-2 border-t border-gray-200">
@@ -1116,9 +1047,9 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                             <button 
                               onClick={() => handleCommentVote(comment.id, 'up')}
                               className={`flex items-center space-x-1 text-xs transition-colors ${
-                                commentVotes[comment.id] === 'up' 
-                                  ? 'text-blue-600' 
-                                  : 'text-gray-500 hover:text-blue-600'
+                                commentVotes[comment.id] === 'up'
+                                  ? 'text-blue-600'
+                                  : 'text-gray-700 hover:text-blue-600'
                               }`}
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1129,9 +1060,9 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                             <button 
                               onClick={() => handleCommentVote(comment.id, 'down')}
                               className={`flex items-center space-x-1 text-xs transition-colors ${
-                                commentVotes[comment.id] === 'down' 
-                                  ? 'text-red-600' 
-                                  : 'text-gray-500 hover:text-red-600'
+                                commentVotes[comment.id] === 'down'
+                                  ? 'text-red-600'
+                                  : 'text-gray-700 hover:text-red-600'
                               }`}
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1144,7 +1075,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                           {/* Reply button */}
                           <button 
                             onClick={() => handleReply(comment.id, comment.isAnonymous ? comment.anonymousHandle : comment.author.name)}
-                            className="text-xs text-gray-500 hover:text-blue-600 transition-colors"
+                            className="text-xs text-gray-700 hover:text-blue-600 transition-colors"
                           >
                             Reply
                           </button>
@@ -1166,7 +1097,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                           <div className="flex justify-end space-x-2 mt-2">
                             <button
                               onClick={() => setReplyingTo(null)}
-                              className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700"
+                              className="px-3 py-1 text-xs text-gray-700 hover:text-gray-900"
                             >
                               Cancel
                             </button>
@@ -1184,7 +1115,7 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 italic">No comments yet. Be the first to comment!</p>
+              <p className="text-sm text-gray-700 italic">No comments yet. Be the first to comment!</p>
             )}
           </div>
 

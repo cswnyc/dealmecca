@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { 
-  HandThumbUpIcon, 
+import {
+  HandThumbUpIcon,
   HandThumbDownIcon,
   ChatBubbleLeftIcon,
   UserIcon,
@@ -13,12 +13,15 @@ import {
 import { HandThumbUpIcon as HandThumbUpSolid } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { MentionDisplayReact } from './MentionDisplay';
+import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
+import { useAuth } from '@/lib/auth/firebase-auth';
 
 interface ForumComment {
   id: string;
   content: string;
   isAnonymous: boolean;
   anonymousHandle?: string;
+  anonymousAvatarId?: string;
   depth: number;
   upvotes: number;
   downvotes: number;
@@ -63,6 +66,32 @@ interface CommentItemProps {
 function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProps) {
   const [showReplies, setShowReplies] = useState(true);
   const [isVoting, setIsVoting] = useState(false);
+  const [currentUserIdentity, setCurrentUserIdentity] = useState<{username: string, avatarId: string} | null>(null);
+  const { user: firebaseUser } = useAuth();
+
+  // Fetch current user's anonymous identity for their own comments
+  useEffect(() => {
+    const fetchCurrentUserIdentity = async () => {
+      if (firebaseUser?.uid) {
+        try {
+          const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.currentUsername && data.currentAvatarId) {
+              setCurrentUserIdentity({
+                username: data.currentUsername,
+                avatarId: data.currentAvatarId
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching user identity:', error);
+        }
+      }
+    };
+
+    fetchCurrentUserIdentity();
+  }, [firebaseUser?.uid]);
 
   const handleVote = async (type: 'upvote' | 'downvote') => {
     if (isVoting || !onVote) return;
@@ -82,12 +111,13 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
   if (comment.isDeleted) {
     return (
       <div className={`py-2 ${indentClass}`}>
-        <div className="text-gray-500 italic text-sm">
+        <div className="text-gray-700 italic text-sm">
           [This comment has been deleted]
         </div>
       </div>
     );
   }
+
 
   return (
     <div className={`${indentClass}`}>
@@ -96,15 +126,34 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-3">
             {/* Avatar */}
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <UserIcon className="w-4 h-4 text-gray-600" />
+            <div className="flex-shrink-0">
+              {comment.isAnonymous ? (
+                <AvatarDisplay
+                  avatarId={comment.anonymousAvatarId}
+                  username={comment.anonymousHandle || 'Anonymous'}
+                  size={32}
+                />
+              ) : currentUserIdentity && comment.author.name === 'Christopher Wong' ? (
+                <AvatarDisplay
+                  avatarId={currentUserIdentity.avatarId}
+                  username={currentUserIdentity.username}
+                  size={32}
+                />
+              ) : (
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  <UserIcon className="w-4 h-4 text-gray-600" />
+                </div>
+              )}
             </div>
             
             {/* Author Info */}
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900 text-sm">
-                  {comment.isAnonymous ? comment.anonymousHandle : comment.author.name}
+                <span className="font-medium text-black text-lg bg-yellow-200 px-2 py-1 border-2 border-red-500">
+                  DEBUG USERNAME: {comment.isAnonymous
+                    ? (comment.anonymousHandle || 'Anonymous User')
+                    : (comment.author.name || 'Unknown User')
+                  }
                 </span>
                 
                 {!comment.isAnonymous && comment.author.company && (
@@ -126,7 +175,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
                 )}
               </div>
               
-              <div className="flex items-center space-x-2 text-xs text-gray-500">
+              <div className="flex items-center space-x-2 text-xs text-gray-700">
                 <span>{formatDistanceToNow(new Date(comment.createdAt))} ago</span>
                 {comment.parent && (
                   <span>
@@ -139,8 +188,8 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
         </div>
 
         {/* Comment Content */}
-        <div className="mb-3 text-gray-800">
-          <MentionDisplayReact content={comment.content} showIcons={false} />
+        <div className="mb-3 bg-blue-200 p-4 border-2 border-green-500">
+          <span className="text-black text-lg font-bold">DEBUG CONTENT: "{comment.content}"</span>
         </div>
 
         {/* Comment Actions */}
@@ -151,7 +200,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
               <button
                 onClick={() => handleVote('upvote')}
                 disabled={isVoting}
-                className="flex items-center space-x-1 px-2 py-1 rounded text-sm text-gray-500 hover:text-green-600 hover:bg-green-50 transition-colors disabled:opacity-50"
+                className="flex items-center space-x-1 px-2 py-1 rounded text-sm text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors disabled:opacity-50"
               >
                 <HandThumbUpIcon className="w-4 h-4" />
                 <span>{comment.upvotes}</span>
@@ -160,7 +209,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
               <button
                 onClick={() => handleVote('downvote')}
                 disabled={isVoting}
-                className="flex items-center space-x-1 px-2 py-1 rounded text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                className="flex items-center space-x-1 px-2 py-1 rounded text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
               >
                 <HandThumbDownIcon className="w-4 h-4" />
                 <span>{comment.downvotes}</span>
@@ -171,7 +220,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
             {comment.depth < maxDepth && onReply && (
               <button
                 onClick={() => onReply(comment.id)}
-                className="flex items-center space-x-1 px-2 py-1 rounded text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                className="flex items-center space-x-1 px-2 py-1 rounded text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
               >
                 <ChatBubbleLeftIcon className="w-4 h-4" />
                 <span>Reply</span>
@@ -183,7 +232,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
           {comment.replies && comment.replies.length > 0 && (
             <button
               onClick={() => setShowReplies(!showReplies)}
-              className="text-sm text-gray-500 hover:text-gray-700"
+              className="text-sm text-gray-700 hover:text-gray-900"
             >
               {showReplies ? 'Hide' : 'Show'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
             </button>
@@ -212,10 +261,10 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
 export function CommentList({ comments, onReply, onVote, maxDepth = 5 }: CommentListProps) {
   if (!comments || comments.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-700">
         <ChatBubbleLeftIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
         <h3 className="text-lg font-medium text-gray-900 mb-2">No comments yet</h3>
-        <p className="text-gray-500">Be the first to share your thoughts on this discussion.</p>
+        <p className="text-gray-700">Be the first to share your thoughts on this discussion.</p>
       </div>
     );
   }

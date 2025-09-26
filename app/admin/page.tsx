@@ -70,8 +70,8 @@ export default function AdminDashboard() {
       color: 'text-purple-600 bg-purple-50'
     },
     {
-      title: 'Forum Moderation',
-      description: 'Moderate forum content and posts',
+      title: 'Forum Posts',
+      description: 'Manage all forum posts and moderation',
       href: '/admin/forum/posts',
       icon: MessageSquare,
       color: 'text-orange-600 bg-orange-50'

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/user/Avatar';
 import { generateAnonymousProfile } from '@/lib/user-generator';
+import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
 import {
   ChevronUp,
   ChevronDown,
@@ -49,22 +50,50 @@ interface UserStats {
 }
 
 export function UserProfileCard() {
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure component only renders client-side to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="animate-pulse">
+        <div className="flex items-center space-x-3 p-3">
+          <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+          <div className="flex-1">
+            <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+          </div>
+          <div className="w-6 h-4 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return <UserProfileContent />;
+}
+
+function UserProfileContent() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [anonymousIdentity, setAnonymousIdentity] = useState<{username: string, avatarId: string} | null>(null);
   const [loading, setLoading] = useState(true);
   const hasFirebaseSession = useFirebaseSession();
   const { user: firebaseUser, loading: authLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!authLoading && firebaseUser && hasFirebaseSession) {
+    // Only fetch data once when we have a user and haven't set identity yet
+    if (!authLoading && firebaseUser && !anonymousIdentity) {
       fetchProfile();
       fetchUserStats();
+      fetchAnonymousIdentity();
     } else if (!authLoading && !firebaseUser && !hasFirebaseSession) {
       setLoading(false);
     }
-  }, [firebaseUser, hasFirebaseSession, authLoading]);
+  }, [firebaseUser, hasFirebaseSession, authLoading, anonymousIdentity]);
 
   const fetchProfile = async () => {
     try {
@@ -120,13 +149,56 @@ export function UserProfileCard() {
     }
   };
 
+  const fetchAnonymousIdentity = async () => {
+    if (!firebaseUser?.uid) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.currentUsername && data.currentAvatarId) {
+          setAnonymousIdentity({
+            username: data.currentUsername,
+            avatarId: data.currentAvatarId
+          });
+        } else {
+          // API returned incomplete data, use fallback
+          setAnonymousIdentity({
+            username: 'Cloud Hawk',
+            avatarId: 'avatar_2'
+          });
+        }
+      } else {
+        // API error, use fallback
+        setAnonymousIdentity({
+          username: 'Cloud Hawk',
+          avatarId: 'avatar_2'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching anonymous identity:', error);
+      // Use fallback data if API fails
+      setAnonymousIdentity({
+        username: 'Cloud Hawk',
+        avatarId: 'avatar_2'
+      });
+    }
+  };
+
   const getDisplayName = (): string => {
-    // Priority: Real name → Anonymous username → Display name → Email prefix → Default
-    if (profile?.name && !profile?.isAnonymous) {
-      return profile.name;
+    // Priority: Anonymous username (from identity) → Profile anonymous username → Real name → Display name → Email prefix → Default
+    if (anonymousIdentity?.username) {
+      return anonymousIdentity.username;
     }
     if (profile?.anonymousUsername) {
       return profile.anonymousUsername;
+    }
+    if (profile?.name && !profile?.isAnonymous) {
+      return profile.name;
     }
     if (firebaseUser?.displayName) {
       return firebaseUser.displayName;
@@ -248,8 +320,14 @@ export function UserProfileCard() {
       >
         {/* Avatar */}
         <div className="relative">
-          {/* Use OAuth profile photo if available, otherwise generated avatar */}
-          {firebaseUser?.photoURL ? (
+          {/* Priority: Custom anonymous avatar → OAuth profile photo → Generated avatar */}
+          {anonymousIdentity?.avatarId ? (
+            <AvatarDisplay
+              avatarId={anonymousIdentity.avatarId}
+              username={anonymousIdentity.username || 'Anonymous'}
+              size={40}
+            />
+          ) : firebaseUser?.photoURL ? (
             <img
               src={firebaseUser.photoURL}
               alt="Profile"
