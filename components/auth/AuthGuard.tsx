@@ -40,21 +40,43 @@ export function AuthGuard({
         return;
       }
 
-      // No user and auth is required
-      if (!user) {
-        if (!showSignUpPage) {
-          // Redirect immediately
-          router.replace(fallbackUrl);
-          return;
-        }
-        // Show sign-up page instead of redirecting
-        setIsAuthorized(false);
+      // Check for Firebase user first
+      if (user) {
+        setIsAuthorized(true);
         setIsChecking(false);
         return;
       }
 
-      // User is authenticated
-      setIsAuthorized(true);
+      // Check for LinkedIn session as fallback
+      try {
+        const linkedinSession = localStorage.getItem('linkedin-session');
+        if (linkedinSession) {
+          const sessionData = JSON.parse(linkedinSession);
+
+          // Validate session token hasn't expired
+          if (sessionData.exp && Date.now() < sessionData.exp) {
+            // LinkedIn user is authenticated
+            setIsAuthorized(true);
+            setIsChecking(false);
+            return;
+          } else {
+            // Session expired, remove it
+            localStorage.removeItem('linkedin-session');
+          }
+        }
+      } catch (error) {
+        // Invalid session data, remove it
+        localStorage.removeItem('linkedin-session');
+      }
+
+      // No authenticated user found
+      if (!showSignUpPage) {
+        // Redirect immediately
+        router.replace(fallbackUrl);
+        return;
+      }
+      // Show sign-up page instead of redirecting
+      setIsAuthorized(false);
       setIsChecking(false);
     };
 

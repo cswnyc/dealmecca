@@ -21,7 +21,26 @@ const publicRoutes = [
   '/pricing',
   '/contact',
   '/privacy',
-  '/terms'
+  '/terms',
+  '/billing',
+  '/help',
+  '/rewards',
+  '/invite-only',
+  // Test and diagnostic routes
+  '/test-linkedin-diagnosis',
+  '/test-linkedin-config',
+  '/test-firebase-auth',
+  '/test-firebase-config',
+  '/test-convertkit',
+  '/test-linkedin',
+  '/test-auth',
+  '/test-auth-fixed',
+  '/test-auth-offline',
+  '/test-auth-simple',
+  '/test-isolated',
+  '/test-components',
+  '/test-confetti',
+  '/demo'
 ];
 
 // Define auth routes
@@ -65,11 +84,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // For protected routes, we'll rely on client-side AuthGuard
-  // This middleware serves as a backup and for SEO purposes
+  // For protected routes, apply authentication checks
   if (isProtectedRoute) {
     // Skip auth checks for admin routes in development
-    if (pathname.startsWith('/admin')) {
+    if (pathname.startsWith('/admin') && process.env.NODE_ENV === 'development') {
       return NextResponse.next();
     }
 
@@ -92,6 +110,8 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // For all other routes (neither public nor protected), allow access
+  // This includes test routes, diagnostic pages, and other misc pages
   return NextResponse.next();
 }
 
