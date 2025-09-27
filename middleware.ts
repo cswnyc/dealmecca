@@ -33,6 +33,7 @@ const publicRoutes = [
   '/test-firebase-config',
   '/test-convertkit',
   '/test-linkedin',
+  '/test-linkedin-simple',
   '/test-auth',
   '/test-auth-fixed',
   '/test-auth-offline',
