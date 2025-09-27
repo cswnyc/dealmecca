@@ -17,10 +17,17 @@ export default function LinkedInSuccessPage() {
   useEffect(() => {
     const processLinkedInAuth = async () => {
       try {
+        console.log('LinkedIn success page processing auth...', {
+          searchParams: searchParams?.toString(),
+          sessionToken: searchParams?.get('session'),
+          userDataString: searchParams?.get('user')
+        });
+
         const sessionToken = searchParams?.get('session')
         const userDataString = searchParams?.get('user')
 
         if (!sessionToken) {
+          console.error('No session token found in URL params');
           throw new Error('No session token received')
         }
 

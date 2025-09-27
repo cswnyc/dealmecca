@@ -38,7 +38,7 @@ export function initiateLinkedInAuth(redirectUri: string, state?: string) {
     client_id: clientId,
     redirect_uri: redirectUri,
     state: state || 'linkedin-auth',
-    scope: 'profile email openid'
+    scope: 'openid profile email'
   });
 
   const authUrl = `${LINKEDIN_AUTH_URL}?${params.toString()}`;

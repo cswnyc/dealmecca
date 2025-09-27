@@ -12,6 +12,14 @@ export async function GET(request: NextRequest) {
     const state = searchParams.get('state')
     const error = searchParams.get('error')
 
+    console.log('LinkedIn callback received:', {
+      url: request.url,
+      code: code ? 'present' : 'missing',
+      state,
+      error,
+      allParams: Object.fromEntries(searchParams.entries())
+    })
+
     // Handle OAuth error (user denied access)
     if (error) {
       const errorUrl = new URL('/auth/signin', request.nextUrl.origin)
