@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateAnonymousProfile } from '@/lib/user-generator';
+import { subscribeUserToNewsletter } from '@/lib/convertkit';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,8 +40,23 @@ export async function POST(request: NextRequest) {
           updatedAt: new Date()
         }
       });
-      
+
       console.log('🔥 Firebase user synced to database:', { uid, email, isNewUser: true });
+
+      // Subscribe user to ConvertKit newsletter if they provided an email
+      if (email && isNewUser) {
+        try {
+          await subscribeUserToNewsletter(
+            email,
+            displayName || undefined,
+            'FREE'
+          );
+          console.log('✅ User subscribed to ConvertKit newsletter:', email);
+        } catch (convertKitError) {
+          console.warn('⚠️ ConvertKit subscription failed (non-critical):', convertKitError);
+          // Don't fail the user registration if ConvertKit fails
+        }
+      }
     } else if (user.id !== uid) {
       // Update user ID if it doesn't match Firebase UID
       user = await prisma.user.update({

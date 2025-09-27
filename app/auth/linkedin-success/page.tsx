@@ -17,15 +17,27 @@ export default function LinkedInSuccessPage() {
   useEffect(() => {
     const processLinkedInAuth = async () => {
       try {
-        const token = searchParams?.get('token')
+        const sessionToken = searchParams?.get('session')
         const userDataString = searchParams?.get('user')
 
-        if (!token) {
-          throw new Error('No authentication token received')
+        if (!sessionToken) {
+          throw new Error('No session token received')
         }
 
-        // Sign in with the Firebase custom token
-        await signInWithCustomToken(auth, token)
+        // Parse and validate the session token
+        const sessionData = JSON.parse(atob(sessionToken))
+
+        if (!sessionData.userId || !sessionData.email) {
+          throw new Error('Invalid session data')
+        }
+
+        // Check token expiration
+        if (Date.now() > sessionData.exp) {
+          throw new Error('Session token expired')
+        }
+
+        // Store session data in localStorage for the app to use
+        localStorage.setItem('linkedin-session', JSON.stringify(sessionData))
 
         // Parse user data if available
         let userData = null

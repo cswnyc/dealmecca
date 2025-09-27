@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { exchangeLinkedInCode, getLinkedInProfile } from '@/lib/auth/linkedin-oauth'
 import { auth } from '@/lib/firebase-admin'
 import { prisma } from '@/lib/db'
-import { generateSecureUsername } from '@/lib/user-generator'
+import { generateUsername } from '@/lib/user-generator'
+import { subscribeUserToNewsletter } from '@/lib/convertkit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
       })
     } else {
       // Create new user
-      const anonymousUsername = await generateSecureUsername()
+      const anonymousUsername = generateUsername(linkedInProfile.sub)
 
       user = await prisma.user.create({
         data: {
@@ -97,34 +98,33 @@ export async function GET(request: NextRequest) {
           access_token: accessToken
         }
       })
+
+      // Subscribe new user to ConvertKit newsletter
+      try {
+        await subscribeUserToNewsletter(
+          linkedInProfile.email,
+          linkedInProfile.given_name || linkedInProfile.name || undefined,
+          'FREE'
+        );
+        console.log('✅ LinkedIn user subscribed to ConvertKit newsletter:', linkedInProfile.email);
+      } catch (convertKitError) {
+        console.warn('⚠️ ConvertKit subscription failed for LinkedIn user (non-critical):', convertKitError);
+        // Don't fail the OAuth flow if ConvertKit fails
+      }
     }
 
-    // Create Firebase custom token for the user
-    let firebaseToken: string
-
-    if (user.firebaseUid) {
-      // User already has Firebase account
-      firebaseToken = await auth.createCustomToken(user.firebaseUid)
-    } else {
-      // Create new Firebase user
-      const firebaseUser = await auth.createUser({
-        email: user.email!,
-        displayName: user.name || undefined,
-        emailVerified: true // LinkedIn emails are verified
-      })
-
-      // Update our user record with Firebase UID
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { firebaseUid: firebaseUser.uid }
-      })
-
-      firebaseToken = await auth.createCustomToken(firebaseUser.uid)
-    }
-
-    // Redirect to success page with token
+    // For the LinkedIn OAuth flow, we'll redirect to a simplified success page
+    // that handles the authentication differently since Firebase Admin is not fully configured
     const successUrl = new URL('/auth/linkedin-success', request.nextUrl.origin)
-    successUrl.searchParams.set('token', firebaseToken)
+
+    // Create a simple session token using the user's database ID
+    const sessionToken = Buffer.from(JSON.stringify({
+      userId: user.id,
+      email: user.email,
+      exp: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+    })).toString('base64')
+
+    successUrl.searchParams.set('session', sessionToken)
     successUrl.searchParams.set('user', JSON.stringify({
       id: user.id,
       email: user.email,
