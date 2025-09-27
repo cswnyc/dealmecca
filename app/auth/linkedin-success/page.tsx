@@ -58,9 +58,13 @@ export default function LinkedInSuccessPage() {
 
         setStatus('success')
 
+        // Check for custom redirect parameter, default to forum
+        const redirectTo = searchParams?.get('redirect') || '/forum'
+        console.log('LinkedIn success - redirecting to:', redirectTo)
+
         // Redirect after a short delay
         setTimeout(() => {
-          router.push('/forum')
+          router.push(redirectTo)
         }, 2000)
 
       } catch (error) {
@@ -70,7 +74,7 @@ export default function LinkedInSuccessPage() {
 
         // Redirect to signin page after delay
         setTimeout(() => {
-          router.push('/auth/signin?error=linkedin_auth_failed')
+          router.push('/auth/firebase-signin?error=linkedin_auth_failed')
         }, 3000)
       }
     }

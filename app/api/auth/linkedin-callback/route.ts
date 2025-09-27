@@ -121,10 +121,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // For the LinkedIn OAuth flow, we'll redirect to a simplified success page
-    // that handles the authentication differently since Firebase Admin is not fully configured
-    const successUrl = new URL('/auth/linkedin-success', request.nextUrl.origin)
-
     // Create a simple session token using the user's database ID
     const sessionToken = Buffer.from(JSON.stringify({
       userId: user.id,
@@ -132,7 +128,16 @@ export async function GET(request: NextRequest) {
       exp: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
     })).toString('base64')
 
+    console.log('LinkedIn auth successful, creating session and redirecting to forum:', {
+      userId: user.id,
+      email: user.email,
+      sessionTokenLength: sessionToken.length
+    })
+
+    // Store session in localStorage via a redirect page that sets it and then redirects to forum
+    const successUrl = new URL('/auth/linkedin-success', request.nextUrl.origin)
     successUrl.searchParams.set('session', sessionToken)
+    successUrl.searchParams.set('redirect', '/forum')
     successUrl.searchParams.set('user', JSON.stringify({
       id: user.id,
       email: user.email,
