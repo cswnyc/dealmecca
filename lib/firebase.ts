@@ -29,9 +29,15 @@ const firebaseConfig = {
 // Initialize Firebase (singleton pattern)
 let app;
 try {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  // Only initialize if we have valid API key (not demo)
+  if (firebaseConfig.apiKey !== 'demo-api-key') {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  } else {
+    console.log('Firebase using demo configuration, skipping initialization');
+    app = null;
+  }
 } catch (error) {
-  console.warn('Firebase initialization failed, using demo mode:', error);
+  console.warn('Firebase initialization failed, continuing without Firebase:', error);
   app = null;
 }
 

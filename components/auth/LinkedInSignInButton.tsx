@@ -19,10 +19,15 @@ export default function LinkedInSignInButton({
 }: LinkedInSignInButtonProps) {
   const [loading, setLoading] = useState(false)
 
-  const handleLinkedInSignIn = async () => {
+  const handleLinkedInSignIn = async (e: React.MouseEvent) => {
+    // Prevent any default behavior that might trigger Firebase auth
+    e.preventDefault()
+    e.stopPropagation()
+
     setLoading(true)
 
     try {
+      console.log('LinkedIn sign-in initiated by user')
       const redirectUri = `${window.location.origin}/api/auth/linkedin-callback`
       const state = `linkedin-auth-${Date.now()}`
 
