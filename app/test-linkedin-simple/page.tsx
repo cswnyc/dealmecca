@@ -21,41 +21,105 @@ export default function TestLinkedInSimple() {
 
     addLog(`Redirect URI: ${redirectUri}`)
     addLog(`Auth URL: ${authUrl}`)
+    addLog('Redirecting to LinkedIn in 2 seconds...')
 
-    // Redirect to LinkedIn
-    window.location.href = authUrl
+    console.log('LinkedIn OAuth Test:', {
+      clientId,
+      redirectUri,
+      authUrl,
+      state
+    })
+
+    // Small delay to show logs, then redirect
+    setTimeout(() => {
+      window.location.href = authUrl
+    }, 2000)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">LinkedIn OAuth Simple Test</h1>
+    <html>
+      <head>
+        <title>LinkedIn OAuth Test</title>
+        <style>{`
+          /* Hide any injected layout elements */
+          * {
+            position: relative !important;
+          }
 
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Direct LinkedIn Test</h2>
+          /* Hide potential navigation elements */
+          nav, header, .nav, .navbar, .header, .user-profile, .auth-button,
+          button:not(.button), [class*="user"], [class*="User"], [class*="auth"],
+          [class*="profile"], [class*="signin"], [class*="login"] {
+            display: none !important;
+            visibility: hidden !important;
+          }
+
+          body {
+            font-family: Arial, sans-serif !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            background-color: #f5f5f5 !important;
+            overflow-x: hidden !important;
+          }
+          .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          .button {
+            background: #0073b1;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+          }
+          .button:hover {
+            background: #005885;
+          }
+          .logs {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+          }
+        `}</style>
+      </head>
+      <body>
+        <div className="container">
+          <h1>🔗 LinkedIn OAuth Test (Isolated)</h1>
+          <p>This page tests LinkedIn OAuth without any layout or navigation interference.</p>
+
           <button
             onClick={testLinkedInDirect}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+            className="button"
           >
-            Test LinkedIn OAuth (Direct)
+            🚀 Test LinkedIn OAuth (Direct)
           </button>
-        </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Debug Logs</h2>
-          <div className="bg-gray-100 p-4 rounded max-h-96 overflow-y-auto">
+          <div className="logs">
+            <h3>Debug Logs:</h3>
             {logs.length === 0 ? (
-              <p className="text-gray-500">No logs yet...</p>
+              <p>No logs yet... Click the button to start test.</p>
             ) : (
               logs.map((log, index) => (
-                <div key={index} className="font-mono text-sm mb-1">
+                <div key={index} style={{ marginBottom: '5px' }}>
                   {log}
                 </div>
               ))
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </body>
+    </html>
   )
 }

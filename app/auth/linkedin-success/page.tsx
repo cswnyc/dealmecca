@@ -128,10 +128,10 @@ export default function LinkedInSuccessPage() {
         setError(error instanceof Error ? error.message : 'Authentication failed')
         setStatus('error')
 
-        // Redirect to signin page after delay
+        // Redirect to signup page after delay
         setTimeout(() => {
-          console.log('🔄 Redirecting to signin page due to error')
-          window.location.href = '/auth/firebase-signin?error=linkedin_auth_failed'
+          console.log('🔄 Redirecting to signup page due to error')
+          window.location.href = '/auth/signup?error=linkedin_auth_failed'
         }, 3000)
       }
     }

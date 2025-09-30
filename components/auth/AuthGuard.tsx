@@ -17,21 +17,34 @@ interface AuthGuardProps {
 
 export function AuthGuard({
   children,
-  fallbackUrl = '/auth/firebase-signin',
+  fallbackUrl = '/auth/signup',
   requireAuth = true,
   showSignUpPage = true
 }: AuthGuardProps) {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
-  const { user, loading } = useAuth();
   const router = useRouter();
+
+  // Try to get Firebase auth, but handle errors gracefully
+  let user = null;
+  let loading = false;
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+    loading = authContext.loading;
+  } catch (error) {
+    // Firebase auth not available, continue with LinkedIn-only auth
+    console.log('Firebase auth not available, using LinkedIn-only authentication');
+  }
 
   useEffect(() => {
     const checkAccess = async () => {
-      // Wait for auth to load
-      if (loading) {
-        return;
-      }
+      console.log('AuthGuard: Checking access...', {
+        requireAuth,
+        user: !!user,
+        loading,
+        hasLinkedInSession: !!localStorage.getItem('linkedin-session')
+      });
 
       // If auth is not required, allow access
       if (!requireAuth) {
@@ -40,14 +53,7 @@ export function AuthGuard({
         return;
       }
 
-      // Check for Firebase user first
-      if (user) {
-        setIsAuthorized(true);
-        setIsChecking(false);
-        return;
-      }
-
-      // Check for LinkedIn session as fallback
+      // Check for LinkedIn session first (prioritize over Firebase to avoid conflicts)
       try {
         const linkedinSession = localStorage.getItem('linkedin-session');
         if (linkedinSession) {
@@ -55,18 +61,32 @@ export function AuthGuard({
 
           // Validate session token hasn't expired
           if (sessionData.exp && Date.now() < sessionData.exp) {
-            // LinkedIn user is authenticated
+            console.log('AuthGuard: LinkedIn user authenticated');
             setIsAuthorized(true);
             setIsChecking(false);
             return;
           } else {
-            // Session expired, remove it
+            console.log('AuthGuard: LinkedIn session expired, removing');
             localStorage.removeItem('linkedin-session');
           }
         }
       } catch (error) {
-        // Invalid session data, remove it
+        console.log('AuthGuard: Invalid LinkedIn session data, removing');
         localStorage.removeItem('linkedin-session');
+      }
+
+      // Wait for Firebase auth to load (if available)
+      if (loading) {
+        console.log('AuthGuard: Waiting for Firebase auth to load...');
+        return;
+      }
+
+      // Check for Firebase user as fallback
+      if (user) {
+        console.log('AuthGuard: Firebase user authenticated');
+        setIsAuthorized(true);
+        setIsChecking(false);
+        return;
       }
 
       // No authenticated user found
@@ -81,6 +101,18 @@ export function AuthGuard({
     };
 
     checkAccess();
+
+    // Listen for localStorage changes (e.g., when LinkedIn auth completes)
+    const handleStorageChange = () => {
+      console.log('AuthGuard: Storage changed, rechecking authentication...');
+      checkAccess();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [user, loading, router, fallbackUrl, requireAuth, showSignUpPage]);
 
   // Show loading state while checking
@@ -110,7 +142,7 @@ export function AuthGuard({
                 <LogoWithIcon size="md" className="cursor-pointer" />
               </Link>
               <div className="flex items-center space-x-4">
-                <Link href="/auth/firebase-signin">
+                <Link href="/auth/signup">
                   <Button variant="ghost" className="text-slate-700 dark:text-slate-300 hover:text-blue-600">
                     Sign In
                   </Button>
@@ -163,7 +195,7 @@ export function AuthGuard({
 
             {/* CTA Buttons */}
             <div className="space-y-4">
-              <Link href="/auth/firebase-signin" className="block">
+              <Link href="/auth/signup" className="block">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
                   Create Free Account
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -172,7 +204,7 @@ export function AuthGuard({
 
               <div className="text-sm text-slate-500 dark:text-slate-400">
                 Already have an account?{' '}
-                <Link href="/auth/firebase-signin" className="text-blue-600 hover:text-blue-700 font-medium">
+                <Link href="/auth/signup" className="text-blue-600 hover:text-blue-700 font-medium">
                   Sign in here
                 </Link>
               </div>

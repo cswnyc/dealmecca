@@ -24,8 +24,10 @@ export function AdminHeader({ user, title, subtitle, onMenuClick }: AdminHeaderP
   
   const handleSignOut = async () => {
     try {
+      localStorage.removeItem('linkedin-session');
+      localStorage.removeItem('auth-token');
       await firebaseSignOut(auth);
-      router.push('/auth/firebase-signin');
+      router.push('/auth/signup');
     } catch (error) {
       console.error('Error signing out:', error);
     }

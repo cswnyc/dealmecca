@@ -7,9 +7,9 @@ export default function SignInRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    // Automatically redirect to Firebase authentication
-    console.log('🔀 Redirecting from NextAuth signin to Firebase signin');
-    router.replace('/auth/firebase-signin');
+    // Automatically redirect to LinkedIn OAuth authentication
+    console.log('🔀 Redirecting from signin to LinkedIn OAuth signup');
+    router.replace('/auth/signup');
   }, [router]);
 
   return (

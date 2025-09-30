@@ -46,7 +46,6 @@ const publicRoutes = [
 
 // Define auth routes
 const authRoutes = [
-  '/auth/firebase-signin',
   '/auth/signup',
   '/auth/signin',
   '/auth/login'
@@ -106,7 +105,7 @@ export function middleware(request: NextRequest) {
       }
 
       // For page requests, redirect to sign up
-      const signUpUrl = new URL('/auth/firebase-signin', request.url);
+      const signUpUrl = new URL('/auth/signup', request.url);
       signUpUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(signUpUrl);
     }

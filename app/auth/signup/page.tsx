@@ -93,11 +93,12 @@ export default function SignUpPage() {
       // Store state in sessionStorage for verification
       sessionStorage.setItem('linkedin_oauth_state', state);
 
-      // Redirect to LinkedIn OAuth
+      // Redirect to LinkedIn OAuth with canonical redirect URI
+      const canonicalRedirectUri = 'https://getmecca.com/api/linkedin/callback';
       const params = new URLSearchParams({
         response_type: 'code',
         client_id: '86de7r9h24e1oe', // LinkedIn Client ID
-        redirect_uri: `${window.location.origin}/api/linkedin/callback`,
+        redirect_uri: canonicalRedirectUri,
         scope: 'openid profile email',
         state: state,
       });
@@ -428,9 +429,12 @@ export default function SignUpPage() {
               <div className="mt-8 text-center">
                 <p className="text-sm text-slate-600">
                   Already have an account?{' '}
-                  <Link href="/auth/firebase-signin" className="text-blue-600 hover:text-blue-500 font-medium">
-                    Sign in
-                  </Link>
+                  <button
+                    onClick={handleLinkedInSignUp}
+                    className="text-blue-600 hover:text-blue-500 font-medium underline"
+                  >
+                    Sign in with LinkedIn
+                  </button>
                 </p>
               </div>
 

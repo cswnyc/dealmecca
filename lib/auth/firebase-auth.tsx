@@ -15,7 +15,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, createLinkedInProvider } from '@/lib/firebase';
 
 // Types
 export interface AuthUser {
@@ -243,16 +243,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         return null;
       }
       
-      // Create LinkedIn OAuth provider - this should match your Firebase Console configuration
-      // The provider ID should be exactly as configured in Firebase Console (e.g., 'oidc.linkedin')
-      const provider = new OAuthProvider('oidc.linkedin');
-      
-      // Add required scopes for LinkedIn OpenID Connect
-      provider.addScope('openid');
-      provider.addScope('profile'); 
-      provider.addScope('email');
-      
-      // Set custom parameters if needed
+      // Use centralized LinkedIn provider configuration
+      const provider = createLinkedInProvider();
+
+      // Set custom parameters for sign-in flow
       provider.setCustomParameters({
         // This ensures we get the proper LinkedIn sign-in flow
         'prompt': 'select_account'
@@ -271,11 +265,27 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       const isNewUser = result.user.metadata.creationTime === result.user.metadata.lastSignInTime;
       
       console.log('🔥 LinkedIn Sign-In Success:', { authUser, isNewUser });
-      
+
       return { user: authUser, isNewUser };
-      
+
     } catch (error) {
-      handleAuthError(error as AuthError);
+      console.error('🔥 LinkedIn Sign-In Error:', error);
+
+      // Handle specific LinkedIn authentication errors
+      const authError = error as AuthError;
+      if (authError.code === 'auth/invalid-credential') {
+        console.error('🔥 LinkedIn provider configuration issue - check Firebase Console');
+        setError('LinkedIn authentication is not properly configured. Please try again or contact support.');
+      } else if (authError.code === 'auth/popup-blocked') {
+        setError('Popup was blocked. Please enable popups and try again.');
+      } else if (authError.code === 'auth/popup-closed-by-user') {
+        setError('LinkedIn sign-in was cancelled.');
+      } else if (authError.code === 'auth/unauthorized-domain') {
+        console.error('🔥 Domain not authorized in Firebase Console');
+        setError('This domain is not authorized for LinkedIn authentication.');
+      } else {
+        handleAuthError(authError);
+      }
       return null;
     } finally {
       setLoading(false);
@@ -405,6 +415,9 @@ export function useAuthUser(): AuthUser | null {
   const { user } = useAuth();
   return user;
 }
+
+// Alias for compatibility
+export const useFirebaseAuth = useAuth;
 
 // Hook for auth loading state
 export function useAuthLoading(): boolean {

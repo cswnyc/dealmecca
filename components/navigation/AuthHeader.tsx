@@ -42,7 +42,7 @@ export default function AuthHeader() {
     )
   }
 
-  // Hide AuthHeader on homepage, forum, organizations, events, admin, auth, privacy, terms, invite-only, and new user pages to avoid duplicate user menus
+  // Hide AuthHeader on homepage, forum, organizations, events, admin, auth, privacy, terms, invite-only, test pages, and new user pages to avoid duplicate user menus
   if (pathname === '/' ||
       pathname === '/forum' ||
       pathname.startsWith('/forum/') ||
@@ -51,6 +51,7 @@ export default function AuthHeader() {
       pathname === '/admin' ||
       pathname.startsWith('/admin/') ||
       pathname.startsWith('/auth/') ||
+      pathname.startsWith('/test-') ||
       pathname === '/privacy' ||
       pathname === '/terms' ||
       pathname === '/invite-only' ||
@@ -95,11 +96,13 @@ export default function AuthHeader() {
                 <Settings className="w-4 h-4 inline mr-2" />
                 Settings
               </Link>
-              <button 
+              <button
                 onClick={async () => {
                   try {
+                    localStorage.removeItem('linkedin-session');
+                    localStorage.removeItem('auth-token');
                     await firebaseSignOut(auth);
-                    router.push('/auth/firebase-signin');
+                    router.push('/auth/signup');
                   } catch (error) {
                     console.error('Error signing out:', error);
                   }
@@ -119,12 +122,12 @@ export default function AuthHeader() {
   // Not logged in - show login buttons
   return (
     <div className="flex items-center space-x-4">
-      <Link href="/auth/firebase-signin">
+      <Link href="/auth/signup">
         <Button variant="ghost" className="text-gray-700 hover:text-primary font-medium">
           Sign In
         </Button>
       </Link>
-      <Link href="/auth/firebase-signin">
+      <Link href="/auth/signup">
         <Button className="bg-accent hover:bg-accent-700 text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
           Get Started
         </Button>

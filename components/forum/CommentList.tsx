@@ -14,7 +14,7 @@ import { HandThumbUpIcon as HandThumbUpSolid } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { MentionDisplayReact } from './MentionDisplay';
 import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
-import { useAuth } from '@/lib/auth/firebase-auth';
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 
 interface ForumComment {
   id: string;
@@ -67,7 +67,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
   const [showReplies, setShowReplies] = useState(true);
   const [isVoting, setIsVoting] = useState(false);
   const [currentUserIdentity, setCurrentUserIdentity] = useState<{username: string, avatarId: string} | null>(null);
-  const { user: firebaseUser } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
 
   // Fetch current user's anonymous identity for their own comments
   useEffect(() => {

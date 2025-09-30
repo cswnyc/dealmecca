@@ -9,7 +9,7 @@ interface AdminGuardProps {
   fallbackUrl?: string;
 }
 
-export function AdminGuard({ children, fallbackUrl = '/auth/firebase-signin' }: AdminGuardProps) {
+export function AdminGuard({ children, fallbackUrl = '/auth/signup' }: AdminGuardProps) {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const { user, loading } = useAuth();

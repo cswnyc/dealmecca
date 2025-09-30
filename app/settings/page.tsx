@@ -55,7 +55,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace('/auth/firebase-signin');
+      router.replace('/auth/signup');
       return;
     }
 

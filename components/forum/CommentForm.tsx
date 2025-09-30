@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirebaseSession } from '@/hooks/useFirebaseSession';
-import { useAuth } from '@/lib/auth/firebase-auth';
-import { 
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
+import {
   PaperAirplaneIcon,
   EyeSlashIcon,
   UserIcon
@@ -29,14 +28,16 @@ export function CommentForm({
   placeholder = "Share your thoughts...",
   className = ""
 }: CommentFormProps) {
-  const hasFirebaseSession = useFirebaseSession();
-  const { user: firebaseUser, loading: authLoading } = useAuth();
+  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+
+  // Check LinkedIn session as fallback
+  const hasLinkedInSession = typeof window !== 'undefined' && localStorage.getItem('linkedin-session');
   const [content, setContent] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  if (!firebaseUser) {
+  if (!firebaseUser && !hasLinkedInSession) {
     return (
       <div className={`bg-gray-50 rounded-lg p-6 text-center ${className}`}>
         <UserIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />

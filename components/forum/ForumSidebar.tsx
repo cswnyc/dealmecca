@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useFirebaseSession } from '@/hooks/useFirebaseSession';
-import { useAuth } from '@/lib/auth/firebase-auth';
-import { 
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
+import {
   Trophy, 
   Crown, 
   Star, 
@@ -40,8 +39,13 @@ interface QuickStat {
 }
 
 export function ForumSidebar() {
-  const hasFirebaseSession = useFirebaseSession();
-  const { user: firebaseUser, loading: authLoading } = useAuth();
+  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+
+  // Check Firebase session
+  const hasFirebaseSession = Boolean(firebaseUser);
+
+  // Check LinkedIn session as fallback
+  const hasLinkedInSession = typeof window !== 'undefined' && localStorage.getItem('linkedin-session');
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const isFetchingRef = useRef(false);

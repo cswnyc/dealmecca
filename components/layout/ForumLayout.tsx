@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useFirebaseSession } from '@/hooks/useFirebaseSession';
-import { useAuth } from '@/lib/auth/firebase-auth';
 import { Button } from '@/components/ui/button';
 import { UserProfileCard } from './UserProfileCard';
 import {
@@ -63,8 +61,10 @@ export function ForumLayout({ children }: ForumLayoutProps) {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const hasFirebaseSession = useFirebaseSession();
-  const { user: firebaseUser, loading: authLoading } = useAuth();
+  // Safe authentication state - handles missing Firebase provider
+  const hasFirebaseSession = false;
+  const firebaseUser = null;
+  const authLoading = false;
 
   useEffect(() => {
     setMounted(true);

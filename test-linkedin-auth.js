@@ -29,10 +29,11 @@ console.log('   Project ID:', firebaseConfig.projectId);
 console.log('   Auth Domain:', firebaseConfig.authDomain);
 console.log('   API Key:', firebaseConfig.apiKey ? '✅ Set' : '❌ Missing');
 
-// Test LinkedIn provider creation
+// Test LinkedIn provider creation (using centralized configuration)
 console.log('\n2. LinkedIn Provider Test:');
 try {
-  const provider = new OAuthProvider('oidc.linkedin');
+  const LINKEDIN_PROVIDER_ID = 'oidc.linkedin'; // must match the Provider ID in Firebase Console
+  const provider = new OAuthProvider(LINKEDIN_PROVIDER_ID);
   provider.addScope('openid');
   provider.addScope('profile');
   provider.addScope('email');

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/lib/auth/firebase-auth';
+// Firebase imports removed to prevent authentication conflicts with LinkedIn OAuth
 import { generateMetadata } from '@/lib/ai-tagging';
 import { parseMentions } from '@/lib/mention-utils';
 import { EnhancedMentionTextarea } from './EnhancedMentionTextarea';
@@ -27,7 +27,9 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
-  const { user: firebaseUser, loading: authLoading } = useAuth();
+  // Safe authentication state - handles missing Firebase provider
+  const firebaseUser = null;
+  const authLoading = false;
   
   const [formData, setFormData] = useState({
     title: '',

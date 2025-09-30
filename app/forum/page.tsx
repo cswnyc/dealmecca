@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useFirebaseSession } from '@/hooks/useFirebaseSession';
-import { useAuth } from '@/lib/auth/firebase-auth';
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { ForumPostCard } from '@/components/forum/ForumPostCard';
 import { SmartPostForm } from '@/components/forum/SmartPostForm';
@@ -131,8 +130,13 @@ export default function ForumPage() {
   const topicFilter = searchParams.get('topic');
   const categoryFilter = searchParams.get('category');
   
-  const { user: firebaseUser, loading: authLoading } = useAuth();
-  const hasFirebaseSession = useFirebaseSession();
+  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+
+  // Check Firebase session
+  const hasFirebaseSession = Boolean(firebaseUser);
+
+  // Check LinkedIn session as fallback
+  const hasLinkedInSession = typeof window !== 'undefined' && localStorage.getItem('linkedin-session');
   
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [categories, setCategories] = useState<ForumCategory[]>([]);

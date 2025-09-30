@@ -13,12 +13,37 @@ import AuthHeader from "@/components/navigation/AuthHeader";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AnimatedText } from "@/components/ui/animated-text";
 import { EnhancedFeatures, HighlightedFeatures } from "@/components/ui/enhanced-features";
-import { useAuth } from "@/lib/auth/firebase-auth";
-import { useUserRole } from "@/hooks/useUserRole";
 
 export default function Home() {
-  const { user, loading, signOut } = useAuth();
-  const { isAdmin, isRegularUser, loading: roleLoading } = useUserRole();
+  // Safe authentication state - handles missing Firebase provider
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const signOut = () => {
+    localStorage.removeItem('linkedin-session');
+    localStorage.removeItem('auth-token');
+    window.location.reload();
+  };
+
+  // Check for LinkedIn session on load
+  useEffect(() => {
+    try {
+      const linkedinSession = localStorage.getItem('linkedin-session');
+      if (linkedinSession) {
+        const sessionData = JSON.parse(linkedinSession);
+        if (sessionData.exp && Date.now() < sessionData.exp) {
+          setUser({ email: sessionData.email || 'user@linkedin.com' });
+        }
+      }
+    } catch (error) {
+      console.log('No valid LinkedIn session found');
+    }
+    setLoading(false);
+  }, []);
+
+  // Safe role state - simplified for LinkedIn-only authentication
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isRegularUser, setIsRegularUser] = useState(true);
+  const roleLoading = false;
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const forumRef = useRef<HTMLElement>(null);
@@ -164,7 +189,7 @@ export default function Home() {
                 </div>
               ) : (
                 <>
-                  <Link href="/auth/firebase-signin">
+                  <Link href="/auth/signup">
                     <Button variant="ghost" className="text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary font-medium">
                       Sign In
                     </Button>

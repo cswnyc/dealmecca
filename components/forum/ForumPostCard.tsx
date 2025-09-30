@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { useFirebaseSession } from '@/hooks/useFirebaseSession';
-import { useAuth } from '@/lib/auth/firebase-auth';
+// Firebase imports removed to prevent authentication conflicts with LinkedIn OAuth
 import {
   ChatBubbleLeftIcon,
   BookmarkIcon,
@@ -185,8 +184,10 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   const pollChoicesArray = parsePollChoices(post.pollChoices);
   const [mentionQuery, setMentionQuery] = useState('');
   const [mentionSuggestions, setMentionSuggestions] = useState<any[]>([]);
-  const hasFirebaseSession = useFirebaseSession();
-  const { user: firebaseUser, loading: authLoading } = useAuth();
+  // Safe authentication state - handles missing Firebase provider
+  const hasFirebaseSession = false;
+  const firebaseUser = null;
+  const authLoading = false;
   const urgencyColors = {
     LOW: 'text-gray-500',
     MEDIUM: 'text-blue-500', 

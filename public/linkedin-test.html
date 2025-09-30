@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn OAuth Test - Isolated</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .status {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .status.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .status.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .linkedin-btn {
+            background: #0077b5;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .linkedin-btn:hover {
+            background: #005885;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,119,181,0.3);
+        }
+
+        .test-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .test-info h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .log {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 2px 0;
+        }
+
+        .log-entry.info { color: #0066cc; }
+        .log-entry.success { color: #009900; }
+        .log-entry.error { color: #cc0000; }
+        .log-entry.warning { color: #ff6600; }
+
+        .session-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .session-info.show {
+            display: block;
+        }
+
+        .auth-state {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .auth-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+
+        .auth-indicator.authenticated {
+            background: #28a745;
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .clear-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 LinkedIn OAuth Test (Isolated)</h1>
+
+        <div class="test-info">
+            <h3>🧪 Test Environment</h3>
+            <p><strong>Completely isolated from Next.js app</strong></p>
+            <ul>
+                <li>No Firebase interference</li>
+                <li>No AuthGuard conflicts</li>
+                <li>No middleware routing</li>
+                <li>No authentication buttons</li>
+                <li>Pure LinkedIn OAuth testing</li>
+            </ul>
+        </div>
+
+        <div class="auth-state">
+            <span>Authentication Status:</span>
+            <div class="auth-indicator" id="authIndicator"></div>
+            <span id="authStatus">Not Authenticated</span>
+        </div>
+
+        <button class="linkedin-btn" onclick="startLinkedInAuth()">
+            🔗 Sign in with LinkedIn
+        </button>
+
+        <button class="clear-btn" onclick="clearSession()">Clear Session</button>
+        <button class="clear-btn" onclick="clearLogs()">Clear Logs</button>
+
+        <div class="session-info" id="sessionInfo">
+            <h4>Session Details:</h4>
+            <pre id="sessionData"></pre>
+        </div>
+
+        <div class="log" id="logContainer">
+            <strong>Test Logs:</strong><br>
+        </div>
+    </div>
+
+    <script>
+        // LinkedIn OAuth Configuration
+        const LINKEDIN_CONFIG = {
+            client_id: '86de7r9h24e1oe',
+            redirect_uri: window.location.origin + '/api/auth/linkedin-callback',
+            scope: 'openid profile email',
+            state: 'linkedin_oauth_test_' + Date.now()
+        };
+
+        // Logging functions
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            // Also log to browser console
+            console.log(`[LinkedIn Test] ${message}`);
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '<strong>Test Logs:</strong><br>';
+        }
+
+        // Authentication state management
+        function updateAuthState() {
+            const session = localStorage.getItem('linkedin-session');
+            const authIndicator = document.getElementById('authIndicator');
+            const authStatus = document.getElementById('authStatus');
+            const sessionInfo = document.getElementById('sessionInfo');
+            const sessionData = document.getElementById('sessionData');
+
+            if (session) {
+                try {
+                    const sessionObj = JSON.parse(session);
+                    const isValid = sessionObj.exp && Date.now() < sessionObj.exp;
+
+                    if (isValid) {
+                        authIndicator.classList.add('authenticated');
+                        authStatus.textContent = 'Authenticated via LinkedIn';
+                        sessionInfo.classList.add('show');
+                        sessionData.textContent = JSON.stringify(sessionObj, null, 2);
+                        log('✅ Valid LinkedIn session found', 'success');
+                        return true;
+                    } else {
+                        log('⏰ LinkedIn session expired, clearing...', 'warning');
+                        localStorage.removeItem('linkedin-session');
+                    }
+                } catch (e) {
+                    log('❌ Invalid session data found, clearing...', 'error');
+                    localStorage.removeItem('linkedin-session');
+                }
+            }
+
+            authIndicator.classList.remove('authenticated');
+            authStatus.textContent = 'Not Authenticated';
+            sessionInfo.classList.remove('show');
+            return false;
+        }
+
+        // LinkedIn OAuth functions
+        function startLinkedInAuth() {
+            log('🚀 Starting LinkedIn OAuth flow...', 'info');
+
+            const params = new URLSearchParams({
+                response_type: 'code',
+                client_id: LINKEDIN_CONFIG.client_id,
+                redirect_uri: LINKEDIN_CONFIG.redirect_uri,
+                scope: LINKEDIN_CONFIG.scope,
+                state: LINKEDIN_CONFIG.state
+            });
+
+            const authUrl = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
+
+            log(`📍 Redirecting to: ${authUrl}`, 'info');
+            log(`🔗 Client ID: ${LINKEDIN_CONFIG.client_id}`, 'info');
+            log(`🎯 Redirect URI: ${LINKEDIN_CONFIG.redirect_uri}`, 'info');
+            log(`📊 Scope: ${LINKEDIN_CONFIG.scope}`, 'info');
+            log(`🔐 State: ${LINKEDIN_CONFIG.state}`, 'info');
+
+            // Store state for validation
+            localStorage.setItem('linkedin_oauth_state', LINKEDIN_CONFIG.state);
+
+            // Redirect to LinkedIn
+            window.location.href = authUrl;
+        }
+
+        function clearSession() {
+            localStorage.removeItem('linkedin-session');
+            localStorage.removeItem('linkedin_oauth_state');
+
+            // Clear cookies too
+            document.cookie = 'linkedin-auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+            updateAuthState();
+            log('🧹 Session and cookies cleared', 'info');
+        }
+
+        // Check for OAuth return parameters
+        function checkOAuthReturn() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            const error = urlParams.get('error');
+            const errorDescription = urlParams.get('error_description');
+
+            if (error) {
+                log(`❌ OAuth Error: ${error}`, 'error');
+                if (errorDescription) {
+                    log(`📝 Error Description: ${errorDescription}`, 'error');
+                }
+                return;
+            }
+
+            if (code) {
+                log('✅ OAuth authorization code received', 'success');
+                log(`🔑 Code: ${code.substring(0, 20)}...`, 'info');
+                log(`🔐 State: ${state}`, 'info');
+
+                // Validate state
+                const storedState = localStorage.getItem('linkedin_oauth_state');
+                if (state !== storedState) {
+                    log('❌ State mismatch! Possible CSRF attack.', 'error');
+                    log(`Expected: ${storedState}`, 'error');
+                    log(`Received: ${state}`, 'error');
+                    return;
+                }
+
+                log('✅ State validation passed', 'success');
+
+                // Clean up URL
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+
+                log('🔄 Redirecting to LinkedIn success handler...', 'info');
+
+                // Build success URL with parameters
+                const successUrl = `/auth/linkedin-success?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
+                log(`📍 Success URL: ${successUrl}`, 'info');
+
+                // Redirect to success handler
+                setTimeout(() => {
+                    window.location.href = successUrl;
+                }, 1000);
+
+                return;
+            }
+
+            log('ℹ️ No OAuth parameters found - normal page load', 'info');
+        }
+
+        // Storage event listener to detect session changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'linkedin-session') {
+                log('📢 LinkedIn session changed in another tab', 'info');
+                updateAuthState();
+            }
+        });
+
+        // Initialize page
+        function init() {
+            log('🚀 LinkedIn OAuth Test initialized', 'info');
+            log(`🌐 Environment: ${window.location.origin}`, 'info');
+            log(`📄 Page: ${window.location.pathname}`, 'info');
+
+            updateAuthState();
+            checkOAuthReturn();
+
+            // Test accessibility
+            log('🧪 Testing LinkedIn API accessibility...', 'info');
+
+            // Check if we can access LinkedIn domain
+            const testImage = new Image();
+            testImage.onload = () => log('✅ LinkedIn domain accessible', 'success');
+            testImage.onerror = () => log('❌ LinkedIn domain not accessible', 'error');
+            testImage.src = 'https://www.linkedin.com/favicon.ico';
+        }
+
+        // Run initialization
+        init();
+    </script>
+</body>
+</html>

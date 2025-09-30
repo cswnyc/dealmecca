@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useFirebaseSession } from '@/hooks/useFirebaseSession';
-import { useAuth } from '@/lib/auth/firebase-auth';
-import { auth } from '@/lib/firebase';
-import { signOut as firebaseSignOut } from 'firebase/auth';
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -80,8 +77,10 @@ function UserProfileContent() {
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [anonymousIdentity, setAnonymousIdentity] = useState<{username: string, avatarId: string} | null>(null);
   const [loading, setLoading] = useState(true);
-  const hasFirebaseSession = useFirebaseSession();
-  const { user: firebaseUser, loading: authLoading } = useAuth();
+  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+
+  // Check if we have a valid Firebase session
+  const hasFirebaseSession = Boolean(firebaseUser);
   const router = useRouter();
 
   useEffect(() => {
@@ -267,8 +266,22 @@ function UserProfileContent() {
   };
 
   const handleSignOut = async () => {
-    await firebaseSignOut(auth);
-    router.push('/auth/firebase-signin');
+    try {
+      // Sign out from Firebase if authenticated
+      if (firebaseUser) {
+        const { signOut } = await import('firebase/auth');
+        const { auth } = await import('@/lib/firebase');
+        await signOut(auth);
+      }
+      // Clear LinkedIn session
+      localStorage.removeItem('linkedin-session');
+      localStorage.removeItem('auth-token');
+      router.push('/auth/signup');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Fallback: navigate to sign-up page anyway
+      router.push('/auth/signup');
+    }
   };
 
   const handleNavigation = (path: string) => {
@@ -297,7 +310,7 @@ function UserProfileContent() {
     return (
       <div className="p-3">
         <Button
-          onClick={() => router.push('/auth/firebase-signin')}
+          onClick={() => router.push('/auth/signup')}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         >
           Sign In
