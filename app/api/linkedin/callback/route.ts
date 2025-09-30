@@ -2,6 +2,8 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { generateAnonymousProfile } from '@/lib/user-generator';
 
 async function postForm(url: string, data: Record<string,string>) {
   const body = new URLSearchParams(data).toString();
@@ -251,10 +253,77 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unable to retrieve user profile' }, { status: 400 });
     }
 
+    // Create or find user in database
+    const userEmail = emailAddr?.toLowerCase();
+    const userIdentifier = userEmail || `linkedin:${linkedinId}`;
+
+    console.log('Creating/finding database user:', { userIdentifier, hasEmail: !!userEmail });
+
+    let dbUser;
+    try {
+      // Try to find existing user by email first
+      if (userEmail) {
+        dbUser = await prisma.user.findUnique({
+          where: { email: userEmail }
+        });
+      }
+
+      // If no user found by email, try to find by a unique identifier approach
+      if (!dbUser) {
+        // For LinkedIn users without email, we'll use firebaseUid field to store linkedin:id
+        const linkedinIdentifier = userEmail || `linkedin:${linkedinId}`;
+        dbUser = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: userEmail },
+              { firebaseUid: `linkedin:${linkedinId}` }
+            ]
+          }
+        });
+      }
+
+      if (!dbUser) {
+        // Create new user with anonymous profile
+        const anonymousProfile = generateAnonymousProfile(linkedinId);
+
+        dbUser = await prisma.user.create({
+          data: {
+            email: userEmail || null,
+            firebaseUid: userEmail ? null : `linkedin:${linkedinId}`,
+            name: name || null,
+            anonymousUsername: anonymousProfile.username,
+            avatarSeed: anonymousProfile.avatarId,
+            isAnonymous: true,
+            role: 'FREE',
+            subscriptionTier: 'FREE',
+            subscriptionStatus: 'ACTIVE'
+          }
+        });
+
+        console.log('✅ Created new LinkedIn user in database:', {
+          id: dbUser.id,
+          email: dbUser.email,
+          firebaseUid: dbUser.firebaseUid,
+          anonymousUsername: dbUser.anonymousUsername
+        });
+      } else {
+        console.log('✅ Found existing LinkedIn user in database:', {
+          id: dbUser.id,
+          email: dbUser.email,
+          firebaseUid: dbUser.firebaseUid
+        });
+      }
+    } catch (dbError) {
+      console.error('❌ Database user creation/lookup failed:', dbError);
+      // Continue with session creation even if database fails
+    }
+
     // Create session data compatible with existing auth system
     const uid = emailAddr ? emailAddr.toLowerCase() : `linkedin:${linkedinId}`;
     const sessionData = {
       userId: linkedinId, // Use userId for compatibility with success page
+      dbUserId: dbUser?.id, // Database user ID for identity system
+      firebaseUid: dbUser?.firebaseUid, // Firebase UID equivalent for API compatibility
       email: emailAddr || undefined,
       name: name || undefined,
       provider: 'linkedin',

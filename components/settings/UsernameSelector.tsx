@@ -5,7 +5,9 @@ import { Shuffle } from 'lucide-react';
 
 interface UsernameSelectorProps {
   currentUsername?: string;
-  firebaseUid: string;
+  firebaseUid?: string;
+  linkedinId?: string;
+  email?: string;
   onSelect: (username: string) => void;
   disabled?: boolean;
 }
@@ -13,6 +15,8 @@ interface UsernameSelectorProps {
 export default function UsernameSelector({
   currentUsername,
   firebaseUid,
+  linkedinId,
+  email,
   onSelect,
   disabled = false
 }: UsernameSelectorProps) {
@@ -24,25 +28,33 @@ export default function UsernameSelector({
 
   // Generate initial username options
   useEffect(() => {
-    if (firebaseUid && usernameOptions.length === 0) {
+    if ((firebaseUid || linkedinId || email) && usernameOptions.length === 0) {
       generateNewOptions();
     }
-  }, [firebaseUid]);
+  }, [firebaseUid, linkedinId, email]);
 
   const generateNewOptions = async () => {
     if (isGenerating) return;
 
     setIsGenerating(true);
     try {
+      const requestBody: any = { count: 6 };
+
+      // Add appropriate user identifier
+      if (firebaseUid) {
+        requestBody.firebaseUid = firebaseUid;
+      } else if (linkedinId) {
+        requestBody.linkedinId = linkedinId;
+      } else if (email) {
+        requestBody.email = email;
+      }
+
       const response = await fetch('/api/users/identity', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          firebaseUid,
-          count: 6,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {

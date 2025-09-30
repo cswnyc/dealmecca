@@ -18,7 +18,10 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
     onSelect(avatarId);
   };
 
-  const renderAvatar = (avatar: AvatarOption) => {
+  const renderAvatar = (avatar: AvatarOption | undefined) => {
+    if (!avatar) {
+      return <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs">?</div>;
+    }
     return (
       <div
         dangerouslySetInnerHTML={{
@@ -87,7 +90,7 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
-              {renderAvatar(AVATAR_LIBRARY.find(a => a.id === selectedId)!)}
+              {renderAvatar(AVATAR_LIBRARY.find(a => a.id === selectedId))}
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">

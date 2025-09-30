@@ -71,7 +71,7 @@ export const generateFriendlyUsername = (userId: string): string => {
   const adjective = ADJECTIVES[adjectiveIndex];
   const noun = NOUNS[nounIndex];
 
-  return `${adjective} ${noun}`;
+  return `${adjective}${noun}`;
 };
 
 /**
@@ -88,7 +88,7 @@ export const generateUsernameOptions = (userId: string, count = 6): string[] => 
 
     const adjective = ADJECTIVES[adjectiveIndex];
     const noun = NOUNS[nounIndex];
-    const username = `${adjective} ${noun}`;
+    const username = `${adjective}${noun}`;
 
     if (!usedCombinations.has(username)) {
       options.push(username);
@@ -105,11 +105,16 @@ export const generateUsernameOptions = (userId: string, count = 6): string[] => 
  * Check if username follows friendly pattern
  */
 export const isFriendlyUsername = (username: string): boolean => {
-  const parts = username.split(' ');
-  if (parts.length !== 2) return false;
-
-  const [adjective, noun] = parts;
-  return ADJECTIVES.includes(adjective) && NOUNS.includes(noun);
+  // Check if username is a combination of an adjective and noun (no spaces)
+  for (const adjective of ADJECTIVES) {
+    if (username.startsWith(adjective)) {
+      const remaining = username.slice(adjective.length);
+      if (NOUNS.includes(remaining)) {
+        return true;
+      }
+    }
+  }
+  return false;
 };
 
 /**
@@ -119,5 +124,5 @@ export const generateRandomFriendlyUsername = (): string => {
   const adjective = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
   const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
 
-  return `${adjective} ${noun}`;
+  return `${adjective}${noun}`;
 };

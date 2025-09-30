@@ -18,33 +18,78 @@ interface IdentityData {
 }
 
 export default function IdentityTab() {
-  const { user } = useAuth();
+  // Try to get Firebase auth, but handle errors gracefully
+  let user = null;
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+  } catch (error) {
+    console.log('Firebase auth not available, using LinkedIn-only authentication');
+  }
+
   const [identityData, setIdentityData] = useState<IdentityData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [linkedinSession, setLinkedinSession] = useState<any>(null);
 
   // Form state
   const [selectedUsername, setSelectedUsername] = useState<string>('');
   const [selectedAvatarId, setSelectedAvatarId] = useState<string>('');
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Check for LinkedIn session on mount
+  useEffect(() => {
+    try {
+      const linkedinSessionData = localStorage.getItem('linkedin-session');
+      if (linkedinSessionData) {
+        const sessionData = JSON.parse(linkedinSessionData);
+        if (sessionData.exp && Date.now() < sessionData.exp) {
+          setLinkedinSession(sessionData);
+          console.log('IdentityTab: LinkedIn session found:', sessionData);
+        }
+      }
+    } catch (error) {
+      console.log('IdentityTab: Invalid LinkedIn session data');
+    }
+  }, []);
+
   // Fetch current identity data
   useEffect(() => {
-    if (user?.uid) {
+    if (user?.uid || linkedinSession) {
       fetchIdentityData();
     }
-  }, [user?.uid]);
+  }, [user?.uid, linkedinSession]);
 
   const fetchIdentityData = async () => {
-    if (!user?.uid) return;
-
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/users/identity?firebaseUid=${user.uid}`);
+      let apiUrl = '';
+
+      // Determine which authentication method to use
+      if (user?.uid) {
+        // Firebase user
+        apiUrl = `/api/users/identity?firebaseUid=${user.uid}`;
+      } else if (linkedinSession?.firebaseUid) {
+        // LinkedIn user with Firebase UID equivalent
+        apiUrl = `/api/users/identity?firebaseUid=${linkedinSession.firebaseUid}`;
+      } else if (linkedinSession?.email) {
+        // LinkedIn user with email
+        apiUrl = `/api/users/identity?email=${encodeURIComponent(linkedinSession.email)}`;
+      } else if (linkedinSession?.userId) {
+        // LinkedIn user with LinkedIn ID
+        apiUrl = `/api/users/identity?linkedinId=${linkedinSession.userId}`;
+      } else {
+        setError('No valid authentication found');
+        setLoading(false);
+        return;
+      }
+
+      console.log('IdentityTab: Fetching identity data from:', apiUrl);
+      const response = await fetch(apiUrl);
 
       if (response.ok) {
         const data = await response.json();
@@ -73,22 +118,36 @@ export default function IdentityTab() {
   }, [selectedUsername, selectedAvatarId, identityData]);
 
   const handleSave = async () => {
-    if (!user?.uid || !hasChanges) return;
+    if ((!user?.uid && !linkedinSession) || !hasChanges) return;
 
     setSaving(true);
     setError(null);
 
     try {
+      let requestBody: any = {
+        anonymousUsername: selectedUsername || undefined,
+        avatarId: selectedAvatarId || undefined,
+      };
+
+      // Add appropriate user identifier
+      if (user?.uid) {
+        requestBody.firebaseUid = user.uid;
+      } else if (linkedinSession?.firebaseUid) {
+        requestBody.firebaseUid = linkedinSession.firebaseUid;
+      } else if (linkedinSession?.email) {
+        requestBody.email = linkedinSession.email;
+      } else if (linkedinSession?.userId) {
+        requestBody.linkedinId = linkedinSession.userId;
+      }
+
+      console.log('IdentityTab: Saving identity data:', requestBody);
+
       const response = await fetch('/api/users/identity', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          firebaseUid: user.uid,
-          anonymousUsername: selectedUsername || undefined,
-          avatarId: selectedAvatarId || undefined,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
@@ -176,10 +235,12 @@ export default function IdentityTab() {
       />
 
       {/* Username Selection */}
-      {user?.uid && (
+      {(user?.uid || linkedinSession) && (
         <UsernameSelector
           currentUsername={identityData?.currentUsername}
-          firebaseUid={user.uid}
+          firebaseUid={user?.uid || linkedinSession?.firebaseUid}
+          linkedinId={linkedinSession?.userId}
+          email={linkedinSession?.email}
           onSelect={setSelectedUsername}
           disabled={saving}
         />
