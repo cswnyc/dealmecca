@@ -102,8 +102,10 @@ export default function SignUpPage() {
         state: state,
       });
 
-      // Set state cookie for backend verification
-      document.cookie = `li_oauth_state=${state}; path=/; SameSite=Strict; max-age=600`; // 10 minutes
+      // Set state cookie for backend verification (with Secure flag for production)
+      const isProduction = window.location.protocol === 'https:';
+      const cookieString = `li_oauth_state=${state}; path=/; SameSite=Strict; max-age=600${isProduction ? '; Secure' : ''}`;
+      document.cookie = cookieString;
 
       const authUrl = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
       window.location.href = authUrl;

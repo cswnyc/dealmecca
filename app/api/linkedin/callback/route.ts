@@ -55,7 +55,15 @@ export async function GET(req: NextRequest) {
   const cookieState = req.cookies.get('li_oauth_state')?.value || null;
 
   if (!cookieState || cookieState !== state) {
-    console.error('LinkedIn OAuth state mismatch');
+    console.error('LinkedIn OAuth state mismatch:', {
+      cookieState: cookieState?.substring(0, 10) + '...',
+      receivedState: state?.substring(0, 10) + '...',
+      hasCookie: !!cookieState,
+      hasState: !!state,
+      allCookies: Object.fromEntries(
+        Array.from(req.cookies.entries()).map(([key, cookie]) => [key, cookie.value?.substring(0, 10) + '...'])
+      )
+    });
     return NextResponse.json({ error: 'Invalid state parameter' }, { status: 400 });
   }
 
