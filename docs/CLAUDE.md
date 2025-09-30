@@ -185,6 +185,36 @@
 
 ---
 
+## 🚨 Critical Deployment Rules
+
+### **ALWAYS Use OAuth-Safe Deployment**
+**CRITICAL**: OAuth integrations (LinkedIn, Google, Stripe) require consistent domains
+
+**✅ CORRECT Production Deployment:**
+```bash
+vercel --prod --alias getmecca.com
+# OR use the npm script:
+npm run deploy:prod
+```
+
+**❌ NEVER Use Random Vercel URLs:**
+```bash
+vercel --prod  # Creates random URLs that break OAuth
+```
+
+**Why This Matters:**
+- LinkedIn OAuth only works on `getmecca.com` (registered redirect URI)
+- Stripe webhooks are configured for specific domains
+- Random Vercel URLs like `dealmecca-abc123.vercel.app` will cause authentication failures
+- OAuth providers require pre-registered redirect URIs for security
+
+**OAuth Redirect URIs Currently Registered:**
+- `https://getmecca.com/api/linkedin/callback`
+- `https://getmecca.com/api/stripe/webhook`
+- `http://localhost:3000/api/linkedin/callback` (development)
+
+---
+
 ## 💡 Common Development Scenarios
 
 ### **Adding New Features**

@@ -123,10 +123,13 @@ export async function GET(req: NextRequest) {
       }, { status: 500 });
     }
 
-    const redirectUri = 'https://getmecca.com/api/linkedin/callback';
+    // Use dynamic redirect URI based on current domain
+    const baseUrl = req.nextUrl.origin;
+    const redirectUri = process.env.LINKEDIN_REDIRECT_URI || `${baseUrl}/api/linkedin/callback`;
     console.log('Environment check passed, proceeding with token exchange:', {
       clientId: clientId.substring(0, 5) + '...',
-      redirectUri
+      redirectUri,
+      baseUrl
     });
 
 
@@ -352,7 +355,7 @@ export async function GET(req: NextRequest) {
 
     const res = NextResponse.redirect(successUrl);
 
-    // Clear OAuth state cookie
+    // Clear OAuth state cookie (no PKCE verifier to clear)
     res.cookies.set('li_oauth_state', '', { path: '/', maxAge: 0 });
     return res;
 

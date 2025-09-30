@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import {
-  Trophy, 
-  Crown, 
-  Star, 
-  TrendingUp, 
-  Gift, 
+  Trophy,
+  Crown,
+  Star,
+  TrendingUp,
+  Gift,
   Target,
   Users,
   MessageSquare,
@@ -15,7 +15,9 @@ import {
   Calendar,
   UserPlus,
   Bookmark,
-  Bell
+  Bell,
+  Plus,
+  Check
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +52,9 @@ export function ForumSidebar() {
   const [loading, setLoading] = useState(true);
   const isFetchingRef = useRef(false);
   const [syncedUser, setSyncedUser] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [isFollowingCompanies, setIsFollowingCompanies] = useState<string[]>([]);
+  const [followActionLoading, setFollowActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('🎯 ForumSidebar: Firebase user state:', { firebaseUser: !!firebaseUser, authLoading, hasFirebaseSession });
@@ -155,6 +160,103 @@ export function ForumSidebar() {
       setLoading(false);
     }
   };
+
+  const fetchNotificationCount = async () => {
+    if (!firebaseUser) return;
+
+    try {
+      const idToken = await firebaseUser.getIdToken();
+      const response = await fetch('/api/notifications?unread=true&limit=1', {
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setNotificationCount(data.unreadCount || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching notification count:', error);
+    }
+  };
+
+  const handleFollowCompany = async (companyId: string) => {
+    if (!firebaseUser || followActionLoading) return;
+
+    setFollowActionLoading(companyId);
+
+    try {
+      const idToken = await firebaseUser.getIdToken();
+
+      // Find user in database using firebaseUid
+      const userResponse = await fetch(`/api/users/identity?firebaseUid=${encodeURIComponent(firebaseUser.uid)}`);
+
+      if (!userResponse.ok) {
+        console.error('Failed to get user identity');
+        return;
+      }
+
+      // Get the user ID from the response - we need to extract it differently since this endpoint returns avatar info
+      // Let's use a different approach and call the sync endpoint to get user ID
+      const syncResponse = await fetch('/api/auth/firebase-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          providerId: firebaseUser.providerId,
+          isNewUser: false
+        }),
+        credentials: 'include'
+      });
+
+      if (!syncResponse.ok) {
+        console.error('Failed to sync user');
+        return;
+      }
+
+      const { user } = await syncResponse.json();
+      const isCurrentlyFollowing = isFollowingCompanies.includes(companyId);
+
+      const response = await fetch(`/api/companies/${companyId}/follow`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          follow: !isCurrentlyFollowing
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isFollowing) {
+          setIsFollowingCompanies(prev => [...prev, companyId]);
+        } else {
+          setIsFollowingCompanies(prev => prev.filter(id => id !== companyId));
+        }
+      }
+    } catch (error) {
+      console.error('Error following company:', error);
+    } finally {
+      setFollowActionLoading(null);
+    }
+  };
+
+  // Fetch notification count when user is available
+  useEffect(() => {
+    if (firebaseUser && syncedUser) {
+      fetchNotificationCount();
+    }
+  }, [firebaseUser, syncedUser]);
 
   const getTierColor = (tier: string) => {
     switch (tier) {
@@ -277,19 +379,53 @@ export function ForumSidebar() {
           <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-            <UserPlus className="w-3 h-3 mr-2" />
-            Follow Companies
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full justify-start text-xs"
+            onClick={() => {
+              // For demo, let's follow WPP Group (first company in our seed data)
+              handleFollowCompany('cmg753pu90000s8vimfxekxil'); // WPP Group ID from seed data
+            }}
+            disabled={followActionLoading === 'cmg753pu90000s8vimfxekxil'}
+          >
+            {isFollowingCompanies.includes('cmg753pu90000s8vimfxekxil') ? (
+              <Check className="w-3 h-3 mr-2" />
+            ) : (
+              <UserPlus className="w-3 h-3 mr-2" />
+            )}
+            {followActionLoading === 'cmg753pu90000s8vimfxekxil' ? 'Following...' :
+             isFollowingCompanies.includes('cmg753pu90000s8vimfxekxil') ? 'Following WPP' : 'Follow Companies'}
           </Button>
-          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full justify-start text-xs"
+            onClick={() => window.location.href = '/saved-posts'}
+          >
             <Bookmark className="w-3 h-3 mr-2" />
             Saved Posts
           </Button>
-          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full justify-start text-xs relative"
+            onClick={() => window.location.href = '/notifications'}
+          >
             <Bell className="w-3 h-3 mr-2" />
             Notifications
+            {notificationCount > 0 && (
+              <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 text-xs p-0 flex items-center justify-center">
+                {notificationCount > 99 ? '99+' : notificationCount}
+              </Badge>
+            )}
           </Button>
-          <Button variant="outline" size="sm" className="w-full justify-start text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full justify-start text-xs"
+            onClick={() => window.location.href = '/events'}
+          >
             <Calendar className="w-3 h-3 mr-2" />
             Events
           </Button>

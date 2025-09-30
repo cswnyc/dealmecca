@@ -12,6 +12,7 @@
     "dev": "next dev -H localhost -p 3000",
     "build": "prisma generate && next build",
     "start": "next start",
+    "deploy:prod": "vercel --prod --alias getmecca.com",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "db:seed": "npx tsx prisma/seed.ts",

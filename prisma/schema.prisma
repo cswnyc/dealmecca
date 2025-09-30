@@ -78,6 +78,9 @@ model User {
   codeGenerations                                                 CodeGeneration[]         @relation("UserCodeGenerations")
   postFollows                                                     PostFollow[]             @relation("UserPostFollows")
   postBookmarks                                                   PostBookmark[]           @relation("UserPostBookmarks")
+  companyFollows                                                  CompanyFollow[]          @relation("UserCompanyFollows")
+  following                                                       UserFollow[]             @relation("UserFollowing")
+  followers                                                       UserFollow[]             @relation("UserFollowers")
 }
 
 model Account {
@@ -163,6 +166,7 @@ model Company {
   agencyPartnerships    CompanyPartnership[] @relation("AgencyPartnership")
   advertiserPartnerships CompanyPartnership[] @relation("AdvertiserPartnership")
   topicCompanies        TopicCompany[]       @relation("TopicCompanies")
+  followers             CompanyFollow[]      @relation("CompanyFollowers")
 
   @@index([name])
   @@index([companyType])
@@ -994,6 +998,36 @@ model PostBookmark {
   @@index([postId])
 }
 
+model CompanyFollow {
+  id        String   @id @default(cuid())
+  userId    String
+  companyId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation("UserCompanyFollows", fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation("CompanyFollowers", fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+  @@index([userId])
+  @@index([companyId])
+  @@index([createdAt])
+}
+
+model UserFollow {
+  id          String   @id @default(cuid())
+  followerId  String   // User who is following
+  followingId String   // User being followed
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@index([createdAt])
+}
+
 enum Role {
   FREE
   PRO
@@ -1403,6 +1437,10 @@ enum NotificationType {
   CONNECTION_REQUEST
   ACHIEVEMENT_UNLOCKED
   SYSTEM_ANNOUNCEMENT
+  USER_FOLLOWED
+  COMPANY_FOLLOWED
+  POST_BOOKMARKED
+  POST_FOLLOWED
 }
 
 enum InteractionType {

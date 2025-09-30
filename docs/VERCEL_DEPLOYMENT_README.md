@@ -8,11 +8,15 @@ vercel login
 ```
 *Follow the prompts to authenticate with GitHub/email*
 
-### Step 2: Deploy Application
+### Step 2: Deploy Application (OAuth-Safe)
 ```bash
-npx tsx deployment/scripts/vercel-quick-deploy.ts
+# CRITICAL: Use domain alias for OAuth integrations
+vercel --prod --alias getmecca.com
+
+# OR use the convenient npm script:
+npm run deploy:prod
 ```
-*This will build and deploy your app to Vercel*
+*⚠️ NEVER use `vercel --prod` alone - it creates random URLs that break LinkedIn/Stripe OAuth*
 
 ### Step 3: Set Up Database (Neon - Recommended)
 1. **Create Neon Account**: Go to [neon.tech](https://neon.tech)
@@ -52,11 +56,67 @@ Visit your Vercel URL and verify:
 
 ---
 
+## 🔐 OAuth Integration Requirements
+
+### **Critical: Domain Consistency for OAuth**
+OAuth providers (LinkedIn, Google, Stripe) require **exact domain matches** for security:
+
+**✅ Registered OAuth Redirect URIs:**
+- `https://getmecca.com/api/linkedin/callback`
+- `https://getmecca.com/api/stripe/webhook`
+- `http://localhost:3000/api/linkedin/callback` (development)
+
+**❌ Common OAuth Deployment Mistakes:**
+```bash
+vercel --prod  # Creates: dealmecca-abc123.vercel.app (BREAKS OAUTH)
+```
+
+**✅ Correct OAuth Deployment:**
+```bash
+vercel --prod --alias getmecca.com  # Uses: getmecca.com (WORKS)
+npm run deploy:prod                 # Automated version
+```
+
+### **Why This Matters:**
+- **LinkedIn OAuth**: Only works on registered domains
+- **Stripe Webhooks**: Configured for specific endpoints
+- **Random URLs**: Cause "invalid_client" authentication failures
+- **Security**: OAuth providers block unregistered redirect URIs
+
+---
+
 ## 📚 Detailed Guides
 
 - **Complete Guide**: `deployment/VERCEL_DEPLOYMENT_GUIDE.md`
 - **Database Setup**: `npx tsx deployment/scripts/setup-neon-database.ts check`
 - **Full Automation**: `npx tsx deployment/scripts/deploy-to-vercel.ts full`
+
+---
+
+## ✅ Pre-Deployment Checklist
+
+### **Before Every Production Deployment:**
+- [ ] **OAuth Check**: Using `vercel --prod --alias getmecca.com` or `npm run deploy:prod`
+- [ ] **Environment Variables**: All OAuth secrets configured in Vercel
+- [ ] **Database**: Connection string updated for production
+- [ ] **Local Build**: `npm run build` succeeds locally
+- [ ] **Type Check**: `npm run type-check` passes
+- [ ] **Lint Check**: `npm run lint` passes
+
+### **After Deployment Test:**
+- [ ] **Homepage**: Loads correctly on getmecca.com
+- [ ] **LinkedIn OAuth**: Sign-in works from `/auth/signup`
+- [ ] **Stripe Integration**: Billing page functions properly
+- [ ] **Database**: Company data displays correctly
+- [ ] **Authentication**: User sessions persist correctly
+
+### **Common Deployment Issues:**
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| LinkedIn OAuth fails | Random Vercel URL | Use `npm run deploy:prod` |
+| Stripe webhooks broken | Wrong domain | Check Stripe dashboard settings |
+| Database connection fails | Wrong connection string | Update DATABASE_URL in Vercel |
+| Build fails | TypeScript errors | Run `npm run type-check` locally |
 
 ---
 

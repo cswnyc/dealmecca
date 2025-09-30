@@ -103,7 +103,12 @@ export default function BillingPage() {
   }
 
   const createCheckoutSession = async (tier: 'PRO' | 'TEAM', interval: 'monthly' | 'annual') => {
-    if (!idToken) return
+    // Check if user is authenticated
+    if (!user || !idToken) {
+      console.log('🔐 User not authenticated, redirecting to sign-in')
+      window.location.href = `/auth/signin?returnTo=${encodeURIComponent('/billing')}`
+      return
+    }
 
     setUpgradeLoading(`${tier}_${interval}`)
 
