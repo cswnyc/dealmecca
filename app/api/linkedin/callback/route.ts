@@ -31,6 +31,36 @@ async function postForm(url: string, data: Record<string,string>) {
   return { status: res.status, ok: res.ok, json };
 }
 
+async function postFormWithBasicAuth(url: string, data: Record<string,string>, clientId: string, clientSecret: string) {
+  const body = new URLSearchParams(data).toString();
+  const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${credentials}`,
+    },
+    body,
+  });
+
+  const responseText = await res.text();
+
+  // Log errors for debugging
+  if (!res.ok) {
+    console.error('LinkedIn token exchange with Basic Auth failed:', res.status, responseText);
+  }
+
+  let json;
+  try {
+    json = JSON.parse(responseText);
+  } catch (e) {
+    json = { _raw_response: responseText };
+  }
+
+  return { status: res.status, ok: res.ok, json };
+}
+
 async function getJSON(url: string, headers: Record<string,string>) {
   const res = await fetch(url, { headers });
   const json = await res.json().catch(() => ({}));
@@ -99,16 +129,40 @@ export async function GET(req: NextRequest) {
 
 
     // Exchange authorization code for access token
-    const tokenData: Record<string,string> = {
+    console.log('Attempting token exchange with LinkedIn using Basic Auth...');
+    console.log('Token exchange parameters:', {
+      grant_type: 'authorization_code',
+      code: code?.substring(0, 10) + '...',
+      redirect_uri: redirectUri,
+      client_id: clientId,
+      client_secret_length: clientSecret.length,
+      client_secret_preview: clientSecret.substring(0, 5) + '...'
+    });
+
+    // Try Basic Auth first (more secure and preferred by some OAuth providers)
+    const tokenDataBasicAuth: Record<string,string> = {
       grant_type: 'authorization_code',
       code,
       redirect_uri: redirectUri,
-      client_id: clientId,
-      client_secret: clientSecret,
     };
 
-    console.log('Attempting token exchange with LinkedIn...');
-    const token = await postForm('https://www.linkedin.com/oauth/v2/accessToken', tokenData);
+    let token = await postFormWithBasicAuth('https://www.linkedin.com/oauth/v2/accessToken', tokenDataBasicAuth, clientId, clientSecret);
+    console.log('Basic Auth response:', { status: token.status, ok: token.ok });
+
+    // If Basic Auth fails, try form parameters method
+    if (!token.ok) {
+      console.log('Basic Auth failed, trying form parameters method...');
+      const tokenDataFormAuth: Record<string,string> = {
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        client_secret: clientSecret,
+      };
+
+      token = await postForm('https://www.linkedin.com/oauth/v2/accessToken', tokenDataFormAuth);
+      console.log('Form parameters response:', { status: token.status, ok: token.ok });
+    }
 
     if (!token.ok) {
       console.error('LinkedIn token exchange failed:', {
