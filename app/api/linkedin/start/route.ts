@@ -6,7 +6,7 @@ import { pkcePair, randomString } from '@/lib/oauth';
 
 export async function GET() {
   const clientId = process.env.LINKEDIN_CLIENT_ID!;
-  const redirectUri = process.env.LINKEDIN_REDIRECT_URI!;
+  const redirectUri = process.env.LINKEDIN_REDIRECT_URI || 'https://getmecca.com/api/linkedin/callback';
   const scope = (process.env.LINKEDIN_SCOPES || 'openid profile email').trim();
 
   const { verifier, challenge } = await pkcePair();
