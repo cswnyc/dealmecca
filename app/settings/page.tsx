@@ -32,10 +32,12 @@ interface UserSettings {
 }
 
 export default function SettingsPage() {
-  const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('identity');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [settings, setSettings] = useState<UserSettings>({
     displayName: '',
     email: '',
@@ -49,24 +51,86 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  // Try to get Firebase auth, but handle errors gracefully
+  let user = null;
+  let loading = false;
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+    loading = authContext.loading;
+  } catch (error) {
+    console.log('Firebase auth not available, using LinkedIn-only authentication');
+  }
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/auth/signup');
-      return;
-    }
+    const checkAuthentication = async () => {
+      console.log('Settings: Checking authentication...', {
+        hasFirebaseUser: !!user,
+        firebaseLoading: loading
+      });
 
-    if (user) {
-      setSettings(prev => ({
-        ...prev,
-        displayName: user.displayName || '',
-        email: user.email || ''
-      }));
+      // Check for LinkedIn session first
+      try {
+        const linkedinSession = localStorage.getItem('linkedin-session');
+        if (linkedinSession) {
+          const sessionData = JSON.parse(linkedinSession);
+
+          // Validate session token hasn't expired
+          if (sessionData.exp && Date.now() < sessionData.exp) {
+            console.log('Settings: LinkedIn user authenticated');
+            setIsAuthenticated(true);
+            setUserProfile(sessionData);
+            setSettings(prev => ({
+              ...prev,
+              displayName: sessionData.name || '',
+              email: sessionData.email || ''
+            }));
+            setAuthLoading(false);
+            return;
+          } else {
+            console.log('Settings: LinkedIn session expired, removing');
+            localStorage.removeItem('linkedin-session');
+          }
+        }
+      } catch (error) {
+        console.log('Settings: Invalid LinkedIn session data, removing');
+        localStorage.removeItem('linkedin-session');
+      }
+
+      // Wait for Firebase auth to load if available
+      if (loading) {
+        console.log('Settings: Waiting for Firebase auth to load...');
+        return;
+      }
+
+      // Check for Firebase user as fallback
+      if (user) {
+        console.log('Settings: Firebase user authenticated');
+        setIsAuthenticated(true);
+        setUserProfile(user);
+        setSettings(prev => ({
+          ...prev,
+          displayName: user.displayName || '',
+          email: user.email || ''
+        }));
+        setAuthLoading(false);
+        return;
+      }
+
+      // No authenticated user found
+      console.log('Settings: No authenticated user, redirecting to signup');
+      setAuthLoading(false);
+      router.replace('/auth/signup');
+    };
+
+    if (mounted) {
+      checkAuthentication();
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, mounted]);
 
   const handleSettingChange = (key: keyof UserSettings, value: any) => {
     setSettings(prev => ({
@@ -90,7 +154,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (!mounted || loading) {
+  if (!mounted || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -101,7 +165,7 @@ export default function SettingsPage() {
     );
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return null;
   }
 
