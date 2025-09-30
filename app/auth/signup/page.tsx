@@ -87,29 +87,8 @@ export default function SignUpPage() {
     setError('');
 
     try {
-      // Generate a secure state parameter
-      const state = 'signup_' + Math.random().toString(36).substring(7);
-
-      // Store state in sessionStorage for verification
-      sessionStorage.setItem('linkedin_oauth_state', state);
-
-      // Redirect to LinkedIn OAuth with canonical redirect URI
-      const canonicalRedirectUri = 'https://getmecca.com/api/linkedin/callback';
-      const params = new URLSearchParams({
-        response_type: 'code',
-        client_id: '86de7r9h24e1oe', // LinkedIn Client ID
-        redirect_uri: canonicalRedirectUri,
-        scope: 'openid profile email',
-        state: state,
-      });
-
-      // Set state cookie for backend verification (with Secure flag for production)
-      const isProduction = window.location.protocol === 'https:';
-      const cookieString = `li_oauth_state=${state}; path=/; SameSite=Strict; max-age=600${isProduction ? '; Secure' : ''}`;
-      document.cookie = cookieString;
-
-      const authUrl = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
-      window.location.href = authUrl;
+      // Use the LinkedIn start endpoint which handles environment variables properly
+      window.location.href = '/api/linkedin/start';
     } catch (err) {
       setError('Failed to initiate LinkedIn authentication. Please try again.');
       setLoading(false);
@@ -429,12 +408,9 @@ export default function SignUpPage() {
               <div className="mt-8 text-center">
                 <p className="text-sm text-slate-600">
                   Already have an account?{' '}
-                  <button
-                    onClick={handleLinkedInSignUp}
-                    className="text-blue-600 hover:text-blue-500 font-medium underline"
-                  >
+                  <Link href="/api/linkedin/start" className="text-blue-600 hover:text-blue-500 font-medium underline">
                     Sign in with LinkedIn
-                  </button>
+                  </Link>
                 </p>
               </div>
 
