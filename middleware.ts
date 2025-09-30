@@ -95,10 +95,11 @@ export function middleware(request: NextRequest) {
     // Check for authentication token/session
     const authToken = request.cookies.get('auth-token');
     const firebaseToken = request.cookies.get('__session'); // Firebase session cookie
+    const linkedinToken = request.cookies.get('linkedin-auth'); // LinkedIn session cookie
 
     // If no auth indication found, redirect to auth page
     // Note: This is a basic check. The AuthGuard component will do the real verification
-    if (!authToken && !firebaseToken) {
+    if (!authToken && !firebaseToken && !linkedinToken) {
       // For API calls, return 401
       if (pathname.startsWith('/api/')) {
         return new NextResponse('Unauthorized', { status: 401 });

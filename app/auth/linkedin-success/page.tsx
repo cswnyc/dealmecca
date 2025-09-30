@@ -1,38 +1,43 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/lib/auth/firebase-auth'
-import { signInWithCustomToken } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
 import { Loader2, CheckCircle, AlertCircle, Linkedin } from 'lucide-react'
 
 export default function LinkedInSuccessPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const { user } = useAuth()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [error, setError] = useState<string>('')
+  const [redirectAttempts, setRedirectAttempts] = useState(0)
 
   useEffect(() => {
     const processLinkedInAuth = async () => {
       try {
-        console.log('LinkedIn success page processing auth...', {
-          searchParams: searchParams?.toString(),
-          sessionToken: searchParams?.get('session'),
-          userDataString: searchParams?.get('user')
-        });
+        console.log('🔗 LinkedIn success page processing auth...')
 
-        const sessionToken = searchParams?.get('session')
-        const userDataString = searchParams?.get('user')
+        // Parse URL parameters using window.location.search (no React dependencies)
+        const urlParams = new URLSearchParams(window.location.search)
+        const sessionToken = urlParams.get('session')
+        const userDataString = urlParams.get('user')
+        const redirectTo = urlParams.get('redirect') || '/forum'
+
+        console.log('🔗 URL Parameters:', {
+          hasSession: !!sessionToken,
+          hasUser: !!userDataString,
+          redirectTo,
+          fullURL: window.location.href
+        })
 
         if (!sessionToken) {
-          console.error('No session token found in URL params');
+          console.error('❌ No session token found in URL params')
           throw new Error('No session token received')
         }
 
         // Parse and validate the session token
         const sessionData = JSON.parse(atob(sessionToken))
+        console.log('🔗 Session data parsed:', {
+          userId: sessionData.userId,
+          email: sessionData.email,
+          expiresAt: new Date(sessionData.exp).toLocaleString()
+        })
 
         if (!sessionData.userId || !sessionData.email) {
           throw new Error('Invalid session data')
@@ -45,42 +50,95 @@ export default function LinkedInSuccessPage() {
 
         // Store session data in localStorage for the app to use
         localStorage.setItem('linkedin-session', JSON.stringify(sessionData))
+        console.log('✅ LinkedIn session stored in localStorage')
+
+        // Set authentication cookie for middleware to recognize
+        try {
+          const cookieValue = `linkedin-${sessionData.userId}`
+          const expirationDate = new Date(sessionData.exp)
+          const isProduction = window.location.protocol === 'https:'
+          const cookieString = `linkedin-auth=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/; SameSite=Strict${isProduction ? '; Secure' : ''}`
+          document.cookie = cookieString
+          console.log('🍪 LinkedIn auth cookie set successfully')
+        } catch (cookieError) {
+          console.warn('⚠️ Failed to set auth cookie, continuing without:', cookieError)
+        }
 
         // Parse user data if available
         let userData = null
         if (userDataString) {
           try {
             userData = JSON.parse(userDataString)
+            console.log('👤 User data parsed:', userData)
           } catch (e) {
-            console.warn('Failed to parse user data:', e)
+            console.warn('⚠️ Failed to parse user data:', e)
           }
         }
 
         setStatus('success')
+        console.log('✅ LinkedIn authentication processing complete')
 
-        // Check for custom redirect parameter, default to forum
-        const redirectTo = searchParams?.get('redirect') || '/forum'
-        console.log('LinkedIn success - redirecting to:', redirectTo)
+        // Multiple redirect strategies with enhanced error handling
+        const attemptRedirect = (attempt: number) => {
+          console.log(`🔄 Redirect attempt ${attempt} to: ${redirectTo}`)
 
-        // Redirect after a short delay
-        setTimeout(() => {
-          router.push(redirectTo)
-        }, 2000)
+          try {
+            // Clear any cached authentication state
+            window.dispatchEvent(new Event('storage'))
+
+            // Strategy 1: Direct window.location navigation
+            if (attempt === 1) {
+              console.log('🔄 Using window.location.href')
+              window.location.href = redirectTo
+              return
+            }
+
+            // Strategy 2: window.location.assign
+            if (attempt === 2) {
+              console.log('🔄 Using window.location.assign')
+              window.location.assign(redirectTo)
+              return
+            }
+
+            // Strategy 3: window.location.replace
+            if (attempt === 3) {
+              console.log('🔄 Using window.location.replace')
+              window.location.replace(redirectTo)
+              return
+            }
+
+          } catch (redirectError) {
+            console.error(`❌ Redirect attempt ${attempt} failed:`, redirectError)
+
+            // Try next strategy after delay
+            if (attempt < 3) {
+              setTimeout(() => attemptRedirect(attempt + 1), 1000)
+            } else {
+              console.error('❌ All redirect attempts failed')
+              setError('Redirect failed. Please click the button below.')
+            }
+          }
+        }
+
+        // Start redirect sequence after a short delay
+        setTimeout(() => attemptRedirect(1), 1500)
 
       } catch (error) {
-        console.error('LinkedIn auth processing error:', error)
+        console.error('❌ LinkedIn auth processing error:', error)
         setError(error instanceof Error ? error.message : 'Authentication failed')
         setStatus('error')
 
         // Redirect to signin page after delay
         setTimeout(() => {
-          router.push('/auth/firebase-signin?error=linkedin_auth_failed')
+          console.log('🔄 Redirecting to signin page due to error')
+          window.location.href = '/auth/firebase-signin?error=linkedin_auth_failed'
         }, 3000)
       }
     }
 
+    // Process auth immediately on mount
     processLinkedInAuth()
-  }, [searchParams, router])
+  }, []) // No dependencies to avoid hydration issues
 
   if (status === 'loading') {
     return (
@@ -123,10 +181,41 @@ export default function LinkedInSuccessPage() {
           <p className="text-gray-600 mb-6">
             Your LinkedIn account has been successfully connected. Redirecting you to the community...
           </p>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
             <p className="text-sm text-green-800">
               ✨ You now have access to all community features and can start networking with other professionals.
             </p>
+          </div>
+
+          {error && (
+            <div className="mb-4">
+              <button
+                onClick={() => {
+                  const urlParams = new URLSearchParams(window.location.search)
+                  const redirectTo = urlParams.get('redirect') || '/forum'
+                  console.log('🔄 Manual redirect to:', redirectTo)
+                  window.location.href = redirectTo
+                }}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              >
+                Continue to Forum →
+              </button>
+              <p className="text-sm text-gray-500 mt-2">{error}</p>
+            </div>
+          )}
+
+          <div className="text-xs text-gray-400">
+            If you're not redirected automatically, <a
+              href="/forum"
+              className="text-blue-600 hover:text-blue-700 underline"
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('🔄 Manual link click to forum')
+                window.location.href = '/forum'
+              }}
+            >
+              click here
+            </a>
           </div>
         </div>
       </div>

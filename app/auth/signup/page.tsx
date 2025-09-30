@@ -83,20 +83,32 @@ export default function SignUpPage() {
   };
 
   const handleLinkedInSignUp = async () => {
-    if (!signInWithLinkedIn) return;
-
     setLoading(true);
     setError('');
 
     try {
-      const result = await signInWithLinkedIn();
-      if (result) {
-        setSuccess('Account created successfully! Redirecting...');
-        setTimeout(() => router.push('/forum'), 1500);
-      }
+      // Generate a secure state parameter
+      const state = 'signup_' + Math.random().toString(36).substring(7);
+
+      // Store state in sessionStorage for verification
+      sessionStorage.setItem('linkedin_oauth_state', state);
+
+      // Redirect to LinkedIn OAuth
+      const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: '86de7r9h24e1oe', // LinkedIn Client ID
+        redirect_uri: `${window.location.origin}/api/linkedin/callback`,
+        scope: 'openid profile email',
+        state: state,
+      });
+
+      // Set state cookie for backend verification
+      document.cookie = `li_oauth_state=${state}; path=/; SameSite=Strict; max-age=600`; // 10 minutes
+
+      const authUrl = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
+      window.location.href = authUrl;
     } catch (err) {
-      setError('Failed to create account with LinkedIn. Please try again.');
-    } finally {
+      setError('Failed to initiate LinkedIn authentication. Please try again.');
       setLoading(false);
     }
   };
