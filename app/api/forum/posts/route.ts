@@ -231,113 +231,131 @@ export async function GET(request: NextRequest) {
     const total = await prisma.forumPost.count({ where });
     const pages = Math.ceil(total / limit);
 
-    // Transform data to match frontend expectations
-    const formattedPosts = posts.map(post => ({
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      slug: post.slug,
-      isAnonymous: post.isAnonymous,
-      anonymousHandle: post.anonymousHandle,
-      tags: post.tags,
-      urgency: post.urgency,
-      dealSize: post.dealSize,
-      location: post.location,
-      mediaType: post.mediaType,
-      views: post.views,
-      upvotes: post.upvotes,
-      downvotes: post.downvotes,
-      bookmarks: post.bookmarks,
-      isPinned: post.isPinned,
-      isLocked: post.isLocked,
-      isFeatured: post.isFeatured,
-      createdAt: post.createdAt.toISOString(),
-      updatedAt: post.updatedAt.toISOString(),
-      lastActivityAt: post.lastActivityAt.toISOString(),
-      author: {
-        id: post.User.id,
-        name: post.User.name || 'Anonymous User',
-        email: post.User.email
-      },
-      category: {
-        id: post.ForumCategory.id,
-        name: post.ForumCategory.name,
-        slug: post.ForumCategory.slug,
-        description: post.ForumCategory.description,
-        color: post.ForumCategory.color,
-        icon: post.ForumCategory.icon
-      },
-      companyMentions: post.CompanyMention.map(mention => ({
-        company: {
-          id: mention.companies.id,
-          name: mention.companies.name,
-          logoUrl: mention.companies.logoUrl,
-          verified: mention.companies.verified,
-          companyType: mention.companies.companyType,
-          industry: mention.companies.industry,
-          city: mention.companies.city,
-          state: mention.companies.state
-        }
-      })),
-      contactMentions: post.ContactMention.map(mention => ({
-        contact: {
-          id: mention.contacts.id,
-          fullName: `${mention.contacts.firstName} ${mention.contacts.lastName}`,
-          title: mention.contacts.title,
-          company: mention.contacts.company ? {
-            id: mention.contacts.company.id,
-            name: mention.contacts.company.name,
-            logoUrl: mention.contacts.company.logoUrl
-          } : null
-        }
-      })),
-      topicMentions: post.TopicMention.map(mention => ({
-        id: mention.id,
-        topic: {
-          id: mention.Topic.id,
-          name: mention.Topic.name,
-          description: mention.Topic.description,
-          context: mention.Topic.context,
-          color: mention.Topic.color,
-          icon: mention.Topic.icon,
-          companies: mention.Topic.TopicCompany.map(tc => ({
-            id: tc.id,
-            company: {
-              id: tc.companies.id,
-              name: tc.companies.name,
-              logoUrl: tc.companies.logoUrl,
-              verified: tc.companies.verified,
-              companyType: tc.companies.companyType,
-              industry: tc.companies.industry,
-              city: tc.companies.city,
-              state: tc.companies.state
-            },
-            context: tc.context,
-            role: tc.role,
-            order: tc.order
-          })),
-          contacts: mention.Topic.TopicContact.map(tc => ({
-            id: tc.id,
-            contact: {
-              id: tc.contacts.id,
-              fullName: `${tc.contacts.firstName} ${tc.contacts.lastName}`,
-              title: tc.contacts.title,
-              company: tc.contacts.company ? {
-                id: tc.contacts.company.id,
-                name: tc.contacts.company.name,
-                logoUrl: tc.contacts.company.logoUrl
-              } : null
-            },
-            context: tc.context,
-            role: tc.role,
-            order: tc.order
-          }))
-        }
-      })),
-      _count: {
-        comments: post._count.ForumComment
+    // Transform data to match frontend expectations with null checks
+    const formattedPosts = posts.map(post => {
+      // Skip posts with missing required relationships
+      if (!post.User || !post.ForumCategory) {
+        console.warn(`Skipping post ${post.id} due to missing User or Category`);
+        return null;
       }
-    }));
+
+      return {
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        slug: post.slug,
+        isAnonymous: post.isAnonymous,
+        anonymousHandle: post.anonymousHandle,
+        tags: post.tags,
+        urgency: post.urgency,
+        dealSize: post.dealSize,
+        location: post.location,
+        mediaType: post.mediaType,
+        views: post.views,
+        upvotes: post.upvotes,
+        downvotes: post.downvotes,
+        bookmarks: post.bookmarks,
+        isPinned: post.isPinned,
+        isLocked: post.isLocked,
+        isFeatured: post.isFeatured,
+        createdAt: post.createdAt.toISOString(),
+        updatedAt: post.updatedAt.toISOString(),
+        lastActivityAt: post.lastActivityAt.toISOString(),
+        author: {
+          id: post.User.id,
+          name: post.User.name || 'Anonymous User',
+          email: post.User.email
+        },
+        category: {
+          id: post.ForumCategory.id,
+          name: post.ForumCategory.name,
+          slug: post.ForumCategory.slug,
+          description: post.ForumCategory.description,
+          color: post.ForumCategory.color,
+          icon: post.ForumCategory.icon
+        },
+        companyMentions: post.CompanyMention
+          .filter(mention => mention.companies)
+          .map(mention => ({
+            company: {
+              id: mention.companies.id,
+              name: mention.companies.name,
+              logoUrl: mention.companies.logoUrl,
+              verified: mention.companies.verified,
+              companyType: mention.companies.companyType,
+              industry: mention.companies.industry,
+              city: mention.companies.city,
+              state: mention.companies.state
+            }
+          })),
+        contactMentions: post.ContactMention
+          .filter(mention => mention.contacts)
+          .map(mention => ({
+            contact: {
+              id: mention.contacts.id,
+              fullName: `${mention.contacts.firstName} ${mention.contacts.lastName}`,
+              title: mention.contacts.title,
+              company: mention.contacts.company ? {
+                id: mention.contacts.company.id,
+                name: mention.contacts.company.name,
+                logoUrl: mention.contacts.company.logoUrl
+              } : null
+            }
+          })),
+        topicMentions: post.TopicMention
+          .filter(mention => mention.Topic)
+          .map(mention => ({
+            id: mention.id,
+            topic: {
+              id: mention.Topic.id,
+              name: mention.Topic.name,
+              description: mention.Topic.description,
+              context: mention.Topic.context,
+              color: mention.Topic.color,
+              icon: mention.Topic.icon,
+              companies: mention.Topic.TopicCompany
+                .filter(tc => tc.companies)
+                .map(tc => ({
+                  id: tc.id,
+                  company: {
+                    id: tc.companies.id,
+                    name: tc.companies.name,
+                    logoUrl: tc.companies.logoUrl,
+                    verified: tc.companies.verified,
+                    companyType: tc.companies.companyType,
+                    industry: tc.companies.industry,
+                    city: tc.companies.city,
+                    state: tc.companies.state
+                  },
+                  context: tc.context,
+                  role: tc.role,
+                  order: tc.order
+                })),
+              contacts: mention.Topic.TopicContact
+                .filter(tc => tc.contacts)
+                .map(tc => ({
+                  id: tc.id,
+                  contact: {
+                    id: tc.contacts.id,
+                    fullName: `${tc.contacts.firstName} ${tc.contacts.lastName}`,
+                    title: tc.contacts.title,
+                    company: tc.contacts.company ? {
+                      id: tc.contacts.company.id,
+                      name: tc.contacts.company.name,
+                      logoUrl: tc.contacts.company.logoUrl
+                    } : null
+                  },
+                  context: tc.context,
+                  role: tc.role,
+                  order: tc.order
+                }))
+            }
+          })),
+        _count: {
+          comments: post._count.ForumComment
+        }
+      };
+    }).filter(post => post !== null);
 
     return NextResponse.json({
       posts: formattedPosts,
@@ -351,8 +369,13 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error fetching forum posts:', error);
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
-      { error: 'Failed to fetch posts' },
+      {
+        error: 'Failed to fetch posts',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
