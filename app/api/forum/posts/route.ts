@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       // Filter by topic name - can be exact match or partial match
       where.TopicMention = {
         some: {
-          topic: {
+          Topic: {
             name: {
               contains: topic,
               mode: 'insensitive'
@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
         },
         TopicMention: {
           include: {
-            topic: {
+            Topic: {
               select: {
                 id: true,
                 name: true,
@@ -294,13 +294,13 @@ export async function GET(request: NextRequest) {
       topicMentions: post.TopicMention.map(mention => ({
         id: mention.id,
         topic: {
-          id: mention.topic.id,
-          name: mention.topic.name,
-          description: mention.topic.description,
-          context: mention.topic.context,
-          color: mention.topic.color,
-          icon: mention.topic.icon,
-          companies: mention.topic.companies.map(tc => ({
+          id: mention.Topic.id,
+          name: mention.Topic.name,
+          description: mention.Topic.description,
+          context: mention.Topic.context,
+          color: mention.Topic.color,
+          icon: mention.Topic.icon,
+          companies: mention.Topic.companies.map(tc => ({
             id: tc.id,
             company: {
               id: tc.company.id,
@@ -316,7 +316,7 @@ export async function GET(request: NextRequest) {
             role: tc.role,
             order: tc.order
           })),
-          contacts: mention.topic.contacts.map(tc => ({
+          contacts: mention.Topic.contacts.map(tc => ({
             id: tc.id,
             contact: {
               id: tc.contact.id,
