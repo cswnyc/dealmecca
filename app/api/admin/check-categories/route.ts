@@ -8,7 +8,7 @@ export async function GET() {
       include: {
         _count: {
           select: {
-            posts: true
+            ForumPost: true
           }
         }
       },
@@ -30,7 +30,7 @@ export async function GET() {
         slug: c.slug,
         isActive: c.isActive,
         order: c.order,
-        postCount: c._count.posts,
+        postCount: c._count.ForumPost,
         color: c.color,
         icon: c.icon
       }))

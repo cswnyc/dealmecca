@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            posts: true
+            ForumPost: true
           }
         }
       },
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       color: category.color || '#3B82F6',
       isActive: category.isActive,
       _count: {
-        posts: category._count.posts
+        posts: category._count.ForumPost
       },
       createdAt: category.createdAt.toISOString(),
       updatedAt: category.updatedAt.toISOString()
