@@ -147,7 +147,7 @@ export async function GET(request: NextRequest) {
                 firstName: true,
                 lastName: true,
                 title: true,
-                company: {
+                companies: {
                   select: {
                     id: true,
                     name: true,
@@ -195,7 +195,7 @@ export async function GET(request: NextRequest) {
                         firstName: true,
                         lastName: true,
                         title: true,
-                        company: {
+                        companies: {
                           select: {
                             id: true,
                             name: true,
@@ -295,10 +295,10 @@ export async function GET(request: NextRequest) {
               id: mention.contacts.id,
               fullName: `${mention.contacts.firstName} ${mention.contacts.lastName}`,
               title: mention.contacts.title,
-              company: mention.contacts.company ? {
-                id: mention.contacts.company.id,
-                name: mention.contacts.company.name,
-                logoUrl: mention.contacts.company.logoUrl
+              company: mention.contacts.companies ? {
+                id: mention.contacts.companies.id,
+                name: mention.contacts.companies.name,
+                logoUrl: mention.contacts.companies.logoUrl
               } : null
             }
           })),
@@ -339,10 +339,10 @@ export async function GET(request: NextRequest) {
                     id: tc.contacts.id,
                     fullName: `${tc.contacts.firstName} ${tc.contacts.lastName}`,
                     title: tc.contacts.title,
-                    company: tc.contacts.company ? {
-                      id: tc.contacts.company.id,
-                      name: tc.contacts.company.name,
-                      logoUrl: tc.contacts.company.logoUrl
+                    company: tc.contacts.companies ? {
+                      id: tc.contacts.companies.id,
+                      name: tc.contacts.companies.name,
+                      logoUrl: tc.contacts.companies.logoUrl
                     } : null
                   },
                   context: tc.context,
