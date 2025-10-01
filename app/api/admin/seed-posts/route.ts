@@ -135,7 +135,8 @@ DM me if interested in learning more!`,
           views: 0,
           upvotes: 0,
           downvotes: 0,
-          bookmarks: 0
+          bookmarks: 0,
+          updatedAt: new Date()
         },
         include: {
           category: true,
