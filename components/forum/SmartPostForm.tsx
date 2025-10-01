@@ -8,6 +8,7 @@ import { parseMentions } from '@/lib/mention-utils';
 import { EnhancedMentionTextarea } from './EnhancedMentionTextarea';
 import { CodeGenerationInterface } from '@/components/code/CodeGenerationInterface';
 import { TagIcon, MapPinIcon, ExclamationTriangleIcon, BuildingOfficeIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { useUser } from '@/hooks/useUser';
 
 interface ForumCategory {
   id: string;
@@ -27,9 +28,8 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
-  // Safe authentication state - handles missing Firebase provider
-  const firebaseUser = null;
-  const authLoading = false;
+  // Use backend session authentication instead of Firebase
+  const { user, loading: authLoading } = useUser();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -233,7 +233,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     if (!formData.categoryId) return;
 
     // Check authentication
-    if (!firebaseUser?.uid) {
+    if (!user?.id) {
       alert('You must be signed in to create a post.');
       return;
     }
@@ -287,7 +287,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         ...formData,
         title: autoTitle,
         content,
-        authorId: firebaseUser?.uid,
+        authorId: user?.id,
         ...additionalData,
         tags: JSON.stringify(formData.tags),
         mediaType: JSON.stringify(formData.mediaType),
