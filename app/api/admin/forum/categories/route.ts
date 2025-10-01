@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { createId } from '@paralleldrive/cuid2';
+import { randomBytes } from 'crypto';
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 // GET - List all categories
 export async function GET(request: NextRequest) {
@@ -61,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     const category = await prisma.forumCategory.create({
       data: {
-        id: createId(),
+        id: generateId(),
         name,
         description: description || '',
         slug,
