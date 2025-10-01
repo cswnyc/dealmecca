@@ -4,7 +4,19 @@ import { prisma } from '@/lib/prisma';
 export async function GET(request: NextRequest) {
   try {
     // Get user ID from session headers set by middleware
-    const userId = request.headers.get('x-user-id');
+    let userId = request.headers.get('x-user-id');
+
+    // Fallback: Check for linkedin-auth cookie if no header
+    if (!userId) {
+      const linkedInAuthCookie = request.cookies.get('linkedin-auth');
+      if (linkedInAuthCookie) {
+        // Cookie format is "linkedin-{userId}"
+        const cookieValue = linkedInAuthCookie.value;
+        if (cookieValue.startsWith('linkedin-')) {
+          userId = cookieValue.replace('linkedin-', '');
+        }
+      }
+    }
 
     if (!userId) {
       return NextResponse.json(
