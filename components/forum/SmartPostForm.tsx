@@ -222,9 +222,9 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation based on post type
-    
+
     if (postType === 'post' && !formData.content) return;
     if (postType === 'list' && formData.listItems.filter(item => item.trim()).length === 0) return;
     if (postType === 'poll' && formData.pollChoices.filter(choice => choice.trim()).length < 2) return;
@@ -232,9 +232,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
     if (!formData.categoryId) return;
 
-    // Check authentication
+    // Check authentication with detailed logging
+    console.log('🔐 Auth check - user object:', user);
+    console.log('🔐 Auth check - user.id:', user?.id);
+    console.log('🔐 Auth check - authLoading:', authLoading);
+
     if (!user?.id) {
-      alert('You must be signed in to create a post.');
+      alert('You must be signed in to create a post. Please sign out and sign back in with LinkedIn.');
+      console.error('❌ No user ID available. User object:', user);
       return;
     }
 

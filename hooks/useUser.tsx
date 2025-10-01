@@ -33,16 +33,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      
+
+      console.log('🔍 useUser: Fetching profile from /api/users/profile');
+
       // Use Firebase-compatible profile endpoint instead of NextAuth /api/auth/me
       const response = await fetch('/api/users/profile', {
         credentials: 'include'
       });
 
+      console.log('🔍 useUser: Profile API response status:', response.status);
+
       if (response.ok) {
         const userData = await response.json();
+        console.log('✅ useUser: Profile data received:', userData);
+
         // Map profile data to User interface
-        setUser({
+        const mappedUser = {
           id: userData.id,
           email: userData.email,
           name: userData.name,
@@ -51,14 +57,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
           teamId: userData.teamId,
           teamName: userData.teamName,
           profilePicture: userData.profilePicture
-        });
+        };
+
+        console.log('✅ useUser: Mapped user object:', mappedUser);
+        setUser(mappedUser);
       } else if (response.status === 401) {
         // User not authenticated
+        console.warn('⚠️ useUser: Profile API returned 401 - user not authenticated');
         setUser(null);
       } else {
+        const errorText = await response.text();
+        console.error('❌ useUser: Profile API error:', response.status, errorText);
         throw new Error('Failed to fetch user data');
       }
     } catch (err) {
+      console.error('❌ useUser: Error in fetchUser:', err);
       setError(err instanceof Error ? err.message : 'Failed to load user');
       setUser(null);
     } finally {
