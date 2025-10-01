@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/firebase-admin';
 
 export async function GET(
   request: NextRequest,
@@ -135,6 +136,33 @@ export async function GET(
   }
 }
 
+async function verifyFirebaseToken(request: NextRequest): Promise<{ uid: string; email?: string } | null> {
+  try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decodedToken = await auth.verifyIdToken(token);
+    return { uid: decodedToken.uid, email: decodedToken.email };
+  } catch (error) {
+    console.error('Firebase token verification failed:', error);
+    return null;
+  }
+}
+
+async function getUserByFirebaseUid(firebaseUid: string) {
+  return await prisma.user.findFirst({
+    where: {
+      OR: [
+        { firebaseUid },
+        { email: firebaseUid }
+      ]
+    }
+  });
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -144,9 +172,27 @@ export async function POST(
     const body = await request.json();
     const { content, authorId, isAnonymous, anonymousHandle, anonymousAvatarId, parentId } = body;
 
-    if (!postId || !content || !authorId) {
+    // Verify Firebase token
+    const firebaseAuth = await verifyFirebaseToken(request);
+    if (!firebaseAuth) {
       return NextResponse.json(
-        { error: 'Post ID, content, and author ID are required' },
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Find user in database
+    const user = await getUserByFirebaseUid(firebaseAuth.uid);
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    if (!postId || !content) {
+      return NextResponse.json(
+        { error: 'Post ID and content are required' },
         { status: 400 }
       );
     }
@@ -155,7 +201,7 @@ export async function POST(
     const comment = await prisma.forumComment.create({
       data: {
         content,
-        authorId,
+        authorId: user.id,
         postId,
         parentId: parentId || null,
         isAnonymous: isAnonymous || false,

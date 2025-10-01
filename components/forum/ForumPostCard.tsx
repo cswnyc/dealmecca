@@ -453,20 +453,30 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
   };
 
   const handleFollow = async () => {
+    if (!firebaseUser) {
+      console.log('🔥 User not authenticated, cannot follow');
+      return;
+    }
+
     try {
+      const idToken = await firebaseUser.getIdToken();
+
       const response = await fetch(`/api/forum/posts/${post.id}/follow`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({
-          userId: firebaseUser?.uid,
+          userId: firebaseUser.uid,
           follow: !isFollowing
         }),
       });
 
       if (response.ok) {
         setIsFollowing(!isFollowing);
+      } else {
+        console.error('Failed to toggle follow:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Failed to toggle follow:', error);
@@ -480,10 +490,13 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
     }
 
     try {
+      const idToken = await firebaseUser.getIdToken();
+
       const response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           userId: firebaseUser.uid,

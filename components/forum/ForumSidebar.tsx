@@ -12,7 +12,6 @@ import {
   Users,
   MessageSquare,
   Eye,
-  Calendar,
   UserPlus,
   Bookmark,
   Bell,
@@ -69,6 +68,7 @@ export function ForumSidebar() {
     } else if (firebaseUser && syncedUser) {
       console.log('🎯 ForumSidebar: Firebase user already synced, fetching stats');
       fetchUserStats();
+      fetchNotificationCount();
     } else {
       console.log('🎯 ForumSidebar: No firebaseUser, setting loading to false');
       setLoading(false);
@@ -99,8 +99,9 @@ export function ForumSidebar() {
       if (response.ok) {
         console.log('🔥 Firebase user synced successfully');
         setSyncedUser(true);
-        // Now fetch user stats
+        // Now fetch user stats and notification count
         fetchUserStats();
+        fetchNotificationCount();
       } else {
         console.error('🔥 Failed to sync Firebase user:', response.status);
         setLoading(false);
@@ -419,15 +420,6 @@ export function ForumSidebar() {
                 {notificationCount > 99 ? '99+' : notificationCount}
               </Badge>
             )}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start text-xs"
-            onClick={() => window.location.href = '/events'}
-          >
-            <Calendar className="w-3 h-3 mr-2" />
-            Events
           </Button>
         </CardContent>
       </Card>

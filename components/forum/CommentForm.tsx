@@ -60,9 +60,27 @@ export function CommentForm({
     setError('');
 
     try {
-      // Get user profile to get the user ID and anonymous handle
-      const userResponse = await fetch('/api/users/profile');
-      const userData = await userResponse.json();
+      // Get Firebase ID token for authentication
+      const idToken = await firebaseUser.getIdToken();
+
+      // Sync user with Firebase and get database user ID
+      const syncResponse = await fetch('/api/auth/firebase-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          providerId: firebaseUser.providerId,
+          isNewUser: false
+        }),
+        credentials: 'include'
+      });
+
+      const { user } = await syncResponse.json();
 
       // Get anonymous identity if posting anonymously
       let anonymousHandle = null;
@@ -76,11 +94,14 @@ export function CommentForm({
 
       const response = await fetch(`/api/forum/posts/${postSlug}/comments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
         body: JSON.stringify({
           content: content.trim(),
           parentId,
-          authorId: userData.id,
+          authorId: user.id,
           isAnonymous,
           anonymousHandle,
           anonymousAvatarId

@@ -7,84 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                                                              String                   @id @default(cuid())
-  email                                                           String?                  @unique
-  firebaseUid                                                     String?                  @unique
-  name                                                            String?
-  password                                                        String?
-  role                                                            Role                     @default(FREE)
-  subscriptionTier                                                SubscriptionTier         @default(FREE)
-
-  // Anonymous user fields
-  isAnonymous                                                     Boolean                  @default(true)
-  anonymousUsername                                               String?                  @unique
-  avatarSeed                                                      String?
-
-  // Legacy field (keeping for backward compatibility)
-  anonymousHandle                                                 String?                  @unique
-
-  searchesUsed                                                    Int                      @default(0)
-  searchesResetAt                                                 DateTime                 @default(now())
-  createdAt                                                       DateTime                 @default(now())
-  updatedAt                                                       DateTime                 @updatedAt
-  lastDashboardVisit                                              DateTime?
-  dashboardVisits                                                 Int                      @default(0)
-  searchesThisMonth                                               Int                      @default(0)
-  searchResetDate                                                 DateTime                 @default(now())
-  annualEventGoal                                                 Int?                     @default(6)
-  annualNetworkingGoal                                            Int?                     @default(100)
-  annualRevenueGoal                                               Float?
-  achievements                                                    String?
-  achievementPoints                                               Int                      @default(0)
-  stripeCustomerId                                                String?                  @unique
-  stripeSubscriptionId                                            String?                  @unique
-  subscriptionStatus                                              SubscriptionStatus       @default(ACTIVE)
-  currentPeriodStart                                              DateTime?
-  currentPeriodEnd                                                DateTime?
-  cancelAtPeriodEnd                                               Boolean                  @default(false)
-  lastSearchLimitCheck                                            DateTime                 @default(now())
-  companyId                                                       String?
-  accounts                                                        Account[]
-  comments                                                        Comment[]
-  companyMentions                                                 CompanyMention[]         @relation("CompanyMentionedBy")
-  contactInteractions                                             ContactInteraction[]
-  contactMentions                                                 ContactMention[]         @relation("ContactMentionedBy")
-  contactNotes                                                    ContactNote[]
-  contactStatuses                                                 ContactStatus[]
-  dashboardActivities                                             DashboardActivity[]
-  createdEvents                                                   Event[]                  @relation("EventCreator")
-  eventAttendees                                                  EventAttendee[]
-  eventRatings                                                    EventRating[]
-  forumBookmarks                                                  ForumBookmark[]          @relation("ForumBookmarks")
-  forumComments                                                   ForumComment[]           @relation("ForumComments")
-  forumCommentVotes                                               ForumCommentVote[]       @relation("ForumCommentVotes")
-  forumPosts                                                      ForumPost[]              @relation("ForumPosts")
-  forumVotes                                                      ForumVote[]              @relation("ForumVotes")
-  notifications                                                   Notification[]           @relation("UserNotifications")
-  payments                                                        Payment[]
-  posts                                                           Post[]
-  savedSearches                                                   SavedSearch[]
-  searches                                                        Search[]
-  sessions                                                        Session[]
-  subscriptions                                                   Subscription[]
-  company                                                         Company?                 @relation("UserCompany", fields: [companyId], references: [id])
-  connections                                                     UserConnection[]
-  networkingActivity                                              UserNetworkingActivity[]
-  viewedContacts                                                  ViewedContact[]
-  analytics_events                                                analytics_events[]
-  introduction_requests_introduction_requests_facilitatorIdToUser introduction_requests[]  @relation("introduction_requests_facilitatorIdToUser")
-  introduction_requests_introduction_requests_requesterIdToUser   introduction_requests[]  @relation("introduction_requests_requesterIdToUser")
-  codeGenerations                                                 CodeGeneration[]         @relation("UserCodeGenerations")
-  postFollows                                                     PostFollow[]             @relation("UserPostFollows")
-  postBookmarks                                                   PostBookmark[]           @relation("UserPostBookmarks")
-  companyFollows                                                  CompanyFollow[]          @relation("UserCompanyFollows")
-  following                                                       UserFollow[]             @relation("UserFollowing")
-  followers                                                       UserFollow[]             @relation("UserFollowers")
-}
-
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id
   userId            String
   type              String
   provider          String
@@ -96,320 +20,70 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+model CodeGeneration {
+  id            String   @id
+  userId        String
+  prompt        String
+  language      String
+  framework     String?
+  codeType      String
+  complexity    String
+  generatedCode String
+  explanation   String?
+  dependencies  String   @default("")
+  suggestions   String   @default("")
+  executionTime Int?
+  tokensUsed    Int?
+  qualityScore  Float?
+  wasUseful     Boolean?
+  forumPostId   String?
+  createdAt     DateTime @default(now())
+  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Company {
-  id                    String                   @id @default(cuid())
-  name                  String                   @unique(map: "unique_company_name")
-  slug                  String                   @unique
-  website               String?                  @unique(map: "unique_company_website")
-  logoUrl               String?
-  description           String?
-  companyType           CompanyType
-  agencyType            AgencyType?
-  industry              Industry?
-  address               String?
-  city                  String?
-  state                 String?
-  region                Region?
-  country               String                   @default("US")
-  zipCode               String?
-  employeeCount         EmployeeRange?
-  revenueRange          RevenueRange?
-  teamCount             Int?
-  foundedYear           Int?
-  stockSymbol           String?
-  linkedinUrl           String?
-  twitterHandle         String?
-  headquarters          String?
-  revenue               String?
-  parentCompanyId       String?
-  verified              Boolean                  @default(false)
-  dataQuality           DataQuality              @default(BASIC)
-  lastVerified          DateTime?
-  verifiedBy            String?
-  aiSummary             String?
-  lastInsightUpdate     DateTime?
-  createdAt             DateTime                 @default(now())
-  updatedAt             DateTime                 @updatedAt
-  normalizedName        String?
-  normalizedWebsite     String?
-  insights              CompanyInsight[]
-  companyMentions       CompanyMention[]         @relation("CompanyMentioned")
-  eventAttendees        EventAttendee[]
-  searches              Search[]
-  users                 User[]                   @relation("UserCompany")
-  networkingActivity    UserNetworkingActivity[]
-  parentCompany         Company?                 @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
-  subsidiaries          Company[]                @relation("CompanyHierarchy")
-  contacts              Contact[]
-  introduction_requests introduction_requests[]
-  agencyPartnerships    CompanyPartnership[] @relation("AgencyPartnership")
-  advertiserPartnerships CompanyPartnership[] @relation("AdvertiserPartnership")
-  topicCompanies        TopicCompany[]       @relation("TopicCompanies")
-  followers             CompanyFollow[]      @relation("CompanyFollowers")
-
-  @@index([name])
-  @@index([companyType])
-  @@index([industry])
-  @@index([city, state])
-  @@index([verified])
-  @@index([lastInsightUpdate])
-  @@index([normalizedName])
-  @@index([normalizedWebsite])
-  @@map("companies")
-}
-
-model CompanyPartnership {
-  id                String                    @id @default(cuid())
-  agencyId          String
-  advertiserId      String
-  relationshipType  PartnershipType           @default(AGENCY_CLIENT)
-  startDate         DateTime?
-  endDate           DateTime?
-  isActive          Boolean                   @default(true)
-  notes             String?
-  contractValue     Float?
-  primaryContact    String?
-  createdAt         DateTime                  @default(now())
-  updatedAt         DateTime                  @updatedAt
-  agency            Company                   @relation("AgencyPartnership", fields: [agencyId], references: [id], onDelete: Cascade)
-  advertiser        Company                   @relation("AdvertiserPartnership", fields: [advertiserId], references: [id], onDelete: Cascade)
-  
-  @@unique([agencyId, advertiserId])
-  @@index([agencyId])
-  @@index([advertiserId])
-  @@index([isActive])
-  @@index([relationshipType])
-  @@index([startDate])
-  @@index([endDate])
-}
-
-model Contact {
-  id                    String                  @id @default(cuid())
-  firstName             String
-  lastName              String
-  fullName              String
-  title                 String
-  email                 String?                 @unique(map: "unique_contact_email")
-  phone                 String?
-  linkedinUrl           String?
-  logoUrl               String?
-  personalEmail         String?
-  department            Department?
-  seniority             SeniorityLevel
-  primaryRole           ContactRole?
-  companyId             String
-  territories           String?
-  accounts              String?
-  budgetRange           BudgetRange?
-  name                  String?
-  isDecisionMaker       Boolean                 @default(false)
-  verified              Boolean                 @default(false)
-  dataQuality           DataQuality             @default(BASIC)
-  lastVerified          DateTime?
-  isActive              Boolean                 @default(true)
-  preferredContact      ContactMethod?
-  communityScore        Float?                  @default(0)
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime                @updatedAt
-  interactions          ContactInteraction[]
-  contactMentions       ContactMention[]        @relation("ContactMentioned")
-  notes                 ContactNote[]
-  status                ContactStatus?
-  eventAttendees        EventAttendee[]
-  PostContactMention    PostContactMention[]
-  connections           UserConnection[]
-  viewedBy              ViewedContact[]
-  company               Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  introduction_requests introduction_requests[]
-  topicContacts         TopicContact[]          @relation("TopicContacts")
-
-  @@unique([firstName, lastName, companyId], map: "unique_contact_per_company")
-  @@index([companyId])
-  @@index([firstName, lastName])
-  @@index([title])
-  @@index([department])
-  @@index([seniority])
-  @@index([verified])
-  @@index([email])
-  @@index([firstName, lastName, companyId])
-  @@index([communityScore])
-  @@map("contacts")
-}
-
-model Post {
-  id                 String               @id @default(cuid())
-  userId             String
-  title              String
-  content            String
-  category           PostCategory
-  anonymousName      String
-  votes              Int                  @default(0)
-  isAnonymous        Boolean              @default(true)
-  extractedCompanies String              @default("")
-  aiTags             String              @default("")
-  aiSummary          String?
-  aiProcessed        Boolean              @default(false)
-  aiProcessedAt      DateTime?
-  aiVersion          String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  comments           Comment[]
-  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  PostContactMention PostContactMention[]
-
-  @@index([category])
+  @@index([codeType])
   @@index([createdAt])
-  @@index([votes])
-  @@index([aiProcessedAt])
-  @@index([aiProcessed])
+  @@index([forumPostId])
+  @@index([language])
+  @@index([userId])
 }
 
 model Comment {
-  id            String   @id @default(cuid())
+  id            String   @id
   postId        String
   userId        String
   content       String
   anonymousName String
   votes         Int      @default(0)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt     DateTime
+  Post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([postId])
   @@index([createdAt])
+  @@index([postId])
 }
 
-model Search {
-  id           String   @id @default(cuid())
-  userId       String
-  query        String
-  resultsCount Int
-  searchType   String?
-  companyId    String?
-  createdAt    DateTime @default(now())
-  company      Company? @relation(fields: [companyId], references: [id])
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model CompanyFollow {
+  id        String    @id
+  userId    String
+  companyId String
+  createdAt DateTime  @default(now())
+  companies companies @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@unique([userId, companyId])
   @@index([companyId])
   @@index([createdAt])
-}
-
-model SavedSearch {
-  id           String   @id @default(cuid())
-  userId       String
-  name         String
-  description  String?
-  query        String
-  filters      Json
-  alertEnabled Boolean  @default(false)
-  isActive     Boolean  @default(true)
-  lastRun      DateTime @default(now())
-  resultCount  Int?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId])
-  @@index([lastRun])
-  @@index([isActive])
-}
-
-model ContactInteraction {
-  id          String          @id @default(cuid())
-  contactId   String
-  userId      String
-  type        InteractionType
-  notes       String?
-  outcome     String?
-  followUpAt  DateTime?
-  scheduledAt DateTime?
-  completedAt DateTime?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  contact     Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([contactId])
-  @@index([userId])
-  @@index([followUpAt])
-  @@index([type])
-}
-
-model ContactNote {
-  id        String   @id @default(cuid())
-  contactId String
-  userId    String
-  content   String
-  isPrivate Boolean  @default(false)
-  tags      String @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([contactId])
-  @@index([userId])
-}
-
-model ViewedContact {
-  id        String   @id @default(cuid())
-  userId    String
-  contactId String
-  viewedAt  DateTime @default(now())
-  duration  Int?
-  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, contactId])
-  @@index([userId])
-  @@index([viewedAt])
-}
-
-model ContactStatus {
-  id           String     @id @default(cuid())
-  contactId    String     @unique
-  userId       String
-  status       LeadStatus @default(NEW)
-  priority     Priority   @default(MEDIUM)
-  leadScore    Int?
-  lastActivity DateTime?
-  nextAction   String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  contact      Contact    @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([status])
-  @@index([priority])
-  @@index([leadScore])
 }
 
 model CompanyInsight {
-  id             String      @id @default(cuid())
+  id             String      @id
   companyId      String
   type           InsightType
   title          String
@@ -419,64 +93,144 @@ model CompanyInsight {
   isAiGenerated  Boolean     @default(false)
   createdAt      DateTime    @default(now())
   expiresAt      DateTime?
-  company        Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companies      companies   @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([companyId, type])
   @@index([createdAt])
   @@index([relevanceScore])
 }
 
-model UserConnection {
-  id           String             @id @default(cuid())
-  userId       String
-  contactId    String
-  relationship ConnectionType
-  strength     ConnectionStrength
-  source       String
-  notes        String?
-  lastContact  DateTime?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  contact      Contact            @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+model CompanyMention {
+  id          String    @id
+  postId      String
+  companyId   String
+  mentionedBy String
+  createdAt   DateTime  @default(now())
+  companies   companies @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [mentionedBy], references: [id], onDelete: Cascade)
+  ForumPost   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, contactId])
-  @@index([userId])
-  @@index([contactId])
-  @@index([strength])
+  @@unique([postId, companyId, mentionedBy])
+  @@index([companyId])
+  @@index([createdAt])
+  @@index([mentionedBy])
+  @@index([postId])
 }
 
-model SearchSuggestion {
-  id          String   @id @default(cuid())
-  query       String
-  type        String
-  description String
-  popularity  Int      @default(0)
-  category    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model CompanyPartnership {
+  id                                                   String          @id
+  agencyId                                             String
+  advertiserId                                         String
+  relationshipType                                     PartnershipType @default(AGENCY_CLIENT)
+  startDate                                            DateTime?
+  endDate                                              DateTime?
+  isActive                                             Boolean         @default(true)
+  notes                                                String?
+  contractValue                                        Float?
+  primaryContact                                       String?
+  createdAt                                            DateTime        @default(now())
+  updatedAt                                            DateTime
+  companies_CompanyPartnership_advertiserIdTocompanies companies       @relation("CompanyPartnership_advertiserIdTocompanies", fields: [advertiserId], references: [id], onDelete: Cascade)
+  companies_CompanyPartnership_agencyIdTocompanies     companies       @relation("CompanyPartnership_agencyIdTocompanies", fields: [agencyId], references: [id], onDelete: Cascade)
 
+  @@unique([agencyId, advertiserId])
+  @@index([advertiserId])
+  @@index([agencyId])
+  @@index([endDate])
+  @@index([isActive])
+  @@index([relationshipType])
+  @@index([startDate])
+}
+
+model ContactInteraction {
+  id          String          @id
+  contactId   String
+  userId      String
+  type        InteractionType
+  notes       String?
+  outcome     String?
+  followUpAt  DateTime?
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime
+  contacts    contacts        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  User        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([followUpAt])
   @@index([type])
-  @@index([popularity])
-  @@index([category])
+  @@index([userId])
+}
+
+model ContactMention {
+  id          String    @id
+  postId      String
+  contactId   String
+  mentionedBy String
+  createdAt   DateTime  @default(now())
+  contacts    contacts  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [mentionedBy], references: [id], onDelete: Cascade)
+  ForumPost   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, contactId, mentionedBy])
+  @@index([contactId])
+  @@index([createdAt])
+  @@index([mentionedBy])
+  @@index([postId])
+}
+
+model ContactNote {
+  id        String   @id
+  contactId String
+  userId    String
+  content   String
+  isPrivate Boolean  @default(false)
+  tags      String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  contacts  contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([userId])
+}
+
+model ContactStatus {
+  id           String     @id
+  contactId    String     @unique
+  userId       String
+  status       LeadStatus @default(NEW)
+  priority     Priority   @default(MEDIUM)
+  leadScore    Int?
+  lastActivity DateTime?
+  nextAction   String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime
+  contacts     contacts   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  User         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([leadScore])
+  @@index([priority])
+  @@index([status])
+  @@index([userId])
 }
 
 model DashboardActivity {
-  id          String       @id @default(cuid())
+  id          String       @id
   userId      String
   actionType  ActivityType
   title       String
   description String?
   metadata    String?
   createdAt   DateTime     @default(now())
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }
 
 model Event {
-  id                   String          @id @default(cuid())
+  id                   String          @id
   name                 String
   description          String?
   website              String?
@@ -508,24 +262,24 @@ model Event {
   avgROIRating         Float?          @default(0)
   totalRatings         Int             @default(0)
   createdAt            DateTime        @default(now())
-  updatedAt            DateTime        @updatedAt
-  creator              User?           @relation("EventCreator", fields: [createdBy], references: [id])
-  attendees            EventAttendee[]
-  ratings              EventRating[]
-  forumPosts           ForumPost[]     @relation("EventForumPosts")
+  updatedAt            DateTime
+  User                 User?           @relation(fields: [createdBy], references: [id])
+  EventAttendee        EventAttendee[]
+  EventRating          EventRating[]
+  ForumPost            ForumPost[]
 
-  @@index([startDate])
-  @@index([category])
-  @@index([location])
   @@index([avgOverallRating])
-  @@index([createdBy])
-  @@index([status])
   @@index([capacity])
+  @@index([category])
+  @@index([createdBy])
+  @@index([location])
   @@index([registrationDeadline])
+  @@index([startDate])
+  @@index([status])
 }
 
 model EventAttendee {
-  id                  String           @id @default(cuid())
+  id                  String           @id
   userId              String
   eventId             String
   status              AttendanceStatus @default(INTERESTED)
@@ -542,22 +296,22 @@ model EventAttendee {
   totalCost           Float?
   notes               String?
   createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  company             Company?         @relation(fields: [companyId], references: [id])
-  contact             Contact?         @relation(fields: [contactId], references: [id])
-  event               Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt           DateTime
+  companies           companies?       @relation(fields: [companyId], references: [id])
+  contacts            contacts?        @relation(fields: [contactId], references: [id])
+  Event               Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  User                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventId])
-  @@index([userId])
-  @@index([eventId])
   @@index([companyId])
   @@index([contactId])
+  @@index([eventId])
   @@index([registeredAt])
+  @@index([userId])
 }
 
 model EventRating {
-  id               String   @id @default(cuid())
+  id               String   @id
   userId           String
   eventId          String
   overallRating    Int
@@ -572,49 +326,29 @@ model EventRating {
   isVerified       Boolean  @default(false)
   helpfulVotes     Int      @default(0)
   createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt        DateTime
+  Event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  User             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventId])
   @@index([eventId])
   @@index([overallRating])
 }
 
-model Subscription {
-  id                   String             @id @default(cuid())
-  userId               String
-  stripeSubscriptionId String             @unique
-  stripePriceId        String
-  status               SubscriptionStatus
-  tier                 SubscriptionTier
-  currentPeriodStart   DateTime
-  currentPeriodEnd     DateTime
-  cancelAtPeriodEnd    Boolean            @default(false)
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+model ForumBookmark {
+  id        String    @id
+  userId    String
+  postId    String
+  createdAt DateTime  @default(now())
+  ForumPost ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
-  @@index([status])
-}
-
-model Payment {
-  id                    String        @id @default(cuid())
-  userId                String
-  stripePaymentIntentId String        @unique
-  amount                Int
-  currency              String        @default("usd")
-  status                PaymentStatus
-  description           String?
-  createdAt             DateTime      @default(now())
-  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  @@unique([userId, postId])
   @@index([userId])
 }
 
 model ForumCategory {
-  id          String      @id @default(cuid())
+  id          String      @id
   name        String
   description String?
   icon        String?
@@ -623,16 +357,56 @@ model ForumCategory {
   order       Int         @default(0)
   isActive    Boolean     @default(true)
   createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  posts       ForumPost[]
-  topics      Topic[]     @relation("TopicCategory")
+  updatedAt   DateTime
+  ForumPost   ForumPost[]
+  Topic       Topic[]
 
-  @@index([slug])
   @@index([order])
+  @@index([slug])
+}
+
+model ForumComment {
+  id                 String             @id
+  content            String
+  authorId           String
+  isAnonymous        Boolean            @default(false)
+  anonymousHandle    String?
+  anonymousAvatarId  String?
+  postId             String
+  parentId           String?
+  depth              Int                @default(0)
+  upvotes            Int                @default(0)
+  downvotes          Int                @default(0)
+  isDeleted          Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime
+  User               User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  ForumComment       ForumComment?      @relation("ForumCommentToForumComment", fields: [parentId], references: [id])
+  other_ForumComment ForumComment[]     @relation("ForumCommentToForumComment")
+  ForumPost          ForumPost          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  ForumCommentVote   ForumCommentVote[]
+
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([parentId])
+  @@index([postId])
+}
+
+model ForumCommentVote {
+  id           String       @id
+  userId       String
+  commentId    String
+  type         VoteType
+  createdAt    DateTime     @default(now())
+  ForumComment ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  User         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+  @@index([commentId])
 }
 
 model ForumPost {
-  id                 String           @id @default(cuid())
+  id                 String           @id
   title              String
   content            String
   slug               String           @unique
@@ -657,234 +431,60 @@ model ForumPost {
   approvedAt         DateTime?
   approvedBy         String?
   createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  updatedAt          DateTime
   lastActivityAt     DateTime         @default(now())
   aiProcessed        Boolean          @default(false)
   aiProcessedAt      DateTime?
   aiSummary          String?
   aiTags             Json?
   aiVersion          String?
-  extractedCompanies String         @default("")
-  // Post type specific fields
-  postType           String           @default("post") // "post", "list", "poll", "code"
-  listItems          String         @default("")     // For list posts
-  pollChoices        String         @default("")     // For poll posts  
-  pollDuration       Int?                              // Poll duration in days
-  pollEndsAt         DateTime?                         // When poll expires
-  // Code generation specific fields
-  codeLanguage       String?                           // Programming language
-  codeFramework      String?                           // Framework used
-  codeType           String?                           // Type of code (component, function, etc.)
-  codeComplexity     String?                           // Complexity level
-  generatedCode      String?                           // The actual generated code
-  companyMentions    CompanyMention[] @relation("PostCompanyMentions")
-  contactMentions    ContactMention[] @relation("PostContactMentions")
-  topicMentions      TopicMention[]   @relation("PostTopicMentions")
-  bookmarkedBy       ForumBookmark[]
-  comments           ForumComment[]
-  author             User             @relation("ForumPosts", fields: [authorId], references: [id], onDelete: Cascade)
-  category           ForumCategory    @relation(fields: [categoryId], references: [id])
-  event              Event?           @relation("EventForumPosts", fields: [eventId], references: [id])
-  votes              ForumVote[]
-  follows            PostFollow[]     @relation("PostFollows")
-  postBookmarks      PostBookmark[]   @relation("PostBookmarks")
+  extractedCompanies String           @default("")
+  postType           String           @default("post")
+  listItems          String           @default("")
+  pollChoices        String           @default("")
+  pollDuration       Int?
+  pollEndsAt         DateTime?
+  codeLanguage       String?
+  codeFramework      String?
+  codeType           String?
+  codeComplexity     String?
+  generatedCode      String?
+  CompanyMention     CompanyMention[]
+  ContactMention     ContactMention[]
+  ForumBookmark      ForumBookmark[]
+  ForumComment       ForumComment[]
+  User               User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  ForumCategory      ForumCategory    @relation(fields: [categoryId], references: [id])
+  Event              Event?           @relation(fields: [eventId], references: [id])
+  ForumVote          ForumVote[]
+  PostBookmark       PostBookmark[]
+  PostFollow         PostFollow[]
+  TopicMention       TopicMention[]
 
+  @@index([authorId])
   @@index([categoryId])
-  @@index([authorId])
+  @@index([createdAt])
   @@index([eventId])
-  @@index([createdAt])
   @@index([lastActivityAt])
-  @@index([urgency])
   @@index([location])
-}
-
-model ForumComment {
-  id              String             @id @default(cuid())
-  content         String
-  authorId        String
-  isAnonymous     Boolean            @default(false)
-  anonymousHandle String?
-  anonymousAvatarId String?
-  postId          String
-  parentId        String?
-  depth           Int                @default(0)
-  upvotes         Int                @default(0)
-  downvotes       Int                @default(0)
-  isDeleted       Boolean            @default(false)
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  author          User               @relation("ForumComments", fields: [authorId], references: [id], onDelete: Cascade)
-  parent          ForumComment?      @relation("CommentReplies", fields: [parentId], references: [id])
-  replies         ForumComment[]     @relation("CommentReplies")
-  post            ForumPost          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  votes           ForumCommentVote[]
-
-  @@index([postId])
-  @@index([authorId])
-  @@index([parentId])
-  @@index([createdAt])
+  @@index([urgency])
 }
 
 model ForumVote {
-  id        String    @id @default(cuid())
+  id        String    @id
   userId    String
   postId    String
   type      VoteType
   createdAt DateTime  @default(now())
-  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User      @relation("ForumVotes", fields: [userId], references: [id], onDelete: Cascade)
+  ForumPost ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@index([postId])
-}
-
-model ForumCommentVote {
-  id        String       @id @default(cuid())
-  userId    String
-  commentId String
-  type      VoteType
-  createdAt DateTime     @default(now())
-  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  user      User         @relation("ForumCommentVotes", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, commentId])
-  @@index([commentId])
-}
-
-model ForumBookmark {
-  id        String    @id @default(cuid())
-  userId    String
-  postId    String
-  createdAt DateTime  @default(now())
-  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User      @relation("ForumBookmarks", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, postId])
-  @@index([userId])
-}
-
-model Topic {
-  id          String           @id @default(cuid())
-  name        String
-  description String?
-  categoryId  String?
-  context     String?          // e.g., "AstraZeneca @ Healix NY"
-  color       String?          @default("#3B82F6")
-  icon        String?
-  isActive    Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  category    ForumCategory?   @relation("TopicCategory", fields: [categoryId], references: [id])
-  mentions    TopicMention[]
-  companies   TopicCompany[]
-  contacts    TopicContact[]
-
-  @@index([categoryId])
-  @@index([name])
-  @@index([isActive])
-}
-
-model TopicMention {
-  id        String    @id @default(cuid())
-  postId    String
-  topicId   String
-  order     Int       @default(0) // For display ordering
-  createdAt DateTime  @default(now())
-  post      ForumPost @relation("PostTopicMentions", fields: [postId], references: [id], onDelete: Cascade)
-  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, topicId])
-  @@index([postId])
-  @@index([topicId])
-  @@index([order])
-}
-
-model TopicCompany {
-  id        String    @id @default(cuid())
-  topicId   String
-  companyId String
-  role      String?   // e.g., "client", "agency", "vendor"
-  context   String?   // e.g., "@ Healix NY"
-  order     Int       @default(0)
-  createdAt DateTime  @default(now())
-  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  company   Company   @relation("TopicCompanies", fields: [companyId], references: [id], onDelete: Cascade)
-
-  @@unique([topicId, companyId])
-  @@index([topicId])
-  @@index([companyId])
-  @@index([order])
-}
-
-model TopicContact {
-  id        String    @id @default(cuid())
-  topicId   String
-  contactId String
-  role      String?   // e.g., "contact", "lead", "decision_maker"
-  context   String?   // Additional context about this contact in the topic
-  order     Int       @default(0)
-  createdAt DateTime  @default(now())
-  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  contact   Contact   @relation("TopicContacts", fields: [contactId], references: [id], onDelete: Cascade)
-
-  @@unique([topicId, contactId])
-  @@index([topicId])
-  @@index([contactId])
-  @@index([order])
-}
-
-model CompanyMention {
-  id          String    @id @default(cuid())
-  postId      String
-  companyId   String
-  mentionedBy String
-  createdAt   DateTime  @default(now())
-  company     Company   @relation("CompanyMentioned", fields: [companyId], references: [id], onDelete: Cascade)
-  user        User      @relation("CompanyMentionedBy", fields: [mentionedBy], references: [id], onDelete: Cascade)
-  post        ForumPost @relation("PostCompanyMentions", fields: [postId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, companyId, mentionedBy])
-  @@index([postId])
-  @@index([companyId])
-  @@index([mentionedBy])
-  @@index([createdAt])
-}
-
-model ContactMention {
-  id          String    @id @default(cuid())
-  postId      String
-  contactId   String
-  mentionedBy String
-  createdAt   DateTime  @default(now())
-  contact     Contact   @relation("ContactMentioned", fields: [contactId], references: [id], onDelete: Cascade)
-  user        User      @relation("ContactMentionedBy", fields: [mentionedBy], references: [id], onDelete: Cascade)
-  post        ForumPost @relation("PostContactMentions", fields: [postId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, contactId, mentionedBy])
-  @@index([postId])
-  @@index([contactId])
-  @@index([mentionedBy])
-  @@index([createdAt])
-}
-
-model UserNetworkingActivity {
-  id              String                 @id @default(cuid())
-  userId          String
-  companyId       String?
-  interactionType NetworkingActivityType
-  metadata        String?
-  createdAt       DateTime               @default(now())
-  company         Company?               @relation(fields: [companyId], references: [id])
-  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([companyId])
-  @@index([interactionType])
-  @@index([createdAt])
 }
 
 model Notification {
-  id        String           @id @default(cuid())
+  id        String           @id
   userId    String
   type      NotificationType
   title     String
@@ -894,12 +494,67 @@ model Notification {
   actionUrl String?
   createdAt DateTime         @default(now())
   readAt    DateTime?
-  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  User      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([read])
+  @@index([type])
+  @@index([userId])
+}
+
+model Payment {
+  id                    String        @id
+  userId                String
+  stripePaymentIntentId String        @unique
+  amount                Int
+  currency              String        @default("usd")
+  status                PaymentStatus
+  description           String?
+  createdAt             DateTime      @default(now())
+  User                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([type])
-  @@index([read])
+}
+
+model Post {
+  id                 String               @id
+  userId             String
+  title              String
+  content            String
+  category           PostCategory
+  anonymousName      String
+  votes              Int                  @default(0)
+  isAnonymous        Boolean              @default(true)
+  extractedCompanies String               @default("")
+  aiTags             String               @default("")
+  aiSummary          String?
+  aiProcessed        Boolean              @default(false)
+  aiProcessedAt      DateTime?
+  aiVersion          String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  Comment            Comment[]
+  User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  PostContactMention PostContactMention[]
+
+  @@index([aiProcessedAt])
+  @@index([aiProcessed])
+  @@index([category])
   @@index([createdAt])
+  @@index([votes])
+}
+
+model PostBookmark {
+  id        String    @id
+  userId    String
+  postId    String
+  createdAt DateTime  @default(now())
+  ForumPost ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([userId])
 }
 
 model PostContactMention {
@@ -912,7 +567,7 @@ model PostContactMention {
   verified   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime
-  contacts   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contacts   contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
   Post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([postId, contactId])
@@ -922,6 +577,323 @@ model PostContactMention {
   @@index([createdAt])
   @@index([postId])
   @@index([verified])
+}
+
+model PostFollow {
+  id        String    @id
+  userId    String
+  postId    String
+  createdAt DateTime  @default(now())
+  ForumPost ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([userId])
+}
+
+model SavedSearch {
+  id           String   @id
+  userId       String
+  name         String
+  description  String?
+  query        String
+  filters      Json
+  alertEnabled Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  lastRun      DateTime @default(now())
+  resultCount  Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+  @@index([lastRun])
+  @@index([userId])
+}
+
+model Search {
+  id           String     @id
+  userId       String
+  query        String
+  resultsCount Int
+  searchType   String?
+  companyId    String?
+  createdAt    DateTime   @default(now())
+  companies    companies? @relation(fields: [companyId], references: [id])
+  User         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model SearchSuggestion {
+  id          String   @id
+  query       String
+  type        String
+  description String
+  popularity  Int      @default(0)
+  category    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([category])
+  @@index([popularity])
+  @@index([type])
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id                   String             @id
+  userId               String
+  stripeSubscriptionId String             @unique
+  stripePriceId        String
+  status               SubscriptionStatus
+  tier                 SubscriptionTier
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime
+  User                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
+}
+
+model Topic {
+  id            String         @id
+  name          String
+  description   String?
+  categoryId    String?
+  context       String?
+  color         String?        @default("#3B82F6")
+  icon          String?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime
+  ForumCategory ForumCategory? @relation(fields: [categoryId], references: [id])
+  TopicCompany  TopicCompany[]
+  TopicContact  TopicContact[]
+  TopicMention  TopicMention[]
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([name])
+}
+
+model TopicCompany {
+  id        String    @id
+  topicId   String
+  companyId String
+  role      String?
+  context   String?
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  companies companies @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, companyId])
+  @@index([companyId])
+  @@index([order])
+  @@index([topicId])
+}
+
+model TopicContact {
+  id        String   @id
+  topicId   String
+  contactId String
+  role      String?
+  context   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  contacts  contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  Topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, contactId])
+  @@index([contactId])
+  @@index([order])
+  @@index([topicId])
+}
+
+model TopicMention {
+  id        String    @id
+  postId    String
+  topicId   String
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  ForumPost ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, topicId])
+  @@index([order])
+  @@index([postId])
+  @@index([topicId])
+}
+
+model User {
+  id                                                              String                   @id
+  email                                                           String?                  @unique
+  firebaseUid                                                     String?                  @unique
+  name                                                            String?
+  password                                                        String?
+  role                                                            Role                     @default(FREE)
+  subscriptionTier                                                SubscriptionTier         @default(FREE)
+  isAnonymous                                                     Boolean                  @default(true)
+  anonymousUsername                                               String?                  @unique
+  avatarSeed                                                      String?
+  anonymousHandle                                                 String?                  @unique
+  searchesUsed                                                    Int                      @default(0)
+  searchesResetAt                                                 DateTime                 @default(now())
+  createdAt                                                       DateTime                 @default(now())
+  updatedAt                                                       DateTime
+  lastDashboardVisit                                              DateTime?
+  dashboardVisits                                                 Int                      @default(0)
+  searchesThisMonth                                               Int                      @default(0)
+  searchResetDate                                                 DateTime                 @default(now())
+  annualEventGoal                                                 Int?                     @default(6)
+  annualNetworkingGoal                                            Int?                     @default(100)
+  annualRevenueGoal                                               Float?
+  achievements                                                    String?
+  achievementPoints                                               Int                      @default(0)
+  stripeCustomerId                                                String?                  @unique
+  stripeSubscriptionId                                            String?                  @unique
+  subscriptionStatus                                              SubscriptionStatus       @default(ACTIVE)
+  currentPeriodStart                                              DateTime?
+  currentPeriodEnd                                                DateTime?
+  cancelAtPeriodEnd                                               Boolean                  @default(false)
+  lastSearchLimitCheck                                            DateTime                 @default(now())
+  companyId                                                       String?
+  Account                                                         Account[]
+  CodeGeneration                                                  CodeGeneration[]
+  Comment                                                         Comment[]
+  CompanyFollow                                                   CompanyFollow[]
+  CompanyMention                                                  CompanyMention[]
+  ContactInteraction                                              ContactInteraction[]
+  ContactMention                                                  ContactMention[]
+  ContactNote                                                     ContactNote[]
+  ContactStatus                                                   ContactStatus[]
+  DashboardActivity                                               DashboardActivity[]
+  Event                                                           Event[]
+  EventAttendee                                                   EventAttendee[]
+  EventRating                                                     EventRating[]
+  ForumBookmark                                                   ForumBookmark[]
+  ForumComment                                                    ForumComment[]
+  ForumCommentVote                                                ForumCommentVote[]
+  ForumPost                                                       ForumPost[]
+  ForumVote                                                       ForumVote[]
+  Notification                                                    Notification[]
+  Payment                                                         Payment[]
+  Post                                                            Post[]
+  PostBookmark                                                    PostBookmark[]
+  PostFollow                                                      PostFollow[]
+  SavedSearch                                                     SavedSearch[]
+  Search                                                          Search[]
+  Session                                                         Session[]
+  Subscription                                                    Subscription[]
+  companies                                                       companies?               @relation(fields: [companyId], references: [id])
+  UserConnection                                                  UserConnection[]
+  UserFollow_UserFollow_followerIdToUser                          UserFollow[]             @relation("UserFollow_followerIdToUser")
+  UserFollow_UserFollow_followingIdToUser                         UserFollow[]             @relation("UserFollow_followingIdToUser")
+  UserNetworkingActivity                                          UserNetworkingActivity[]
+  ViewedContact                                                   ViewedContact[]
+  analytics_events                                                analytics_events[]
+  introduction_requests_introduction_requests_facilitatorIdToUser introduction_requests[]  @relation("introduction_requests_facilitatorIdToUser")
+  introduction_requests_introduction_requests_requesterIdToUser   introduction_requests[]  @relation("introduction_requests_requesterIdToUser")
+}
+
+model UserConnection {
+  id           String             @id
+  userId       String
+  contactId    String
+  relationship ConnectionType
+  strength     ConnectionStrength
+  source       String
+  notes        String?
+  lastContact  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime
+  contacts     contacts           @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  User         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contactId])
+  @@index([contactId])
+  @@index([strength])
+  @@index([userId])
+}
+
+model UserFollow {
+  id                                String   @id
+  followerId                        String
+  followingId                       String
+  createdAt                         DateTime @default(now())
+  User_UserFollow_followerIdToUser  User     @relation("UserFollow_followerIdToUser", fields: [followerId], references: [id], onDelete: Cascade)
+  User_UserFollow_followingIdToUser User     @relation("UserFollow_followingIdToUser", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([createdAt])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model UserNetworkingActivity {
+  id              String                 @id
+  userId          String
+  companyId       String?
+  interactionType NetworkingActivityType
+  metadata        String?
+  createdAt       DateTime               @default(now())
+  companies       companies?             @relation(fields: [companyId], references: [id])
+  User            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([createdAt])
+  @@index([interactionType])
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model ViewedContact {
+  id        String   @id
+  userId    String
+  contactId String
+  viewedAt  DateTime @default(now())
+  duration  Int?
+  contacts  contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contactId])
+  @@index([userId])
+  @@index([viewedAt])
+}
+
+model WaitlistEmail {
+  id        String         @id
+  email     String         @unique
+  source    String         @default("invite-only")
+  status    WaitlistStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([email])
+  @@index([status])
 }
 
 model analytics_events {
@@ -944,6 +916,119 @@ model analytics_events {
   @@index([userId])
 }
 
+model companies {
+  id                                                            String                   @id
+  name                                                          String                   @unique(map: "unique_company_name")
+  slug                                                          String                   @unique
+  website                                                       String?                  @unique(map: "unique_company_website")
+  logoUrl                                                       String?
+  description                                                   String?
+  companyType                                                   CompanyType
+  agencyType                                                    AgencyType?
+  industry                                                      Industry?
+  address                                                       String?
+  city                                                          String?
+  state                                                         String?
+  region                                                        Region?
+  country                                                       String                   @default("US")
+  zipCode                                                       String?
+  employeeCount                                                 EmployeeRange?
+  revenueRange                                                  RevenueRange?
+  teamCount                                                     Int?
+  foundedYear                                                   Int?
+  stockSymbol                                                   String?
+  linkedinUrl                                                   String?
+  twitterHandle                                                 String?
+  headquarters                                                  String?
+  revenue                                                       String?
+  parentCompanyId                                               String?
+  verified                                                      Boolean                  @default(false)
+  dataQuality                                                   DataQuality              @default(BASIC)
+  lastVerified                                                  DateTime?
+  verifiedBy                                                    String?
+  aiSummary                                                     String?
+  lastInsightUpdate                                             DateTime?
+  createdAt                                                     DateTime                 @default(now())
+  updatedAt                                                     DateTime
+  normalizedName                                                String?
+  normalizedWebsite                                             String?
+  CompanyFollow                                                 CompanyFollow[]
+  CompanyInsight                                                CompanyInsight[]
+  CompanyMention                                                CompanyMention[]
+  CompanyPartnership_CompanyPartnership_advertiserIdTocompanies CompanyPartnership[]     @relation("CompanyPartnership_advertiserIdTocompanies")
+  CompanyPartnership_CompanyPartnership_agencyIdTocompanies     CompanyPartnership[]     @relation("CompanyPartnership_agencyIdTocompanies")
+  EventAttendee                                                 EventAttendee[]
+  Search                                                        Search[]
+  TopicCompany                                                  TopicCompany[]
+  User                                                          User[]
+  UserNetworkingActivity                                        UserNetworkingActivity[]
+  companies                                                     companies?               @relation("companiesTocompanies", fields: [parentCompanyId], references: [id])
+  other_companies                                               companies[]              @relation("companiesTocompanies")
+  contacts                                                      contacts[]
+  introduction_requests                                         introduction_requests[]
+
+  @@index([city, state])
+  @@index([companyType])
+  @@index([industry])
+  @@index([lastInsightUpdate])
+  @@index([name])
+  @@index([normalizedName])
+  @@index([normalizedWebsite])
+  @@index([verified])
+}
+
+model contacts {
+  id                    String                  @id
+  firstName             String
+  lastName              String
+  fullName              String
+  title                 String
+  email                 String?                 @unique(map: "unique_contact_email")
+  phone                 String?
+  linkedinUrl           String?
+  logoUrl               String?
+  personalEmail         String?
+  department            Department?
+  seniority             SeniorityLevel
+  primaryRole           ContactRole?
+  companyId             String
+  territories           String?
+  accounts              String?
+  budgetRange           BudgetRange?
+  name                  String?
+  isDecisionMaker       Boolean                 @default(false)
+  verified              Boolean                 @default(false)
+  dataQuality           DataQuality             @default(BASIC)
+  lastVerified          DateTime?
+  isActive              Boolean                 @default(true)
+  preferredContact      ContactMethod?
+  communityScore        Float?                  @default(0)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  ContactInteraction    ContactInteraction[]
+  ContactMention        ContactMention[]
+  ContactNote           ContactNote[]
+  ContactStatus         ContactStatus?
+  EventAttendee         EventAttendee[]
+  PostContactMention    PostContactMention[]
+  TopicContact          TopicContact[]
+  UserConnection        UserConnection[]
+  ViewedContact         ViewedContact[]
+  companies             companies               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  introduction_requests introduction_requests[]
+
+  @@unique([firstName, lastName, companyId], map: "unique_contact_per_company")
+  @@index([communityScore])
+  @@index([companyId])
+  @@index([department])
+  @@index([email])
+  @@index([firstName, lastName, companyId])
+  @@index([firstName, lastName])
+  @@index([seniority])
+  @@index([title])
+  @@index([verified])
+}
+
 model introduction_requests {
   id                                             String             @id
   requesterId                                    String
@@ -959,8 +1044,8 @@ model introduction_requests {
   completedAt                                    DateTime?
   User_introduction_requests_facilitatorIdToUser User?              @relation("introduction_requests_facilitatorIdToUser", fields: [facilitatorId], references: [id])
   User_introduction_requests_requesterIdToUser   User               @relation("introduction_requests_requesterIdToUser", fields: [requesterId], references: [id], onDelete: Cascade)
-  companies                                      Company            @relation(fields: [targetCompanyId], references: [id], onDelete: Cascade)
-  contacts                                       Contact            @relation(fields: [targetContactId], references: [id], onDelete: Cascade)
+  companies                                      companies          @relation(fields: [targetCompanyId], references: [id], onDelete: Cascade)
+  contacts                                       contacts           @relation(fields: [targetContactId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([facilitatorId])
@@ -970,112 +1055,57 @@ model introduction_requests {
   @@index([targetContactId])
 }
 
-model PostFollow {
-  id     String @id @default(cuid())
-  userId String
-  postId String
-  createdAt DateTime @default(now())
-  
-  user User @relation("UserPostFollows", fields: [userId], references: [id], onDelete: Cascade)
-  post ForumPost @relation("PostFollows", fields: [postId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, postId])
-  @@index([userId])
-  @@index([postId])
+enum ActivityType {
+  SEARCH
+  EVENT_ATTENDED
+  EVENT_REGISTERED
+  FORUM_POST
+  CONNECTION_MADE
+  GOAL_ACHIEVED
+  MILESTONE_REACHED
+  UPGRADE_PROMPT_SHOWN
+  UPGRADE_COMPLETED
+  ACHIEVEMENT_UNLOCKED
 }
 
-model PostBookmark {
-  id     String @id @default(cuid())
-  userId String
-  postId String
-  createdAt DateTime @default(now())
-  
-  user User @relation("UserPostBookmarks", fields: [userId], references: [id], onDelete: Cascade)
-  post ForumPost @relation("PostBookmarks", fields: [postId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, postId])
-  @@index([userId])
-  @@index([postId])
+enum AgencyType {
+  FULL_SERVICE
+  MEDIA_SPECIALIST
+  CREATIVE_SPECIALIST
+  DIGITAL_SPECIALIST
+  PROGRAMMATIC_SPECIALIST
+  SOCIAL_MEDIA_SPECIALIST
+  SEARCH_SPECIALIST
+  INFLUENCER_SPECIALIST
+  PERFORMANCE_MARKETING
+  BRAND_STRATEGY
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  DATA_ANALYTICS
+  CONTENT_MARKETING
 }
 
-model CompanyFollow {
-  id        String   @id @default(cuid())
-  userId    String
-  companyId String
-  createdAt DateTime @default(now())
-
-  user    User    @relation("UserCompanyFollows", fields: [userId], references: [id], onDelete: Cascade)
-  company Company @relation("CompanyFollowers", fields: [companyId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, companyId])
-  @@index([userId])
-  @@index([companyId])
-  @@index([createdAt])
+enum AttendanceStatus {
+  INTERESTED
+  PLANNING_TO_ATTEND
+  REGISTERED
+  ATTENDING
+  ATTENDED
+  CANCELLED
 }
 
-model UserFollow {
-  id          String   @id @default(cuid())
-  followerId  String   // User who is following
-  followingId String   // User being followed
-  createdAt   DateTime @default(now())
-
-  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
-  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
-
-  @@unique([followerId, followingId])
-  @@index([followerId])
-  @@index([followingId])
-  @@index([createdAt])
-}
-
-enum Role {
-  FREE
-  PRO
-  TEAM_ADMIN
-  ADMIN
-}
-
-enum InsightType {
-  NEWS
-  LEADERSHIP_CHANGE
-  FUNDING
-  ACQUISITION
-  PRODUCT_LAUNCH
-  MARKET_EXPANSION
-  FINANCIAL_RESULTS
-  HIRING_SURGE
-  MEDIA_SPEND_CHANGE
-  COMPETITIVE_INTEL
-  PARTNERSHIP
-  OFFICE_MOVE
-  REGULATORY_CHANGE
-  INDUSTRY_TREND
-  AI_SUMMARY
-}
-
-enum ConnectionType {
-  COLLEAGUE
-  FORMER_COLLEAGUE
-  CLIENT
-  VENDOR
-  EVENT_CONNECTION
-  REFERRAL
-  SOCIAL_MEDIA
-  MUTUAL_CONNECTION
-  INDUSTRY_CONTACT
-  PROSPECT
-}
-
-enum ConnectionStrength {
-  STRONG
-  MEDIUM
-  WEAK
-}
-
-enum SubscriptionTier {
-  FREE
-  PRO
-  TEAM
+enum BudgetRange {
+  UNDER_10K
+  RANGE_10K_25K
+  RANGE_25K_50K
+  RANGE_50K_100K
+  RANGE_100K_250K
+  RANGE_250K_500K
+  RANGE_500K_1M
+  RANGE_1M_5M
+  RANGE_5M_25M
+  OVER_25M
+  CONFIDENTIAL
 }
 
 enum CompanyType {
@@ -1100,67 +1130,106 @@ enum CompanyType {
   ADTECH
 }
 
-enum AgencyType {
-  FULL_SERVICE
-  MEDIA_SPECIALIST
-  CREATIVE_SPECIALIST
-  DIGITAL_SPECIALIST
-  PROGRAMMATIC_SPECIALIST
-  SOCIAL_MEDIA_SPECIALIST
-  SEARCH_SPECIALIST
-  INFLUENCER_SPECIALIST
-  PERFORMANCE_MARKETING
-  BRAND_STRATEGY
+enum ConnectionStrength {
+  STRONG
+  MEDIUM
+  WEAK
+}
+
+enum ConnectionType {
+  COLLEAGUE
+  FORMER_COLLEAGUE
+  CLIENT
+  VENDOR
+  EVENT_CONNECTION
+  REFERRAL
+  SOCIAL_MEDIA
+  MUTUAL_CONNECTION
+  INDUSTRY_CONTACT
+  PROSPECT
+}
+
+enum ContactMethod {
+  EMAIL
+  PHONE
+  LINKEDIN
+  DIRECT_MESSAGE
+  NO_CONTACT
+}
+
+enum ContactRole {
+  MEDIA_BUYER
+  MEDIA_PLANNER
+  STRATEGIST
+  ANALYST
+  CREATIVE
+  ACCOUNT_MANAGER
+  PROJECT_MANAGER
+  BUSINESS_DEVELOPER
+  DECISION_MAKER
+  INFLUENCER
+  GATEKEEPER
+  IMPLEMENTER
+  ADVISOR
+  BUDGET_HOLDER
+  PROCUREMENT
+}
+
+enum DataQuality {
+  BASIC
+  VERIFIED
+  PREMIUM
+  EXPERT_VERIFIED
+}
+
+enum DealSize {
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum Department {
   MEDIA_PLANNING
   MEDIA_BUYING
-  DATA_ANALYTICS
-  CONTENT_MARKETING
-}
-
-enum Industry {
-  AUTOMOTIVE
-  CPG_FOOD_BEVERAGE
-  CPG_PERSONAL_CARE
-  CPG_HOUSEHOLD
-  FINANCIAL_SERVICES
-  HEALTHCARE_PHARMA
-  RETAIL_ECOMMERCE
+  DIGITAL_MARKETING
+  PROGRAMMATIC
+  SOCIAL_MEDIA
+  SEARCH_MARKETING
+  STRATEGY_PLANNING
+  ANALYTICS_INSIGHTS
+  CREATIVE_SERVICES
+  ACCOUNT_MANAGEMENT
+  BUSINESS_DEVELOPMENT
+  OPERATIONS
   TECHNOLOGY
-  ENTERTAINMENT_MEDIA
-  TRAVEL_HOSPITALITY
-  TELECOM
-  FASHION_BEAUTY
-  SPORTS_FITNESS
-  EDUCATION
-  REAL_ESTATE
-  ENERGY
-  GOVERNMENT_NONPROFIT
-  GAMING
-  CRYPTOCURRENCY
-  INSURANCE
-  B2B_SERVICES
-  STARTUPS
-  NONPROFIT
-  PROFESSIONAL_SERVICES
-  LOGISTICS
+  FINANCE
+  LEADERSHIP
+  HUMAN_RESOURCES
+  SALES
+  MARKETING
+  PRODUCT
+  DATA_SCIENCE
 }
 
-enum PostCategory {
-  ACCOUNT_MOVES
-  RFPS
-  INDUSTRY_NEWS
-  QA
+enum EmployeeRange {
+  STARTUP_1_10
+  SMALL_11_50
+  MEDIUM_51_200
+  LARGE_201_1000
+  ENTERPRISE_1001_5000
+  MEGA_5000_PLUS
+}
+
+enum EventBestFor {
+  NEW_BUSINESS
+  LEARNING
   NETWORKING
-  DEALS
-  EVENTS
-}
-
-enum EventStatus {
-  DRAFT
-  PUBLISHED
-  CANCELLED
-  COMPLETED
-  SUSPENDED
+  PRODUCT_DEMOS
+  PARTNERSHIPS
+  RECRUITING
+  BRAND_AWARENESS
+  THOUGHT_LEADERSHIP
 }
 
 enum EventCategory {
@@ -1193,74 +1262,92 @@ enum EventIndustry {
   DATA_ANALYTICS
 }
 
-enum AttendanceStatus {
-  INTERESTED
-  PLANNING_TO_ATTEND
-  REGISTERED
-  ATTENDING
-  ATTENDED
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+  SUSPENDED
+}
+
+enum Industry {
+  AUTOMOTIVE
+  CPG_FOOD_BEVERAGE
+  CPG_PERSONAL_CARE
+  CPG_HOUSEHOLD
+  FINANCIAL_SERVICES
+  HEALTHCARE_PHARMA
+  RETAIL_ECOMMERCE
+  TECHNOLOGY
+  ENTERTAINMENT_MEDIA
+  TRAVEL_HOSPITALITY
+  TELECOM
+  FASHION_BEAUTY
+  SPORTS_FITNESS
+  EDUCATION
+  REAL_ESTATE
+  ENERGY
+  GOVERNMENT_NONPROFIT
+  GAMING
+  CRYPTOCURRENCY
+  INSURANCE
+  B2B_SERVICES
+  STARTUPS
+  NONPROFIT
+  PROFESSIONAL_SERVICES
+  LOGISTICS
+}
+
+enum InsightType {
+  NEWS
+  LEADERSHIP_CHANGE
+  FUNDING
+  ACQUISITION
+  PRODUCT_LAUNCH
+  MARKET_EXPANSION
+  FINANCIAL_RESULTS
+  HIRING_SURGE
+  MEDIA_SPEND_CHANGE
+  COMPETITIVE_INTEL
+  PARTNERSHIP
+  OFFICE_MOVE
+  REGULATORY_CHANGE
+  INDUSTRY_TREND
+  AI_SUMMARY
+}
+
+enum InteractionType {
+  EMAIL
+  PHONE_CALL
+  LINKEDIN_MESSAGE
+  LINKEDIN_CONNECTION
+  MEETING
+  CONFERENCE_CALL
+  TEXT_MESSAGE
+  IN_PERSON
+  SOCIAL_MEDIA
+  OTHER
+}
+
+enum IntroductionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  COMPLETED
   CANCELLED
 }
 
-enum EventBestFor {
-  NEW_BUSINESS
-  LEARNING
-  NETWORKING
-  PRODUCT_DEMOS
-  PARTNERSHIPS
-  RECRUITING
-  BRAND_AWARENESS
-  THOUGHT_LEADERSHIP
-}
-
-enum ActivityType {
-  SEARCH
-  EVENT_ATTENDED
-  EVENT_REGISTERED
-  FORUM_POST
-  CONNECTION_MADE
-  GOAL_ACHIEVED
-  MILESTONE_REACHED
-  UPGRADE_PROMPT_SHOWN
-  UPGRADE_COMPLETED
-  ACHIEVEMENT_UNLOCKED
-}
-
-enum SubscriptionStatus {
-  ACTIVE
-  CANCELED
-  INCOMPLETE
-  INCOMPLETE_EXPIRED
-  PAST_DUE
-  UNPAID
-  TRIALING
-}
-
-enum PaymentStatus {
-  SUCCEEDED
-  PENDING
-  FAILED
-  CANCELED
-  REFUNDED
-}
-
-enum UrgencyLevel {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-enum DealSize {
-  SMALL
-  MEDIUM
-  LARGE
-  ENTERPRISE
-}
-
-enum VoteType {
-  UPVOTE
-  DOWNVOTE
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATING
+  CLOSED_WON
+  CLOSED_LOST
+  NOT_INTERESTED
+  NURTURING
+  ON_HOLD
 }
 
 enum MediaType {
@@ -1288,125 +1375,6 @@ enum MediaType {
   AUDIO_STREAMING
   GAMING_ADVERTISING
   VIRTUAL_REALITY
-}
-
-enum Region {
-  NORTHEAST
-  SOUTHEAST
-  MIDWEST
-  SOUTHWEST
-  WEST
-  NORTHWEST
-  NATIONAL
-  INTERNATIONAL
-  CANADA
-  GLOBAL
-}
-
-enum EmployeeRange {
-  STARTUP_1_10
-  SMALL_11_50
-  MEDIUM_51_200
-  LARGE_201_1000
-  ENTERPRISE_1001_5000
-  MEGA_5000_PLUS
-}
-
-enum RevenueRange {
-  UNDER_1M
-  RANGE_1M_5M
-  RANGE_5M_25M
-  RANGE_25M_100M
-  RANGE_100M_500M
-  RANGE_500M_1B
-  OVER_1B
-  UNDISCLOSED
-}
-
-enum Department {
-  MEDIA_PLANNING
-  MEDIA_BUYING
-  DIGITAL_MARKETING
-  PROGRAMMATIC
-  SOCIAL_MEDIA
-  SEARCH_MARKETING
-  STRATEGY_PLANNING
-  ANALYTICS_INSIGHTS
-  CREATIVE_SERVICES
-  ACCOUNT_MANAGEMENT
-  BUSINESS_DEVELOPMENT
-  OPERATIONS
-  TECHNOLOGY
-  FINANCE
-  LEADERSHIP
-  HUMAN_RESOURCES
-  SALES
-  MARKETING
-  PRODUCT
-  DATA_SCIENCE
-}
-
-enum SeniorityLevel {
-  INTERN
-  COORDINATOR
-  SPECIALIST
-  SENIOR_SPECIALIST
-  MANAGER
-  SENIOR_MANAGER
-  DIRECTOR
-  SENIOR_DIRECTOR
-  VP
-  SVP
-  EVP
-  C_LEVEL
-  FOUNDER_OWNER
-}
-
-enum ContactRole {
-  MEDIA_BUYER
-  MEDIA_PLANNER
-  STRATEGIST
-  ANALYST
-  CREATIVE
-  ACCOUNT_MANAGER
-  PROJECT_MANAGER
-  BUSINESS_DEVELOPER
-  DECISION_MAKER
-  INFLUENCER
-  GATEKEEPER
-  IMPLEMENTER
-  ADVISOR
-  BUDGET_HOLDER
-  PROCUREMENT
-}
-
-enum DataQuality {
-  BASIC
-  VERIFIED
-  PREMIUM
-  EXPERT_VERIFIED
-}
-
-enum ContactMethod {
-  EMAIL
-  PHONE
-  LINKEDIN
-  DIRECT_MESSAGE
-  NO_CONTACT
-}
-
-enum BudgetRange {
-  UNDER_10K
-  RANGE_10K_25K
-  RANGE_25K_50K
-  RANGE_50K_100K
-  RANGE_100K_250K
-  RANGE_250K_500K
-  RANGE_500K_1M
-  RANGE_1M_5M
-  RANGE_5M_25M
-  OVER_25M
-  CONFIDENTIAL
 }
 
 enum NetworkingActivityType {
@@ -1443,101 +1411,6 @@ enum NotificationType {
   POST_FOLLOWED
 }
 
-enum InteractionType {
-  EMAIL
-  PHONE_CALL
-  LINKEDIN_MESSAGE
-  LINKEDIN_CONNECTION
-  MEETING
-  CONFERENCE_CALL
-  TEXT_MESSAGE
-  IN_PERSON
-  SOCIAL_MEDIA
-  OTHER
-}
-
-enum LeadStatus {
-  NEW
-  CONTACTED
-  QUALIFIED
-  PROPOSAL_SENT
-  NEGOTIATING
-  CLOSED_WON
-  CLOSED_LOST
-  NOT_INTERESTED
-  NURTURING
-  ON_HOLD
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-enum IntroductionStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-  COMPLETED
-  CANCELLED
-}
-
-enum PostStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  DRAFT
-}
-
-model CodeGeneration {
-  id              String   @id @default(cuid())
-  userId          String
-  prompt          String
-  language        String
-  framework       String?
-  codeType        String
-  complexity      String
-  generatedCode   String
-  explanation     String?
-  dependencies    String @default("")
-  suggestions     String @default("")
-  executionTime   Int?     // in milliseconds
-  tokensUsed      Int?
-  qualityScore    Float?
-  wasUseful       Boolean? // User feedback
-  forumPostId     String?  // If shared to forum
-  createdAt       DateTime @default(now())
-  user            User     @relation("UserCodeGenerations", fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
-  @@index([language])
-  @@index([codeType])
-  @@index([createdAt])
-  @@index([forumPostId])
-}
-
-model WaitlistEmail {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  source    String   @default("invite-only")
-  status    WaitlistStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([email])
-  @@index([status])
-  @@index([createdAt])
-}
-
-enum WaitlistStatus {
-  PENDING
-  INVITED
-  REGISTERED
-  DECLINED
-}
-
 enum PartnershipType {
   AGENCY_CLIENT
   MEDIA_PARTNERSHIP
@@ -1547,4 +1420,118 @@ enum PartnershipType {
   SISTER_AGENCY
   JOINT_VENTURE
   SUBCONTRACTOR
+}
+
+enum PaymentStatus {
+  SUCCEEDED
+  PENDING
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+enum PostCategory {
+  ACCOUNT_MOVES
+  RFPS
+  INDUSTRY_NEWS
+  QA
+  NETWORKING
+  DEALS
+  EVENTS
+}
+
+enum PostStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DRAFT
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum Region {
+  NORTHEAST
+  SOUTHEAST
+  MIDWEST
+  SOUTHWEST
+  WEST
+  NORTHWEST
+  NATIONAL
+  INTERNATIONAL
+  CANADA
+  GLOBAL
+}
+
+enum RevenueRange {
+  UNDER_1M
+  RANGE_1M_5M
+  RANGE_5M_25M
+  RANGE_25M_100M
+  RANGE_100M_500M
+  RANGE_500M_1B
+  OVER_1B
+  UNDISCLOSED
+}
+
+enum Role {
+  FREE
+  PRO
+  TEAM_ADMIN
+  ADMIN
+}
+
+enum SeniorityLevel {
+  INTERN
+  COORDINATOR
+  SPECIALIST
+  SENIOR_SPECIALIST
+  MANAGER
+  SENIOR_MANAGER
+  DIRECTOR
+  SENIOR_DIRECTOR
+  VP
+  SVP
+  EVP
+  C_LEVEL
+  FOUNDER_OWNER
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  PAST_DUE
+  UNPAID
+  TRIALING
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  TEAM
+}
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+enum WaitlistStatus {
+  PENDING
+  INVITED
+  REGISTERED
+  DECLINED
 }
