@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, BarChart3, UserCheck, Shield } from 'lucide-react';
+import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, BarChart3, UserCheck, Shield, Folder } from 'lucide-react';
 
 interface DashboardStats {
   totalCompanies: number;
@@ -93,6 +93,13 @@ export default function AdminDashboard() {
       href: '/admin/forum/posts',
       icon: MessageSquare,
       color: 'text-orange-600 bg-orange-50'
+    },
+    {
+      title: 'Forum Categories',
+      description: 'Manage discussion categories and topics',
+      href: '/admin/forum-categories',
+      icon: Folder,
+      color: 'text-amber-600 bg-amber-50'
     },
     {
       title: 'Events Management',
