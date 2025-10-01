@@ -139,8 +139,8 @@ DM me if interested in learning more!`,
           updatedAt: new Date()
         },
         include: {
-          category: true,
-          author: {
+          ForumCategory: true,
+          User: {
             select: {
               id: true,
               name: true,
@@ -154,7 +154,7 @@ DM me if interested in learning more!`,
         id: post.id,
         title: post.title,
         slug: post.slug,
-        category: post.category.name,
+        category: post.ForumCategory.name,
         status: post.status
       });
 
