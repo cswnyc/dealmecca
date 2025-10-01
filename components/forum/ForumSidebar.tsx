@@ -12,11 +12,8 @@ import {
   Users,
   MessageSquare,
   Eye,
-  UserPlus,
   Bookmark,
-  Bell,
-  Plus,
-  Check
+  Bell
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -52,8 +49,6 @@ export function ForumSidebar() {
   const isFetchingRef = useRef(false);
   const [syncedUser, setSyncedUser] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
-  const [isFollowingCompanies, setIsFollowingCompanies] = useState<string[]>([]);
-  const [followActionLoading, setFollowActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('🎯 ForumSidebar: Firebase user state:', { firebaseUser: !!firebaseUser, authLoading, hasFirebaseSession });
@@ -180,75 +175,6 @@ export function ForumSidebar() {
       }
     } catch (error) {
       console.error('Error fetching notification count:', error);
-    }
-  };
-
-  const handleFollowCompany = async (companyId: string) => {
-    if (!firebaseUser || followActionLoading) return;
-
-    setFollowActionLoading(companyId);
-
-    try {
-      const idToken = await firebaseUser.getIdToken();
-
-      // Find user in database using firebaseUid
-      const userResponse = await fetch(`/api/users/identity?firebaseUid=${encodeURIComponent(firebaseUser.uid)}`);
-
-      if (!userResponse.ok) {
-        console.error('Failed to get user identity');
-        return;
-      }
-
-      // Get the user ID from the response - we need to extract it differently since this endpoint returns avatar info
-      // Let's use a different approach and call the sync endpoint to get user ID
-      const syncResponse = await fetch('/api/auth/firebase-sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-          providerId: firebaseUser.providerId,
-          isNewUser: false
-        }),
-        credentials: 'include'
-      });
-
-      if (!syncResponse.ok) {
-        console.error('Failed to sync user');
-        return;
-      }
-
-      const { user } = await syncResponse.json();
-      const isCurrentlyFollowing = isFollowingCompanies.includes(companyId);
-
-      const response = await fetch(`/api/companies/${companyId}/follow`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${idToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          follow: !isCurrentlyFollowing
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.isFollowing) {
-          setIsFollowingCompanies(prev => [...prev, companyId]);
-        } else {
-          setIsFollowingCompanies(prev => prev.filter(id => id !== companyId));
-        }
-      }
-    } catch (error) {
-      console.error('Error following company:', error);
-    } finally {
-      setFollowActionLoading(null);
     }
   };
 
@@ -380,24 +306,6 @@ export function ForumSidebar() {
           <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start text-xs"
-            onClick={() => {
-              // For demo, let's follow WPP Group (first company in our seed data)
-              handleFollowCompany('cmg753pu90000s8vimfxekxil'); // WPP Group ID from seed data
-            }}
-            disabled={followActionLoading === 'cmg753pu90000s8vimfxekxil'}
-          >
-            {isFollowingCompanies.includes('cmg753pu90000s8vimfxekxil') ? (
-              <Check className="w-3 h-3 mr-2" />
-            ) : (
-              <UserPlus className="w-3 h-3 mr-2" />
-            )}
-            {followActionLoading === 'cmg753pu90000s8vimfxekxil' ? 'Following...' :
-             isFollowingCompanies.includes('cmg753pu90000s8vimfxekxil') ? 'Following WPP' : 'Follow Companies'}
-          </Button>
           <Button
             variant="outline"
             size="sm"

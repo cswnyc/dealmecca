@@ -403,7 +403,7 @@ export async function POST(request: NextRequest) {
     // Extract all original mentions for backward compatibility
     const allMentions = parsedContent.originalMentions;
 
-    // Create the post
+    // Create the post with auto-approval
     const post = await prisma.forumPost.create({
       data: {
         title,
@@ -418,7 +418,7 @@ export async function POST(request: NextRequest) {
         dealSize,
         location,
         mediaType,
-        status: 'PENDING'
+        status: 'APPROVED'  // Auto-approve posts
       },
       include: {
         author: {
