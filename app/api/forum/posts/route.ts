@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     if (company) {
       where.CompanyMention = {
         some: {
-          company: {
+          companies: {
             id: company
           }
         }
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
         },
         CompanyMention: {
           include: {
-            company: {
+            companies: {
               select: {
                 id: true,
                 name: true,
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
         },
         ContactMention: {
           include: {
-            contact: {
+            contacts: {
               select: {
                 id: true,
                 firstName: true,
@@ -269,25 +269,25 @@ export async function GET(request: NextRequest) {
       },
       companyMentions: post.CompanyMention.map(mention => ({
         company: {
-          id: mention.company.id,
-          name: mention.company.name,
-          logoUrl: mention.company.logoUrl,
-          verified: mention.company.verified,
-          companyType: mention.company.companyType,
-          industry: mention.company.industry,
-          city: mention.company.city,
-          state: mention.company.state
+          id: mention.companies.id,
+          name: mention.companies.name,
+          logoUrl: mention.companies.logoUrl,
+          verified: mention.companies.verified,
+          companyType: mention.companies.companyType,
+          industry: mention.companies.industry,
+          city: mention.companies.city,
+          state: mention.companies.state
         }
       })),
       contactMentions: post.ContactMention.map(mention => ({
         contact: {
-          id: mention.contact.id,
-          fullName: `${mention.contact.firstName} ${mention.contact.lastName}`,
-          title: mention.contact.title,
-          company: mention.contact.company ? {
-            id: mention.contact.company.id,
-            name: mention.contact.company.name,
-            logoUrl: mention.contact.company.logoUrl
+          id: mention.contacts.id,
+          fullName: `${mention.contacts.firstName} ${mention.contacts.lastName}`,
+          title: mention.contacts.title,
+          company: mention.contacts.company ? {
+            id: mention.contacts.company.id,
+            name: mention.contacts.company.name,
+            logoUrl: mention.contacts.company.logoUrl
           } : null
         }
       })),
