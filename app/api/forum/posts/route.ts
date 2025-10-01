@@ -168,9 +168,9 @@ export async function GET(request: NextRequest) {
                 context: true,
                 color: true,
                 icon: true,
-                companies: {
+                TopicCompany: {
                   include: {
-                    company: {
+                    companies: {
                       select: {
                         id: true,
                         name: true,
@@ -187,9 +187,9 @@ export async function GET(request: NextRequest) {
                     order: 'asc'
                   }
                 },
-                contacts: {
+                TopicContact: {
                   include: {
-                    contact: {
+                    contacts: {
                       select: {
                         id: true,
                         firstName: true,
@@ -300,32 +300,32 @@ export async function GET(request: NextRequest) {
           context: mention.Topic.context,
           color: mention.Topic.color,
           icon: mention.Topic.icon,
-          companies: mention.Topic.companies.map(tc => ({
+          companies: mention.Topic.TopicCompany.map(tc => ({
             id: tc.id,
             company: {
-              id: tc.company.id,
-              name: tc.company.name,
-              logoUrl: tc.company.logoUrl,
-              verified: tc.company.verified,
-              companyType: tc.company.companyType,
-              industry: tc.company.industry,
-              city: tc.company.city,
-              state: tc.company.state
+              id: tc.companies.id,
+              name: tc.companies.name,
+              logoUrl: tc.companies.logoUrl,
+              verified: tc.companies.verified,
+              companyType: tc.companies.companyType,
+              industry: tc.companies.industry,
+              city: tc.companies.city,
+              state: tc.companies.state
             },
             context: tc.context,
             role: tc.role,
             order: tc.order
           })),
-          contacts: mention.Topic.contacts.map(tc => ({
+          contacts: mention.Topic.TopicContact.map(tc => ({
             id: tc.id,
             contact: {
-              id: tc.contact.id,
-              fullName: `${tc.contact.firstName} ${tc.contact.lastName}`,
-              title: tc.contact.title,
-              company: tc.contact.company ? {
-                id: tc.contact.company.id,
-                name: tc.contact.company.name,
-                logoUrl: tc.contact.company.logoUrl
+              id: tc.contacts.id,
+              fullName: `${tc.contacts.firstName} ${tc.contacts.lastName}`,
+              title: tc.contacts.title,
+              company: tc.contacts.company ? {
+                id: tc.contacts.company.id,
+                name: tc.contacts.company.name,
+                logoUrl: tc.contacts.company.logoUrl
               } : null
             },
             context: tc.context,
