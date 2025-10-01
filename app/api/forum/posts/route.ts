@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     };
     
     if (category) {
-      where.category = {
+      where.ForumCategory = {
         slug: category
       };
     }
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (company) {
-      where.companyMentions = {
+      where.CompanyMention = {
         some: {
           company: {
             id: company
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
     if (topic) {
       // Filter by topic name - can be exact match or partial match
-      where.topicMentions = {
+      where.TopicMention = {
         some: {
           topic: {
             name: {
@@ -106,14 +106,14 @@ export async function GET(request: NextRequest) {
     const posts = await prisma.forumPost.findMany({
       where,
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
             email: true
           }
         },
-        category: {
+        ForumCategory: {
           select: {
             id: true,
             name: true,
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
             icon: true
           }
         },
-        companyMentions: {
+        CompanyMention: {
           include: {
             company: {
               select: {
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        contactMentions: {
+        ContactMention: {
           include: {
             contact: {
               select: {
@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        topicMentions: {
+        TopicMention: {
           include: {
             topic: {
               select: {
@@ -218,7 +218,7 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            comments: true
+            ForumComment: true
           }
         }
       },
@@ -255,19 +255,19 @@ export async function GET(request: NextRequest) {
       updatedAt: post.updatedAt.toISOString(),
       lastActivityAt: post.lastActivityAt.toISOString(),
       author: {
-        id: post.author.id,
-        name: post.author.name || 'Anonymous User',
-        email: post.author.email
+        id: post.User.id,
+        name: post.User.name || 'Anonymous User',
+        email: post.User.email
       },
       category: {
-        id: post.category.id,
-        name: post.category.name,
-        slug: post.category.slug,
-        description: post.category.description,
-        color: post.category.color,
-        icon: post.category.icon
+        id: post.ForumCategory.id,
+        name: post.ForumCategory.name,
+        slug: post.ForumCategory.slug,
+        description: post.ForumCategory.description,
+        color: post.ForumCategory.color,
+        icon: post.ForumCategory.icon
       },
-      companyMentions: post.companyMentions.map(mention => ({
+      companyMentions: post.CompanyMention.map(mention => ({
         company: {
           id: mention.company.id,
           name: mention.company.name,
@@ -279,7 +279,7 @@ export async function GET(request: NextRequest) {
           state: mention.company.state
         }
       })),
-      contactMentions: post.contactMentions.map(mention => ({
+      contactMentions: post.ContactMention.map(mention => ({
         contact: {
           id: mention.contact.id,
           fullName: `${mention.contact.firstName} ${mention.contact.lastName}`,
@@ -291,7 +291,7 @@ export async function GET(request: NextRequest) {
           } : null
         }
       })),
-      topicMentions: post.topicMentions.map(mention => ({
+      topicMentions: post.TopicMention.map(mention => ({
         id: mention.id,
         topic: {
           id: mention.topic.id,
@@ -335,7 +335,7 @@ export async function GET(request: NextRequest) {
         }
       })),
       _count: {
-        comments: post._count.comments
+        comments: post._count.ForumComment
       }
     }));
 
@@ -421,14 +421,14 @@ export async function POST(request: NextRequest) {
         status: 'APPROVED'  // Auto-approve posts
       },
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
             email: true
           }
         },
-        category: true
+        ForumCategory: true
       }
     });
 
