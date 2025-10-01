@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
+import { useUser } from '@/hooks/useUser';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -78,21 +79,30 @@ function UserProfileContent() {
   const [anonymousIdentity, setAnonymousIdentity] = useState<{username: string, avatarId: string} | null>(null);
   const [loading, setLoading] = useState(true);
   const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+  const { user: backendUser, loading: backendLoading } = useUser();
 
-  // Check if we have a valid Firebase session
-  const hasFirebaseSession = Boolean(firebaseUser);
+  // Check if we have either Firebase or backend session
+  const hasSession = Boolean(firebaseUser || backendUser);
+  const anyLoading = authLoading || backendLoading;
   const router = useRouter();
 
   useEffect(() => {
-    // Only fetch data once when we have a user and haven't set identity yet
-    if (!authLoading && firebaseUser && !anonymousIdentity) {
-      fetchProfile();
-      fetchUserStats();
-      fetchAnonymousIdentity();
-    } else if (!authLoading && !firebaseUser && !hasFirebaseSession) {
+    // Fetch data if we have either Firebase or backend user
+    if (!anyLoading && hasSession && !profile) {
+      // Use backend user if available, otherwise use Firebase user
+      if (backendUser) {
+        setProfile(backendUser as UserProfile);
+      }
+      if (firebaseUser || backendUser) {
+        fetchUserStats();
+      }
+      if (firebaseUser && !anonymousIdentity) {
+        fetchAnonymousIdentity();
+      }
+    } else if (!anyLoading && !hasSession) {
       setLoading(false);
     }
-  }, [firebaseUser, hasFirebaseSession, authLoading, anonymousIdentity]);
+  }, [firebaseUser, backendUser, hasSession, anyLoading, anonymousIdentity, profile]);
 
   const fetchProfile = async () => {
     try {
@@ -273,9 +283,11 @@ function UserProfileContent() {
         const { auth } = await import('@/lib/firebase');
         await signOut(auth);
       }
-      // Clear LinkedIn session
+      // Clear LinkedIn session and cookie
       localStorage.removeItem('linkedin-session');
       localStorage.removeItem('auth-token');
+      // Clear linkedin-auth cookie
+      document.cookie = 'linkedin-auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       router.push('/auth/signup');
     } catch (error) {
       console.error('Sign out error:', error);
@@ -306,7 +318,7 @@ function UserProfileContent() {
     );
   }
 
-  if (!showProfile && !authLoading && !firebaseUser && !hasFirebaseSession) {
+  if (!showProfile && !anyLoading && !hasSession) {
     return (
       <div className="p-3">
         <Button
