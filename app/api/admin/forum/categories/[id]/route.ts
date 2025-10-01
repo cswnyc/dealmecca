@@ -12,7 +12,7 @@ export async function GET(
       include: {
         _count: {
           select: {
-            posts: true
+            ForumPost: true
           }
         }
       }
@@ -84,7 +84,7 @@ export async function PATCH(
       include: {
         _count: {
           select: {
-            posts: true
+            ForumPost: true
           }
         }
       }
@@ -112,7 +112,7 @@ export async function DELETE(
       include: {
         _count: {
           select: {
-            posts: true
+            ForumPost: true
           }
         }
       }
@@ -126,11 +126,11 @@ export async function DELETE(
     }
 
     // Check if category has posts
-    if (category._count.posts > 0) {
+    if (category._count.ForumPost > 0) {
       return NextResponse.json(
         {
           error: 'Cannot delete category with posts',
-          message: `This category has ${category._count.posts} post(s). Please move or delete them first.`
+          message: `This category has ${category._count.ForumPost} post(s). Please move or delete them first.`
         },
         { status: 409 }
       );

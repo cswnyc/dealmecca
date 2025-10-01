@@ -13,7 +13,7 @@ interface Category {
   order: number;
   isActive: boolean;
   _count: {
-    posts: number;
+    ForumPost: number;
   };
 }
 
@@ -320,7 +320,7 @@ export default function ForumCategoriesAdmin() {
                       </code>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{category._count.posts}</span>
+                      <span className="text-sm text-gray-900">{category._count.ForumPost}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button

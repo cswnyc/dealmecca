@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createId } from '@paralleldrive/cuid2';
 
 // GET - List all categories
 export async function GET(request: NextRequest) {
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            posts: true
+            ForumPost: true
           }
         }
       },
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
 
     const category = await prisma.forumCategory.create({
       data: {
+        id: createId(),
         name,
         description: description || '',
         slug,
@@ -71,7 +73,7 @@ export async function POST(request: NextRequest) {
       include: {
         _count: {
           select: {
-            posts: true
+            ForumPost: true
           }
         }
       }
