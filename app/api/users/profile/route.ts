@@ -3,15 +3,24 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
+    // Log all cookies for debugging
+    const allCookies = request.cookies.getAll();
+    console.log('🍪 Profile API: All cookies:', allCookies.map(c => `${c.name}=${c.value.substring(0, 20)}...`));
+
     // Get user ID from session headers set by middleware
     let userId = request.headers.get('x-user-id');
+    console.log('📧 Profile API: x-user-id header:', userId);
 
     // Fallback: Check for linkedin-auth cookie if no header
     if (!userId) {
       const linkedInAuthCookie = request.cookies.get('linkedin-auth');
+      console.log('🍪 Profile API: linkedin-auth cookie:', linkedInAuthCookie);
+
       if (linkedInAuthCookie) {
         // Cookie format is "linkedin-{userId}"
         const cookieValue = linkedInAuthCookie.value;
+        console.log('🍪 Profile API: Cookie value:', cookieValue);
+
         if (cookieValue.startsWith('linkedin-')) {
           userId = cookieValue.replace('linkedin-', '');
           console.log('📧 Profile API: Extracted user ID from linkedin-auth cookie:', userId);

@@ -141,6 +141,16 @@ export async function GET(request: NextRequest) {
     const cookieValue = `linkedin-${user.id}`
     const expiresIn7Days = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
+    console.log('🍪 LinkedIn callback: Setting cookie for user:', user.id);
+    console.log('🍪 Cookie value:', cookieValue);
+    console.log('🍪 Cookie config:', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: expiresIn7Days,
+      path: '/'
+    });
+
     response.cookies.set('linkedin-auth', cookieValue, {
       httpOnly: false, // Allow client-side access for compatibility
       secure: process.env.NODE_ENV === 'production',
@@ -149,7 +159,8 @@ export async function GET(request: NextRequest) {
       path: '/'
     })
 
-    console.log('🍪 Set linkedin-auth cookie for user:', user.id)
+    console.log('🍪 Set linkedin-auth cookie successfully');
+    console.log('🔄 Redirecting to /forum');
 
     return response
 
