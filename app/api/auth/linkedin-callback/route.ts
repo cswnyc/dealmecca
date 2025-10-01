@@ -134,18 +134,24 @@ export async function GET(request: NextRequest) {
       sessionTokenLength: sessionToken.length
     })
 
-    // Store session in localStorage via a redirect page that sets it and then redirects to forum
-    const successUrl = new URL('/auth/linkedin-success', request.nextUrl.origin)
-    successUrl.searchParams.set('session', sessionToken)
-    successUrl.searchParams.set('redirect', '/forum')
-    successUrl.searchParams.set('user', JSON.stringify({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      tier: user.subscriptionTier
-    }))
+    // Set HTTP-only cookie server-side
+    const response = NextResponse.redirect(new URL('/forum', request.nextUrl.origin))
 
-    return NextResponse.redirect(successUrl)
+    // Set linkedin-auth cookie with user ID
+    const cookieValue = `linkedin-${user.id}`
+    const expiresIn7Days = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+    response.cookies.set('linkedin-auth', cookieValue, {
+      httpOnly: false, // Allow client-side access for compatibility
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // Less strict than 'strict' for better compatibility
+      expires: expiresIn7Days,
+      path: '/'
+    })
+
+    console.log('🍪 Set linkedin-auth cookie for user:', user.id)
+
+    return response
 
   } catch (error) {
     console.error('LinkedIn callback error:', error)
