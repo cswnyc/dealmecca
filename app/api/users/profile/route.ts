@@ -57,10 +57,10 @@ export async function GET(request: NextRequest) {
         // Include some statistics
         _count: {
           select: {
-            forumPosts: true,
-            forumComments: true,
-            savedSearches: true,
-            eventAttendees: true
+            ForumPost: true,
+            ForumComment: true,
+            SavedSearch: true,
+            EventAttendee: true
           }
         }
       }
@@ -101,10 +101,10 @@ export async function GET(request: NextRequest) {
       avatarSeed: user.avatarSeed,
       isAnonymous: user.isAnonymous,
       stats: {
-        forumPosts: user._count.forumPosts,
-        forumComments: user._count.forumComments,
-        savedSearches: user._count.savedSearches,
-        eventsAttended: user._count.eventAttendees
+        forumPosts: user._count.ForumPost,
+        forumComments: user._count.ForumComment,
+        savedSearches: user._count.SavedSearch,
+        eventsAttended: user._count.EventAttendee
       }
     };
 
