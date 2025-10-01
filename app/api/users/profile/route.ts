@@ -14,11 +14,15 @@ export async function GET(request: NextRequest) {
         const cookieValue = linkedInAuthCookie.value;
         if (cookieValue.startsWith('linkedin-')) {
           userId = cookieValue.replace('linkedin-', '');
+          console.log('📧 Profile API: Extracted user ID from linkedin-auth cookie:', userId);
         }
       }
+    } else {
+      console.log('📧 Profile API: Got user ID from header:', userId);
     }
 
     if (!userId) {
+      console.log('❌ Profile API: No user ID found in headers or cookies');
       return NextResponse.json(
         { error: 'Not authenticated' },
         { status: 401 }
@@ -63,11 +67,14 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
+      console.log('❌ Profile API: User not found in database:', userId);
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       );
     }
+
+    console.log('✅ Profile API: Successfully fetched user:', user.email);
 
     // Transform data to match frontend expectations
     const profile = {
@@ -104,9 +111,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(profile);
 
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    console.error('❌ Profile API error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch profile' },
+      {
+        error: 'Failed to fetch profile',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
