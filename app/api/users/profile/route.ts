@@ -3,27 +3,14 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    // For now, we'll get the user ID from query params or headers
-    // In a real app, this would come from session/authentication
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    
+    // Get user ID from session headers set by middleware
+    const userId = request.headers.get('x-user-id');
+
     if (!userId) {
-      // Return a mock user for demonstration if no userId provided
-      const mockUser = {
-        id: 'demo-user',
-        email: 'demo@dealmecca.com',
-        name: 'Demo User',
-        role: 'FREE',
-        subscriptionTier: 'FREE',
-        createdAt: new Date().toISOString(),
-        dashboardVisits: 5,
-        searchesUsed: 10,
-        achievementPoints: 100,
-        lastDashboardVisit: new Date().toISOString()
-      };
-      
-      return NextResponse.json(mockUser);
+      return NextResponse.json(
+        { error: 'Not authenticated' },
+        { status: 401 }
+      );
     }
 
     const user = await prisma.user.findUnique({
