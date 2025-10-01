@@ -156,6 +156,7 @@ export default function ForumPage() {
   const [sortBy, setSortBy] = useState('latest');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [postType, setPostType] = useState<'post' | 'list' | 'poll'>('post');
 
   useEffect(() => {
     fetchCategories();
@@ -475,7 +476,7 @@ export default function ForumPage() {
           ) : (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium">Create New Post</h3>
+                <h3 className="text-lg font-medium">What are you creating?</h3>
                 <button
                   onClick={() => setShowCreateForm(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -484,8 +485,46 @@ export default function ForumPage() {
                 </button>
               </div>
 
+              {/* Post Type Selector */}
+              <div className="flex space-x-2 mb-6">
+                <button
+                  onClick={() => setPostType('post')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    postType === 'post'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Post</span>
+                </button>
+                <button
+                  onClick={() => setPostType('list')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    postType === 'list'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                  <span>List</span>
+                </button>
+                <button
+                  onClick={() => setPostType('poll')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    postType === 'poll'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  <span>Poll</span>
+                </button>
+              </div>
+
               <SmartPostForm
                 categories={categories as any}
+                postType={postType}
                 onSuccess={() => {
                   setShowCreateForm(false);
                   fetchPosts(); // Refresh posts after creation
