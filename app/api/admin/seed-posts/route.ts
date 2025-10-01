@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { randomBytes } from 'crypto';
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 export async function POST() {
   try {
@@ -114,6 +120,7 @@ DM me if interested in learning more!`,
 
       const post = await prisma.forumPost.create({
         data: {
+          id: generateId(),
           title: postData.title,
           content: postData.content,
           slug,
