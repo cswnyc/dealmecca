@@ -38,6 +38,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    console.log('🔍 Profile API: Querying database for user ID:', userId);
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
