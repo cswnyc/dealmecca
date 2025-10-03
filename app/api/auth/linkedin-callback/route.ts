@@ -4,6 +4,12 @@ import { auth } from '@/lib/firebase-admin'
 import { prisma } from '@/lib/db'
 import { generateUsername } from '@/lib/user-generator'
 import { subscribeUserToNewsletter } from '@/lib/convertkit'
+import { randomBytes } from 'crypto'
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -84,17 +90,30 @@ export async function GET(request: NextRequest) {
       // Create new user
       const anonymousUsername = generateUsername(linkedInProfile.sub)
 
-      user = await prisma.user.create({
-        data: {
-          email: linkedInProfile.email,
-          name: linkedInProfile.name || null,
-          isAnonymous: false,
-          anonymousUsername,
-          role: 'FREE',
-          subscriptionTier: 'FREE',
-          subscriptionStatus: 'ACTIVE'
-        }
-      })
+      // Generate a unique ID
+      const userId = generateId()
+
+      console.log('🆕 Creating new user:', { userId, email: linkedInProfile.email, anonymousUsername });
+
+      try {
+        user = await prisma.user.create({
+          data: {
+            id: userId,
+            email: linkedInProfile.email,
+            name: linkedInProfile.name || null,
+            isAnonymous: false,
+            anonymousUsername,
+            role: 'FREE',
+            subscriptionTier: 'FREE',
+            subscriptionStatus: 'ACTIVE'
+          }
+        })
+
+        console.log('✅ User created successfully:', user.id);
+      } catch (createError) {
+        console.error('❌ Failed to create user:', createError);
+        throw createError;
+      }
 
       // Create account record
       await prisma.account.create({
