@@ -51,15 +51,7 @@ export async function GET(
               select: {
                 id: true,
                 name: true,
-                email: true,
-                company: {
-                  select: {
-                    id: true,
-                    name: true,
-                    logoUrl: true,
-                    verified: true
-                  }
-                }
+                email: true
               }
             },
             _count: {
