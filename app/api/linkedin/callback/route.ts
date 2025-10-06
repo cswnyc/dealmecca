@@ -4,6 +4,12 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateAnonymousProfile } from '@/lib/user-generator';
+import { randomBytes } from 'crypto';
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 async function postForm(url: string, data: Record<string,string>) {
   const body = new URLSearchParams(data).toString();
@@ -288,9 +294,13 @@ export async function GET(req: NextRequest) {
       if (!dbUser) {
         // Create new user with anonymous profile
         const anonymousProfile = generateAnonymousProfile(linkedinId);
+        const userId = generateId();
+
+        console.log('🆕 Creating new LinkedIn user with ID:', userId);
 
         dbUser = await prisma.user.create({
           data: {
+            id: userId,
             email: userEmail || null,
             firebaseUid: userEmail ? null : `linkedin:${linkedinId}`,
             name: name || null,
@@ -318,15 +328,31 @@ export async function GET(req: NextRequest) {
       }
     } catch (dbError) {
       console.error('❌ Database user creation/lookup failed:', dbError);
-      // Continue with session creation even if database fails
+      console.error('Error details:', dbError instanceof Error ? dbError.message : 'Unknown error');
+
+      // IMPORTANT: Don't continue if database operations fail
+      return NextResponse.json({
+        error: 'Failed to create or find user in database',
+        details: dbError instanceof Error ? dbError.message : 'Unknown error'
+      }, { status: 500 });
+    }
+
+    // Verify we have a valid database user before continuing
+    if (!dbUser || !dbUser.id) {
+      console.error('❌ No valid database user after creation/lookup');
+      return NextResponse.json({
+        error: 'User creation failed',
+        details: 'Database user is null or missing ID'
+      }, { status: 500 });
     }
 
     // Create session data compatible with existing auth system
     const uid = emailAddr ? emailAddr.toLowerCase() : `linkedin:${linkedinId}`;
     const sessionData = {
-      userId: linkedinId, // Use userId for compatibility with success page
-      dbUserId: dbUser?.id, // Database user ID for identity system
-      firebaseUid: dbUser?.firebaseUid, // Firebase UID equivalent for API compatibility
+      userId: dbUser.id, // IMPORTANT: Use database user ID, not LinkedIn ID!
+      dbUserId: dbUser.id, // Database user ID for identity system
+      firebaseUid: dbUser.firebaseUid, // Firebase UID equivalent for API compatibility
+      linkedinId: linkedinId, // Store LinkedIn ID for reference
       email: emailAddr || undefined,
       name: name || undefined,
       provider: 'linkedin',
@@ -334,6 +360,12 @@ export async function GET(req: NextRequest) {
       exp: Date.now() + (24 * 60 * 60 * 1000), // 24 hours expiration
       timestamp: new Date().toISOString(),
     };
+
+    console.log('📝 Session data created with database user ID:', {
+      userId: sessionData.userId,
+      dbUserId: sessionData.dbUserId,
+      linkedinId: sessionData.linkedinId
+    });
 
     console.log('Creating session token and redirect URL...');
 
@@ -345,7 +377,7 @@ export async function GET(req: NextRequest) {
     successUrl.searchParams.set('session', sessionToken);
     successUrl.searchParams.set('redirect', '/forum');
     successUrl.searchParams.set('user', JSON.stringify({
-      id: linkedinId,
+      id: dbUser.id, // Use database ID, not LinkedIn ID
       email: emailAddr,
       name: name,
       provider: 'linkedin'
