@@ -26,7 +26,7 @@ export async function GET(
     const comments = await prisma.forumComment.findMany({
       where: { postId },
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -35,19 +35,19 @@ export async function GET(
         },
         _count: {
           select: {
-            votes: true,
-            replies: true
+            ForumCommentVote: true,
+            other_ForumComment: true
           }
         },
-        votes: {
+        ForumCommentVote: {
           select: {
             type: true,
             userId: true
           }
         },
-        replies: {
+        other_ForumComment: {
           include: {
-            author: {
+            User: {
               select: {
                 id: true,
                 name: true,
@@ -56,10 +56,10 @@ export async function GET(
             },
             _count: {
               select: {
-                votes: true
+                ForumCommentVote: true
               }
             },
-            votes: {
+            ForumCommentVote: {
               select: {
                 type: true,
                 userId: true
@@ -74,21 +74,21 @@ export async function GET(
 
     // Calculate vote counts for each comment
     const formattedComments = comments.map(comment => {
-      const upvotes = comment.votes.filter(vote => vote.type === 'UPVOTE').length;
-      const downvotes = comment.votes.filter(vote => vote.type === 'DOWNVOTE').length;
-      
+      const upvotes = comment.ForumCommentVote.filter(vote => vote.type === 'UPVOTE').length;
+      const downvotes = comment.ForumCommentVote.filter(vote => vote.type === 'DOWNVOTE').length;
+
       // Format replies with vote counts
-      const formattedReplies = comment.replies.map(reply => {
-        const replyUpvotes = reply.votes.filter(vote => vote.type === 'UPVOTE').length;
-        const replyDownvotes = reply.votes.filter(vote => vote.type === 'DOWNVOTE').length;
-        
+      const formattedReplies = comment.other_ForumComment.map(reply => {
+        const replyUpvotes = reply.ForumCommentVote.filter(vote => vote.type === 'UPVOTE').length;
+        const replyDownvotes = reply.ForumCommentVote.filter(vote => vote.type === 'DOWNVOTE').length;
+
         return {
           id: reply.id,
           content: reply.content,
           isAnonymous: reply.isAnonymous,
           anonymousHandle: reply.anonymousHandle,
           anonymousAvatarId: reply.anonymousAvatarId,
-          author: reply.author,
+          author: reply.User,
           upvotes: replyUpvotes,
           downvotes: replyDownvotes,
           createdAt: reply.createdAt.toISOString(),
@@ -102,10 +102,10 @@ export async function GET(
         isAnonymous: comment.isAnonymous,
         anonymousHandle: comment.anonymousHandle,
         anonymousAvatarId: comment.anonymousAvatarId,
-        author: comment.author,
+        author: comment.User,
         upvotes,
         downvotes,
-        replyCount: comment._count.replies,
+        replyCount: comment._count.other_ForumComment,
         replies: formattedReplies,
         createdAt: comment.createdAt.toISOString(),
         updatedAt: comment.updatedAt.toISOString()
@@ -220,7 +220,7 @@ export async function POST(
         anonymousAvatarId: isAnonymous ? anonymousAvatarId : null
       },
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -229,8 +229,8 @@ export async function POST(
         },
         _count: {
           select: {
-            votes: true,
-            replies: true
+            ForumCommentVote: true,
+            other_ForumComment: true
           }
         }
       }
@@ -255,7 +255,7 @@ export async function POST(
       isAnonymous: comment.isAnonymous,
       anonymousHandle: comment.anonymousHandle,
       anonymousAvatarId: comment.anonymousAvatarId,
-      author: comment.author,
+      author: comment.User,
       upvotes: 0,
       downvotes: 0,
       replyCount: 0,
