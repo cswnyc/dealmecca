@@ -387,6 +387,18 @@ export async function GET(req: NextRequest) {
 
     const res = NextResponse.redirect(successUrl);
 
+    // Set authentication cookie for the user session
+    const cookieValue = `linkedin-${dbUser.id}`;
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    res.cookies.set('linkedin-auth', cookieValue, {
+      httpOnly: false, // Allow client-side JavaScript to read (for debugging)
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+      path: '/',
+      expires: expiresAt
+    });
+    console.log('🍪 Set linkedin-auth cookie:', cookieValue);
+
     // Clear OAuth state cookie (no PKCE verifier to clear)
     res.cookies.set('li_oauth_state', '', { path: '/', maxAge: 0 });
     return res;
