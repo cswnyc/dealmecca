@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/firebase-admin';
+import { randomBytes } from 'crypto';
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 export async function GET(
   request: NextRequest,
@@ -24,15 +30,7 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            email: true,
-            company: {
-              select: {
-                id: true,
-                name: true,
-                logoUrl: true,
-                verified: true
-              }
-            }
+            email: true
           }
         },
         _count: {
@@ -172,23 +170,39 @@ export async function POST(
     const body = await request.json();
     const { content, authorId, isAnonymous, anonymousHandle, anonymousAvatarId, parentId } = body;
 
-    // Verify Firebase token
+    // Try Firebase authentication first
+    let user = null;
     const firebaseAuth = await verifyFirebaseToken(request);
-    if (!firebaseAuth) {
+
+    if (firebaseAuth) {
+      // Find user by Firebase UID
+      user = await getUserByFirebaseUid(firebaseAuth.uid);
+    } else {
+      // Fallback: Check for LinkedIn auth cookie
+      const linkedInAuthCookie = request.cookies.get('linkedin-auth');
+      if (linkedInAuthCookie) {
+        const cookieValue = linkedInAuthCookie.value;
+        if (cookieValue.startsWith('linkedin-')) {
+          const userId = cookieValue.replace('linkedin-', '');
+          console.log('📝 Comment API: Using LinkedIn auth, user ID:', userId);
+
+          // Find user by ID from cookie
+          user = await prisma.user.findUnique({
+            where: { id: userId }
+          });
+        }
+      }
+    }
+
+    if (!user) {
+      console.log('❌ Comment API: No authenticated user found');
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    // Find user in database
-    const user = await getUserByFirebaseUid(firebaseAuth.uid);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
+    console.log('✅ Comment API: User authenticated:', user.id);
 
     if (!postId || !content) {
       return NextResponse.json(
@@ -197,9 +211,14 @@ export async function POST(
       );
     }
 
+    // Generate unique ID for comment
+    const commentId = generateId();
+    console.log('🆕 Creating comment with ID:', commentId);
+
     // Create the comment
     const comment = await prisma.forumComment.create({
       data: {
+        id: commentId,
         content,
         authorId: user.id,
         postId,
@@ -213,15 +232,7 @@ export async function POST(
           select: {
             id: true,
             name: true,
-            email: true,
-            company: {
-              select: {
-                id: true,
-                name: true,
-                logoUrl: true,
-                verified: true
-              }
-            }
+            email: true
           }
         },
         _count: {

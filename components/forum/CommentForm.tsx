@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
+import { useUser } from '@/hooks/useUser';
 import {
   PaperAirplaneIcon,
   EyeSlashIcon,
@@ -19,25 +20,27 @@ interface CommentFormProps {
   className?: string;
 }
 
-export function CommentForm({ 
-  postSlug, 
-  parentId, 
+export function CommentForm({
+  postSlug,
+  parentId,
   parentAuthor,
-  onCommentCreated, 
+  onCommentCreated,
   onCancel,
   placeholder = "Share your thoughts...",
   className = ""
 }: CommentFormProps) {
   const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+  const { user: backendUser, loading: backendLoading } = useUser();
 
-  // Check LinkedIn session as fallback
-  const hasLinkedInSession = typeof window !== 'undefined' && localStorage.getItem('linkedin-session');
   const [content, setContent] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  if (!firebaseUser && !hasLinkedInSession) {
+  const isAuthenticated = Boolean(firebaseUser || backendUser);
+  const isLoading = authLoading || backendLoading;
+
+  if (!isLoading && !isAuthenticated) {
     return (
       <div className={`bg-gray-50 rounded-lg p-6 text-center ${className}`}>
         <UserIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />
@@ -60,44 +63,67 @@ export function CommentForm({
     setError('');
 
     try {
-      // Get Firebase ID token for authentication
-      const idToken = await firebaseUser.getIdToken();
+      let user = null;
+      let idToken = null;
 
-      // Sync user with Firebase and get database user ID
-      const syncResponse = await fetch('/api/auth/firebase-sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-          providerId: firebaseUser.providerId,
-          isNewUser: false
-        }),
-        credentials: 'include'
-      });
+      // Use Firebase auth if available
+      if (firebaseUser) {
+        idToken = await firebaseUser.getIdToken();
 
-      const { user } = await syncResponse.json();
+        // Sync user with Firebase and get database user ID
+        const syncResponse = await fetch('/api/auth/firebase-sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL,
+            providerId: firebaseUser.providerId,
+            isNewUser: false
+          }),
+          credentials: 'include'
+        });
+
+        const syncData = await syncResponse.json();
+        user = syncData.user;
+      } else if (backendUser) {
+        // Use backend user (LinkedIn OAuth)
+        user = backendUser;
+        console.log('💬 Using LinkedIn auth for comment, user:', user.id);
+      }
+
+      if (!user) {
+        throw new Error('No user session found');
+      }
 
       // Get anonymous identity if posting anonymously
       let anonymousHandle = null;
       let anonymousAvatarId = null;
       if (isAnonymous) {
-        const identityResponse = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+        const identityParam = firebaseUser
+          ? `firebaseUid=${firebaseUser.uid}`
+          : `userId=${user.id}`;
+        const identityResponse = await fetch(`/api/users/identity?${identityParam}`);
         const identityData = await identityResponse.json();
         anonymousHandle = identityData.currentUsername;
         anonymousAvatarId = identityData.currentAvatarId;
       }
 
+      // Build headers - only include Authorization if using Firebase
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (idToken) {
+        headers['Authorization'] = `Bearer ${idToken}`;
+      }
+
       const response = await fetch(`/api/forum/posts/${postSlug}/comments`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
+        headers,
+        credentials: 'include', // Important for LinkedIn cookie
         body: JSON.stringify({
           content: content.trim(),
           parentId,
