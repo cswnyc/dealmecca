@@ -52,17 +52,8 @@ export default function LinkedInSuccessPage() {
         localStorage.setItem('linkedin-session', JSON.stringify(sessionData))
         console.log('✅ LinkedIn session stored in localStorage')
 
-        // Set authentication cookie for middleware to recognize
-        try {
-          const cookieValue = `linkedin-${sessionData.userId}`
-          const expirationDate = new Date(sessionData.exp)
-          const isProduction = window.location.protocol === 'https:'
-          const cookieString = `linkedin-auth=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/; SameSite=Strict${isProduction ? '; Secure' : ''}`
-          document.cookie = cookieString
-          console.log('🍪 LinkedIn auth cookie set successfully')
-        } catch (cookieError) {
-          console.warn('⚠️ Failed to set auth cookie, continuing without:', cookieError)
-        }
+        // Note: Authentication cookie is set server-side in the OAuth callback
+        // No need to set it client-side with document.cookie
 
         // Parse user data if available
         let userData = null

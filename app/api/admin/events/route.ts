@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     const events = await prisma.event.findMany({
       where,
       include: {
-        creator: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -68,9 +68,9 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            attendees: true,
-            ratings: true,
-            forumPosts: true
+            EventAttendee: true,
+            EventRating: true,
+            ForumPost: true
           }
         }
       },

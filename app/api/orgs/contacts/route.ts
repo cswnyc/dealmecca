@@ -110,8 +110,8 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            interactions: true,
-            notes: true
+            ContactInteraction: true,
+            ContactNote: true
           }
         }
       },

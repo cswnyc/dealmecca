@@ -1,6 +1,12 @@
 import { PrismaClient } from '@prisma/client';
+import { randomBytes } from 'crypto';
 
 const prisma = new PrismaClient();
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 async function main() {
   console.log('🌱 Seeding forum posts...\n');
@@ -111,6 +117,7 @@ DM me if interested in learning more!`,
 
     const post = await prisma.forumPost.create({
       data: {
+        id: generateId(),
         title: postData.title,
         content: postData.content,
         slug,

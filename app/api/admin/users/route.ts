@@ -73,10 +73,10 @@ export async function GET(request: NextRequest) {
         // Include related data counts
         _count: {
           select: {
-            forumComments: true,
-            forumPosts: true,
-            postBookmarks: true,
-            postFollows: true
+            ForumComment: true,
+            ForumPost: true,
+            PostBookmark: true,
+            PostFollow: true
           }
         }
       }
