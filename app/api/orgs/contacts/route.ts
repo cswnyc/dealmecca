@@ -154,8 +154,8 @@ export async function GET(request: NextRequest) {
       updatedAt: contact.updatedAt.toISOString(),
       company: contact.company,
       _count: {
-        interactions: contact._count.interactions,
-        notes: contact._count.notes
+        interactions: contact._count.ContactInteraction,
+        notes: contact._count.ContactNote
       }
     }));
 

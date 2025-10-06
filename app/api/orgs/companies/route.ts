@@ -139,8 +139,8 @@ export async function GET(request: NextRequest) {
       } : null,
       _count: {
         contacts: company._count.contacts,
-        users: company._count.users,
-        subsidiaries: company._count.subsidiaries
+        users: company._count.User,
+        subsidiaries: company._count.other_companies
       }
     }));
 

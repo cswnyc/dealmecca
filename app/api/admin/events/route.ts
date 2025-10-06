@@ -134,15 +134,15 @@ export async function GET(request: NextRequest) {
       totalRatings: event.totalRatings,
       createdAt: event.createdAt.toISOString(),
       updatedAt: event.updatedAt.toISOString(),
-      creator: event.creator ? {
-        id: event.creator.id,
-        name: event.creator.name || 'Anonymous',
-        email: event.creator.email
+      creator: event.User ? {
+        id: event.User.id,
+        name: event.User.name || 'Anonymous',
+        email: event.User.email
       } : null,
       _count: {
-        attendees: event._count.attendees,
-        ratings: event._count.ratings,
-        forumPosts: event._count.forumPosts
+        attendees: event._count.EventAttendee,
+        ratings: event._count.EventRating,
+        forumPosts: event._count.ForumPost
       }
     }));
 
