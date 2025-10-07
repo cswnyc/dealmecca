@@ -5,6 +5,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateAnonymousProfile } from '@/lib/user-generator';
 import { randomBytes } from 'crypto';
+import { getAdmin } from '@/server/firebaseAdmin';
+
+const admin = getAdmin();
 
 // Generate a random ID similar to CUID format
 const generateId = () => {
@@ -346,61 +349,57 @@ export async function GET(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // Create session data compatible with existing auth system
-    const uid = emailAddr ? emailAddr.toLowerCase() : `linkedin:${linkedinId}`;
-    const sessionData = {
-      userId: dbUser.id, // IMPORTANT: Use database user ID, not LinkedIn ID!
-      dbUserId: dbUser.id, // Database user ID for identity system
-      firebaseUid: dbUser.firebaseUid, // Firebase UID equivalent for API compatibility
-      linkedinId: linkedinId, // Store LinkedIn ID for reference
-      email: emailAddr || undefined,
-      name: name || undefined,
+    // Mint Firebase custom token for LinkedIn user
+    console.log('🔐 Minting Firebase custom token for LinkedIn user...');
+
+    // Determine Firebase UID (reuse by email to prevent duplicate accounts)
+    let firebaseUid: string;
+    try {
+      if (emailAddr) {
+        // Try to get existing Firebase user by email
+        const existingUser = await admin.auth().getUserByEmail(emailAddr.toLowerCase());
+        firebaseUid = existingUser.uid;
+        console.log('✓ Found existing Firebase user by email:', firebaseUid);
+      } else {
+        firebaseUid = `linkedin:${linkedinId}`;
+        console.log('✓ Using LinkedIn ID as Firebase UID:', firebaseUid);
+      }
+    } catch {
+      // No existing Firebase user found, create new UID
+      firebaseUid = `linkedin:${linkedinId}`;
+      console.log('✓ Creating new Firebase UID:', firebaseUid);
+    }
+
+    // Create custom token with claims
+    const customToken = await admin.auth().createCustomToken(firebaseUid, {
       provider: 'linkedin',
-      source: userinfo?.ok ? 'oidc' : 'legacy',
-      exp: Date.now() + (24 * 60 * 60 * 1000), // 24 hours expiration
-      timestamp: new Date().toISOString(),
-    };
-
-    console.log('📝 Session data created with database user ID:', {
-      userId: sessionData.userId,
-      dbUserId: sessionData.dbUserId,
-      linkedinId: sessionData.linkedinId
+      linkedinId: linkedinId,
+      dbUserId: dbUser.id,
+      canComment: true,
+      canCreatePosts: true,
     });
 
-    console.log('Creating session token and redirect URL...');
+    console.log('✅ Firebase custom token created successfully');
 
-    // Encode session as base64 token
-    const sessionToken = Buffer.from(JSON.stringify(sessionData)).toString('base64');
+    // Redirect to completion page with custom token in cookie
+    const completionUrl = new URL('/auth/linkedin-complete', req.nextUrl.origin);
+    const res = NextResponse.redirect(completionUrl);
 
-    // Create redirect to success page with session data
-    const successUrl = new URL('/auth/linkedin-success', req.nextUrl.origin);
-    successUrl.searchParams.set('session', sessionToken);
-    successUrl.searchParams.set('redirect', '/forum');
-    successUrl.searchParams.set('user', JSON.stringify({
-      id: dbUser.id, // Use database ID, not LinkedIn ID
-      email: emailAddr,
-      name: name,
-      provider: 'linkedin'
-    }));
-
-    console.log('Redirecting to success page:', successUrl.pathname);
-
-    const res = NextResponse.redirect(successUrl);
-
-    // Set authentication cookie for the user session
-    const cookieValue = `linkedin-${dbUser.id}`;
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    res.cookies.set('linkedin-auth', cookieValue, {
-      httpOnly: false, // Allow client-side JavaScript to read (for debugging)
+    // Set short-lived httpOnly cookie with custom token (one-time use)
+    res.cookies.set('li_custom_token', customToken, {
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+      sameSite: 'lax',
       path: '/',
-      expires: expiresAt
+      maxAge: 60 // 60 seconds - just enough to retrieve once
     });
-    console.log('🍪 Set linkedin-auth cookie:', cookieValue);
 
-    // Clear OAuth state cookie (no PKCE verifier to clear)
+    console.log('🍪 Set li_custom_token cookie (60s expiry)');
+
+    // Clear OAuth state cookie
     res.cookies.set('li_oauth_state', '', { path: '/', maxAge: 0 });
+
+    console.log('🔄 Redirecting to:', completionUrl.pathname);
     return res;
 
   } catch (error) {

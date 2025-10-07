@@ -63,81 +63,30 @@ export function CommentForm({
     setError('');
 
     try {
-      let user = null;
-      let idToken = null;
-
-      // Use Firebase auth if available
-      if (firebaseUser) {
-        idToken = await firebaseUser.getIdToken();
-
-        // Sync user with Firebase and get database user ID
-        const syncResponse = await fetch('/api/auth/firebase-sync', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-            providerId: firebaseUser.providerId,
-            isNewUser: false
-          }),
-          credentials: 'include'
-        });
-
-        const syncData = await syncResponse.json();
-        user = syncData.user;
-      } else if (backendUser) {
-        // Use backend user (LinkedIn OAuth)
-        user = backendUser;
-        console.log('💬 Using LinkedIn auth for comment, user:', user.id);
+      // Check if user is signed in (either Firebase or LinkedIn via Firebase custom token)
+      if (!firebaseUser && !backendUser) {
+        throw new Error('Please sign in to comment');
       }
 
-      if (!user) {
-        throw new Error('No user session found');
-      }
-
-      // Get anonymous identity if posting anonymously
-      let anonymousHandle = null;
-      let anonymousAvatarId = null;
-      if (isAnonymous) {
-        const identityParam = firebaseUser
-          ? `firebaseUid=${firebaseUser.uid}`
-          : `userId=${user.id}`;
-        const identityResponse = await fetch(`/api/users/identity?${identityParam}`);
-        const identityData = await identityResponse.json();
-        anonymousHandle = identityData.currentUsername;
-        anonymousAvatarId = identityData.currentAvatarId;
-      }
-
-      // Build headers - only include Authorization if using Firebase
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json'
-      };
-      if (idToken) {
-        headers['Authorization'] = `Bearer ${idToken}`;
-      }
-
-      const response = await fetch(`/api/forum/posts/${postSlug}/comments`, {
+      // Make authenticated request using authedFetch
+      const { authedFetch } = await import('@/lib/authedFetch');
+      const response = await authedFetch(`/api/forum/posts/${postSlug}/comments`, {
         method: 'POST',
-        headers,
-        credentials: 'include', // Important for LinkedIn cookie
         body: JSON.stringify({
           content: content.trim(),
           parentId,
-          authorId: user.id,
           isAnonymous,
-          anonymousHandle,
-          anonymousAvatarId
-        })
+        }),
       });
 
+      // Parse response
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to post comment');
+        throw new Error(data.error || data.message || 'Failed to post comment');
       }
+
+      console.log('✅ Comment posted successfully:', data);
 
       // Reset form
       setContent('');
@@ -148,9 +97,21 @@ export function CommentForm({
       if (onCommentCreated) {
         onCommentCreated();
       }
-    } catch (error) {
-      console.error('Failed to post comment:', error);
-      setError(error instanceof Error ? error.message : 'Failed to post comment');
+    } catch (error: any) {
+      console.error('❌ Failed to post comment:', error);
+
+      // User-friendly error messages
+      let errorMessage = 'Failed to post comment';
+
+      if (error?.message === 'not_signed_in') {
+        errorMessage = 'Please sign in to comment';
+      } else if (error?.message?.includes('authentication') || error?.message?.includes('token')) {
+        errorMessage = 'Session expired - please sign in again';
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

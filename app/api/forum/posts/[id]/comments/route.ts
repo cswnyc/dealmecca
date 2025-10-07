@@ -1,6 +1,9 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/firebase-admin';
+import { requireAuth } from '@/server/requireAuth';
 import { randomBytes } from 'crypto';
 
 // Generate a random ID similar to CUID format
@@ -126,80 +129,52 @@ export async function GET(
   }
 }
 
-async function verifyFirebaseToken(request: NextRequest): Promise<{ uid: string; email?: string } | null> {
-  try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return null;
-    }
-
-    const token = authHeader.split('Bearer ')[1];
-    const decodedToken = await auth.verifyIdToken(token);
-    return { uid: decodedToken.uid, email: decodedToken.email };
-  } catch (error) {
-    console.error('Firebase token verification failed:', error);
-    return null;
-  }
-}
-
-async function getUserByFirebaseUid(firebaseUid: string) {
-  return await prisma.user.findFirst({
-    where: {
-      OR: [
-        { firebaseUid },
-        { email: firebaseUid }
-      ]
-    }
-  });
-}
-
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id: postId } = await params;
-    const body = await request.json();
-    const { content, authorId, isAnonymous, anonymousHandle, anonymousAvatarId, parentId } = body;
 
-    // Try Firebase authentication first
-    let user = null;
-    const firebaseAuth = await verifyFirebaseToken(request);
-
-    if (firebaseAuth) {
-      // Find user by Firebase UID
-      user = await getUserByFirebaseUid(firebaseAuth.uid);
-    } else {
-      // Fallback: Check for LinkedIn auth cookie
-      const linkedInAuthCookie = request.cookies.get('linkedin-auth');
-      if (linkedInAuthCookie) {
-        const cookieValue = linkedInAuthCookie.value;
-        if (cookieValue.startsWith('linkedin-')) {
-          const userId = cookieValue.replace('linkedin-', '');
-          console.log('📝 Comment API: Using LinkedIn auth, user ID:', userId);
-
-          // Find user by ID from cookie
-          user = await prisma.user.findUnique({
-            where: { id: userId }
-          });
-        }
-      }
+    // Authenticate user via Firebase ID token
+    const auth = await requireAuth(request);
+    if (auth instanceof NextResponse) {
+      // requireAuth returned error response
+      return auth;
     }
 
-    if (!user) {
-      console.log('❌ Comment API: No authenticated user found');
+    console.log('✅ Comment API: User authenticated:', auth.dbUserId, 'handle:', auth.dbUserHandle);
+
+    // Parse and validate request body
+    const body = await request.json().catch(() => ({}));
+    const content = (body?.content || '').toString().trim();
+    const parentId = body?.parentId || null;
+    const isAnonymous = body?.isAnonymous || false;
+
+    // Validate content
+    if (!content) {
       return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
+        { error: 'Content is required' },
+        { status: 400 }
       );
     }
 
-    console.log('✅ Comment API: User authenticated:', user.id);
-
-    if (!postId || !content) {
+    if (content.length > 5000) {
       return NextResponse.json(
-        { error: 'Post ID and content are required' },
+        { error: 'Content must be 5000 characters or less' },
         { status: 400 }
+      );
+    }
+
+    // Verify post exists
+    const post = await prisma.forumPost.findUnique({
+      where: { id: postId }
+    });
+
+    if (!post) {
+      return NextResponse.json(
+        { error: 'Post not found' },
+        { status: 404 }
       );
     }
 
@@ -207,22 +182,25 @@ export async function POST(
     const commentId = generateId();
     console.log('🆕 Creating comment with ID:', commentId);
 
-    // Create the comment
+    // Create the comment with anonymized author info
     const comment = await prisma.forumComment.create({
       data: {
         id: commentId,
         content,
-        authorId: user.id,
+        authorId: auth.dbUserId,
         postId,
         parentId: parentId || null,
-        isAnonymous: isAnonymous || false,
-        anonymousHandle: isAnonymous ? anonymousHandle : null,
-        anonymousAvatarId: isAnonymous ? anonymousAvatarId : null
+        isAnonymous: isAnonymous,
+        // Store anonymized handle when anonymous
+        anonymousHandle: isAnonymous ? auth.dbUserHandle : null,
+        anonymousAvatarId: null // Can be enhanced later
       },
       include: {
         User: {
           select: {
             id: true,
+            publicHandle: true,
+            anonymousHandle: true,
             name: true,
             email: true
           }
@@ -269,10 +247,14 @@ export async function POST(
       comment: formattedComment
     }, { status: 201 });
 
-  } catch (error) {
-    console.error('Error creating comment:', error);
+  } catch (error: any) {
+    console.error('❌ Error creating comment:', error);
     return NextResponse.json(
-      { error: 'Failed to create comment' },
+      {
+        error: 'server_error',
+        message: 'Failed to create comment',
+        detail: error?.message || String(error)
+      },
       { status: 500 }
     );
   }
