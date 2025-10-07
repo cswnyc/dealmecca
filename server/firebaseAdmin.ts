@@ -1,6 +1,5 @@
 import admin from 'firebase-admin';
-
-let app: admin.app.App | null = null;
+import { getApps } from 'firebase-admin/app';
 
 /**
  * Resolves the Firebase private key from environment variables.
@@ -33,10 +32,14 @@ function resolvePrivateKey(): string {
 
 /**
  * Gets the Firebase Admin SDK instance.
- * Initializes on first call, returns cached instance on subsequent calls.
+ * Returns existing app if already initialized, otherwise initializes new one.
  */
 export function getAdmin() {
-  if (app) return admin;
+  // Check if app is already initialized
+  const apps = getApps();
+  if (apps.length > 0) {
+    return admin;
+  }
 
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
@@ -45,7 +48,7 @@ export function getAdmin() {
     throw new Error('Missing Firebase config - set FIREBASE_PROJECT_ID and FIREBASE_CLIENT_EMAIL');
   }
 
-  app = admin.initializeApp({
+  admin.initializeApp({
     credential: admin.credential.cert({
       projectId,
       clientEmail,
