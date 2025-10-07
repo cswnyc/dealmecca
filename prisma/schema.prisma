@@ -685,6 +685,7 @@ model Topic {
   TopicCompany  TopicCompany[]
   TopicContact  TopicContact[]
   TopicMention  TopicMention[]
+  TopicFollow   TopicFollow[]
 
   @@index([categoryId])
   @@index([isActive])
@@ -738,6 +739,19 @@ model TopicMention {
   @@index([order])
   @@index([postId])
   @@index([topicId])
+}
+
+model TopicFollow {
+  id        String   @id @default(cuid())
+  userId    String
+  topicId   String
+  createdAt DateTime @default(now())
+  Topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicId])
+  @@index([topicId])
+  @@index([userId])
 }
 
 model User {
@@ -798,6 +812,7 @@ model User {
   Post                                                            Post[]
   PostBookmark                                                    PostBookmark[]
   PostFollow                                                      PostFollow[]
+  TopicFollow                                                     TopicFollow[]
   SavedSearch                                                     SavedSearch[]
   Search                                                          Search[]
   Session                                                         Session[]

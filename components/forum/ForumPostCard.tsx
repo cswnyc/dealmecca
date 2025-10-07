@@ -15,7 +15,6 @@ import {
   UserIcon
 } from '@heroicons/react/24/outline';
 import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
-import { RealTimeVotes } from './RealTimeVotes';
 import { RichContentRenderer } from './RichContentRenderer';
 import { TopicChip } from './TopicChip';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
@@ -139,20 +138,17 @@ interface ForumPost {
 
 interface ForumPostCardProps {
   post: ForumPost;
-  onVote?: (postId: string, type: 'upvote' | 'downvote') => void;
   onBookmark?: (postId: string) => void;
-  userVote?: 'UPVOTE' | 'DOWNVOTE' | null;
   expandable?: boolean;
 }
 
-export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable = false }: ForumPostCardProps) {
+export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPostCardProps) {
   const [expanded, setExpanded] = useState(expandable);
   const [comments, setComments] = useState<any[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentAnonymous, setCommentAnonymous] = useState(false);
   const [submittingComment, setSubmittingComment] = useState(false);
-  const [commentVotes, setCommentVotes] = useState<{[key: string]: string}>({});
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showMentions, setShowMentions] = useState(false);
@@ -380,42 +376,6 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
     }
   };
 
-  const handleCommentVote = async (commentId: string, voteType: 'up' | 'down') => {
-    try {
-      // Use Firebase user ID or create anonymous user ID
-      const userId = firebaseUser?.uid || 'anonymous-user-' + Math.random().toString(36).substr(2, 9);
-      
-      const response = await fetch(`/api/forum/comments/${commentId}/vote`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: voteType,
-          userId
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Update the comment in our local state
-        setComments(prevComments => 
-          prevComments.map(comment => 
-            comment.id === commentId 
-              ? { ...comment, upvotes: data.comment.upvotes, downvotes: data.comment.downvotes }
-              : comment
-          )
-        );
-        // Track user's vote
-        setCommentVotes(prev => ({
-          ...prev,
-          [commentId]: data.userVote
-        }));
-      }
-    } catch (error) {
-      console.error('Failed to vote on comment:', error);
-    }
-  };
 
   const handleReply = (commentId: string, authorName: string) => {
     setReplyingTo(commentId);
@@ -541,35 +501,6 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
     setShowShareMenu(false);
   };
 
-  const handlePostVote = async (type: 'upvote' | 'downvote') => {
-    if (!firebaseUser) {
-      console.log('🔥 User not authenticated, cannot vote');
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/forum/posts/${post.id}/vote`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: type.toUpperCase(),
-          userId: firebaseUser.uid
-        }),
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        // Force page refresh to show updated vote counts
-        window.location.reload();
-      } else {
-        console.error('Failed to vote on post:', response.status, response.statusText);
-      }
-    } catch (error) {
-      console.error('Failed to vote on post:', error);
-    }
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 hover:-translate-y-0.5 group">
@@ -874,15 +805,6 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
             )}
           </div>
         </div>
-
-          {/* Real-time Votes */}
-          <RealTimeVotes
-            postId={post.id}
-            initialUpvotes={post.upvotes}
-            initialDownvotes={post.downvotes}
-            onVote={handlePostVote}
-            userVote={userVote}
-          />
       </div>
 
       {/* Enhanced Comment Box */}
@@ -1084,41 +1006,11 @@ export function ForumPostCard({ post, onVote, onBookmark, userVote, expandable =
                         <div className="text-sm text-gray-800">
                           {comment.content}
                         </div>
-                        
+
                         {/* Comment Actions */}
                         <div className="flex items-center space-x-4 mt-2 pt-2 border-t border-gray-200">
-                          {/* Vote buttons */}
-                          <div className="flex items-center space-x-1">
-                            <button 
-                              onClick={() => handleCommentVote(comment.id, 'up')}
-                              className={`flex items-center space-x-1 text-xs transition-colors ${
-                                commentVotes[comment.id] === 'up'
-                                  ? 'text-blue-600'
-                                  : 'text-gray-700 hover:text-blue-600'
-                              }`}
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                              </svg>
-                              <span>{comment.upvotes || 0}</span>
-                            </button>
-                            <button 
-                              onClick={() => handleCommentVote(comment.id, 'down')}
-                              className={`flex items-center space-x-1 text-xs transition-colors ${
-                                commentVotes[comment.id] === 'down'
-                                  ? 'text-red-600'
-                                  : 'text-gray-700 hover:text-red-600'
-                              }`}
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                              </svg>
-                              <span>{comment.downvotes || 0}</span>
-                            </button>
-                          </div>
-                          
                           {/* Reply button */}
-                          <button 
+                          <button
                             onClick={() => handleReply(comment.id, comment.isAnonymous ? comment.anonymousHandle : comment.author.name)}
                             className="text-xs text-gray-700 hover:text-blue-600 transition-colors"
                           >

@@ -209,3 +209,37 @@ export async function unbookmarkPost(postId: string) {
   }
   return data;
 }
+
+// ──────────────────────────────────────────────────────────────────
+// Topic Following
+// ──────────────────────────────────────────────────────────────────
+
+/**
+ * Follow a topic
+ */
+export async function followTopic(topicId: string) {
+  const response = await authedFetch(`/api/forum/topics/${topicId}/follow`, {
+    method: 'POST',
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || `HTTP ${response.status}`);
+  }
+  return data;
+}
+
+/**
+ * Unfollow a topic
+ */
+export async function unfollowTopic(topicId: string) {
+  const response = await authedFetch(`/api/forum/topics/${topicId}/follow`, {
+    method: 'DELETE',
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || `HTTP ${response.status}`);
+  }
+  return data;
+}
