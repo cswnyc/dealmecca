@@ -1,6 +1,12 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/server/prisma';
+import { safeHandler, bad } from '@/server/safeHandler';
+import { requireAuth } from '@/server/requireAuth';
 import { TopicParser } from '@/lib/forum/topic-parser';
+import { z } from 'zod';
 
 interface Mention {
   type: 'company' | 'contact' | 'topic';
@@ -25,9 +31,8 @@ function extractMentions(text: string): Mention[] {
   return mentions;
 }
 
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
+export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestId }) => {
+  const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const category = searchParams.get('category');
@@ -357,52 +362,57 @@ export async function GET(request: NextRequest) {
       };
     }).filter(post => post !== null);
 
-    return NextResponse.json({
-      posts: formattedPosts,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages
-      }
-    });
-
-  } catch (error) {
-    console.error('Error fetching forum posts:', error);
-    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
       {
-        error: 'Failed to fetch posts',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        posts: formattedPosts,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages
+        },
+        requestId,
       },
-      { status: 500 }
+      {
+        headers: { 'x-request-id': requestId },
+      }
     );
-  }
-}
+});
 
-export async function POST(request: NextRequest) {
+const CreatePostSchema = z.object({
+  content: z.string().trim().min(1, 'Content is required').max(50000, 'Content too long'),
+  categoryId: z.string().cuid().optional(),
+  tags: z.string().optional().default(''),
+  isAnonymous: z.boolean().optional().default(false),
+  urgency: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional().default('MEDIUM'),
+  dealSize: z.string().optional(),
+  location: z.string().optional(),
+  mediaType: z.enum(['text', 'image', 'video', 'link']).optional().default('text'),
+});
+
+export const POST = safeHandler(async (request: NextRequest, ctx: any, { requestId }) => {
+  // Authenticate user
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
+
+  // Parse and validate input
+  let body;
   try {
-    const body = await request.json();
-    const {
-      content,
-      categoryId,
-      authorId,
-      tags = '',
-      isAnonymous = false,
-      anonymousHandle,
-      urgency = 'MEDIUM',
-      dealSize,
-      location,
-      mediaType = 'text'
-    } = body;
+    body = CreatePostSchema.parse(await request.json());
+  } catch (e: any) {
+    return bad(400, requestId, 'invalid_input', { issues: e?.issues });
+  }
 
-    if (!content || !categoryId || !authorId) {
-      return NextResponse.json(
-        { error: 'Content, categoryId, and authorId are required' },
-        { status: 400 }
-      );
-    }
+  const {
+    content,
+    categoryId,
+    tags,
+    isAnonymous,
+    urgency,
+    dealSize,
+    location,
+    mediaType
+  } = body;
 
     // Parse content and generate smart title using TopicParser
     const parsedContent = TopicParser.parseContentIntoTopics(content);
@@ -432,11 +442,11 @@ export async function POST(request: NextRequest) {
         title,
         content,
         slug,
-        categoryId,
-        authorId,
+        categoryId: categoryId || null,
+        authorId: auth.dbUserId,
         tags,
         isAnonymous,
-        anonymousHandle,
+        anonymousHandle: isAnonymous ? auth.dbUserHandle : null,
         urgency,
         dealSize,
         location,
@@ -570,7 +580,7 @@ export async function POST(request: NextRequest) {
             data: validCompanyMentions.map(mention => ({
               postId: post.id,
               companyId: mention.id,
-              mentionedBy: authorId
+              mentionedBy: auth.dbUserId
             })),
             skipDuplicates: true
           });
@@ -594,7 +604,7 @@ export async function POST(request: NextRequest) {
             data: validContactMentions.map(mention => ({
               postId: post.id,
               contactId: mention.id,
-              mentionedBy: authorId
+              mentionedBy: auth.dbUserId
             })),
             skipDuplicates: true
           });
@@ -602,13 +612,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(post, { status: 201 });
-
-  } catch (error) {
-    console.error('Error creating forum post:', error);
     return NextResponse.json(
-      { error: 'Failed to create post' },
-      { status: 500 }
+      { success: true, requestId, post },
+      {
+        status: 201,
+        headers: { 'x-request-id': requestId },
+      }
     );
-  }
-}
+});

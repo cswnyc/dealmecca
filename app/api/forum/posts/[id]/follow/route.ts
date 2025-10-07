@@ -1,198 +1,174 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/firebase-admin';
+import { prisma } from '@/server/prisma';
+import { safeHandler, bad } from '@/server/safeHandler';
+import { requireAuth } from '@/server/requireAuth';
+import { z } from 'zod';
 
-async function verifyFirebaseToken(request: NextRequest): Promise<{ uid: string; email?: string } | null> {
-  try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return null;
-    }
+const FollowSchema = z.object({
+  follow: z.boolean().optional(),
+});
 
-    const token = authHeader.split('Bearer ')[1];
-    const decodedToken = await auth.verifyIdToken(token);
-    return { uid: decodedToken.uid, email: decodedToken.email };
-  } catch (error) {
-    console.error('Firebase token verification failed:', error);
-    return null;
+/**
+ * POST /api/forum/posts/[id]/follow
+ * Follow/unfollow a post
+ */
+export const POST = safeHandler(async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+  { requestId }
+) => {
+  // Authenticate user
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
+
+  const { id: postId } = await params;
+
+  if (!postId) {
+    return bad(400, requestId, 'post_id_required');
   }
-}
 
-async function getUserByFirebaseUid(firebaseUid: string) {
-  return await prisma.user.findFirst({
+  // Parse input (follow field is optional, defaults to toggling)
+  const body = await request.json().catch(() => ({}));
+  const { follow } = FollowSchema.parse(body);
+
+  // Check if follow relationship already exists
+  const existingFollow = await prisma.postFollow.findUnique({
     where: {
-      OR: [
-        { firebaseUid },
-        { email: firebaseUid }
-      ]
-    }
-  });
-}
-
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id: postId } = await params;
-    const body = await request.json();
-    const { userId, follow } = body;
-
-    // Verify Firebase token
-    const firebaseAuth = await verifyFirebaseToken(request);
-    if (!firebaseAuth) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Find user in database
-    const user = await getUserByFirebaseUid(firebaseAuth.uid);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    if (!postId) {
-      return NextResponse.json(
-        { error: 'Post ID is required' },
-        { status: 400 }
-      );
-    }
-
-    // Check if follow relationship already exists
-    const existingFollow = await prisma.postFollow.findUnique({
-      where: {
-        userId_postId: {
-          userId: user.id,
-          postId
-        }
-      }
-    });
-
-    if (follow === false || (existingFollow && follow !== true)) {
-      // Remove follow
-      if (existingFollow) {
-        await prisma.postFollow.delete({
-          where: { id: existingFollow.id }
-        });
-      }
-    } else {
-      // Add follow
-      if (!existingFollow) {
-        await prisma.postFollow.create({
-          data: {
-            userId: user.id,
-            postId
-          }
-        });
-      }
-    }
-
-    // Get updated follow count
-    const followCount = await prisma.postFollow.count({
-      where: { postId }
-    });
-
-    const isFollowing = follow !== false && (existingFollow || follow === true);
-
-    return NextResponse.json({
-      success: true,
-      isFollowing,
-      followCount
-    });
-
-  } catch (error) {
-    console.error('Error processing follow:', error);
-    return NextResponse.json(
-      { error: 'Failed to process follow' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const postId = params.id;
-    const userId = request.nextUrl.searchParams.get('userId');
-
-    if (!postId || !userId) {
-      return NextResponse.json(
-        { error: 'Post ID and user ID are required' },
-        { status: 400 }
-      );
-    }
-
-    // Remove follow
-    await prisma.postFollow.deleteMany({
-      where: {
-        userId,
+      userId_postId: {
+        userId: auth.dbUserId,
         postId
       }
-    });
+    }
+  });
 
-    // Get updated follow count
-    const followCount = await prisma.postFollow.count({
-      where: { postId }
-    });
+  if (follow === false || (existingFollow && follow !== true)) {
+    // Remove follow
+    if (existingFollow) {
+      await prisma.postFollow.delete({
+        where: { id: existingFollow.id }
+      });
+    }
+  } else {
+    // Add follow
+    if (!existingFollow) {
+      await prisma.postFollow.create({
+        data: {
+          userId: auth.dbUserId,
+          postId
+        }
+      });
+    }
+  }
 
-    return NextResponse.json({
+  // Get updated follow count
+  const followCount = await prisma.postFollow.count({
+    where: { postId }
+  });
+
+  const isFollowing = follow !== false && (existingFollow || follow === true);
+
+  return NextResponse.json(
+    {
+      success: true,
+      isFollowing,
+      followCount,
+      requestId,
+    },
+    { headers: { 'x-request-id': requestId } }
+  );
+});
+
+/**
+ * DELETE /api/forum/posts/[id]/follow
+ * Unfollow a post
+ */
+export const DELETE = safeHandler(async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+  { requestId }
+) => {
+  // Authenticate user
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
+
+  const { id: postId } = await params;
+
+  if (!postId) {
+    return bad(400, requestId, 'post_id_required');
+  }
+
+  // Remove follow
+  await prisma.postFollow.deleteMany({
+    where: {
+      userId: auth.dbUserId,
+      postId
+    }
+  });
+
+  // Get updated follow count
+  const followCount = await prisma.postFollow.count({
+    where: { postId }
+  });
+
+  return NextResponse.json(
+    {
       success: true,
       isFollowing: false,
-      followCount
-    });
+      followCount,
+      requestId,
+    },
+    { headers: { 'x-request-id': requestId } }
+  );
+});
 
-  } catch (error) {
-    console.error('Error removing follow:', error);
-    return NextResponse.json(
-      { error: 'Failed to remove follow' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET(
+/**
+ * GET /api/forum/posts/[id]/follow
+ * Get follow count and user's follow status (optional auth)
+ */
+export const GET = safeHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const postId = params.id;
-    const userId = request.nextUrl.searchParams.get('userId');
+  { params }: { params: Promise<{ id: string }> },
+  { requestId }
+) => {
+  const { id: postId } = await params;
 
-    // Get follow count
-    const followCount = await prisma.postFollow.count({
-      where: { postId }
-    });
+  if (!postId) {
+    return bad(400, requestId, 'post_id_required');
+  }
 
-    let isFollowing = false;
-    if (userId) {
+  // Get follow count
+  const followCount = await prisma.postFollow.count({
+    where: { postId }
+  });
+
+  // Optionally check user's follow status if authenticated
+  let isFollowing = false;
+  const authHeader = request.headers.get('authorization');
+
+  if (authHeader?.startsWith('Bearer ')) {
+    const auth = await requireAuth(request);
+    if (!(auth instanceof NextResponse)) {
       const existingFollow = await prisma.postFollow.findUnique({
         where: {
           userId_postId: {
-            userId,
+            userId: auth.dbUserId,
             postId
           }
         }
       });
       isFollowing = !!existingFollow;
     }
-
-    return NextResponse.json({
-      isFollowing,
-      followCount
-    });
-
-  } catch (error) {
-    console.error('Error fetching follow data:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch follow data' },
-      { status: 500 }
-    );
   }
-}
+
+  return NextResponse.json(
+    {
+      isFollowing,
+      followCount,
+      requestId,
+    },
+    { headers: { 'x-request-id': requestId } }
+  );
+});

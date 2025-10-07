@@ -52,8 +52,9 @@ export function safeHandler<T = any>(fn: Handler<T>) {
       // Execute the wrapped handler
       const res = await fn(req, ctx, { requestId, start });
 
-      // Ensure requestId is echoed in response
+      // Ensure requestId and response time are echoed in response
       res.headers.set('x-request-id', requestId);
+      res.headers.set('x-response-time-ms', String(Date.now() - start));
 
       return res;
     } catch (e: any) {
@@ -84,7 +85,10 @@ export function safeHandler<T = any>(fn: Handler<T>) {
         },
         {
           status: 500,
-          headers: { 'x-request-id': requestId },
+          headers: {
+            'x-request-id': requestId,
+            'x-response-time-ms': String(ms),
+          },
         }
       );
     }

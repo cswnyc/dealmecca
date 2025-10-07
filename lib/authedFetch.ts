@@ -44,8 +44,8 @@ export async function authedFetch(
   const headers = new Headers(init.headers || {});
   headers.set('Authorization', `Bearer ${idToken}`);
 
-  // Set Content-Type only if not already set and body is present
-  if (!headers.has('Content-Type') && init.body) {
+  // Set Content-Type only if not already set, method is not GET, and body is present
+  if (!headers.has('Content-Type') && init.method && init.method !== 'GET' && init.body) {
     headers.set('Content-Type', 'application/json');
   }
 

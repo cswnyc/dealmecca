@@ -1,145 +1,167 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/server/prisma';
+import { safeHandler, bad } from '@/server/safeHandler';
+import { requireAuth } from '@/server/requireAuth';
+import { z } from 'zod';
 
-export async function POST(
+const VoteSchema = z.object({
+  type: z.enum(['UPVOTE', 'DOWNVOTE']),
+});
+
+/**
+ * POST /api/forum/posts/[id]/vote
+ * Vote on a post (toggle voting - same vote type removes vote)
+ */
+export const POST = safeHandler(async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: { params: Promise<{ id: string }> },
+  { requestId }
+) => {
+  // Authenticate user
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
+
+  const { id: postId } = await params;
+
+  if (!postId) {
+    return bad(400, requestId, 'post_id_required');
+  }
+
+  // Parse and validate input
+  let body;
   try {
-    const { id: postId } = await params;
-    const body = await request.json();
-    const { type, userId } = body;
+    body = VoteSchema.parse(await request.json());
+  } catch (e: any) {
+    return bad(400, requestId, 'invalid_input', { issues: e?.issues });
+  }
 
-    if (!postId || !type || !userId) {
-      return NextResponse.json(
-        { error: 'Post ID, vote type, and user ID are required' },
-        { status: 400 }
-      );
-    }
+  const { type } = body;
 
-    if (!['UPVOTE', 'DOWNVOTE'].includes(type)) {
-      return NextResponse.json(
-        { error: 'Vote type must be UPVOTE or DOWNVOTE' },
-        { status: 400 }
-      );
-    }
-
-    // Check if user has already voted on this post
-    const existingVote = await prisma.forumVote.findUnique({
-      where: {
-        userId_postId: {
-          userId,
-          postId
-        }
+  // Check if user has already voted on this post
+  const existingVote = await prisma.forumVote.findUnique({
+    where: {
+      userId_postId: {
+        userId: auth.dbUserId,
+        postId
       }
-    });
+    }
+  });
 
-    let userVote: string | null = null;
+  let userVote: string | null = null;
 
-    if (existingVote) {
-      if (existingVote.type === type) {
-        // Same vote type - remove the vote (toggle off)
-        await prisma.forumVote.delete({
-          where: { id: existingVote.id }
-        });
-        userVote = null;
-      } else {
-        // Different vote type - update the vote
-        await prisma.forumVote.update({
-          where: { id: existingVote.id },
-          data: { type: type as 'UPVOTE' | 'DOWNVOTE' }
-        });
-        userVote = type;
-      }
+  if (existingVote) {
+    if (existingVote.type === type) {
+      // Same vote type - remove the vote (toggle off)
+      await prisma.forumVote.delete({
+        where: { id: existingVote.id }
+      });
+      userVote = null;
     } else {
-      // No existing vote - create new vote
-      await prisma.forumVote.create({
-        data: {
-          userId,
-          postId,
-          type: type as 'UPVOTE' | 'DOWNVOTE'
-        }
+      // Different vote type - update the vote
+      await prisma.forumVote.update({
+        where: { id: existingVote.id },
+        data: { type: type as 'UPVOTE' | 'DOWNVOTE' }
       });
       userVote = type;
     }
-
-    // Get updated vote counts
-    const [upvoteCount, downvoteCount] = await Promise.all([
-      prisma.forumVote.count({
-        where: { postId, type: 'UPVOTE' }
-      }),
-      prisma.forumVote.count({
-        where: { postId, type: 'DOWNVOTE' }
-      })
-    ]);
-
-    // Update the post's vote counts
-    await prisma.forumPost.update({
-      where: { id: postId },
+  } else {
+    // No existing vote - create new vote
+    await prisma.forumVote.create({
       data: {
-        upvotes: upvoteCount,
-        downvotes: downvoteCount
+        userId: auth.dbUserId,
+        postId,
+        type: type as 'UPVOTE' | 'DOWNVOTE'
       }
     });
+    userVote = type;
+  }
 
-    return NextResponse.json({
+  // Get updated vote counts
+  const [upvoteCount, downvoteCount] = await Promise.all([
+    prisma.forumVote.count({
+      where: { postId, type: 'UPVOTE' }
+    }),
+    prisma.forumVote.count({
+      where: { postId, type: 'DOWNVOTE' }
+    })
+  ]);
+
+  // Update the post's vote counts
+  await prisma.forumPost.update({
+    where: { id: postId },
+    data: {
+      upvotes: upvoteCount,
+      downvotes: downvoteCount
+    }
+  });
+
+  return NextResponse.json(
+    {
       success: true,
       userVote,
       upvotes: upvoteCount,
-      downvotes: downvoteCount
-    });
+      downvotes: downvoteCount,
+      requestId,
+    },
+    { headers: { 'x-request-id': requestId } }
+  );
+});
 
-  } catch (error) {
-    console.error('Error processing vote:', error);
-    return NextResponse.json(
-      { error: 'Failed to process vote' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET(
+/**
+ * GET /api/forum/posts/[id]/vote
+ * Get vote counts and user's vote status (optional auth)
+ */
+export const GET = safeHandler(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const postId = params.id;
-    const userId = request.nextUrl.searchParams.get('userId');
+  { params }: { params: Promise<{ id: string }> },
+  { requestId }
+) => {
+  const { id: postId } = await params;
 
-    // Get vote counts
-    const [upvoteCount, downvoteCount] = await Promise.all([
-      prisma.forumVote.count({
-        where: { postId, type: 'UPVOTE' }
-      }),
-      prisma.forumVote.count({
-        where: { postId, type: 'DOWNVOTE' }
-      })
-    ]);
+  if (!postId) {
+    return bad(400, requestId, 'post_id_required');
+  }
 
-    let userVote = null;
-    if (userId) {
+  // Get vote counts
+  const [upvoteCount, downvoteCount] = await Promise.all([
+    prisma.forumVote.count({
+      where: { postId, type: 'UPVOTE' }
+    }),
+    prisma.forumVote.count({
+      where: { postId, type: 'DOWNVOTE' }
+    })
+  ]);
+
+  // Optionally check user's vote if authenticated
+  let userVote = null;
+  const authHeader = request.headers.get('authorization');
+
+  if (authHeader?.startsWith('Bearer ')) {
+    const auth = await requireAuth(request);
+    if (!(auth instanceof NextResponse)) {
+      // User is authenticated - check their vote
       const existingVote = await prisma.forumVote.findUnique({
         where: {
           userId_postId: {
-            userId,
+            userId: auth.dbUserId,
             postId
           }
         }
       });
       userVote = existingVote?.type || null;
     }
+  }
 
-    return NextResponse.json({
+  return NextResponse.json(
+    {
       upvotes: upvoteCount,
       downvotes: downvoteCount,
-      userVote
-    });
-
-  } catch (error) {
-    console.error('Error fetching vote data:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch vote data' },
-      { status: 500 }
-    );
-  }
-}
+      userVote,
+      requestId,
+    },
+    { headers: { 'x-request-id': requestId } }
+  );
+});
