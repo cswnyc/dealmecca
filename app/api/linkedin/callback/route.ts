@@ -351,7 +351,20 @@ export async function GET(req: NextRequest) {
     console.log('🔐 Minting Firebase custom token for LinkedIn user...');
 
     // Get Firebase Admin SDK instance
-    const admin = getAdmin();
+    let admin;
+    try {
+      admin = getAdmin();
+      console.log('✓ Firebase Admin SDK instance obtained');
+    } catch (adminError) {
+      console.error('❌ Failed to get Firebase Admin SDK instance:', adminError);
+      console.error('Environment check:', {
+        hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
+        hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+        hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
+        hasPrivateKeyB64: !!process.env.FIREBASE_PRIVATE_KEY_B64
+      });
+      throw new Error(`Firebase Admin initialization failed: ${adminError instanceof Error ? adminError.message : 'Unknown error'}`);
+    }
 
     // Determine Firebase UID (reuse by email to prevent duplicate accounts)
     let firebaseUid: string;
@@ -404,15 +417,23 @@ export async function GET(req: NextRequest) {
     return res;
 
   } catch (error) {
-    console.error('LinkedIn callback error:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    console.error('❌ LinkedIn callback error:', {
+      message: errorMessage,
+      stack: errorStack,
+      timestamp: new Date().toISOString(),
+      error: error
     });
+
+    // Return detailed error in development, generic in production
+    const isDev = process.env.NODE_ENV !== 'production';
 
     return NextResponse.json({
       error: 'Internal server error',
-      details: 'LinkedIn authentication failed',
+      details: isDev ? errorMessage : 'LinkedIn authentication failed',
+      stack: isDev ? errorStack : undefined,
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }
