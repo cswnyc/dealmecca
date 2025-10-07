@@ -7,8 +7,6 @@ import { generateAnonymousProfile } from '@/lib/user-generator';
 import { randomBytes } from 'crypto';
 import { getAdmin } from '@/server/firebaseAdmin';
 
-const admin = getAdmin();
-
 // Generate a random ID similar to CUID format
 const generateId = () => {
   return `cmg${randomBytes(12).toString('base64url')}`;
@@ -351,6 +349,9 @@ export async function GET(req: NextRequest) {
 
     // Mint Firebase custom token for LinkedIn user
     console.log('🔐 Minting Firebase custom token for LinkedIn user...');
+
+    // Get Firebase Admin SDK instance
+    const admin = getAdmin();
 
     // Determine Firebase UID (reuse by email to prevent duplicate accounts)
     let firebaseUid: string;
