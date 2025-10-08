@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { subscribeUserToWaitlist } from '@/lib/mailerlite';
 
 const WaitlistEmailSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -50,6 +51,15 @@ export async function POST(request: NextRequest) {
 
     // Log successful signup for analytics
     console.log(`New waitlist signup: ${email} from ${source}`);
+
+    // Sync to MailerLite (non-blocking - don't fail request if MailerLite fails)
+    try {
+      await subscribeUserToWaitlist(email, source);
+      console.log(`✅ MailerLite sync successful for: ${email}`);
+    } catch (mailerLiteError) {
+      console.error('⚠️ MailerLite sync failed (email still saved to database):', mailerLiteError);
+      // Continue - database save was successful
+    }
 
     return NextResponse.json(
       {
