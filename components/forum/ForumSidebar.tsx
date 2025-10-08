@@ -233,7 +233,7 @@ export function ForumSidebar() {
       {firebaseUser && userStats && (
         <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center space-x-2">
+            <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900">
               <Trophy className="w-4 h-4 text-yellow-500" />
               <span>Your Progress</span>
             </CardTitle>
@@ -281,7 +281,7 @@ export function ForumSidebar() {
       {/* Community Stats */}
       <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2">
+          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900">
             <TrendingUp className="w-4 h-4 text-blue-500" />
             <span>Community Activity</span>
           </CardTitle>
@@ -302,7 +302,7 @@ export function ForumSidebar() {
       {/* Quick Actions */}
       <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-900">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <Button
@@ -334,7 +334,7 @@ export function ForumSidebar() {
       {/* Top Contributors Mini Leaderboard */}
       <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2">
+          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900">
             <Star className="w-4 h-4 text-yellow-500" />
             <span>Top Contributors</span>
           </CardTitle>
@@ -355,7 +355,7 @@ export function ForumSidebar() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-1">
-                  <span className="text-sm font-medium truncate">{user.name}</span>
+                  <span className="text-sm font-medium truncate text-gray-900">{user.name}</span>
                   {user.isVIP && <Crown className="w-3 h-3 text-yellow-500 flex-shrink-0" />}
                 </div>
               </div>
@@ -365,7 +365,7 @@ export function ForumSidebar() {
               </div>
             </div>
           ))}
-          <Button variant="ghost" size="sm" className="w-full text-xs">
+          <Button variant="ghost" size="sm" className="w-full text-xs text-gray-700">
             View Leaderboard
           </Button>
         </CardContent>
