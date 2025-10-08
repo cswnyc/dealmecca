@@ -1050,7 +1050,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                               value={replyText}
                               onChange={(e) => setReplyText(e.target.value)}
                               placeholder="Write your reply..."
-                              className="flex-1 p-2 border border-gray-200 rounded text-sm resize-none"
+                              className="flex-1 p-2 border border-gray-200 rounded text-sm resize-none text-gray-900"
                               rows={2}
                             />
                           </div>
