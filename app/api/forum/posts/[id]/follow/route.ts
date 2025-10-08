@@ -5,7 +5,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/server/prisma';
 import { safeHandler, bad } from '@/server/safeHandler';
 import { requireAuth } from '@/server/requireAuth';
+import { randomBytes } from 'crypto';
 import { z } from 'zod';
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 const FollowSchema = z.object({
   follow: z.boolean().optional(),
@@ -56,6 +62,7 @@ export const POST = safeHandler(async (
     if (!existingFollow) {
       await prisma.postFollow.create({
         data: {
+          id: generateId(),
           userId: auth.dbUserId,
           postId
         }

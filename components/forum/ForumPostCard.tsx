@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-// Firebase imports removed to prevent authentication conflicts with LinkedIn OAuth
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import {
   ChatBubbleLeftIcon,
   BookmarkIcon,
@@ -181,10 +181,8 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   const pollChoicesArray = parsePollChoices(post.pollChoices);
   const [mentionQuery, setMentionQuery] = useState('');
   const [mentionSuggestions, setMentionSuggestions] = useState<any[]>([]);
-  // Safe authentication state - handles missing Firebase provider
-  const hasFirebaseSession = false;
-  const firebaseUser = null;
-  const authLoading = false;
+  // Firebase authentication
+  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
   const urgencyColors = {
     LOW: 'text-gray-500',
     MEDIUM: 'text-blue-500', 
@@ -198,6 +196,43 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
       fetchComments();
     }
   }, [expandable]);
+
+  // Fetch follow and bookmark status
+  useEffect(() => {
+    const fetchFollowAndBookmarkStatus = async () => {
+      if (!firebaseUser) return;
+
+      try {
+        const idToken = await firebaseUser.getIdToken();
+
+        // Fetch follow status
+        const followResponse = await fetch(`/api/forum/posts/${post.id}/follow`, {
+          headers: {
+            'Authorization': `Bearer ${idToken}`,
+          },
+        });
+        if (followResponse.ok) {
+          const followData = await followResponse.json();
+          setIsFollowing(followData.isFollowing);
+        }
+
+        // Fetch bookmark status
+        const bookmarkResponse = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
+          headers: {
+            'Authorization': `Bearer ${idToken}`,
+          },
+        });
+        if (bookmarkResponse.ok) {
+          const bookmarkData = await bookmarkResponse.json();
+          setIsBookmarked(bookmarkData.isBookmarked);
+        }
+      } catch (error) {
+        console.error('Failed to fetch follow/bookmark status:', error);
+      }
+    };
+
+    fetchFollowAndBookmarkStatus();
+  }, [firebaseUser, post.id]);
 
   // Fetch current user's anonymous identity for their own comments
   useEffect(() => {
