@@ -200,7 +200,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   // Fetch follow and bookmark status
   useEffect(() => {
     const fetchFollowAndBookmarkStatus = async () => {
-      if (!firebaseUser) return;
+      if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') return;
 
       try {
         const idToken = await firebaseUser.getIdToken();
@@ -444,7 +444,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   };
 
   const handleFollow = async () => {
-    if (!firebaseUser) {
+    if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') {
       console.log('🔥 User not authenticated, cannot follow');
       return;
     }
@@ -475,7 +475,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   };
 
   const handleBookmark = async () => {
-    if (!firebaseUser) {
+    if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') {
       console.log('🔥 User not authenticated, cannot bookmark');
       return;
     }
