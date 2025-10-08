@@ -208,15 +208,10 @@ export const POST = safeHandler(async (
     }
   });
 
-  // Update the post's comment count
-  const commentCount = await prisma.forumComment.count({
-    where: { postId }
-  });
-
+  // Update the post's last activity time
   await prisma.forumPost.update({
     where: { id: postId },
     data: {
-      commentsCount: commentCount,
       lastActivityAt: new Date()
     }
   });

@@ -156,6 +156,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   const [isFollowing, setIsFollowing] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showAllComments, setShowAllComments] = useState(false);
 
   // Helper functions to parse JSON string fields
   const parseListItems = (listItems?: string): string[] => {
@@ -960,8 +961,35 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 ))}
               </div>
             ) : comments.length > 0 ? (
-              <div className="space-y-3">
-                {comments.map((comment) => (
+              <>
+                {/* Show "See all X comments" link if there are more than 1 comment and not expanded */}
+                {comments.length > 1 && !showAllComments && (
+                  <button
+                    onClick={() => setShowAllComments(true)}
+                    className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 mb-4 font-medium transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <span>See all {comments.length} comments</span>
+                  </button>
+                )}
+
+                {/* Show "Hide comments" link when all comments are visible */}
+                {showAllComments && (
+                  <button
+                    onClick={() => setShowAllComments(false)}
+                    className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 mb-4 font-medium transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                    <span>Hide comments</span>
+                  </button>
+                )}
+
+                <div className="space-y-3">
+                {(showAllComments ? comments : comments.slice(0, 1)).map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
                     {/* Avatar */}
                     <div className="flex-shrink-0">
@@ -990,7 +1018,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                             <span className="text-sm font-medium text-gray-900">
                               {comment.isAnonymous
                                 ? 'Anonymous'
-                                : (comment.author.name || comment.author.anonymousUsername || comment.author.publicHandle || 'Unknown User')
+                                : (comment.author.anonymousUsername || comment.author.publicHandle || 'User')
                               }
                             </span>
                             <span className="text-xs text-gray-700">
@@ -1006,7 +1034,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                         <div className="flex items-center space-x-4 mt-2 pt-2 border-t border-gray-200">
                           {/* Reply button */}
                           <button
-                            onClick={() => handleReply(comment.id, comment.isAnonymous ? comment.anonymousHandle : comment.author.name)}
+                            onClick={() => handleReply(comment.id, comment.isAnonymous ? comment.anonymousHandle : comment.author.anonymousUsername)}
                             className="text-xs text-gray-700 hover:text-blue-600 transition-colors"
                           >
                             Reply
@@ -1046,6 +1074,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                   </div>
                 ))}
               </div>
+              </>
             ) : (
               <p className="text-sm text-gray-700 italic">No comments yet. Be the first to comment!</p>
             )}

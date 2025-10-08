@@ -31,6 +31,8 @@ interface ForumComment {
   author: {
     id: string;
     name: string;
+    publicHandle?: string;
+    anonymousUsername?: string;
     company?: {
       id: string;
       name: string;
@@ -149,10 +151,10 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
             {/* Author Info */}
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-black text-lg bg-yellow-200 px-2 py-1 border-2 border-red-500">
-                  DEBUG USERNAME: {comment.isAnonymous
-                    ? (comment.anonymousHandle || 'Anonymous User')
-                    : (comment.author.name || 'Unknown User')
+                <span className="font-medium text-gray-900">
+                  {comment.isAnonymous
+                    ? (comment.anonymousHandle || 'Anonymous')
+                    : (comment.author.anonymousUsername || comment.author.publicHandle || 'User')
                   }
                 </span>
                 
@@ -188,8 +190,8 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
         </div>
 
         {/* Comment Content */}
-        <div className="mb-3 bg-blue-200 p-4 border-2 border-green-500">
-          <span className="text-black text-lg font-bold">DEBUG CONTENT: "{comment.content}"</span>
+        <div className="mb-3">
+          <MentionDisplayReact content={comment.content} />
         </div>
 
         {/* Comment Actions */}
