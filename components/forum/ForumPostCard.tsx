@@ -444,13 +444,17 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   };
 
   const handleFollow = async () => {
+    console.log('🔵 Follow button clicked, firebaseUser:', firebaseUser);
+
     if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') {
       console.log('🔥 User not authenticated, cannot follow');
+      alert('Please sign in to follow posts');
       return;
     }
 
     try {
       const idToken = await firebaseUser.getIdToken();
+      console.log('🔑 Got ID token, making API call...');
 
       const response = await fetch(`/api/forum/posts/${post.id}/follow`, {
         method: 'POST',
@@ -464,24 +468,35 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         }),
       });
 
+      console.log('📡 Follow API response:', response.status);
+
       if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Follow successful:', data);
         setIsFollowing(!isFollowing);
       } else {
-        console.error('Failed to toggle follow:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('❌ Failed to toggle follow:', response.status, errorText);
+        alert(`Failed to follow: ${response.status}`);
       }
     } catch (error) {
-      console.error('Failed to toggle follow:', error);
+      console.error('💥 Failed to toggle follow:', error);
+      alert('Error following post');
     }
   };
 
   const handleBookmark = async () => {
+    console.log('📚 Bookmark button clicked, firebaseUser:', firebaseUser);
+
     if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') {
       console.log('🔥 User not authenticated, cannot bookmark');
+      alert('Please sign in to bookmark posts');
       return;
     }
 
     try {
       const idToken = await firebaseUser.getIdToken();
+      console.log('🔑 Got ID token, making bookmark API call...');
 
       const response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
         method: 'POST',
@@ -496,14 +511,21 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         credentials: 'include'
       });
 
+      console.log('📡 Bookmark API response:', response.status);
+
       if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Bookmark successful:', data);
         setIsBookmarked(!isBookmarked);
         onBookmark?.(post.id);
       } else {
-        console.error('Failed to toggle bookmark:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('❌ Failed to toggle bookmark:', response.status, errorText);
+        alert(`Failed to bookmark: ${response.status}`);
       }
     } catch (error) {
-      console.error('Failed to toggle bookmark:', error);
+      console.error('💥 Failed to toggle bookmark:', error);
+      alert('Error bookmarking post');
     }
   };
 
