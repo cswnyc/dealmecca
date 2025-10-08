@@ -216,6 +216,37 @@ export const POST = safeHandler(async (
     }
   });
 
+  // Create notifications for users following this post
+  const followers = await prisma.postFollow.findMany({
+    where: {
+      postId,
+      userId: { not: auth.dbUserId } // Don't notify the commenter themselves
+    },
+    select: {
+      userId: true
+    }
+  });
+
+  if (followers.length > 0) {
+    const authorName = comment.User.anonymousUsername || comment.User.publicHandle || 'Someone';
+    await prisma.notification.createMany({
+      data: followers.map(follower => ({
+        id: generateId(),
+        userId: follower.userId,
+        type: 'FORUM_COMMENT',
+        title: 'New comment on a post you follow',
+        message: `${authorName} commented on a post you're following`,
+        isRead: false,
+        metadata: JSON.stringify({
+          postId,
+          commentId: comment.id,
+          authorId: auth.dbUserId
+        }),
+        createdAt: new Date()
+      }))
+    });
+  }
+
   const formattedComment = {
     id: comment.id,
     content: comment.content,

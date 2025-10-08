@@ -15,33 +15,30 @@ import {
 
 interface Notification {
   id: string;
-  type: 'comment' | 'like' | 'bookmark' | 'follow' | 'mention';
+  type: string;
   title: string;
   message: string;
   isRead: boolean;
   createdAt: string;
-  relatedPostId?: string;
-  relatedUserId?: string;
-  metadata?: any;
+  metadata?: string | any;
 }
 
 export default function NotificationsPage() {
-  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+  const { user: firebaseUser, idToken, loading: authLoading } = useFirebaseAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (firebaseUser && !authLoading) {
+    if (firebaseUser && idToken && !authLoading) {
       fetchNotifications();
     }
-  }, [firebaseUser, authLoading]);
+  }, [firebaseUser, idToken, authLoading]);
 
   const fetchNotifications = async () => {
-    if (!firebaseUser) return;
+    if (!firebaseUser || !idToken) return;
 
     try {
-      const idToken = await firebaseUser.getIdToken();
       const response = await fetch('/api/notifications', {
         headers: {
           'Authorization': `Bearer ${idToken}`,
@@ -64,10 +61,9 @@ export default function NotificationsPage() {
   };
 
   const markAsRead = async (notificationId: string) => {
-    if (!firebaseUser) return;
+    if (!firebaseUser || !idToken) return;
 
     try {
-      const idToken = await firebaseUser.getIdToken();
       const response = await fetch(`/api/notifications/${notificationId}`, {
         method: 'PATCH',
         headers: {
@@ -90,10 +86,9 @@ export default function NotificationsPage() {
   };
 
   const markAllAsRead = async () => {
-    if (!firebaseUser) return;
+    if (!firebaseUser || !idToken) return;
 
     try {
-      const idToken = await firebaseUser.getIdToken();
       const response = await fetch('/api/notifications/mark-all-read', {
         method: 'POST',
         headers: {
@@ -220,8 +215,16 @@ export default function NotificationsPage() {
                       markAsRead(notification.id);
                     }
                     // Navigate to related post if available
-                    if (notification.relatedPostId) {
-                      window.location.href = `/forum/posts/${notification.relatedPostId}`;
+                    try {
+                      const metadata = typeof notification.metadata === 'string'
+                        ? JSON.parse(notification.metadata)
+                        : notification.metadata;
+
+                      if (metadata?.postId) {
+                        window.location.href = `/forum/posts/${metadata.postId}`;
+                      }
+                    } catch (e) {
+                      console.error('Error parsing notification metadata:', e);
                     }
                   }}
                 >

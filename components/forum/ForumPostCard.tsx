@@ -182,7 +182,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   const [mentionQuery, setMentionQuery] = useState('');
   const [mentionSuggestions, setMentionSuggestions] = useState<any[]>([]);
   // Firebase authentication
-  const { user: firebaseUser, idToken, loading: authLoading } = useFirebaseAuth();
+  const { user: firebaseUser, idToken, loading: authLoading, refreshToken } = useFirebaseAuth();
   const urgencyColors = {
     LOW: 'text-gray-500',
     MEDIUM: 'text-blue-500', 
@@ -453,17 +453,38 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
     try {
       console.log('🔑 Using ID token, making API call...');
 
-      const response = await fetch(`/api/forum/posts/${post.id}/follow`, {
+      let token = idToken;
+      let response = await fetch(`/api/forum/posts/${post.id}/follow`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           userId: firebaseUser.uid,
           follow: !isFollowing
         }),
       });
+
+      // If token expired, refresh and retry once
+      if (response.status === 401) {
+        console.log('🔄 Token expired, refreshing...');
+        const newToken = await refreshToken();
+        if (newToken) {
+          token = newToken;
+          response = await fetch(`/api/forum/posts/${post.id}/follow`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userId: firebaseUser.uid,
+              follow: !isFollowing
+            }),
+          });
+        }
+      }
 
       console.log('📡 Follow API response:', response.status);
 
@@ -494,11 +515,12 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
     try {
       console.log('🔑 Using ID token, making bookmark API call...');
 
-      const response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
+      let token = idToken;
+      let response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           userId: firebaseUser.uid,
@@ -506,6 +528,27 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         }),
         credentials: 'include'
       });
+
+      // If token expired, refresh and retry once
+      if (response.status === 401) {
+        console.log('🔄 Token expired, refreshing...');
+        const newToken = await refreshToken();
+        if (newToken) {
+          token = newToken;
+          response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userId: firebaseUser.uid,
+              bookmark: !isBookmarked
+            }),
+            credentials: 'include'
+          });
+        }
+      }
 
       console.log('📡 Bookmark API response:', response.status);
 

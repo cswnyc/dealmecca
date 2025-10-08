@@ -67,9 +67,12 @@ export default function SavedPostsPage() {
 
   const fetchSavedPosts = async () => {
     if (!firebaseUser || !idToken) {
+      console.log('🔴 Cannot fetch saved posts - missing auth:', { firebaseUser: !!firebaseUser, idToken: !!idToken });
       setLoading(false);
       return;
     }
+
+    console.log('🔵 Fetching saved posts with token:', idToken?.substring(0, 20) + '...');
 
     try {
       const response = await fetch('/api/users/bookmarks', {
@@ -79,14 +82,18 @@ export default function SavedPostsPage() {
         }
       });
 
+      console.log('📥 Response status:', response.status);
+      const data = await response.json();
+      console.log('📦 Response data:', data);
+
       if (response.ok) {
-        const data = await response.json();
         setSavedPosts(data.bookmarks || []);
       } else {
-        setError('Failed to load saved posts');
+        console.error('❌ Error response:', data);
+        setError(`Failed to load saved posts: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error fetching saved posts:', error);
+      console.error('💥 Error fetching saved posts:', error);
       setError('Failed to load saved posts');
     } finally {
       setLoading(false);
@@ -153,6 +160,8 @@ export default function SavedPostsPage() {
                   key={post.id}
                   post={post}
                   onBookmark={handleRemoveBookmark}
+                  expandable={true}
+                  defaultExpanded={true}
                 />
               ))}
             </div>

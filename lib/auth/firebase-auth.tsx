@@ -38,6 +38,7 @@ export interface AuthContextType {
   signUpWithEmail: (email: string, password: string) => Promise<{ user: AuthUser; isNewUser: boolean } | null>;
   signOut: () => Promise<void>;
   clearError: () => void;
+  refreshToken: () => Promise<string | null>;
 }
 
 // Create context
@@ -369,6 +370,24 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     }
   };
 
+  // Refresh ID token
+  const refreshToken = async (): Promise<string | null> => {
+    try {
+      if (!auth?.currentUser) {
+        console.log('🔥 No current user, cannot refresh token');
+        return null;
+      }
+
+      const token = await auth.currentUser.getIdToken(true); // Force refresh
+      setIdToken(token);
+      console.log('🔥 Token refreshed successfully');
+      return token;
+    } catch (error) {
+      console.error('🔥 Failed to refresh token:', error);
+      return null;
+    }
+  };
+
   // Clear error
   const clearError = () => setError(null);
 
@@ -382,7 +401,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     signInWithEmail,
     signUpWithEmail,
     signOut,
-    clearError
+    clearError,
+    refreshToken
   };
 
   return (

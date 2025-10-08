@@ -57,12 +57,17 @@ export async function GET(request: NextRequest) {
       include: {
         ForumPost: {
           include: {
-            author: {
+            User: {
               include: {
-                company: true
+                companies: true
               }
             },
-            category: true
+            ForumCategory: true,
+            _count: {
+              select: {
+                ForumComment: true
+              }
+            }
           }
         }
       },
@@ -94,25 +99,30 @@ export async function GET(request: NextRequest) {
       updatedAt: bookmark.ForumPost.updatedAt.toISOString(),
       lastActivityAt: bookmark.ForumPost.lastActivityAt.toISOString(),
       author: {
-        id: bookmark.ForumPost.author.id,
-        name: bookmark.ForumPost.author.name,
-        email: bookmark.ForumPost.author.email,
-        company: bookmark.ForumPost.author.company ? {
-          id: bookmark.ForumPost.author.company.id,
-          name: bookmark.ForumPost.author.company.name,
-          logoUrl: bookmark.ForumPost.author.company.logoUrl,
-          verified: bookmark.ForumPost.author.company.verified,
-          companyType: bookmark.ForumPost.author.company.companyType,
-          industry: bookmark.ForumPost.author.company.industry,
-          city: bookmark.ForumPost.author.company.city,
-          state: bookmark.ForumPost.author.company.state,
+        id: bookmark.ForumPost.User.id,
+        name: bookmark.ForumPost.User.name,
+        email: bookmark.ForumPost.User.email,
+        anonymousUsername: bookmark.ForumPost.User.anonymousUsername,
+        publicHandle: bookmark.ForumPost.User.publicHandle,
+        company: bookmark.ForumPost.User.companies ? {
+          id: bookmark.ForumPost.User.companies.id,
+          name: bookmark.ForumPost.User.companies.name,
+          logoUrl: bookmark.ForumPost.User.companies.logoUrl,
+          verified: bookmark.ForumPost.User.companies.verified,
+          companyType: bookmark.ForumPost.User.companies.companyType,
+          industry: bookmark.ForumPost.User.companies.industry,
+          city: bookmark.ForumPost.User.companies.city,
+          state: bookmark.ForumPost.User.companies.state,
         } : undefined
       },
       category: {
-        id: bookmark.ForumPost.category.id,
-        name: bookmark.ForumPost.category.name,
-        slug: bookmark.ForumPost.category.slug,
-        color: bookmark.ForumPost.category.color,
+        id: bookmark.ForumPost.ForumCategory.id,
+        name: bookmark.ForumPost.ForumCategory.name,
+        slug: bookmark.ForumPost.ForumCategory.slug,
+        color: bookmark.ForumPost.ForumCategory.color,
+      },
+      _count: {
+        comments: bookmark.ForumPost._count.ForumComment
       }
     }));
 
