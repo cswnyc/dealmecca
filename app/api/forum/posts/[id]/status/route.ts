@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/server/prisma';
 
 export async function GET(
   request: NextRequest,
@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { id: postId } = await params;
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const firebaseUid = searchParams.get('userId');
 
     if (!postId) {
       return NextResponse.json(
@@ -40,42 +40,74 @@ export async function GET(
 
     let userVote = null;
     let isBookmarked = false;
+    let isFollowing = false;
+    let dbUserId: string | null = null;
 
-    if (userId) {
-      // Check if user has voted on this post
-      const vote = await prisma.forumVote.findUnique({
+    if (firebaseUid) {
+      // Find database user ID from Firebase UID
+      const user = await prisma.user.findFirst({
         where: {
-          userId_postId: {
-            userId,
-            postId
-          }
+          OR: [
+            { firebaseUid },
+            { email: firebaseUid }
+          ]
         },
         select: {
-          type: true
+          id: true
         }
       });
 
-      userVote = vote?.type || null;
+      dbUserId = user?.id || null;
 
-      // Check if user has bookmarked this post
-      const bookmark = await prisma.forumBookmark.findUnique({
-        where: {
-          userId_postId: {
-            userId,
-            postId
+      if (dbUserId) {
+        // Check if user has voted on this post
+        const vote = await prisma.forumVote.findUnique({
+          where: {
+            userId_postId: {
+              userId: dbUserId,
+              postId
+            }
+          },
+          select: {
+            type: true
           }
-        }
-      });
+        });
 
-      isBookmarked = !!bookmark;
+        userVote = vote?.type || null;
+
+        // Check if user has bookmarked this post
+        const bookmark = await prisma.forumBookmark.findUnique({
+          where: {
+            userId_postId: {
+              userId: dbUserId,
+              postId
+            }
+          }
+        });
+
+        isBookmarked = !!bookmark;
+
+        // Check if user is following this post
+        const follow = await prisma.postFollow.findUnique({
+          where: {
+            userId_postId: {
+              userId: dbUserId,
+              postId
+            }
+          }
+        });
+
+        isFollowing = !!follow;
+      }
     }
 
     return NextResponse.json({
       postId: post.id,
       status: post.status,
-      isAuthor: userId === post.authorId,
+      isAuthor: dbUserId === post.authorId,
       userVote,
       isBookmarked,
+      isFollowing,
       stats: {
         upvotes: post.upvotes,
         downvotes: post.downvotes,

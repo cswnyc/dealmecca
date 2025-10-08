@@ -6,8 +6,7 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { ForumLayout } from '@/components/layout/ForumLayout';
 import { ForumPostCard } from '@/components/forum/ForumPostCard';
 import {
-  BookmarkIcon,
-  EmptyBookmarkIcon
+  BookmarkIcon
 } from '@heroicons/react/24/outline';
 
 interface ForumPost {
@@ -67,7 +66,17 @@ export default function SavedPostsPage() {
   }, [firebaseUser, authLoading]);
 
   const fetchSavedPosts = async () => {
-    if (!firebaseUser) return;
+    if (!firebaseUser) {
+      setLoading(false);
+      return;
+    }
+
+    // Check if firebaseUser has the getIdToken method
+    if (typeof firebaseUser.getIdToken !== 'function') {
+      console.error('Firebase user not properly loaded');
+      setLoading(false);
+      return;
+    }
 
     try {
       const idToken = await firebaseUser.getIdToken();
@@ -133,7 +142,7 @@ export default function SavedPostsPage() {
 
           {savedPosts.length === 0 ? (
             <div className="text-center py-12">
-              <EmptyBookmarkIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <BookmarkIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No saved posts yet</h3>
               <p className="text-gray-600 mb-6">
                 Save interesting posts to easily find them later.

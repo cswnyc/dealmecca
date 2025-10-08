@@ -324,16 +324,9 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   const handleSubmitComment = async () => {
     if (!commentText.trim() || submittingComment) return;
 
-    // If anonymous comment is requested but user identity is not loaded yet, wait a bit
-    if (commentAnonymous && !currentUserIdentity) {
-      console.warn('⏳ User identity not loaded yet, retrying in 1 second...');
-      setTimeout(() => handleSubmitComment(), 1000);
-      return;
-    }
-    
     setSubmittingComment(true);
 
-    const anonymousHandle = commentAnonymous ? 'Anonymous User' : null;
+    const anonymousHandle = commentAnonymous ? (currentUserIdentity?.username || 'Anonymous User') : null;
     const anonymousAvatarId = commentAnonymous ? (currentUserIdentity?.avatarId || 'avatar_1') : null;
 
     console.log('🚀 Submitting comment:', {
@@ -349,7 +342,8 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
     }
 
     try {
-      const response = await fetch(`/api/forum/posts/${post.id}/comments`, {
+      const { authedFetch } = await import('@/lib/authedFetch');
+      const response = await authedFetch(`/api/forum/posts/${post.id}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -386,7 +380,8 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
     if (!replyText.trim() || !replyingTo) return;
 
     try {
-      const response = await fetch(`/api/forum/posts/${post.id}/comments`, {
+      const { authedFetch } = await import('@/lib/authedFetch');
+      const response = await authedFetch(`/api/forum/posts/${post.id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -994,8 +989,8 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                           <div className="flex items-center space-x-2">
                             <span className="text-sm font-medium text-gray-900">
                               {comment.isAnonymous
-                                ? (comment.anonymousHandle || 'Anonymous User')
-                                : (comment.author.name || 'Unknown User')
+                                ? 'Anonymous'
+                                : (comment.author.name || comment.author.anonymousUsername || comment.author.publicHandle || 'Unknown User')
                               }
                             </span>
                             <span className="text-xs text-gray-700">

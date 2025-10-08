@@ -755,7 +755,7 @@ model TopicFollow {
 }
 
 model User {
-  id                                                              String                   @id
+  id                                                              String                   @id @default(cuid())
   email                                                           String?                  @unique
   firebaseUid                                                     String?                  @unique
   provider                                                        String?
@@ -771,7 +771,7 @@ model User {
   searchesUsed                                                    Int                      @default(0)
   searchesResetAt                                                 DateTime                 @default(now())
   createdAt                                                       DateTime                 @default(now())
-  updatedAt                                                       DateTime
+  updatedAt                                                       DateTime                 @updatedAt
   lastDashboardVisit                                              DateTime?
   dashboardVisits                                                 Int                      @default(0)
   searchesThisMonth                                               Int                      @default(0)

@@ -43,6 +43,7 @@ export const GET = safeHandler(async (
           id: true,
           publicHandle: true,
           name: true,
+          anonymousUsername: true,
         }
       },
       _count: {
@@ -195,6 +196,7 @@ export const POST = safeHandler(async (
           id: true,
           publicHandle: true,
           name: true,
+          anonymousUsername: true,
         }
       },
       _count: {

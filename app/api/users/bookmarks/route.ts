@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/server/prisma';
 import { auth } from '@/lib/firebase-admin';
 
 async function verifyFirebaseToken(request: NextRequest): Promise<{ uid: string; email?: string } | null> {
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         userId: user.id
       },
       include: {
-        post: {
+        ForumPost: {
           include: {
             author: {
               include: {
@@ -73,46 +73,46 @@ export async function GET(request: NextRequest) {
 
     // Transform the data to match the expected format
     const transformedBookmarks = bookmarks.map(bookmark => ({
-      id: bookmark.post.id,
-      title: bookmark.post.title,
-      content: bookmark.post.content,
-      slug: bookmark.post.slug,
-      isAnonymous: bookmark.post.isAnonymous,
-      anonymousHandle: bookmark.post.anonymousHandle,
-      urgency: bookmark.post.urgency,
-      dealSize: bookmark.post.dealSize,
-      location: bookmark.post.location,
-      mediaType: bookmark.post.mediaType,
-      views: bookmark.post.views,
-      upvotes: bookmark.post.upvotes,
-      downvotes: bookmark.post.downvotes,
-      bookmarks: bookmark.post.bookmarks,
-      isPinned: bookmark.post.isPinned,
-      isLocked: bookmark.post.isLocked,
-      isFeatured: bookmark.post.isFeatured,
-      createdAt: bookmark.post.createdAt.toISOString(),
-      updatedAt: bookmark.post.updatedAt.toISOString(),
-      lastActivityAt: bookmark.post.lastActivityAt.toISOString(),
+      id: bookmark.ForumPost.id,
+      title: bookmark.ForumPost.title,
+      content: bookmark.ForumPost.content,
+      slug: bookmark.ForumPost.slug,
+      isAnonymous: bookmark.ForumPost.isAnonymous,
+      anonymousHandle: bookmark.ForumPost.anonymousHandle,
+      urgency: bookmark.ForumPost.urgency,
+      dealSize: bookmark.ForumPost.dealSize,
+      location: bookmark.ForumPost.location,
+      mediaType: bookmark.ForumPost.mediaType,
+      views: bookmark.ForumPost.views,
+      upvotes: bookmark.ForumPost.upvotes,
+      downvotes: bookmark.ForumPost.downvotes,
+      bookmarks: bookmark.ForumPost.bookmarks,
+      isPinned: bookmark.ForumPost.isPinned,
+      isLocked: bookmark.ForumPost.isLocked,
+      isFeatured: bookmark.ForumPost.isFeatured,
+      createdAt: bookmark.ForumPost.createdAt.toISOString(),
+      updatedAt: bookmark.ForumPost.updatedAt.toISOString(),
+      lastActivityAt: bookmark.ForumPost.lastActivityAt.toISOString(),
       author: {
-        id: bookmark.post.author.id,
-        name: bookmark.post.author.name,
-        email: bookmark.post.author.email,
-        company: bookmark.post.author.company ? {
-          id: bookmark.post.author.company.id,
-          name: bookmark.post.author.company.name,
-          logoUrl: bookmark.post.author.company.logoUrl,
-          verified: bookmark.post.author.company.verified,
-          companyType: bookmark.post.author.company.companyType,
-          industry: bookmark.post.author.company.industry,
-          city: bookmark.post.author.company.city,
-          state: bookmark.post.author.company.state,
+        id: bookmark.ForumPost.author.id,
+        name: bookmark.ForumPost.author.name,
+        email: bookmark.ForumPost.author.email,
+        company: bookmark.ForumPost.author.company ? {
+          id: bookmark.ForumPost.author.company.id,
+          name: bookmark.ForumPost.author.company.name,
+          logoUrl: bookmark.ForumPost.author.company.logoUrl,
+          verified: bookmark.ForumPost.author.company.verified,
+          companyType: bookmark.ForumPost.author.company.companyType,
+          industry: bookmark.ForumPost.author.company.industry,
+          city: bookmark.ForumPost.author.company.city,
+          state: bookmark.ForumPost.author.company.state,
         } : undefined
       },
       category: {
-        id: bookmark.post.category.id,
-        name: bookmark.post.category.name,
-        slug: bookmark.post.category.slug,
-        color: bookmark.post.category.color,
+        id: bookmark.ForumPost.category.id,
+        name: bookmark.ForumPost.category.name,
+        slug: bookmark.ForumPost.category.slug,
+        color: bookmark.ForumPost.category.color,
       }
     }));
 

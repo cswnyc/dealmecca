@@ -2,10 +2,25 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/server/prisma';
 import { safeHandler, bad } from '@/server/safeHandler';
 import { requireAuth } from '@/server/requireAuth';
+import { randomBytes } from 'crypto';
+import { z } from 'zod';
 
+const BookmarkSchema = z.object({
+  bookmark: z.boolean().optional(),
+});
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
+
+/**
+ * POST /api/forum/posts/[id]/bookmark
+ * Bookmark/unbookmark a post
+ */
 export const POST = safeHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -16,14 +31,16 @@ export const POST = safeHandler(async (
   if (auth instanceof NextResponse) return auth;
 
   const { id: postId } = await params;
-  const body = await request.json().catch(() => ({}));
-  const { bookmark } = body;
 
   if (!postId) {
     return bad(400, requestId, 'post_id_required');
   }
 
-  // Check if bookmark already exists
+  // Parse input (bookmark field is optional, defaults to toggling)
+  const body = await request.json().catch(() => ({}));
+  const { bookmark } = BookmarkSchema.parse(body);
+
+  // Check if bookmark relationship already exists
   const existingBookmark = await prisma.forumBookmark.findUnique({
     where: {
       userId_postId: {
@@ -45,6 +62,7 @@ export const POST = safeHandler(async (
     if (!existingBookmark) {
       await prisma.forumBookmark.create({
         data: {
+          id: generateId(),
           userId: auth.dbUserId,
           postId
         }
@@ -57,14 +75,6 @@ export const POST = safeHandler(async (
     where: { postId }
   });
 
-  // Update the post's bookmark count
-  await prisma.forumPost.update({
-    where: { id: postId },
-    data: {
-      bookmarks: bookmarkCount
-    }
-  });
-
   const isBookmarked = bookmark !== false && (existingBookmark || bookmark === true);
 
   return NextResponse.json(
@@ -74,12 +84,14 @@ export const POST = safeHandler(async (
       bookmarkCount,
       requestId,
     },
-    {
-      headers: { 'x-request-id': requestId },
-    }
+    { headers: { 'x-request-id': requestId } }
   );
 });
 
+/**
+ * DELETE /api/forum/posts/[id]/bookmark
+ * Remove bookmark from a post
+ */
 export const DELETE = safeHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -108,14 +120,6 @@ export const DELETE = safeHandler(async (
     where: { postId }
   });
 
-  // Update the post's bookmark count
-  await prisma.forumPost.update({
-    where: { id: postId },
-    data: {
-      bookmarks: bookmarkCount
-    }
-  });
-
   return NextResponse.json(
     {
       success: true,
@@ -123,12 +127,14 @@ export const DELETE = safeHandler(async (
       bookmarkCount,
       requestId,
     },
-    {
-      headers: { 'x-request-id': requestId },
-    }
+    { headers: { 'x-request-id': requestId } }
   );
 });
 
+/**
+ * GET /api/forum/posts/[id]/bookmark
+ * Get bookmark count and user's bookmark status (optional auth)
+ */
 export const GET = safeHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -145,12 +151,11 @@ export const GET = safeHandler(async (
     where: { postId }
   });
 
-  // Check if current user has bookmarked (if authenticated)
+  // Optionally check user's bookmark status if authenticated
   let isBookmarked = false;
   const authHeader = request.headers.get('authorization');
 
   if (authHeader?.startsWith('Bearer ')) {
-    // Optional auth - don't fail if not authenticated
     const auth = await requireAuth(request);
     if (!(auth instanceof NextResponse)) {
       const existingBookmark = await prisma.forumBookmark.findUnique({
@@ -171,8 +176,6 @@ export const GET = safeHandler(async (
       bookmarkCount,
       requestId,
     },
-    {
-      headers: { 'x-request-id': requestId },
-    }
+    { headers: { 'x-request-id': requestId } }
   );
 });

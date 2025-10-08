@@ -37,7 +37,7 @@ interface QuickStat {
 }
 
 export function ForumSidebar() {
-  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+  const { user: firebaseUser, idToken, loading: authLoading } = useFirebaseAuth();
 
   // Check Firebase session
   const hasFirebaseSession = Boolean(firebaseUser);
@@ -158,10 +158,9 @@ export function ForumSidebar() {
   };
 
   const fetchNotificationCount = async () => {
-    if (!firebaseUser) return;
+    if (!firebaseUser || !idToken) return;
 
     try {
-      const idToken = await firebaseUser.getIdToken();
       const response = await fetch('/api/notifications?unread=true&limit=1', {
         headers: {
           'Authorization': `Bearer ${idToken}`,
