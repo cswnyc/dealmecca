@@ -59,7 +59,9 @@ export default function AuthHeader() {
       pathname === '/billing' ||
       pathname === '/help' ||
       pathname === '/contact' ||
-      pathname === '/settings') {
+      pathname === '/settings' ||
+      pathname === '/saved-posts' ||
+      pathname === '/notifications') {
     return null;
   }
 
