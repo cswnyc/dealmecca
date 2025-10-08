@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { UserProfileCard } from './UserProfileCard';
 import {
   MessageSquare,
   Search,
@@ -167,7 +168,10 @@ export function ForumLayout({ children }: ForumLayoutProps) {
           </nav>
         </div>
 
-        {/* User Profile Card at Bottom - Removed per user request */}
+        {/* User Profile Card at Bottom */}
+        <div className="border-t border-gray-200 p-4 space-y-4">
+          <UserProfileCard />
+        </div>
       </div>
 
       {/* Main Content Area */}
