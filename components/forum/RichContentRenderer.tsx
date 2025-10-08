@@ -82,7 +82,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
     return (
       <Link
         href={resolved.type === 'company' ? `/orgs/companies/${resolved.id}` : `/contacts/${resolved.id}`}
-        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors no-underline"
+        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors no-underline"
         title={`${resolved.displayName} (${Math.round(resolved.confidence * 100)}% match)`}
       >
         {name}
@@ -95,7 +95,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
     return (
       <Link
         href={`/orgs/companies/${id}`}
-        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors no-underline"
+        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors no-underline"
       >
         @{company.name}
       </Link>
@@ -107,7 +107,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
     return (
       <Link
         href={`/contacts/${id}`}
-        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors no-underline"
+        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors no-underline"
       >
         @{contact.fullName}
       </Link>
@@ -116,7 +116,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
 
   // Fallback for unrecognized or failed mentions
   return (
-    <span className="text-blue-600 hover:text-blue-800 hover:underline transition-colors cursor-pointer">
+    <span className="text-blue-700 hover:text-blue-900 hover:underline transition-colors cursor-pointer font-medium">
       @{name}
     </span>
   );
@@ -150,7 +150,7 @@ function processTextForEmails(text: string): React.ReactNode[] {
       <a
         key={`email-${match.index}`}
         href={`mailto:${email}`}
-        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors"
       >
         {email}
       </a>
@@ -373,7 +373,7 @@ export function RichContentRenderer({
             finalSegments.push(
               <span
                 key={`unresolved-mention-${segment.start}-${plainMatch.index}`}
-                className={mentionsResolved ? "text-gray-600" : "text-blue-500 animate-pulse"}
+                className={mentionsResolved ? "text-gray-600" : "text-blue-700 animate-pulse font-medium"}
                 title={mentionsResolved ? "Unknown mention" : "Resolving mention..."}
               >
                 {fullMatch}
@@ -400,7 +400,7 @@ export function RichContentRenderer({
   };
 
   return (
-    <div className={`rich-content-renderer ${className}`}>
+    <div className={`rich-content-renderer text-gray-900 ${className}`}>
       {parseContentWithMentions(content)}
     </div>
   );

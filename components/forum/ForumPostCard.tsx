@@ -629,7 +629,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           {/* Category Only - Clean display */}
           <div className="flex items-center space-x-2 text-sm text-gray-700 mb-2">
             <span>in</span>
-            <span className="text-blue-600 font-medium">{post.category.name}</span>
+            <span className="text-gray-900 font-medium">{post.category.name}</span>
           </div>
         </div>
           </div>
@@ -703,7 +703,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               <div key={mention.contact.id} className="flex items-center space-x-2">
                 <a 
                   href={`mailto:${mention.contact.email}`}
-                  className="text-blue-600 hover:text-blue-800 text-sm"
+                  className="text-blue-700 hover:text-blue-900 font-medium text-sm"
                 >
                   {mention.contact.email}
                 </a>
@@ -966,7 +966,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 {comments.length > 1 && !showAllComments && (
                   <button
                     onClick={() => setShowAllComments(true)}
-                    className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 mb-4 font-medium transition-colors"
+                    className="flex items-center space-x-2 text-sm text-blue-700 hover:text-blue-900 font-medium mb-4 font-medium transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -979,7 +979,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 {showAllComments && (
                   <button
                     onClick={() => setShowAllComments(false)}
-                    className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 mb-4 font-medium transition-colors"
+                    className="flex items-center space-x-2 text-sm text-blue-700 hover:text-blue-900 font-medium mb-4 font-medium transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -1133,7 +1133,7 @@ function MultiTopicDisplay({
             <div key={tm.topic.id}>
               <Link
                 href={`/forum?topic=${encodeURIComponent(tm.topic.name)}`}
-                className="text-blue-600 hover:text-blue-800 transition-colors duration-200 no-underline font-medium"
+                className="text-blue-700 hover:text-blue-900 font-medium transition-colors duration-200 no-underline font-medium"
               >
                 {tm.topic.name}
               </Link>
