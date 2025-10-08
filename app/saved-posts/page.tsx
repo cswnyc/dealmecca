@@ -54,32 +54,24 @@ interface ForumPost {
 }
 
 export default function SavedPostsPage() {
-  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+  const { user: firebaseUser, idToken, loading: authLoading } = useFirebaseAuth();
   const [savedPosts, setSavedPosts] = useState<ForumPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (firebaseUser && !authLoading) {
+    if (firebaseUser && idToken && !authLoading) {
       fetchSavedPosts();
     }
-  }, [firebaseUser, authLoading]);
+  }, [firebaseUser, idToken, authLoading]);
 
   const fetchSavedPosts = async () => {
-    if (!firebaseUser) {
-      setLoading(false);
-      return;
-    }
-
-    // Check if firebaseUser has the getIdToken method
-    if (typeof firebaseUser.getIdToken !== 'function') {
-      console.error('Firebase user not properly loaded');
+    if (!firebaseUser || !idToken) {
       setLoading(false);
       return;
     }
 
     try {
-      const idToken = await firebaseUser.getIdToken();
       const response = await fetch('/api/users/bookmarks', {
         headers: {
           'Authorization': `Bearer ${idToken}`,
