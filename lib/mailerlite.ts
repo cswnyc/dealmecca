@@ -248,13 +248,16 @@ export async function subscribeUserToNewsletter(
 export async function subscribeUserToWaitlist(email: string, source: string = 'website') {
   const groupId = process.env.MAILERLITE_WAITLIST_GROUP_ID
 
+  // Only include group if it's set and is a valid number
+  const isValidGroupId = groupId && groupId !== 'your-waitlist-group-id-here' && !isNaN(Number(groupId))
+
   return mailerLite.subscribe(email, {
     fields: {
       waitlist_source: source,
       signed_up_at: new Date().toISOString(),
       status: 'waitlist'
     },
-    groups: groupId ? [groupId] : undefined
+    groups: isValidGroupId ? [groupId] : undefined
   })
 }
 
