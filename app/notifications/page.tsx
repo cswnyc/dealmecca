@@ -18,7 +18,7 @@ interface Notification {
   type: string;
   title: string;
   message: string;
-  isRead: boolean;
+  read: boolean;
   createdAt: string;
   metadata?: string | any;
 }
@@ -70,13 +70,13 @@ export default function NotificationsPage() {
           'Authorization': `Bearer ${idToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ isRead: true })
+        body: JSON.stringify({ read: true })
       });
 
       if (response.ok) {
         setNotifications(prev =>
           prev.map(notif =>
-            notif.id === notificationId ? { ...notif, isRead: true } : notif
+            notif.id === notificationId ? { ...notif, read: true } : notif
           )
         );
       }
@@ -99,7 +99,7 @@ export default function NotificationsPage() {
 
       if (response.ok) {
         setNotifications(prev =>
-          prev.map(notif => ({ ...notif, isRead: true }))
+          prev.map(notif => ({ ...notif, read: true }))
         );
       }
     } catch (error) {
@@ -153,7 +153,7 @@ export default function NotificationsPage() {
     );
   }
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <AuthGuard>
@@ -206,12 +206,12 @@ export default function NotificationsPage() {
                 <div
                   key={notification.id}
                   className={`p-4 rounded-lg border transition-colors cursor-pointer ${
-                    notification.isRead
+                    notification.read
                       ? 'bg-white border-gray-200'
                       : 'bg-blue-50 border-blue-200'
                   }`}
                   onClick={() => {
-                    if (!notification.isRead) {
+                    if (!notification.read) {
                       markAsRead(notification.id);
                     }
                     // Navigate to related post if available
@@ -236,7 +236,7 @@ export default function NotificationsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <p className={`text-sm font-medium ${
-                          notification.isRead ? 'text-gray-700' : 'text-gray-900'
+                          notification.read ? 'text-gray-700' : 'text-gray-900'
                         }`}>
                           {notification.title}
                         </p>
@@ -246,13 +246,13 @@ export default function NotificationsPage() {
                       </div>
 
                       <p className={`text-sm mt-1 ${
-                        notification.isRead ? 'text-gray-500' : 'text-gray-700'
+                        notification.read ? 'text-gray-500' : 'text-gray-700'
                       }`}>
                         {notification.message}
                       </p>
                     </div>
 
-                    {!notification.isRead && (
+                    {!notification.read && (
                       <div className="flex-shrink-0">
                         <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                       </div>

@@ -236,7 +236,7 @@ export const POST = safeHandler(async (
         type: 'FORUM_COMMENT',
         title: 'New comment on a post you follow',
         message: `${authorName} commented on a post you're following`,
-        isRead: false,
+        read: false,
         metadata: JSON.stringify({
           postId,
           commentId: comment.id,
