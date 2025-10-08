@@ -182,7 +182,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   const [mentionQuery, setMentionQuery] = useState('');
   const [mentionSuggestions, setMentionSuggestions] = useState<any[]>([]);
   // Firebase authentication
-  const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+  const { user: firebaseUser, idToken, loading: authLoading } = useFirebaseAuth();
   const urgencyColors = {
     LOW: 'text-gray-500',
     MEDIUM: 'text-blue-500', 
@@ -200,11 +200,9 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   // Fetch follow and bookmark status
   useEffect(() => {
     const fetchFollowAndBookmarkStatus = async () => {
-      if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') return;
+      if (!firebaseUser || !idToken) return;
 
       try {
-        const idToken = await firebaseUser.getIdToken();
-
         // Fetch follow status
         const followResponse = await fetch(`/api/forum/posts/${post.id}/follow`, {
           headers: {
@@ -232,7 +230,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
     };
 
     fetchFollowAndBookmarkStatus();
-  }, [firebaseUser, post.id]);
+  }, [firebaseUser, idToken, post.id]);
 
   // Fetch current user's anonymous identity for their own comments
   useEffect(() => {
@@ -444,17 +442,16 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   };
 
   const handleFollow = async () => {
-    console.log('🔵 Follow button clicked, firebaseUser:', firebaseUser);
+    console.log('🔵 Follow button clicked, firebaseUser:', firebaseUser, 'idToken:', idToken);
 
-    if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') {
+    if (!firebaseUser || !idToken) {
       console.log('🔥 User not authenticated, cannot follow');
       alert('Please sign in to follow posts');
       return;
     }
 
     try {
-      const idToken = await firebaseUser.getIdToken();
-      console.log('🔑 Got ID token, making API call...');
+      console.log('🔑 Using ID token, making API call...');
 
       const response = await fetch(`/api/forum/posts/${post.id}/follow`, {
         method: 'POST',
@@ -486,17 +483,16 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   };
 
   const handleBookmark = async () => {
-    console.log('📚 Bookmark button clicked, firebaseUser:', firebaseUser);
+    console.log('📚 Bookmark button clicked, firebaseUser:', firebaseUser, 'idToken:', idToken);
 
-    if (!firebaseUser || typeof firebaseUser.getIdToken !== 'function') {
+    if (!firebaseUser || !idToken) {
       console.log('🔥 User not authenticated, cannot bookmark');
       alert('Please sign in to bookmark posts');
       return;
     }
 
     try {
-      const idToken = await firebaseUser.getIdToken();
-      console.log('🔑 Got ID token, making bookmark API call...');
+      console.log('🔑 Using ID token, making bookmark API call...');
 
       const response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
         method: 'POST',
