@@ -235,29 +235,34 @@ export const POST = safeHandler(async (
   });
 
   if (followers.length > 0) {
-    const authorName = comment.User.anonymousUsername || comment.User.publicHandle || 'Someone';
-    const notificationsToCreate = followers.map(follower => ({
-      id: generateId(),
-      userId: follower.userId,
-      type: 'FORUM_COMMENT',
-      title: 'New comment on a post you follow',
-      message: `${authorName} commented on a post you're following`,
-      read: false,
-      metadata: JSON.stringify({
-        postId,
-        commentId: comment.id,
-        authorId: auth.dbUserId
-      }),
-      createdAt: new Date()
-    }));
+    try {
+      const authorName = comment.User?.anonymousUsername || comment.User?.publicHandle || comment.User?.name || 'Someone';
+      const notificationsToCreate = followers.map(follower => ({
+        id: generateId(),
+        userId: follower.userId,
+        type: 'FORUM_COMMENT' as const,
+        title: 'New comment on a post you follow',
+        message: `${authorName} commented on a post you're following`,
+        read: false,
+        metadata: JSON.stringify({
+          postId,
+          commentId: comment.id,
+          authorId: auth.dbUserId
+        }),
+        createdAt: new Date()
+      }));
 
-    console.log('🔔 Creating notifications:', notificationsToCreate);
+      console.log('🔔 Creating notifications:', notificationsToCreate);
 
-    await prisma.notification.createMany({
-      data: notificationsToCreate
-    });
+      await prisma.notification.createMany({
+        data: notificationsToCreate
+      });
 
-    console.log('🔔 Notifications created successfully');
+      console.log('🔔 Notifications created successfully');
+    } catch (error) {
+      console.error('❌ Error creating notifications:', error);
+      // Don't fail the comment creation if notifications fail
+    }
   } else {
     console.log('🔔 No followers to notify (excluding commenter)');
   }
