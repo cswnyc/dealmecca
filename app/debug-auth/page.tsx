@@ -16,11 +16,12 @@ export default function DebugAuthPage() {
           'Authorization': `Bearer ${idToken}`,
         }
       })
-        .then(res => {
+        .then(async res => {
           if (res.ok) {
             return res.json();
           } else {
-            throw new Error(`API returned ${res.status}`);
+            const errorData = await res.json().catch(() => null);
+            throw new Error(`API returned ${res.status}: ${JSON.stringify(errorData)}`);
           }
         })
         .then(data => {
@@ -71,8 +72,11 @@ export default function DebugAuthPage() {
           <h2 className="text-xl font-semibold mb-4">Database User (API Test)</h2>
           {apiError ? (
             <div className="text-red-600">
-              <p className="font-semibold">Error: {apiError}</p>
-              <p className="text-sm mt-2">The API call to /api/users/profile failed.</p>
+              <p className="font-semibold mb-2">Error: {apiError}</p>
+              <p className="text-sm mt-2 mb-2">The API call to /api/users/profile failed.</p>
+              <pre className="bg-red-50 p-4 rounded overflow-auto text-xs mt-2">
+                {apiError}
+              </pre>
             </div>
           ) : dbUser ? (
             <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
