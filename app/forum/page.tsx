@@ -129,7 +129,8 @@ export default function ForumPage() {
   const eventId = searchParams.get('event');
   const topicFilter = searchParams.get('topic');
   const categoryFilter = searchParams.get('category');
-  
+  const highlightPostId = searchParams.get('post'); // Post to highlight from notification
+
   const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
 
   // Check Firebase session
@@ -172,6 +173,29 @@ export default function ForumPage() {
       }
     }
   }, [categoryFilter, categories]);
+
+  // Scroll to and highlight post from notification
+  useEffect(() => {
+    if (highlightPostId && posts.length > 0 && !loading) {
+      // Wait for DOM to be fully rendered
+      setTimeout(() => {
+        const postElement = document.getElementById(`post-${highlightPostId}`);
+        if (postElement) {
+          // Scroll to the post with smooth behavior
+          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          // Add a highlight effect
+          postElement.style.transition = 'background-color 0.5s ease';
+          postElement.style.backgroundColor = '#dbeafe'; // blue-100
+
+          // Remove highlight after 3 seconds
+          setTimeout(() => {
+            postElement.style.backgroundColor = '';
+          }, 3000);
+        }
+      }, 100);
+    }
+  }, [highlightPostId, posts, loading]);
 
   useEffect(() => {
     fetchPosts();
@@ -562,13 +586,14 @@ export default function ForumPage() {
               </div>
             ) : (
               posts.map((post) => (
-                <ForumPostCard
-                  key={post.id}
-                  post={post}
-                  onVote={handleVote}
-                  onBookmark={handleBookmark}
-                  expandable={true}
-                />
+                <div key={post.id} id={`post-${post.id}`}>
+                  <ForumPostCard
+                    post={post}
+                    onVote={handleVote}
+                    onBookmark={handleBookmark}
+                    expandable={true}
+                  />
+                </div>
               ))
             )}
 

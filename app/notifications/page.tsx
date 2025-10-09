@@ -221,7 +221,8 @@ export default function NotificationsPage() {
                         : notification.metadata;
 
                       if (metadata?.postId) {
-                        window.location.href = `/forum/posts/${metadata.postId}`;
+                        // Navigate to forum with post query parameter to highlight it
+                        window.location.href = `/forum?post=${metadata.postId}`;
                       }
                     } catch (e) {
                       console.error('Error parsing notification metadata:', e);
