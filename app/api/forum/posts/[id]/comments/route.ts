@@ -240,7 +240,7 @@ export const POST = safeHandler(async (
       const notificationsToCreate = followers.map(follower => ({
         id: generateId(),
         userId: follower.userId,
-        type: 'FORUM_COMMENT' as const,
+        type: 'FORUM_POST_REPLY' as const,
         title: 'New comment on a post you follow',
         message: `${authorName} commented on a post you're following`,
         read: false,
