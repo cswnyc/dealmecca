@@ -46,11 +46,11 @@ export default function DebugAuthPage() {
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Firebase Auth User</h2>
           {user ? (
-            <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
+            <pre className="bg-gray-900 text-white p-4 rounded overflow-auto text-sm">
               {JSON.stringify(user, null, 2)}
             </pre>
           ) : (
-            <p className="text-red-600">Not logged in</p>
+            <p className="text-red-600 font-bold text-lg">Not logged in</p>
           )}
         </div>
 
@@ -58,32 +58,35 @@ export default function DebugAuthPage() {
           <h2 className="text-xl font-semibold mb-4">ID Token</h2>
           {idToken ? (
             <div>
-              <p className="text-green-600 mb-2">✓ Token present</p>
-              <pre className="bg-gray-100 p-4 rounded overflow-auto text-xs break-all">
+              <p className="text-green-600 font-bold text-lg mb-2">✓ Token present</p>
+              <pre className="bg-gray-900 text-green-400 p-4 rounded overflow-auto text-xs break-all">
                 {idToken}
               </pre>
             </div>
           ) : (
-            <p className="text-red-600">No token</p>
+            <p className="text-red-600 font-bold text-lg">No token</p>
           )}
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Database User (API Test)</h2>
           {apiError ? (
-            <div className="text-red-600">
-              <p className="font-semibold mb-2">Error: {apiError}</p>
-              <p className="text-sm mt-2 mb-2">The API call to /api/users/profile failed.</p>
-              <pre className="bg-red-50 p-4 rounded overflow-auto text-xs mt-2">
+            <div>
+              <p className="font-bold text-lg text-red-600 mb-2">❌ API Error</p>
+              <p className="text-sm text-gray-700 mb-2">The API call to /api/users/profile failed.</p>
+              <pre className="bg-red-100 border-2 border-red-500 text-red-900 p-4 rounded overflow-auto text-sm mt-2">
                 {apiError}
               </pre>
             </div>
           ) : dbUser ? (
-            <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-              {JSON.stringify(dbUser, null, 2)}
-            </pre>
+            <div>
+              <p className="font-bold text-lg text-green-600 mb-2">✓ Database user found</p>
+              <pre className="bg-gray-900 text-white p-4 rounded overflow-auto text-sm">
+                {JSON.stringify(dbUser, null, 2)}
+              </pre>
+            </div>
           ) : (
-            <p className="text-gray-600">Loading database user...</p>
+            <p className="text-gray-700 font-semibold">Loading database user...</p>
           )}
         </div>
       </div>
