@@ -227,24 +227,39 @@ export const POST = safeHandler(async (
     }
   });
 
+  console.log('🔔 Notification Debug:', {
+    postId,
+    commenterId: auth.dbUserId,
+    followersCount: followers.length,
+    followerIds: followers.map(f => f.userId)
+  });
+
   if (followers.length > 0) {
     const authorName = comment.User.anonymousUsername || comment.User.publicHandle || 'Someone';
+    const notificationsToCreate = followers.map(follower => ({
+      id: generateId(),
+      userId: follower.userId,
+      type: 'FORUM_COMMENT',
+      title: 'New comment on a post you follow',
+      message: `${authorName} commented on a post you're following`,
+      read: false,
+      metadata: JSON.stringify({
+        postId,
+        commentId: comment.id,
+        authorId: auth.dbUserId
+      }),
+      createdAt: new Date()
+    }));
+
+    console.log('🔔 Creating notifications:', notificationsToCreate);
+
     await prisma.notification.createMany({
-      data: followers.map(follower => ({
-        id: generateId(),
-        userId: follower.userId,
-        type: 'FORUM_COMMENT',
-        title: 'New comment on a post you follow',
-        message: `${authorName} commented on a post you're following`,
-        read: false,
-        metadata: JSON.stringify({
-          postId,
-          commentId: comment.id,
-          authorId: auth.dbUserId
-        }),
-        createdAt: new Date()
-      }))
+      data: notificationsToCreate
     });
+
+    console.log('🔔 Notifications created successfully');
+  } else {
+    console.log('🔔 No followers to notify (excluding commenter)');
   }
 
   const formattedComment = {
