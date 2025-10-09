@@ -91,15 +91,10 @@ export const DELETE = safeHandler(async (
     where: { id: commentId }
   });
 
-  // Update the post's comment count
-  const commentCount = await prisma.forumComment.count({
-    where: { postId: existingComment.postId }
-  });
-
+  // Update the post's last activity time
   await prisma.forumPost.update({
     where: { id: existingComment.postId },
     data: {
-      commentsCount: commentCount,
       lastActivityAt: new Date()
     }
   });
