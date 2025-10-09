@@ -60,13 +60,16 @@ export const POST = safeHandler(async (
   } else {
     // Add follow
     if (!existingFollow) {
-      await prisma.postFollow.create({
+      const followRecord = await prisma.postFollow.create({
         data: {
           id: generateId(),
           userId: auth.dbUserId,
           postId
         }
       });
+      console.log('✅ Follow created:', { followId: followRecord.id, userId: auth.dbUserId, postId });
+    } else {
+      console.log('ℹ️ Already following:', { userId: auth.dbUserId, postId });
     }
   }
 
@@ -76,6 +79,8 @@ export const POST = safeHandler(async (
   });
 
   const isFollowing = follow !== false && (existingFollow || follow === true);
+
+  console.log('📊 Follow status:', { postId, userId: auth.dbUserId, isFollowing, followCount });
 
   return NextResponse.json(
     {
