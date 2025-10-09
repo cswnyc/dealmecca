@@ -12,28 +12,22 @@ import {
   AlertCircle,
   CheckCircle,
   Mail,
-  Lock,
   Eye,
   EyeOff,
   ArrowRight,
   Shield,
   Users,
-  BarChart3,
-  Building2,
   Zap,
   Star
 } from 'lucide-react';
 
-export default function SignUpPage() {
+export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
 
   const router = useRouter();
@@ -43,7 +37,7 @@ export default function SignUpPage() {
   let authLoading = false;
   let signInWithGoogle = null;
   let signInWithLinkedIn = null;
-  let signUpWithEmail = null;
+  let signInWithEmail = null;
 
   try {
     const authContext = useAuth();
@@ -51,7 +45,7 @@ export default function SignUpPage() {
     authLoading = authContext.loading;
     signInWithGoogle = authContext.signInWithGoogle;
     signInWithLinkedIn = authContext.signInWithLinkedIn;
-    signUpWithEmail = authContext.signUpWithEmail;
+    signInWithEmail = authContext.signInWithEmail;
   } catch (error) {
     console.log('Auth context not available during build');
   }
@@ -63,7 +57,7 @@ export default function SignUpPage() {
     }
   }, [user, authLoading, router]);
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignIn = async () => {
     if (!signInWithGoogle) return;
 
     setLoading(true);
@@ -72,17 +66,17 @@ export default function SignUpPage() {
     try {
       const result = await signInWithGoogle();
       if (result) {
-        setSuccess('Account created successfully! Redirecting...');
+        setSuccess('Logged in successfully! Redirecting...');
         setTimeout(() => router.push('/forum'), 1500);
       }
     } catch (err) {
-      setError('Failed to create account with Google. Please try again.');
+      setError('Failed to sign in with Google. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLinkedInSignUp = async () => {
+  const handleLinkedInSignIn = async () => {
     setLoading(true);
     setError('');
 
@@ -95,44 +89,25 @@ export default function SignUpPage() {
     }
   };
 
-  const handleEmailSignUp = async (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signUpWithEmail) return;
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (!agreedToTerms) {
-      setError('Please agree to the Terms of Service');
-      return;
-    }
+    if (!signInWithEmail) return;
 
     setLoading(true);
     setError('');
 
     try {
-      const result = await signUpWithEmail(email, password);
+      const result = await signInWithEmail(email, password);
       if (result) {
-        setSuccess('Account created successfully! Redirecting...');
+        setSuccess('Logged in successfully! Redirecting...');
         setTimeout(() => router.push('/forum'), 1500);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to create account. Please try again.');
+      setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  const getPasswordStrength = (password: string) => {
-    if (password.length < 6) return { strength: 'weak', color: 'text-red-500', text: 'Too short' };
-    if (password.length < 8) return { strength: 'fair', color: 'text-yellow-500', text: 'Fair' };
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) return { strength: 'good', color: 'text-blue-500', text: 'Good' };
-    return { strength: 'strong', color: 'text-green-500', text: 'Strong' };
-  };
-
-  const passwordStrength = getPasswordStrength(password);
 
   if (authLoading) {
     return (
@@ -157,31 +132,31 @@ export default function SignUpPage() {
         {/* Main Content */}
         <div className="relative z-10">
           <h1 className="text-4xl font-bold mb-6">
-            {brandConfig.taglines.primary}
+            Welcome back to {brandConfig.name}
           </h1>
           <p className="text-xl text-slate-300 mb-8 max-w-lg">
-            {brandConfig.elevator_pitch}
+            Continue your journey in media sales intelligence
           </p>
 
           {/* Key Benefits */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <BarChart3 className="w-4 h-4" />
+                <Mail className="w-4 h-4" />
               </div>
-              <span className="text-slate-300">30% faster deal closure</span>
+              <span className="text-slate-300">Access your saved contacts</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                 <Shield className="w-4 h-4" />
               </div>
-              <span className="text-slate-300">Enterprise-grade security</span>
+              <span className="text-slate-300">Secure encrypted connection</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                <Building2 className="w-4 h-4" />
+                <Users className="w-4 h-4" />
               </div>
-              <span className="text-slate-300">Trusted by 500+ sales teams</span>
+              <span className="text-slate-300">Join the community discussion</span>
             </div>
           </div>
         </div>
@@ -192,15 +167,12 @@ export default function SignUpPage() {
             {[...Array(5)].map((_, i) => (
               <Star key={i} className="w-4 h-4 fill-current" />
             ))}
-            <span className="text-slate-300 ml-2">4.9/5 from 200+ reviews</span>
+            <span className="text-slate-300 ml-2">Trusted by media professionals</span>
           </div>
-          <p className="text-slate-400 text-sm">
-            "DealMecca transformed our sales process. We're closing deals 40% faster."
-          </p>
         </div>
       </div>
 
-      {/* Right Panel - Signup Form */}
+      {/* Right Panel - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
@@ -212,10 +184,10 @@ export default function SignUpPage() {
             <CardContent className="p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                  Create your account
+                  Sign in to your account
                 </h2>
                 <p className="text-slate-600">
-                  Join thousands of sales professionals
+                  Welcome back! Please enter your details
                 </p>
               </div>
 
@@ -237,7 +209,7 @@ export default function SignUpPage() {
                 <div className="space-y-4">
                   {/* OAuth Buttons */}
                   <Button
-                    onClick={handleGoogleSignUp}
+                    onClick={handleGoogleSignIn}
                     disabled={loading}
                     variant="outline"
                     className="w-full h-12 text-slate-700 border-slate-300 hover:bg-slate-50"
@@ -252,7 +224,7 @@ export default function SignUpPage() {
                   </Button>
 
                   <Button
-                    onClick={handleLinkedInSignUp}
+                    onClick={handleLinkedInSignIn}
                     disabled={loading}
                     variant="outline"
                     className="w-full h-12 text-slate-700 border-slate-300 hover:bg-slate-50"
@@ -282,7 +254,7 @@ export default function SignUpPage() {
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={handleEmailSignUp} className="space-y-6">
+                <form onSubmit={handleEmailSignIn} className="space-y-6">
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                       Email address
@@ -310,7 +282,7 @@ export default function SignUpPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         className="w-full px-3 py-3 pr-10 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Create a password"
+                        placeholder="Enter your password"
                       />
                       <button
                         type="button"
@@ -324,71 +296,34 @@ export default function SignUpPage() {
                         )}
                       </button>
                     </div>
-                    {password && (
-                      <p className={`text-sm mt-1 ${passwordStrength.color}`}>
-                        Password strength: {passwordStrength.text}
-                      </p>
-                    )}
                   </div>
 
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
-                      Confirm password
-                    </label>
-                    <div className="relative">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
                       <input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                        className="w-full px-3 py-3 pr-10 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Confirm your password"
+                        id="remember"
+                        type="checkbox"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-5 w-5 text-slate-400" />
-                        ) : (
-                          <Eye className="h-5 w-5 text-slate-400" />
-                        )}
-                      </button>
+                      <label htmlFor="remember" className="ml-2 block text-sm text-slate-600">
+                        Remember me
+                      </label>
                     </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <input
-                      id="terms"
-                      type="checkbox"
-                      checked={agreedToTerms}
-                      onChange={(e) => setAgreedToTerms(e.target.checked)}
-                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-                    />
-                    <label htmlFor="terms" className="text-sm text-slate-600">
-                      I agree to the{' '}
-                      <Link href="/terms" className="text-blue-600 hover:text-blue-500">
-                        Terms of Service
-                      </Link>{' '}
-                      and{' '}
-                      <Link href="/privacy" className="text-blue-600 hover:text-blue-500">
-                        Privacy Policy
-                      </Link>
-                    </label>
+                    <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
+                      Forgot password?
+                    </Link>
                   </div>
 
                   <Button
                     type="submit"
-                    disabled={loading || !agreedToTerms}
+                    disabled={loading}
                     className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium"
                   >
                     {loading ? (
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     ) : (
                       <>
-                        Create Account
+                        Sign In
                         <ArrowRight className="ml-2 w-5 h-5" />
                       </>
                     )}
@@ -407,9 +342,9 @@ export default function SignUpPage() {
 
               <div className="mt-8 text-center">
                 <p className="text-sm text-slate-600">
-                  Already have an account?{' '}
-                  <Link href="/auth/login" className="text-blue-600 hover:text-blue-500 font-medium underline">
-                    Sign in
+                  Don't have an account?{' '}
+                  <Link href="/auth/signup" className="text-blue-600 hover:text-blue-500 font-medium underline">
+                    Sign up
                   </Link>
                 </p>
               </div>
@@ -427,7 +362,7 @@ export default function SignUpPage() {
                   </div>
                   <div className="flex items-center space-x-1">
                     <Zap className="w-3 h-3" />
-                    <span>Free Forever</span>
+                    <span>Always Secure</span>
                   </div>
                 </div>
               </div>
