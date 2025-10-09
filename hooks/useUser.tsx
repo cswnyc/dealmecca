@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode } from 'react';
 import { UserRole } from '@/lib/permissions';
+import { useAuth } from '@/lib/auth/firebase-auth';
 
 export interface User {
   id: string;
@@ -29,16 +30,35 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Get Firebase auth state
+  const { user: firebaseUser, idToken, loading: authLoading } = useAuth();
+
   const fetchUser = async () => {
+    // Don't fetch if Firebase auth is still loading or user not authenticated
+    if (authLoading) {
+      console.log('🔍 useUser: Waiting for Firebase auth to initialize');
+      return;
+    }
+
+    if (!firebaseUser || !idToken) {
+      console.log('🔍 useUser: No Firebase user or token, skipping profile fetch');
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
 
-      console.log('🔍 useUser: Fetching profile from /api/users/profile');
+      console.log('🔍 useUser: Fetching profile from /api/users/profile with Firebase token');
 
-      // Use Firebase-compatible profile endpoint instead of NextAuth /api/auth/me
+      // Use Firebase Authorization header
       const response = await fetch('/api/users/profile', {
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        }
       });
 
       console.log('🔍 useUser: Profile API response status:', response.status);
@@ -91,7 +111,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [firebaseUser, idToken, authLoading]); // Re-fetch when auth state changes
 
   const value: UserContextType = {
     user,
