@@ -1,43 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/server/requireAuth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Log all cookies for debugging
-    const allCookies = request.cookies.getAll();
-    console.log('🍪 Profile API: All cookies:', allCookies.map(c => `${c.name}=${c.value.substring(0, 20)}...`));
+    // Authenticate user using Firebase token
+    const auth = await requireAuth(request);
+    if (auth instanceof NextResponse) return auth; // Return error response
 
-    // Get user ID from session headers set by middleware
-    let userId = request.headers.get('x-user-id');
-    console.log('📧 Profile API: x-user-id header:', userId);
-
-    // Fallback: Check for linkedin-auth cookie if no header
-    if (!userId) {
-      const linkedInAuthCookie = request.cookies.get('linkedin-auth');
-      console.log('🍪 Profile API: linkedin-auth cookie:', linkedInAuthCookie);
-
-      if (linkedInAuthCookie) {
-        // Cookie format is "linkedin-{userId}"
-        const cookieValue = linkedInAuthCookie.value;
-        console.log('🍪 Profile API: Cookie value:', cookieValue);
-
-        if (cookieValue.startsWith('linkedin-')) {
-          userId = cookieValue.replace('linkedin-', '');
-          console.log('📧 Profile API: Extracted user ID from linkedin-auth cookie:', userId);
-        }
-      }
-    } else {
-      console.log('📧 Profile API: Got user ID from header:', userId);
-    }
-
-    if (!userId) {
-      console.log('❌ Profile API: No user ID found in headers or cookies');
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      );
-    }
-
+    const userId = auth.dbUserId;
     console.log('🔍 Profile API: Querying database for user ID:', userId);
 
     const user = await prisma.user.findUnique({
