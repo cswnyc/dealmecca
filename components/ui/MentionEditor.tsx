@@ -184,7 +184,7 @@ export default function MentionEditor({
     return text.replace(/@\[([^\]]+)\]\([^)]+\)/g, '@$1');
   };
 
-  const baseInputClasses = `w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`;
+  const baseInputClasses = `w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder:text-gray-400 ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`;
 
   return (
     <div className="relative">
