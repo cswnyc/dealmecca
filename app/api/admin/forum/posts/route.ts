@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { content: { contains: search, mode: 'insensitive' } },
-        { author: { name: { contains: search, mode: 'insensitive' } } },
-        { author: { email: { contains: search, mode: 'insensitive' } } }
+        { User: { name: { contains: search, mode: 'insensitive' } } },
+        { User: { email: { contains: search, mode: 'insensitive' } } }
       ];
     }
 
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (category) {
-      where.category = {
+      where.ForumCategory = {
         slug: category
       };
     }
@@ -58,14 +58,14 @@ export async function GET(request: NextRequest) {
     const posts = await prisma.forumPost.findMany({
       where,
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
             email: true
           }
         },
-        category: {
+        ForumCategory: {
           select: {
             id: true,
             name: true,
@@ -75,9 +75,9 @@ export async function GET(request: NextRequest) {
             icon: true
           }
         },
-        companyMentions: {
+        CompanyMention: {
           include: {
-            company: {
+            companies: {
               select: {
                 id: true,
                 name: true,
@@ -86,9 +86,9 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        contactMentions: {
+        ContactMention: {
           include: {
-            contact: {
+            contacts: {
               select: {
                 id: true,
                 firstName: true,
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            comments: true
+            ForumComment: true
           }
         }
       },
@@ -154,10 +154,10 @@ export async function GET(request: NextRequest) {
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
       lastActivityAt: post.lastActivityAt?.toISOString(),
-      author: post.author,
-      category: post.category,
-      companyMentions: post.companyMentions,
-      contactMentions: post.contactMentions,
+      author: post.User,
+      category: post.ForumCategory,
+      companyMentions: post.CompanyMention,
+      contactMentions: post.ContactMention,
       _count: post._count
     }));
 
@@ -232,14 +232,14 @@ export async function POST(request: NextRequest) {
         downvotes: 0
       },
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
             email: true
           }
         },
-        category: {
+        ForumCategory: {
           select: {
             id: true,
             name: true,
@@ -249,9 +249,7 @@ export async function POST(request: NextRequest) {
         },
         _count: {
           select: {
-            comments: true,
-            votes: true,
-            views: true
+            ForumComment: true
           }
         }
       }
