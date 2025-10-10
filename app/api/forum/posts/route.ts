@@ -394,6 +394,15 @@ const CreatePostSchema = z.object({
   dealSize: z.string().optional(),
   location: z.string().optional(),
   mediaType: z.enum(['text', 'image', 'video', 'link', 'TV', 'RADIO', 'DIGITAL', 'PRINT', 'OOH', 'STREAMING', 'PODCAST', 'SOCIAL', 'PROGRAMMATIC']).optional().default('text'),
+  postType: z.enum(['post', 'list', 'poll', 'code']).optional().default('post'),
+  listItems: z.array(z.string()).optional(),
+  pollChoices: z.array(z.string()).optional(),
+  pollDuration: z.number().optional(),
+  codeLanguage: z.string().optional(),
+  codeFramework: z.string().optional(),
+  codeType: z.string().optional(),
+  codeComplexity: z.string().optional(),
+  generatedCode: z.string().optional(),
 });
 
 export const POST = safeHandler(async (request: NextRequest, ctx: any, { requestId }) => {
@@ -417,7 +426,16 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
     urgency,
     dealSize,
     location,
-    mediaType
+    mediaType,
+    postType,
+    listItems,
+    pollChoices,
+    pollDuration,
+    codeLanguage,
+    codeFramework,
+    codeType,
+    codeComplexity,
+    generatedCode
   } = body;
 
     // Parse content and generate smart title using TopicParser
@@ -444,6 +462,12 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
 
     // Create the post - requires admin approval
     const now = new Date();
+
+    // Calculate poll end date if applicable
+    let pollEndsAt = null;
+    if (postType === 'poll' && pollDuration) {
+      pollEndsAt = new Date(now.getTime() + pollDuration * 24 * 60 * 60 * 1000); // Convert days to milliseconds
+    }
     const post = await prisma.forumPost.create({
       data: {
         id: generateId(),
@@ -459,6 +483,16 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
         dealSize,
         location,
         mediaType,
+        postType: postType || 'post',
+        listItems: listItems ? JSON.stringify(listItems) : '',
+        pollChoices: pollChoices ? JSON.stringify(pollChoices) : '',
+        pollDuration: pollDuration || null,
+        pollEndsAt,
+        codeLanguage: codeLanguage || null,
+        codeFramework: codeFramework || null,
+        codeType: codeType || null,
+        codeComplexity: codeComplexity || null,
+        generatedCode: generatedCode || null,
         status: 'PENDING',  // User posts require admin approval
         updatedAt: now
       },

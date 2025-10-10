@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth/firebase-auth';
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -51,16 +51,8 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Try to get Firebase auth, but handle errors gracefully
-  let user = null;
-  let loading = false;
-  try {
-    const authContext = useAuth();
-    user = authContext.user;
-    loading = authContext.loading;
-  } catch (error) {
-    console.log('Firebase auth not available, using LinkedIn-only authentication');
-  }
+  // Get Firebase auth
+  const { user, idToken, loading } = useFirebaseAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -132,6 +124,39 @@ export default function SettingsPage() {
     }
   }, [user, loading, router, mounted]);
 
+  // Fetch user preferences after authentication
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      if (!idToken || !isAuthenticated) return;
+
+      try {
+        const response = await fetch('/api/users/preferences', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`,
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (response.ok) {
+          const preferences = await response.json();
+          setSettings(prev => ({
+            ...prev,
+            darkMode: preferences.darkMode ?? prev.darkMode,
+            language: preferences.language ?? prev.language,
+            timezone: preferences.timezone ?? prev.timezone,
+            emailNotifications: preferences.emailNotifications ?? prev.emailNotifications,
+            pushNotifications: preferences.pushNotifications ?? prev.pushNotifications,
+            marketingEmails: preferences.marketingEmails ?? prev.marketingEmails
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching preferences:', error);
+      }
+    };
+
+    fetchPreferences();
+  }, [idToken, isAuthenticated]);
+
   const handleSettingChange = (key: keyof UserSettings, value: any) => {
     setSettings(prev => ({
       ...prev,
@@ -143,10 +168,35 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Simulate save operation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      // Get Firebase ID token
+      if (!idToken) {
+        console.error('No Firebase ID token available');
+        return;
+      }
+
+      // Save preferences to API
+      const response = await fetch('/api/users/preferences', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          darkMode: settings.darkMode,
+          language: settings.language,
+          timezone: settings.timezone,
+          emailNotifications: settings.emailNotifications,
+          pushNotifications: settings.pushNotifications,
+          marketingEmails: settings.marketingEmails
+        })
+      });
+
+      if (response.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        console.error('Failed to save preferences:', response.status);
+      }
     } catch (error) {
       console.error('Error saving settings:', error);
     } finally {
@@ -455,9 +505,14 @@ export default function SettingsPage() {
           {activeTab === 'security' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                  <Shield className="w-5 h-5 mr-2" />
-                  Account Security
+                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Shield className="w-5 h-5 mr-2" />
+                    <span>Account Security</span>
+                  </div>
+                  <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+                    Coming Soon
+                  </span>
                 </h2>
 
                 <div className="space-y-4">
