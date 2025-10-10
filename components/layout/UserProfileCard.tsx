@@ -439,10 +439,15 @@ function UserProfileContent() {
           <div className="py-1">
             <button
               onClick={() => handleNavigation('/rewards')}
-              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              <Star className="w-4 h-4 mr-3" />
-              My Rewards
+              <div className="flex items-center">
+                <Star className="w-4 h-4 mr-3" />
+                My Rewards
+              </div>
+              <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+                Coming Soon
+              </span>
             </button>
 
             <button

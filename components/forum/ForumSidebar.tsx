@@ -233,9 +233,14 @@ export function ForumSidebar() {
       {firebaseUser && userStats && (
         <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900">
-              <Trophy className="w-4 h-4 text-yellow-500" />
-              <span>Your Progress</span>
+            <CardTitle className="text-sm font-medium flex items-center justify-between text-gray-900">
+              <div className="flex items-center space-x-2">
+                <Trophy className="w-4 h-4 text-yellow-500" />
+                <span>Your Progress</span>
+              </div>
+              <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+                Coming Soon
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
