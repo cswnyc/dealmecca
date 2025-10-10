@@ -7,6 +7,12 @@ import { safeHandler, bad } from '@/server/safeHandler';
 import { requireAuth } from '@/server/requireAuth';
 import { TopicParser } from '@/lib/forum/topic-parser';
 import { z } from 'zod';
+import { randomBytes } from 'node:crypto';
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 interface Mention {
   type: 'company' | 'contact' | 'topic';
@@ -387,7 +393,7 @@ const CreatePostSchema = z.object({
   urgency: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional().default('MEDIUM'),
   dealSize: z.string().optional(),
   location: z.string().optional(),
-  mediaType: z.enum(['text', 'image', 'video', 'link']).optional().default('text'),
+  mediaType: z.enum(['text', 'image', 'video', 'link', 'TV', 'RADIO', 'DIGITAL', 'PRINT', 'OOH', 'STREAMING', 'PODCAST', 'SOCIAL', 'PROGRAMMATIC']).optional().default('text'),
 });
 
 export const POST = safeHandler(async (request: NextRequest, ctx: any, { requestId }) => {
@@ -436,9 +442,11 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
     // Extract all original mentions for backward compatibility
     const allMentions = parsedContent.originalMentions;
 
-    // Create the post with auto-approval
+    // Create the post - requires admin approval
+    const now = new Date();
     const post = await prisma.forumPost.create({
       data: {
+        id: generateId(),
         title,
         content,
         slug,
@@ -451,7 +459,8 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
         dealSize,
         location,
         mediaType,
-        status: 'APPROVED'  // Auto-approve posts
+        status: 'PENDING',  // User posts require admin approval
+        updatedAt: now
       },
       include: {
         User: {

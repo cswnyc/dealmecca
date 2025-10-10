@@ -79,29 +79,60 @@ export async function ensureDbUserFromFirebase(decoded: DecodedIdToken): Promise
 
   // Step 4: Update existing user if firebaseUid is missing (migration scenario)
   if (!user.firebaseUid) {
-    console.log(`🔄 Updating existing user ${user.id} with firebaseUid=${decoded.uid}`);
-
-    user = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        firebaseUid: decoded.uid,
-        provider: provider,
-      },
+    // Check if this firebaseUid is already taken by another user
+    const conflictingUser = await prisma.user.findUnique({
+      where: { firebaseUid: decoded.uid }
     });
+
+    if (conflictingUser && conflictingUser.id !== user.id) {
+      console.warn(`⚠️ FirebaseUid ${decoded.uid} already belongs to user ${conflictingUser.id}, skipping update for user ${user.id}`);
+      // Don't update - this user should use their existing account without firebaseUid
+    } else {
+      console.log(`🔄 Updating existing user ${user.id} with firebaseUid=${decoded.uid}`);
+
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          firebaseUid: decoded.uid,
+          provider: provider,
+        },
+      });
+    }
   }
 
   // Step 5: Ensure publicHandle exists (migration scenario)
   if (!user.publicHandle) {
-    const alias = makeAlias(decoded.uid);
+    let alias = makeAlias(decoded.uid);
 
-    console.log(`🔄 Adding publicHandle to user ${user.id}: ${alias}`);
+    // Check if this publicHandle is already taken
+    let isUnique = false;
+    let attempts = 0;
+    while (!isUnique && attempts < 10) {
+      const existingUser = await prisma.user.findUnique({
+        where: { publicHandle: alias }
+      });
 
-    user = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        publicHandle: alias,
-      },
-    });
+      if (!existingUser || existingUser.id === user.id) {
+        isUnique = true;
+      } else {
+        // Generate new alias with attempt number
+        alias = makeAlias(`${decoded.uid}-${attempts}`);
+        attempts++;
+      }
+    }
+
+    if (isUnique) {
+      console.log(`🔄 Adding publicHandle to user ${user.id}: ${alias}`);
+
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          publicHandle: alias,
+        },
+      });
+    } else {
+      console.warn(`⚠️ Could not find unique publicHandle for user ${user.id} after 10 attempts`);
+    }
   }
 
   return user;

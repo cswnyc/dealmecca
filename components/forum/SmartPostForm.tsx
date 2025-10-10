@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 // Firebase imports removed to prevent authentication conflicts with LinkedIn OAuth
 import { generateMetadata } from '@/lib/ai-tagging';
 import { parseMentions } from '@/lib/mention-utils';
+import { authedFetch } from '@/lib/authedFetch';
 import { EnhancedMentionTextarea } from './EnhancedMentionTextarea';
 import { CodeGenerationInterface } from '@/components/code/CodeGenerationInterface';
 import { TagIcon, MapPinIcon, ExclamationTriangleIcon, BuildingOfficeIcon, CalendarIcon } from '@heroicons/react/24/outline';
@@ -237,12 +238,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     console.log('🔐 Auth check - user.id:', user?.id);
     console.log('🔐 Auth check - authLoading:', authLoading);
 
-    if (!user?.id) {
-      alert('You must be signed in to create a post. Please sign out and sign back in with LinkedIn.');
-      console.error('❌ No user ID available. User object:', user);
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       // Prepare content based on post type
@@ -295,18 +290,22 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         authorId: user?.id,
         ...additionalData,
         tags: JSON.stringify(formData.tags),
-        mediaType: JSON.stringify(formData.mediaType),
+        mediaType: Array.isArray(formData.mediaType) && formData.mediaType.length > 0
+          ? formData.mediaType[0]
+          : 'text', // Default to 'text' if no media type selected
         // Include mentions for backend processing
         mentions: {
           companies: mentions.companyMentions,
           contacts: mentions.contactMentions
         }
       };
-      
-      const response = await fetch('/api/forum/posts', {
+
+      console.log('📤 Request body being sent:', JSON.stringify(requestBody, null, 2));
+      console.log('📤 mediaType value:', requestBody.mediaType, 'type:', typeof requestBody.mediaType);
+
+      const response = await authedFetch('/api/forum/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(requestBody)
       });
 

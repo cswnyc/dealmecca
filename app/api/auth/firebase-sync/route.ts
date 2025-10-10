@@ -22,7 +22,24 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       // Generate anonymous profile for new users
-      const anonymousProfile = generateAnonymousProfile(uid);
+      let anonymousProfile = generateAnonymousProfile(uid);
+
+      // Ensure unique anonymous username
+      let isUnique = false;
+      let attempts = 0;
+      while (!isUnique && attempts < 10) {
+        const existingUser = await prisma.user.findUnique({
+          where: { anonymousUsername: anonymousProfile.username }
+        });
+
+        if (!existingUser) {
+          isUnique = true;
+        } else {
+          // Generate new profile with different seed
+          anonymousProfile = generateAnonymousProfile(`${uid}-${attempts}`);
+          attempts++;
+        }
+      }
 
       // Create new user in database
       user = await prisma.user.create({
