@@ -512,7 +512,7 @@ export default function EditForumPost() {
               <select
                 value={formData.categoryId}
                 onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
@@ -532,7 +532,7 @@ export default function EditForumPost() {
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
                 placeholder="e.g., San Francisco, CA"
               />
             </div>
@@ -546,7 +546,7 @@ export default function EditForumPost() {
                   type="text"
                   value={formData.anonymousHandle}
                   onChange={(e) => setFormData({ ...formData, anonymousHandle: e.target.value })}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
                   placeholder="Anonymous user handle"
                 />
               </div>
@@ -590,7 +590,7 @@ export default function EditForumPost() {
                         }
                       }}
                       placeholder="Search companies, contacts, topics... (e.g., Nike, John Smith, Programmatic)"
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
                     />
 
                     {/* Entity Suggestions Dropdown */}
@@ -791,7 +791,7 @@ export default function EditForumPost() {
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full md:w-1/2 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full md:w-1/2 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
               >
                 <option value="PENDING">Pending Review</option>
                 <option value="APPROVED">Approved</option>
