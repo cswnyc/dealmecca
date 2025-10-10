@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { randomBytes } from 'crypto';
+
+// Generate a random ID similar to CUID format
+const generateId = () => {
+  return `cmg${randomBytes(12).toString('base64url')}`;
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -59,6 +65,7 @@ export async function POST(request: NextRequest) {
 
     const category = await prisma.forumCategory.create({
       data: {
+        id: generateId(),
         name,
         description,
         icon: icon || 'MessageSquare',
