@@ -1,47 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-interface Mention {
-  type: 'company' | 'contact' | 'category' | 'user';
-  id: string;
-  name: string;
-}
-
-function extractMentions(text: string): Mention[] {
-  const mentionRegex = /@\[([^\]]+)\]\(([^:]+):([^)]+)\)/g;
-  const mentions: Mention[] = [];
-  let match;
-
-  while ((match = mentionRegex.exec(text)) !== null) {
-    const [, name, type, id] = match;
-    mentions.push({
-      type: type as Mention['type'],
-      id,
-      name
-    });
-  }
-
-  return mentions;
-}
-
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
-    const post = await prisma.ForumPost.findUnique({
+    const post = await prisma.forumPost.findUnique({
       where: { id },
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
             email: true
           }
         },
-        category: {
+        ForumCategory: {
           select: {
             id: true,
             name: true,
@@ -51,24 +28,9 @@ export async function GET(
             icon: true
           }
         },
-        topicMentions: {
+        CompanyMention: {
           include: {
-            topic: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                context: true
-              }
-            }
-          },
-          orderBy: {
-            order: 'asc'
-          }
-        },
-        companyMentions: {
-          include: {
-            company: {
+            companies: {
               select: {
                 id: true,
                 name: true,
@@ -77,9 +39,9 @@ export async function GET(
             }
           }
         },
-        contactMentions: {
+        ContactMention: {
           include: {
-            contact: {
+            contacts: {
               select: {
                 id: true,
                 firstName: true,
@@ -91,7 +53,7 @@ export async function GET(
         },
         _count: {
           select: {
-            comments: true
+            ForumComment: true
           }
         }
       }
@@ -99,7 +61,7 @@ export async function GET(
 
     if (!post) {
       return NextResponse.json(
-        { error: 'Forum post not found' },
+        { error: 'Post not found' },
         { status: 404 }
       );
     }
@@ -121,6 +83,7 @@ export async function GET(
       isPinned: post.isPinned || false,
       isAnonymous: post.isAnonymous || false,
       anonymousHandle: post.anonymousHandle,
+      tags: post.tags ? post.tags.split(', ') : [],
       urgency: post.urgency,
       dealSize: post.dealSize,
       location: post.location,
@@ -129,12 +92,13 @@ export async function GET(
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
       lastActivityAt: post.lastActivityAt?.toISOString(),
-      author: post.author,
-      category: post.category,
-      topicMentions: post.topicMentions,
-      companyMentions: post.companyMentions,
-      contactMentions: post.contactMentions,
-      _count: post._count
+      author: post.User,
+      category: post.ForumCategory,
+      companyMentions: post.CompanyMention,
+      contactMentions: post.ContactMention,
+      _count: {
+        comments: post._count.ForumComment
+      }
     };
 
     return NextResponse.json(formattedPost);
@@ -150,77 +114,48 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const body = await request.json();
     const {
       content,
       categoryId,
-      isFeatured = false,
-      isPinned = false,
-      isLocked = false,
-      isAnonymous = false,
+      status,
+      isFeatured,
+      isPinned,
+      isLocked,
+      isAnonymous,
       anonymousHandle,
       location,
-      status,
-      approvedBy,
-      topicIds = []
+      topicIds
     } = body;
 
-    if (!content) {
-      return NextResponse.json(
-        { error: 'Content is required' },
-        { status: 400 }
-      );
-    }
-
-    // Get existing post
-    const existingPost = await prisma.ForumPost.findUnique({
-      where: { id },
-      select: { title: true, slug: true }
-    });
-
-    if (!existingPost) {
-      return NextResponse.json(
-        { error: 'Forum post not found' },
-        { status: 404 }
-      );
-    }
-
-    // Parse mentions from content only (title is not being updated)
-    const contentMentions = extractMentions(content);
-    const allMentions = [...contentMentions];
-
-    // Update the post (keeping existing title and slug)
-    const updatedPost = await prisma.ForumPost.update({
+    // Update the post
+    const post = await prisma.forumPost.update({
       where: { id },
       data: {
         content,
         categoryId,
+        status,
         isFeatured,
         isPinned,
         isLocked,
         isAnonymous,
         anonymousHandle,
         location,
-        updatedAt: new Date(),
-        ...(status && { status }),
-        ...(status === 'APPROVED' && approvedBy && {
-          approvedAt: new Date(),
-          approvedBy
-        })
+        updatedAt: new Date()
       },
       include: {
-        author: {
+        User: {
           select: {
             id: true,
             name: true,
             email: true
           }
         },
-        category: {
+        ForumCategory: {
           select: {
             id: true,
             name: true,
@@ -230,103 +165,13 @@ export async function PUT(
         },
         _count: {
           select: {
-            comments: true
+            ForumComment: true
           }
         }
       }
     });
 
-    // Handle topic assignments
-    if (topicIds.length > 0) {
-      // Clear existing topic mentions
-      await prisma.TopicMention.deleteMany({
-        where: { postId: id }
-      });
-
-      // Create or find topics and create mentions
-      for (let i = 0; i < topicIds.length; i++) {
-        const topicIdOrName = topicIds[i];
-        let topicId = topicIdOrName;
-
-        // If it's a new topic (starts with 'new-', 'manual-', or 'entity-'), create it
-        if (typeof topicIdOrName === 'string' && (topicIdOrName.startsWith('new-') || topicIdOrName.startsWith('manual-') || topicIdOrName.startsWith('entity-'))) {
-          let topicName: string;
-
-          if (topicIdOrName.startsWith('entity-')) {
-            // For entity-based topics, extract the name from database entity
-            const parts = topicIdOrName.split('-');
-            const entityType = parts[1]; // company, contact, etc.
-            const entityId = parts[2];
-
-            try {
-              if (entityType === 'company') {
-                const company = await prisma.Company.findUnique({ where: { id: entityId }, select: { name: true } });
-                topicName = company?.name || 'Unknown Company';
-              } else if (entityType === 'contact') {
-                const contact = await prisma.Contact.findUnique({
-                  where: { id: entityId },
-                  select: { firstName: true, lastName: true }
-                });
-                topicName = contact ? `${contact.firstName} ${contact.lastName}`.trim() : 'Unknown Contact';
-              } else if (entityType === 'topic') {
-                // Use existing topic - skip creation
-                topicId = entityId;
-                continue;
-              } else {
-                // For categories and other types, try to find the name
-                topicName = topicIdOrName.replace(/^entity-[^-]+-/, '').replace(/-/g, ' ');
-              }
-            } catch (error) {
-              console.error(`Failed to fetch entity ${entityType}:${entityId}:`, error);
-              topicName = topicIdOrName.replace(/^entity-[^-]+-/, '').replace(/-/g, ' ');
-            }
-          } else {
-            // Handle new- and manual- prefixes
-            topicName = topicIdOrName
-              .replace(/^(new-|manual-)/, '')
-              .replace(/-/g, ' ')
-              .replace(/\b\w/g, l => l.toUpperCase());
-          }
-
-          try {
-            const newTopic = await prisma.Topic.create({
-              data: {
-                name: topicName,
-                categoryId: categoryId || updatedPost.categoryId,
-                isActive: true
-              }
-            });
-
-            topicId = newTopic.id;
-          } catch (error) {
-            console.error(`Failed to create topic "${topicName}":`, error);
-            continue;
-          }
-        }
-
-        // Create topic mention
-        try {
-          await prisma.TopicMention.create({
-            data: {
-              postId: id,
-              topicId: topicId,
-              order: i
-            }
-          });
-        } catch (error) {
-          console.error(`Failed to create topic mention for "${topicId}":`, error);
-        }
-      }
-    }
-
-    // TODO: Handle mention relationships - currently disabled due to model complexity
-    // The mention system requires mentionedBy (user ID) which we don't have in admin context
-    // This should be implemented when user authentication is added to admin routes
-    if (allMentions.length > 0) {
-      console.log(`Found ${allMentions.length} mentions but skipping creation - requires user context`);
-    }
-
-    return NextResponse.json(updatedPost);
+    return NextResponse.json(post);
 
   } catch (error) {
     console.error('Error updating forum post:', error);
@@ -339,29 +184,16 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
-    const post = await prisma.ForumPost.findUnique({
+    await prisma.forumPost.delete({
       where: { id }
     });
 
-    if (!post) {
-      return NextResponse.json(
-        { error: 'Forum post not found' },
-        { status: 404 }
-      );
-    }
-
-    await prisma.ForumPost.delete({
-      where: { id }
-    });
-
-    return NextResponse.json({
-      message: 'Forum post deleted successfully'
-    });
+    return NextResponse.json({ success: true });
 
   } catch (error) {
     console.error('Error deleting forum post:', error);
