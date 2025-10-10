@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 interface SearchSuggestion {
   id: string;
   title: string;
-  type: 'company' | 'team' | 'businessLine' | 'contact';
+  type: 'company' | 'team' | 'businessLine' | 'contact' | 'forumPost' | 'event';
   category: string;
   icon: string;
   metadata?: {
@@ -33,6 +33,8 @@ interface SearchResults {
     team: number;
     businessLine: number;
     contact: number;
+    forumPost: number;
+    event: number;
   };
   totalResults: number;
   seeAllQuery: string;
@@ -53,7 +55,7 @@ export function GlobalSearchInput({
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResults>({
     suggestions: [],
-    categories: { company: 0, team: 0, businessLine: 0, contact: 0 },
+    categories: { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },
     totalResults: 0,
     seeAllQuery: ''
   });
@@ -70,7 +72,7 @@ export function GlobalSearchInput({
     if (searchQuery.length < 2) {
       setResults({
         suggestions: [],
-        categories: { company: 0, team: 0, businessLine: 0, contact: 0 },
+        categories: { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },
         totalResults: 0,
         seeAllQuery: ''
       });
@@ -89,7 +91,7 @@ export function GlobalSearchInput({
         const data = await response.json();
         setResults({
           suggestions: data.suggestions || [],
-          categories: data.categories || { company: 0, team: 0, businessLine: 0, contact: 0 },
+          categories: data.categories || { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },
           totalResults: data.totalResults || 0,
           seeAllQuery: searchQuery
         });
@@ -106,12 +108,23 @@ export function GlobalSearchInput({
   const handleInputChange = (value: string) => {
     setQuery(value);
     setSelectedIndex(-1);
-    
+
+    if (!value.trim()) {
+      setResults({
+        suggestions: [],
+        categories: { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },
+        totalResults: 0,
+        seeAllQuery: ''
+      });
+      setShowDropdown(false);
+      return;
+    }
+
     // Clear existing timeout
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-    
+
     // Set new timeout
     debounceRef.current = setTimeout(() => {
       debouncedSearch(value);
@@ -156,12 +169,16 @@ export function GlobalSearchInput({
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
     setQuery(suggestion.title);
     setShowDropdown(false);
-    
+
     // Navigate based on suggestion type
     if (suggestion.type === 'company') {
       router.push(`/orgs/companies/${suggestion.id}`);
     } else if (suggestion.type === 'contact') {
       router.push(`/orgs/contacts/${suggestion.id}`);
+    } else if (suggestion.type === 'forumPost') {
+      router.push(`/forum/posts/${suggestion.id}`);
+    } else if (suggestion.type === 'event') {
+      router.push(`/events/${suggestion.id}`);
     } else {
       // For teams and business lines, go to search results
       router.push(`/search?q=${encodeURIComponent(suggestion.title)}&type=${suggestion.type}`);
@@ -181,7 +198,7 @@ export function GlobalSearchInput({
     setQuery('');
     setResults({
       suggestions: [],
-      categories: { company: 0, team: 0, businessLine: 0, contact: 0 },
+      categories: { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },
       totalResults: 0,
       seeAllQuery: ''
     });

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 interface SearchSuggestion {
   id: string;
   title: string;
-  type: 'company' | 'team' | 'businessLine' | 'contact';
+  type: 'company' | 'team' | 'businessLine' | 'contact' | 'forumPost' | 'event';
   category: string;
   icon: string;
   metadata?: {
@@ -21,6 +21,8 @@ interface SearchResults {
     team: number;
     businessLine: number;
     contact: number;
+    forumPost: number;
+    event: number;
   };
   totalResults: number;
   seeAllQuery: string;
@@ -35,7 +37,7 @@ export async function GET(request: NextRequest) {
     if (query.length < 2) {
       return NextResponse.json({
         suggestions: [],
-        categories: { company: 0, team: 0, businessLine: 0, contact: 0 },
+        categories: { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },
         totalResults: 0,
         seeAllQuery: ''
       });
@@ -43,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     const suggestions: SearchSuggestion[] = [];
     let totalResults = 0;
-    const categories = { company: 0, team: 0, businessLine: 0, contact: 0 };
+    const categories = { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 };
 
     // Search Companies (limit 3)
     try {
@@ -181,6 +183,113 @@ export async function GET(request: NextRequest) {
       totalResults += forumCategories.length;
     } catch (error) {
       console.error('Error searching forum categories:', error);
+    }
+
+    // Search Forum Posts (limit 2)
+    try {
+      const forumPosts = await prisma.forumPost.findMany({
+        where: {
+          AND: [
+            { status: 'APPROVED' }, // Only show approved posts
+            {
+              OR: [
+                { title: { contains: query, mode: 'insensitive' } },
+                { content: { contains: query, mode: 'insensitive' } },
+                { tags: { contains: query, mode: 'insensitive' } }
+              ]
+            }
+          ]
+        },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          category: {
+            select: {
+              name: true,
+              icon: true
+            }
+          },
+          _count: {
+            select: {
+              comments: true
+            }
+          }
+        },
+        take: 2,
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      forumPosts.forEach(post => {
+        suggestions.push({
+          id: post.id,
+          title: post.title,
+          type: 'forumPost',
+          category: 'Forum Post',
+          icon: post.category?.icon || '💬',
+          metadata: {
+            description: `${post._count.comments} comments`
+          }
+        });
+      });
+
+      categories.forumPost = forumPosts.length;
+      totalResults += forumPosts.length;
+    } catch (error) {
+      console.error('Error searching forum posts:', error);
+    }
+
+    // Search Events (limit 2)
+    try {
+      const events = await prisma.event.findMany({
+        where: {
+          AND: [
+            { status: 'PUBLISHED' },
+            {
+              OR: [
+                { name: { contains: query, mode: 'insensitive' } },
+                { description: { contains: query, mode: 'insensitive' } },
+                { location: { contains: query, mode: 'insensitive' } }
+              ]
+            }
+          ]
+        },
+        select: {
+          id: true,
+          name: true,
+          startDate: true,
+          endDate: true,
+          location: true,
+          isVirtual: true,
+          isHybrid: true
+        },
+        take: 2,
+        orderBy: {
+          startDate: 'asc'
+        }
+      });
+
+      events.forEach(event => {
+        const eventType = event.isVirtual ? 'Virtual Event' : event.isHybrid ? 'Hybrid Event' : 'In-Person Event';
+        suggestions.push({
+          id: event.id,
+          title: event.name,
+          type: 'event',
+          category: 'Event',
+          icon: '📅',
+          metadata: {
+            description: eventType,
+            location: event.location || undefined
+          }
+        });
+      });
+
+      categories.event = events.length;
+      totalResults += events.length;
+    } catch (error) {
+      console.error('Error searching events:', error);
     }
 
     // TODO: Add Teams search when we find the teams data source
