@@ -49,6 +49,12 @@ export function ForumSidebar() {
   const isFetchingRef = useRef(false);
   const [syncedUser, setSyncedUser] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [topContributors, setTopContributors] = useState<Array<{
+    name: string;
+    gems: number;
+    rank: number;
+    isVIP: boolean;
+  }>>([]);
 
   useEffect(() => {
     console.log('🎯 ForumSidebar: Firebase user state:', { firebaseUser: !!firebaseUser, authLoading, hasFirebaseSession });
@@ -176,6 +182,28 @@ export function ForumSidebar() {
       console.error('Error fetching notification count:', error);
     }
   };
+
+  // Fetch top contributors
+  const fetchTopContributors = async () => {
+    try {
+      const response = await fetch('/api/forum/top-contributors?limit=3');
+      if (response.ok) {
+        const data = await response.json();
+        setTopContributors(data.contributors || []);
+      }
+    } catch (error) {
+      console.error('Error fetching top contributors:', error);
+      // Use fallback data on error
+      setTopContributors([
+        { name: 'Loading...', gems: 0, rank: 1, isVIP: false },
+      ]);
+    }
+  };
+
+  // Fetch notification count and top contributors when component mounts
+  useEffect(() => {
+    fetchTopContributors();
+  }, []);
 
   // Fetch notification count when user is available
   useEffect(() => {
@@ -345,11 +373,7 @@ export function ForumSidebar() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {[
-            { name: 'Alex Rodriguez', gems: 2840, rank: 1, isVIP: true },
-            { name: 'Sarah Chen', gems: 2650, rank: 2, isVIP: true },
-            { name: 'Mike Johnson', gems: 2100, rank: 3, isVIP: false },
-          ].map((user, index) => (
+          {topContributors.length > 0 ? topContributors.map((user, index) => (
             <div key={index} className="flex items-center space-x-2">
               <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold ${
                 index === 0 ? 'bg-yellow-500 text-white' :
@@ -369,7 +393,11 @@ export function ForumSidebar() {
                 <span className="text-xs font-semibold text-green-600">{user.gems}</span>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="text-center py-4 text-sm text-gray-500">
+              No contributors yet
+            </div>
+          )}
           <Button variant="ghost" size="sm" className="w-full text-xs text-gray-700">
             View Leaderboard
           </Button>
