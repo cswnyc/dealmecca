@@ -16,13 +16,14 @@ import { cn } from '@/lib/utils';
 interface SearchSuggestion {
   id: string;
   title: string;
-  type: 'company' | 'team' | 'businessLine' | 'contact' | 'forumPost' | 'event';
+  type: 'company' | 'team' | 'businessLine' | 'contact' | 'forumPost' | 'event' | 'forumCategory';
   category: string;
   icon: string;
   metadata?: {
     verified?: boolean;
     location?: string;
     description?: string;
+    slug?: string;
   };
 }
 
@@ -177,6 +178,9 @@ export function GlobalSearchInput({
       router.push(`/orgs/contacts/${suggestion.id}`);
     } else if (suggestion.type === 'forumPost') {
       router.push(`/forum/posts/${suggestion.id}`);
+    } else if (suggestion.type === 'forumCategory') {
+      // Navigate to forum page filtered by category
+      router.push(`/forum?category=${suggestion.metadata?.slug || suggestion.id}`);
     } else if (suggestion.type === 'event') {
       router.push(`/events/${suggestion.id}`);
     } else {

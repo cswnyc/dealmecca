@@ -249,7 +249,11 @@ export default function ForumPage() {
       }
       
       if (selectedCategory && selectedCategory !== '') {
-        params.append('categoryId', selectedCategory);
+        // Find the category slug from the ID
+        const category = categories.find(cat => cat.id === selectedCategory);
+        if (category) {
+          params.append('category', category.slug);
+        }
       }
       
       if (searchQuery.trim()) {

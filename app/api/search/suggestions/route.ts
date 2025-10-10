@@ -4,13 +4,14 @@ import { prisma } from '@/lib/prisma';
 interface SearchSuggestion {
   id: string;
   title: string;
-  type: 'company' | 'team' | 'businessLine' | 'contact' | 'forumPost' | 'event';
+  type: 'company' | 'team' | 'businessLine' | 'contact' | 'forumPost' | 'event' | 'forumCategory';
   category: string;
   icon: string;
   metadata?: {
     verified?: boolean;
     location?: string;
     description?: string;
+    slug?: string;
   };
 }
 
@@ -175,6 +176,7 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           name: true,
+          slug: true,
           description: true,
           icon: true,
           color: true
@@ -189,11 +191,12 @@ export async function GET(request: NextRequest) {
         suggestions.push({
           id: category.id,
           title: category.name,
-          type: 'businessLine', // Using businessLine type for media types
-          category: 'Media Types',
+          type: 'forumCategory',
+          category: 'Forum Category',
           icon: category.icon || '📺',
           metadata: {
-            description: category.description || undefined
+            description: category.description || undefined,
+            slug: category.slug
           }
         });
       });
