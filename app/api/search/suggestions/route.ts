@@ -47,14 +47,16 @@ export async function GET(request: NextRequest) {
     let totalResults = 0;
     const categories = { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 };
 
-    // Search Companies (limit 3)
+    // Search Companies (agencies, advertisers, industries, DSP/SSP, Adtech - limit 3)
     try {
-      const companies = await prisma.company.findMany({
+      const companies = await prisma.companies.findMany({
         where: {
           OR: [
             { name: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
-            { website: { contains: query, mode: 'insensitive' } }
+            { website: { contains: query, mode: 'insensitive' } },
+            { city: { contains: query, mode: 'insensitive' } },
+            { state: { contains: query, mode: 'insensitive' } }
           ]
         },
         select: {
@@ -64,7 +66,9 @@ export async function GET(request: NextRequest) {
           city: true,
           state: true,
           verified: true,
-          logoUrl: true
+          logoUrl: true,
+          companyType: true,
+          agencyType: true
         },
         take: 3,
         orderBy: [
@@ -75,11 +79,26 @@ export async function GET(request: NextRequest) {
 
       companies.forEach(company => {
         const location = [company.city, company.state].filter(Boolean).join(', ');
+
+        // Determine category based on companyType
+        let category = 'Company';
+        if (company.companyType === 'AGENCY' || company.companyType === 'INDEPENDENT_AGENCY' || company.companyType === 'HOLDING_COMPANY_AGENCY') {
+          category = 'Agency';
+        } else if (company.companyType === 'ADVERTISER' || company.companyType === 'NATIONAL_ADVERTISER' || company.companyType === 'LOCAL_ADVERTISER') {
+          category = 'Advertiser';
+        } else if (company.companyType === 'INDUSTRY') {
+          category = 'Industry';
+        } else if (company.companyType === 'DSP_SSP') {
+          category = 'DSP/SSP';
+        } else if (company.companyType === 'ADTECH' || company.companyType === 'ADTECH_VENDOR') {
+          category = 'Adtech';
+        }
+
         suggestions.push({
           id: company.id,
           title: company.name,
           type: 'company',
-          category: 'Company',
+          category,
           icon: company.logoUrl || '🏢',
           metadata: {
             verified: company.verified,
@@ -95,20 +114,20 @@ export async function GET(request: NextRequest) {
       console.error('Error searching companies:', error);
     }
 
-    // Search Contacts (limit 3)
+    // Search Contacts/People (limit 3)
     try {
-      const contacts = await prisma.contact.findMany({
+      const contacts = await prisma.contacts.findMany({
         where: {
           OR: [
             { firstName: { contains: query, mode: 'insensitive' } },
             { lastName: { contains: query, mode: 'insensitive' } },
             { fullName: { contains: query, mode: 'insensitive' } },
             { title: { contains: query, mode: 'insensitive' } },
-            { company: { name: { contains: query, mode: 'insensitive' } } }
+            { companies: { name: { contains: query, mode: 'insensitive' } } }
           ]
         },
         include: {
-          company: {
+          companies: {
             select: {
               id: true,
               name: true,
@@ -126,14 +145,14 @@ export async function GET(request: NextRequest) {
       contacts.forEach(contact => {
         suggestions.push({
           id: contact.id,
-          title: `${contact.fullName}${contact.company ? ` @ ${contact.company.name}` : ''}`,
+          title: `${contact.fullName}${contact.companies ? ` @ ${contact.companies.name}` : ''}`,
           type: 'contact',
           category: 'Person',
           icon: '👤',
           metadata: {
             verified: contact.verified,
             description: contact.title || undefined,
-            location: contact.company?.name || undefined
+            location: contact.companies?.name || undefined
           }
         });
       });
@@ -204,7 +223,7 @@ export async function GET(request: NextRequest) {
           id: true,
           title: true,
           slug: true,
-          category: {
+          ForumCategory: {
             select: {
               name: true,
               icon: true
@@ -212,7 +231,7 @@ export async function GET(request: NextRequest) {
           },
           _count: {
             select: {
-              comments: true
+              ForumComment: true
             }
           }
         },
@@ -228,9 +247,9 @@ export async function GET(request: NextRequest) {
           title: post.title,
           type: 'forumPost',
           category: 'Forum Post',
-          icon: post.category?.icon || '💬',
+          icon: post.ForumCategory?.icon || '💬',
           metadata: {
-            description: `${post._count.comments} comments`
+            description: `${post._count.ForumComment} comments`
           }
         });
       });

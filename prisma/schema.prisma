@@ -684,8 +684,8 @@ model Topic {
   ForumCategory ForumCategory? @relation(fields: [categoryId], references: [id])
   TopicCompany  TopicCompany[]
   TopicContact  TopicContact[]
-  TopicMention  TopicMention[]
   TopicFollow   TopicFollow[]
+  TopicMention  TopicMention[]
 
   @@index([categoryId])
   @@index([isActive])
@@ -758,8 +758,6 @@ model User {
   id                                                              String                   @id @default(cuid())
   email                                                           String?                  @unique
   firebaseUid                                                     String?                  @unique
-  provider                                                        String?
-  publicHandle                                                    String?                  @unique
   name                                                            String?
   password                                                        String?
   role                                                            Role                     @default(FREE)
@@ -789,6 +787,8 @@ model User {
   cancelAtPeriodEnd                                               Boolean                  @default(false)
   lastSearchLimitCheck                                            DateTime                 @default(now())
   companyId                                                       String?
+  provider                                                        String?
+  publicHandle                                                    String?                  @unique
   Account                                                         Account[]
   CodeGeneration                                                  CodeGeneration[]
   Comment                                                         Comment[]
@@ -812,11 +812,11 @@ model User {
   Post                                                            Post[]
   PostBookmark                                                    PostBookmark[]
   PostFollow                                                      PostFollow[]
-  TopicFollow                                                     TopicFollow[]
   SavedSearch                                                     SavedSearch[]
   Search                                                          Search[]
   Session                                                         Session[]
   Subscription                                                    Subscription[]
+  TopicFollow                                                     TopicFollow[]
   companies                                                       companies?               @relation(fields: [companyId], references: [id])
   UserConnection                                                  UserConnection[]
   UserFollow_UserFollow_followerIdToUser                          UserFollow[]             @relation("UserFollow_followerIdToUser")
