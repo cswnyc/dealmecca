@@ -422,8 +422,8 @@ export default function UsersAdminPage() {
                           <div className="text-sm text-gray-500">
                             {user.email || user.anonymousUsername || 'No email'}
                           </div>
-                          {user.isAnonymous && (
-                            <div className="text-xs text-purple-600">Anonymous</div>
+                          {user.anonymousUsername && (
+                            <div className="text-xs text-purple-600">@{user.anonymousUsername}</div>
                           )}
                         </div>
                       </div>
