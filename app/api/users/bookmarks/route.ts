@@ -63,6 +63,16 @@ export async function GET(request: NextRequest) {
               }
             },
             ForumCategory: true,
+            CompanyMention: {
+              include: {
+                companies: true
+              }
+            },
+            ContactMention: {
+              include: {
+                contacts: true
+              }
+            },
             _count: {
               select: {
                 ForumComment: true
@@ -76,8 +86,49 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    // Fetch primary topics for posts
+    const postsWithPrimaryTopics = await Promise.all(
+      bookmarks.map(async (bookmark) => {
+        let primaryTopic = null;
+        if (bookmark.ForumPost.primaryTopicId && bookmark.ForumPost.primaryTopicType) {
+          try {
+            if (bookmark.ForumPost.primaryTopicType === 'contact') {
+              const contact = await prisma.contacts.findUnique({
+                where: { id: bookmark.ForumPost.primaryTopicId },
+                select: { id: true, fullName: true, title: true }
+              });
+              if (contact) {
+                primaryTopic = {
+                  id: contact.id,
+                  name: contact.fullName,
+                  type: bookmark.ForumPost.primaryTopicType,
+                  description: contact.title
+                };
+              }
+            } else {
+              const company = await prisma.companies.findUnique({
+                where: { id: bookmark.ForumPost.primaryTopicId },
+                select: { id: true, name: true, description: true }
+              });
+              if (company) {
+                primaryTopic = {
+                  id: company.id,
+                  name: company.name,
+                  type: bookmark.ForumPost.primaryTopicType,
+                  description: company.description
+                };
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching primary topic:', error);
+          }
+        }
+        return { bookmark, primaryTopic };
+      })
+    );
+
     // Transform the data to match the expected format
-    const transformedBookmarks = bookmarks.map(bookmark => ({
+    const transformedBookmarks = postsWithPrimaryTopics.map(({ bookmark, primaryTopic }) => ({
       id: bookmark.ForumPost.id,
       title: bookmark.ForumPost.title,
       content: bookmark.ForumPost.content,
@@ -95,6 +146,9 @@ export async function GET(request: NextRequest) {
       isPinned: bookmark.ForumPost.isPinned,
       isLocked: bookmark.ForumPost.isLocked,
       isFeatured: bookmark.ForumPost.isFeatured,
+      primaryTopicType: bookmark.ForumPost.primaryTopicType,
+      primaryTopicId: bookmark.ForumPost.primaryTopicId,
+      primaryTopic,
       createdAt: bookmark.ForumPost.createdAt.toISOString(),
       updatedAt: bookmark.ForumPost.updatedAt.toISOString(),
       lastActivityAt: bookmark.ForumPost.lastActivityAt.toISOString(),
@@ -121,6 +175,8 @@ export async function GET(request: NextRequest) {
         slug: bookmark.ForumPost.ForumCategory.slug,
         color: bookmark.ForumPost.ForumCategory.color,
       },
+      companyMentions: bookmark.ForumPost.CompanyMention?.map(cm => ({ company: cm.companies })) || [],
+      contactMentions: bookmark.ForumPost.ContactMention?.map(cm => ({ contact: cm.contacts })) || [],
       _count: {
         comments: bookmark.ForumPost._count.ForumComment
       }
