@@ -62,7 +62,10 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            anonymousUsername: true,
+            anonymousHandle: true,
+            publicHandle: true
           }
         },
         ForumCategory: {
@@ -236,7 +239,10 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            anonymousUsername: true,
+            anonymousHandle: true,
+            publicHandle: true
           }
         },
         ForumCategory: {

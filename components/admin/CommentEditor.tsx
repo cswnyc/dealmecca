@@ -269,7 +269,7 @@ export default function CommentEditor({
                   </div>
                 </div>
               ) : (
-                <div className="prose prose-sm max-w-none">
+                <div className="prose prose-sm max-w-none text-gray-900">
                   {comment.isModerated ? (
                     <div className="bg-red-50 border border-red-200 rounded p-3">
                       <div className="flex items-center space-x-2 text-red-700 mb-1">

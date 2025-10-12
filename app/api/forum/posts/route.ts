@@ -121,7 +121,10 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            anonymousUsername: true,
+            anonymousHandle: true,
+            publicHandle: true
           }
         },
         ForumCategory: {
@@ -242,13 +245,52 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
     const total = await prisma.forumPost.count({ where });
     const pages = Math.ceil(total / limit);
 
+    // Helper function to fetch primary topic entity
+    const fetchPrimaryTopic = async (primaryTopicType: string | null, primaryTopicId: string | null) => {
+      if (!primaryTopicType || !primaryTopicId) return null;
+
+      try {
+        switch (primaryTopicType) {
+          case 'company':
+            const company = await prisma.companies.findUnique({
+              where: { id: primaryTopicId },
+              select: { id: true, name: true, logoUrl: true, verified: true }
+            });
+            return company ? { ...company, type: 'company' } : null;
+
+          case 'agency':
+            const agency = await prisma.companies.findUnique({
+              where: { id: primaryTopicId },
+              select: { id: true, name: true, logoUrl: true, verified: true }
+            });
+            return agency ? { ...agency, type: 'agency' } : null;
+
+          case 'contact':
+            const contact = await prisma.contacts.findUnique({
+              where: { id: primaryTopicId },
+              select: { id: true, firstName: true, lastName: true, title: true }
+            });
+            return contact ? { id: contact.id, name: `${contact.firstName} ${contact.lastName}`, type: 'contact', description: contact.title } : null;
+
+          default:
+            return null;
+        }
+      } catch (error) {
+        console.error('Error fetching primary topic:', error);
+        return null;
+      }
+    };
+
     // Transform data to match frontend expectations with null checks
-    const formattedPosts = posts.map(post => {
+    const formattedPosts = await Promise.all(posts.map(async post => {
       // Skip posts with missing required relationships
       if (!post.User || !post.ForumCategory) {
         console.warn(`Skipping post ${post.id} due to missing User or Category`);
         return null;
       }
+
+      // Fetch primary topic if available
+      const primaryTopic = await fetchPrimaryTopic(post.primaryTopicType, post.primaryTopicId);
 
       return {
         id: post.id,
@@ -272,10 +314,16 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
         createdAt: post.createdAt.toISOString(),
         updatedAt: post.updatedAt.toISOString(),
         lastActivityAt: post.lastActivityAt.toISOString(),
+        primaryTopicType: post.primaryTopicType,
+        primaryTopicId: post.primaryTopicId,
+        primaryTopic: primaryTopic,
         author: {
           id: post.User.id,
           name: post.User.name || 'Anonymous User',
-          email: post.User.email
+          email: post.User.email,
+          anonymousUsername: post.User.anonymousUsername,
+          anonymousHandle: post.User.anonymousHandle,
+          publicHandle: post.User.publicHandle
         },
         category: {
           id: post.ForumCategory.id,
@@ -366,7 +414,7 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
           comments: post._count.ForumComment
         }
       };
-    }).filter(post => post !== null);
+    })).then(posts => posts.filter(post => post !== null));
 
     return NextResponse.json(
       {
@@ -501,7 +549,10 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            anonymousUsername: true,
+            anonymousHandle: true,
+            publicHandle: true
           }
         },
         ForumCategory: true

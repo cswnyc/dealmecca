@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import MentionEditor from '@/components/ui/MentionEditor';
@@ -34,7 +34,7 @@ interface TopicSuggestion {
 interface EntitySuggestion {
   id: string;
   name: string;
-  type: 'company' | 'contact' | 'topic' | 'category';
+  type: 'company' | 'contact' | 'topic' | 'category' | 'agency' | 'advertiser' | 'industry' | 'publisher' | 'dsp_ssp' | 'adtech';
   description?: string;
   confidence: number;
   metadata?: {
@@ -106,6 +106,11 @@ export default function EditForumPost() {
   const [entitySuggestions, setEntitySuggestions] = useState<EntitySuggestion[]>([]);
   const [showEntityDropdown, setShowEntityDropdown] = useState(false);
   const [searchingEntities, setSearchingEntities] = useState(false);
+  const [primaryTopicSearch, setPrimaryTopicSearch] = useState('');
+  const [selectedPrimaryTopic, setSelectedPrimaryTopic] = useState<EntitySuggestion | null>(null);
+
+  // Ref for debouncing
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [formData, setFormData] = useState({
     content: '',
@@ -117,7 +122,9 @@ export default function EditForumPost() {
     anonymousHandle: '',
     location: '',
     status: 'PENDING',
-    topicIds: [] as string[]
+    topicIds: [] as string[],
+    primaryTopicType: '',
+    primaryTopicId: ''
   });
 
   useEffect(() => {
@@ -144,9 +151,51 @@ export default function EditForumPost() {
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
         setComments(commentsData.comments || []);
 
-        // Populate form with existing data
+        // Populate form with existing data - load company and contact mentions as topics
         const existingTopicIds = postData.topicMentions?.map((tm: any) => tm.topic.id) || [];
-        setSelectedTopics(existingTopicIds);
+
+        // Add company mentions as entity-company-{id} topics
+        const companyTopicIds = postData.companyMentions?.map((cm: any) => `entity-company-${cm.companyId}`) || [];
+
+        // Add contact mentions as entity-contact-{id} topics
+        const contactTopicIds = postData.contactMentions?.map((cm: any) => `entity-contact-${cm.contactId}`) || [];
+
+        // Combine all topic IDs
+        const allTopicIds = [...existingTopicIds, ...companyTopicIds, ...contactTopicIds];
+        setSelectedTopics(allTopicIds);
+
+        // Store company/contact data for display names
+        const loadedSuggestions: TopicSuggestion[] = [];
+
+        if (postData.companyMentions) {
+          postData.companyMentions.forEach((cm: any) => {
+            if (cm.companies) {
+              loadedSuggestions.push({
+                id: `entity-company-${cm.companyId}`,
+                name: cm.companies.name,
+                type: 'company',
+                confidence: 1.0,
+                isExisting: true
+              });
+            }
+          });
+        }
+
+        if (postData.contactMentions) {
+          postData.contactMentions.forEach((cm: any) => {
+            if (cm.contacts) {
+              loadedSuggestions.push({
+                id: `entity-contact-${cm.contactId}`,
+                name: `${cm.contacts.firstName} ${cm.contacts.lastName}`,
+                type: 'contact',
+                confidence: 1.0,
+                isExisting: true
+              });
+            }
+          });
+        }
+
+        setTopicSuggestions(loadedSuggestions);
 
         setFormData({
           content: postData.content || '',
@@ -158,8 +207,21 @@ export default function EditForumPost() {
           anonymousHandle: postData.anonymousHandle || '',
           location: postData.location || '',
           status: postData.status || 'PENDING',
-          topicIds: existingTopicIds
+          topicIds: allTopicIds,
+          primaryTopicType: postData.primaryTopicType || '',
+          primaryTopicId: postData.primaryTopicId || ''
         });
+
+        // If there's a primary topic, use it directly from the API response
+        if (postData.primaryTopic) {
+          setSelectedPrimaryTopic({
+            id: postData.primaryTopic.id,
+            name: postData.primaryTopic.name,
+            type: postData.primaryTopic.type,
+            description: postData.primaryTopic.description || '',
+            confidence: 1.0
+          });
+        }
 
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -296,12 +358,102 @@ export default function EditForumPost() {
     }
   };
 
+  // Search for primary topic entities (companies, contacts only)
+  const searchPrimaryTopics = async (query: string) => {
+    if (!query || query.trim().length < 2) {
+      setEntitySuggestions([]);
+      return;
+    }
+
+    try {
+      setSearchingEntities(true);
+      const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(query)}&limit=10`);
+
+      if (response.ok) {
+        const data = await response.json();
+        // Filter to only companies and contacts, and map to our EntitySuggestion format
+        const filteredSuggestions: EntitySuggestion[] = data.suggestions
+          .filter((s: any) => s.type === 'company' || s.type === 'contact')
+          .map((s: any) => {
+            // Determine the entity type based on category
+            let entityType: EntitySuggestion['type'] = 'company';
+            if (s.type === 'contact') {
+              entityType = 'contact';
+            } else if (s.category === 'Agency') {
+              entityType = 'agency';
+            } else if (s.category === 'Advertiser') {
+              entityType = 'advertiser';
+            } else if (s.category === 'Industry') {
+              entityType = 'industry';
+            } else if (s.category === 'DSP/SSP') {
+              entityType = 'dsp_ssp';
+            } else if (s.category === 'Adtech') {
+              entityType = 'adtech';
+            } else if (s.category === 'Publisher') {
+              entityType = 'publisher';
+            }
+
+            return {
+              id: s.id,
+              name: s.title,
+              type: entityType,
+              description: s.metadata?.description,
+              confidence: 1.0,
+              metadata: s.metadata
+            };
+          });
+
+        setEntitySuggestions(filteredSuggestions);
+      }
+    } catch (error) {
+      console.error('Error searching primary topics:', error);
+    } finally {
+      setSearchingEntities(false);
+    }
+  };
+
+  // Handle primary topic selection
+  const handlePrimaryTopicSelect = (entity: EntitySuggestion) => {
+    setSelectedPrimaryTopic(entity);
+    setFormData({
+      ...formData,
+      primaryTopicType: entity.type,
+      primaryTopicId: entity.id
+    });
+    setPrimaryTopicSearch('');
+    setEntitySuggestions([]);
+  };
+
+  // Clear primary topic
+  const clearPrimaryTopic = () => {
+    setSelectedPrimaryTopic(null);
+    setFormData({
+      ...formData,
+      primaryTopicType: '',
+      primaryTopicId: ''
+    });
+  };
+
   // Handle manual topic input change with search
   const handleManualTopicChange = (value: string) => {
     setManualTopicInput(value);
 
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Show dropdown immediately if there's text
+    if (value.trim().length >= 2) {
+      setShowEntityDropdown(true);
+    } else {
+      setShowEntityDropdown(false);
+      setEntitySuggestions([]);
+      return;
+    }
+
     // Debounce search
-    setTimeout(() => {
+    searchTimeoutRef.current = setTimeout(() => {
       searchEntities(value);
     }, 300);
   };
@@ -505,6 +657,109 @@ export default function EditForumPost() {
               />
             </div>
 
+            {/* Primary Topic Section */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Primary Topic
+                <span className="text-sm text-gray-500 ml-2">(Company, Agency, Person, Industry, etc.)</span>
+              </label>
+
+              <div className="relative">
+                <input
+                  type="text"
+                  value={primaryTopicSearch}
+                  onChange={(e) => {
+                    setPrimaryTopicSearch(e.target.value);
+                    searchPrimaryTopics(e.target.value);
+                  }}
+                  placeholder="Search for companies, agencies, people, industries..."
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
+                />
+
+                {/* Search Results Dropdown */}
+                {entitySuggestions.length > 0 && (
+                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                    {searchingEntities && (
+                      <div className="px-4 py-3 text-sm text-gray-500">
+                        Searching...
+                      </div>
+                    )}
+                    {!searchingEntities && entitySuggestions.map((entity) => (
+                      <button
+                        key={entity.id}
+                        type="button"
+                        onClick={() => handlePrimaryTopicSelect(entity)}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="flex-shrink-0">
+                          {entity.type === 'contact' && <span className="text-xl">👤</span>}
+                          {entity.type === 'agency' && <span className="text-xl">🏢</span>}
+                          {entity.type === 'advertiser' && <span className="text-xl">🏪</span>}
+                          {entity.type === 'industry' && <span className="text-xl">🏭</span>}
+                          {entity.type === 'publisher' && <span className="text-xl">📰</span>}
+                          {entity.type === 'dsp_ssp' && <span className="text-xl">🔌</span>}
+                          {entity.type === 'adtech' && <span className="text-xl">⚙️</span>}
+                          {entity.type === 'company' && <span className="text-xl">🏢</span>}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{entity.name}</p>
+                          <div className="flex items-center space-x-2">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                              {entity.type === 'contact' && 'Person'}
+                              {entity.type === 'agency' && 'Agency'}
+                              {entity.type === 'advertiser' && 'Advertiser'}
+                              {entity.type === 'industry' && 'Industry'}
+                              {entity.type === 'publisher' && 'Publisher'}
+                              {entity.type === 'dsp_ssp' && 'DSP/SSP'}
+                              {entity.type === 'adtech' && 'Adtech'}
+                              {entity.type === 'company' && 'Company'}
+                            </span>
+                            {entity.description && (
+                              <span className="text-xs text-gray-500 truncate">{entity.description}</span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Selected Primary Topic Pill */}
+              {selectedPrimaryTopic && (
+                <div className="mt-3">
+                  <div className="inline-flex items-center px-3 py-2 rounded-full text-sm bg-blue-100 text-blue-800 border border-blue-300">
+                    {selectedPrimaryTopic.type === 'contact' && <span className="mr-2">👤</span>}
+                    {selectedPrimaryTopic.type === 'agency' && <span className="mr-2">🏢</span>}
+                    {selectedPrimaryTopic.type === 'advertiser' && <span className="mr-2">🏪</span>}
+                    {selectedPrimaryTopic.type === 'industry' && <span className="mr-2">🏭</span>}
+                    {selectedPrimaryTopic.type === 'publisher' && <span className="mr-2">📰</span>}
+                    {selectedPrimaryTopic.type === 'dsp_ssp' && <span className="mr-2">🔌</span>}
+                    {selectedPrimaryTopic.type === 'adtech' && <span className="mr-2">⚙️</span>}
+                    {selectedPrimaryTopic.type === 'company' && <span className="mr-2">🏢</span>}
+                    <span className="font-medium mr-2">{selectedPrimaryTopic.name}</span>
+                    <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-200 text-blue-900 mr-2">
+                      {selectedPrimaryTopic.type === 'contact' && 'Person'}
+                      {selectedPrimaryTopic.type === 'agency' && 'Agency'}
+                      {selectedPrimaryTopic.type === 'advertiser' && 'Advertiser'}
+                      {selectedPrimaryTopic.type === 'industry' && 'Industry'}
+                      {selectedPrimaryTopic.type === 'publisher' && 'Publisher'}
+                      {selectedPrimaryTopic.type === 'dsp_ssp' && 'DSP/SSP'}
+                      {selectedPrimaryTopic.type === 'adtech' && 'Adtech'}
+                      {selectedPrimaryTopic.type === 'company' && 'Company'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={clearPrimaryTopic}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Category
@@ -521,20 +776,6 @@ export default function EditForumPost() {
                   </option>
                 ))}
               </select>
-            </div>
-
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location
-              </label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
-                placeholder="e.g., San Francisco, CA"
-              />
             </div>
 
             {formData.isAnonymous && (
@@ -558,7 +799,7 @@ export default function EditForumPost() {
             <div className="mb-4">
               <div className="flex items-center justify-between mb-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  Topics (Companies, Industries, DSPs/SSPs, Advertisers, etc.)
+                  Additional Topics (Companies, Industries, DSPs/SSPs, Advertisers, etc.)
                 </label>
                 <button
                   type="button"
@@ -676,26 +917,39 @@ export default function EditForumPost() {
                 </p>
               </div>
 
-              {/* Selected Topics */}
+              {/* Selected Topics with Additional Companies Count */}
               {selectedTopics.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-xs text-gray-600 mb-2">Selected Topics:</p>
+                  <p className="text-xs text-gray-600 mb-2">
+                    Selected Topics:
+                    {selectedTopics.filter(t => t.startsWith('entity-company-')).length > 1 && (
+                      <span className="ml-2 text-blue-600 font-medium">
+                        ({selectedTopics.filter(t => t.startsWith('entity-company-')).length} companies total)
+                      </span>
+                    )}
+                  </p>
                   <div className="flex flex-wrap gap-2">
-                    {selectedTopics.map((topicId) => (
-                      <div
-                        key={topicId}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
-                      >
-                        <span className="mr-2">{getTopicDisplayName(topicId)}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeSelectedTopic(topicId)}
-                          className="text-blue-600 hover:text-blue-800"
+                    {selectedTopics.map((topicId) => {
+                      const isCompany = topicId.startsWith('entity-company-');
+                      return (
+                        <div
+                          key={topicId}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                            isCompany ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-gray-100 text-gray-800'
+                          }`}
                         >
-                          ×
-                        </button>
-                      </div>
-                    ))}
+                          {isCompany && <span className="mr-1">🏢</span>}
+                          <span className="mr-2">{getTopicDisplayName(topicId)}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeSelectedTopic(topicId)}
+                            className={isCompany ? 'text-blue-600 hover:text-blue-800' : 'text-gray-600 hover:text-gray-800'}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

@@ -66,6 +66,52 @@ export async function GET(
       );
     }
 
+    // Fetch primary topic entity if exists
+    let primaryTopic = null;
+    if (post.primaryTopicId && post.primaryTopicType) {
+      try {
+        if (post.primaryTopicType === 'contact') {
+          const contact = await prisma.contacts.findUnique({
+            where: { id: post.primaryTopicId },
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              title: true
+            }
+          });
+          if (contact) {
+            primaryTopic = {
+              id: contact.id,
+              name: `${contact.firstName} ${contact.lastName}`,
+              type: post.primaryTopicType,
+              description: contact.title
+            };
+          }
+        } else {
+          // For companies (agency, advertiser, industry, publisher, dsp_ssp, adtech, company)
+          const company = await prisma.companies.findUnique({
+            where: { id: post.primaryTopicId },
+            select: {
+              id: true,
+              name: true,
+              description: true
+            }
+          });
+          if (company) {
+            primaryTopic = {
+              id: company.id,
+              name: company.name,
+              type: post.primaryTopicType,
+              description: company.description
+            };
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching primary topic:', error);
+      }
+    }
+
     // Transform data to match frontend expectations
     const formattedPost = {
       id: post.id,
@@ -89,6 +135,9 @@ export async function GET(
       location: post.location,
       mediaType: post.mediaType,
       bookmarks: post.bookmarks || 0,
+      primaryTopicType: post.primaryTopicType,
+      primaryTopicId: post.primaryTopicId,
+      primaryTopic: primaryTopic,
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
       lastActivityAt: post.lastActivityAt?.toISOString(),
@@ -129,8 +178,27 @@ export async function PUT(
       isAnonymous,
       anonymousHandle,
       location,
-      topicIds
+      topicIds,
+      primaryTopicType,
+      primaryTopicId
     } = body;
+
+    // Process topicIds to separate companies, contacts, and regular topics
+    const companyIds: string[] = [];
+    const contactIds: string[] = [];
+    const regularTopicIds: string[] = [];
+
+    if (topicIds && Array.isArray(topicIds)) {
+      topicIds.forEach((topicId: string) => {
+        if (topicId.startsWith('entity-company-')) {
+          companyIds.push(topicId.replace('entity-company-', ''));
+        } else if (topicId.startsWith('entity-contact-')) {
+          contactIds.push(topicId.replace('entity-contact-', ''));
+        } else if (!topicId.startsWith('manual-')) {
+          regularTopicIds.push(topicId);
+        }
+      });
+    }
 
     // Update the post
     const post = await prisma.forumPost.update({
@@ -145,6 +213,8 @@ export async function PUT(
         isAnonymous,
         anonymousHandle,
         location,
+        primaryTopicType: primaryTopicType || null,
+        primaryTopicId: primaryTopicId || null,
         updatedAt: new Date()
       },
       include: {
@@ -171,12 +241,93 @@ export async function PUT(
       }
     });
 
-    return NextResponse.json(post);
+    // Delete existing mentions
+    await prisma.companyMention.deleteMany({ where: { postId: id } });
+    await prisma.contactMention.deleteMany({ where: { postId: id } });
+
+    // Create new company mentions
+    if (companyIds.length > 0) {
+      await prisma.companyMention.createMany({
+        data: companyIds.map(companyId => ({
+          id: `cmg${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
+          postId: id,
+          companyId,
+          mentionedBy: post.authorId
+        }))
+      });
+    }
+
+    // Create new contact mentions
+    if (contactIds.length > 0) {
+      await prisma.contactMention.createMany({
+        data: contactIds.map(contactId => ({
+          id: `cmg${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
+          postId: id,
+          contactId,
+          mentionedBy: post.authorId
+        }))
+      });
+    }
+
+    // Fetch the updated post with all mentions
+    const updatedPost = await prisma.forumPost.findUnique({
+      where: { id },
+      include: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        ForumCategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            color: true,
+            icon: true
+          }
+        },
+        CompanyMention: {
+          include: {
+            companies: {
+              select: {
+                id: true,
+                name: true,
+                slug: true
+              }
+            }
+          }
+        },
+        ContactMention: {
+          include: {
+            contacts: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                title: true
+              }
+            }
+          }
+        },
+        _count: {
+          select: {
+            ForumComment: true
+          }
+        }
+      }
+    });
+
+    return NextResponse.json(updatedPost);
 
   } catch (error) {
     console.error('Error updating forum post:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     return NextResponse.json(
-      { error: 'Failed to update forum post' },
+      { error: 'Failed to update forum post', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

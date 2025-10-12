@@ -46,6 +46,16 @@ interface ForumPost {
   createdAt: string;
   updatedAt: string;
   lastActivityAt: string;
+  primaryTopicType?: string;
+  primaryTopicId?: string;
+  primaryTopic?: {
+    id: string;
+    name: string;
+    type: string;
+    logoUrl?: string;
+    verified?: boolean;
+    description?: string;
+  };
   author: {
     id: string;
     name: string;

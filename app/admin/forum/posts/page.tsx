@@ -44,7 +44,12 @@ interface ForumPost {
     name: string;
     email: string;
     profileImage?: string;
+    anonymousUsername?: string;
+    anonymousHandle?: string;
+    publicHandle?: string;
   };
+  isAnonymous: boolean;
+  anonymousHandle?: string;
   category: {
     id: string;
     name: string;
@@ -68,6 +73,7 @@ export default function ForumPostsAdmin() {
   const [sortBy, setSortBy] = useState('latest');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [stats, setStats] = useState({
     total: 0,
     published: 0,
@@ -95,7 +101,7 @@ export default function ForumPostsAdmin() {
 
       const data = await response.json();
       setPosts(data.posts || []);
-      setTotalPages(Math.ceil(data.total / 20));
+      setTotalPages(data.pagination?.pages || 1);
       setStats(data.stats || stats);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -106,9 +112,25 @@ export default function ForumPostsAdmin() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/forum/categories');
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      const data = await response.json();
+      // API returns array directly, not wrapped in object
+      setCategories(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
   }, [currentPage, sortBy, statusFilter, categoryFilter]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,7 +285,7 @@ export default function ForumPostsAdmin() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by title, content, or author..."
-                  className="pl-9 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="pl-9 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -276,7 +298,7 @@ export default function ForumPostsAdmin() {
                 id="status"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
               >
                 <option value="">All Status</option>
                 <option value="PUBLISHED">Published</option>
@@ -294,13 +316,14 @@ export default function ForumPostsAdmin() {
                 id="category"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
               >
                 <option value="">All Categories</option>
-                <option value="general">General Discussion</option>
-                <option value="industry-news">Industry News</option>
-                <option value="deals">Deals & Opportunities</option>
-                <option value="questions">Questions</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.slug}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -312,7 +335,7 @@ export default function ForumPostsAdmin() {
                 id="sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
               >
                 <option value="latest">Latest</option>
                 <option value="popular">Popular</option>
@@ -462,7 +485,11 @@ export default function ForumPostsAdmin() {
                             )}
                           </div>
                           <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-900">{post.author?.name}</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {post.isAnonymous
+                                ? (post.anonymousHandle || 'Anonymous')
+                                : (post.author?.anonymousUsername || post.author?.publicHandle || post.author?.name)}
+                            </p>
                             <p className="text-sm text-gray-500">{post.author?.email}</p>
                           </div>
                         </div>

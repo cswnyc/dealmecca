@@ -46,6 +46,17 @@ interface ForumPost {
   pollChoices?: string; // JSON string of array
   pollDuration?: number;
   pollEndsAt?: string;
+  // Primary topic fields
+  primaryTopicType?: string;
+  primaryTopicId?: string;
+  primaryTopic?: {
+    id: string;
+    name: string;
+    type: string;
+    logoUrl?: string;
+    verified?: boolean;
+    description?: string;
+  };
   author: {
     id: string;
     name: string;
@@ -627,8 +638,33 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             <div className="flex items-center space-x-2 flex-1 min-w-0">
               {!post.isAnonymous ? (
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  {/* Primary Display - Prioritize Topics */}
-                  {post.topicMentions && post.topicMentions.length > 0 ? (
+                  {/* Primary Display - Prioritize Primary Topic, then Topics, then Company */}
+                  {post.primaryTopic ? (
+                    // Display primary topic prominently with count if there are additional mentions
+                    <div className="flex items-center space-x-1">
+                      <Link
+                        href={
+                          post.primaryTopicType === 'company' ? `/orgs/companies/${post.primaryTopicId}` :
+                          post.primaryTopicType === 'agency' ? `/orgs/agencies/${post.primaryTopicId}` :
+                          post.primaryTopicType === 'contact' ? `/contacts/${post.primaryTopicId}` :
+                          `/topics/${post.primaryTopicId}`
+                        }
+                        className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center space-x-1"
+                      >
+                        <span>{post.primaryTopic.name}</span>
+                        {post.primaryTopic.verified && (
+                          <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                        )}
+                      </Link>
+                      {/* Show expandable additional topics if there are company/contact mentions */}
+                      {((post.companyMentions && post.companyMentions.length > 0) || (post.contactMentions && post.contactMentions.length > 0)) && (
+                        <AdditionalMentionsDisplay
+                          companyMentions={post.companyMentions || []}
+                          contactMentions={post.contactMentions || []}
+                        />
+                      )}
+                    </div>
+                  ) : post.topicMentions && post.topicMentions.length > 0 ? (
                     // Display expandable topics
                     <div className="w-full">
                       <MultiTopicDisplay
@@ -672,19 +708,6 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                     >
                       {post.category.name}
                     </Link>
-                  )}
-                  
-                  {/* Show mentions count for legacy posts without topics */}
-                  {(!post.topicMentions || post.topicMentions.length === 0) && ((post.companyMentions && post.companyMentions.length > 1) || (post.contactMentions && post.contactMentions.length > 0)) && (
-                    <>
-                      <span className="text-gray-400">•</span>
-                      <div className="flex items-center space-x-1">
-                        <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                          <BuildingOfficeIcon className="w-3 h-3 mr-1" />
-                          {((post.companyMentions?.length || 0) - 1) + (post.contactMentions?.length || 0)} related
-                        </span>
-                      </div>
-                    </>
                   )}
                 </div>
               ) : (
@@ -790,32 +813,6 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
       </div>
 
 
-      {/* Contact Mentions Section - Enhanced Display (only for legacy posts without topics) */}
-      {(!post.topicMentions || post.topicMentions.length === 0) && post.contactMentions && post.contactMentions.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-3 mb-4">
-          <div className="text-sm text-gray-600 mb-2">few in house contacts</div>
-          <div className="space-y-1">
-            {post.contactMentions.slice(0, 2).map((mention, index) => (
-              <div key={mention.contact.id} className="flex items-center space-x-2">
-                <a 
-                  href={`mailto:${mention.contact.email}`}
-                  className="text-blue-700 hover:text-blue-900 font-medium text-sm"
-                >
-                  {mention.contact.email}
-                </a>
-                <span className="text-gray-500 text-sm">
-                  - {mention.contact.title || 'Contact'}
-                </span>
-              </div>
-              ))}
-            {post.contactMentions.length > 2 && (
-              <button className="text-blue-600 text-sm hover:text-blue-800">
-                Read more
-              </button>
-          )}
-        </div>
-        </div>
-      )}
 
       {/* User Attribution & Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
@@ -828,7 +825,9 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               </span>
             </div>
             <span className="text-sm text-gray-700">
-              {post.isAnonymous ? post.anonymousHandle : post.author.name}
+              {post.isAnonymous
+                ? (post.anonymousHandle || 'Anonymous')
+                : (post.author.anonymousUsername || post.author.publicHandle || post.author.name)}
             </span>
             <span className="text-sm text-gray-600">•</span>
             <span className="text-sm text-gray-700">
@@ -1239,4 +1238,80 @@ function MultiTopicDisplay({
       )}
     </div>
   );
-} 
+}
+
+// AdditionalMentionsDisplay component - Shows expandable company and contact mentions
+function AdditionalMentionsDisplay({
+  companyMentions,
+  contactMentions
+}: {
+  companyMentions: any[];
+  contactMentions: any[];
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Combine all mentions
+  const allMentions = [
+    ...(companyMentions || [])
+      .filter((cm: any) => cm.company?.id) // Filter out mentions without company data
+      .map((cm: any) => ({
+        id: cm.company.id,
+        name: cm.company.name || 'Unknown Company',
+        type: 'company',
+        verified: cm.company.verified || false
+      })),
+    ...(contactMentions || [])
+      .filter((cm: any) => cm.contact?.id) // Filter out mentions without contact data
+      .map((cm: any) => ({
+        id: cm.contact.id,
+        name: cm.contact.fullName || `${cm.contact.firstName || ''} ${cm.contact.lastName || ''}`.trim() || 'Unknown Contact',
+        type: 'contact',
+        verified: false
+      }))
+  ];
+
+  if (allMentions.length === 0) return null;
+
+  return (
+    <div
+      className="relative flex items-center gap-2"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Hover trigger */}
+      <span className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 font-medium cursor-default">
+        +{allMentions.length} more
+      </span>
+
+      {/* Expanded list as popup/dropdown - shows on hover */}
+      {isHovered && (
+        <div className="absolute z-10 top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] max-w-[300px]">
+          <div className="space-y-2">
+            {allMentions.map((mention, index) => (
+              <div key={`${mention.type}-${mention.id}`} className="flex items-center space-x-2">
+                {mention.type === 'company' ? (
+                  <BuildingOfficeIcon className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                ) : (
+                  <UserIcon className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                )}
+                <Link
+                  href={
+                    mention.type === 'company'
+                      ? `/orgs/companies/${mention.id}`
+                      : `/contacts/${mention.id}`
+                  }
+                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 no-underline text-sm"
+                >
+                  {mention.name}
+                </Link>
+                {mention.verified && (
+                  <CheckBadgeIcon className="w-3 h-3 text-blue-500 flex-shrink-0" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

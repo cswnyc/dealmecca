@@ -449,6 +449,8 @@ model ForumPost {
   codeType           String?
   codeComplexity     String?
   generatedCode      String?
+  primaryTopicType   String?
+  primaryTopicId     String?
   CompanyMention     CompanyMention[]
   ContactMention     ContactMention[]
   ForumBookmark      ForumBookmark[]

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const suggestions: EntitySuggestion[] = [];
 
     // Search Companies - simplified query first
-    const companies = await prisma.Company.findMany({
+    const companies = await prisma.companies.findMany({
       where: {
         name: { contains: searchTerm, mode: 'insensitive' }
       },
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Search Contacts
-    const contacts = await prisma.Contact.findMany({
+    const contacts = await prisma.contacts.findMany({
       where: {
         firstName: { contains: searchTerm, mode: 'insensitive' }
       },
