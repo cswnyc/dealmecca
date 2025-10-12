@@ -14,7 +14,8 @@ import {
   Activity,
   Crown,
   Shield,
-  User
+  User,
+  AlertTriangle
 } from 'lucide-react';
 
 interface UserData {
@@ -405,8 +406,18 @@ export default function UsersAdminPage() {
                           {getRoleIcon(user.role)}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.name || user.email || 'Anonymous User'}
+                          <div className="flex items-center space-x-2">
+                            <div className="text-sm font-medium text-gray-900">
+                              {user.name || user.email || 'Anonymous User'}
+                            </div>
+                            {!user.firebaseUid && (
+                              <div
+                                className="flex items-center text-red-600"
+                                title="Missing Firebase UID - user cannot log in!"
+                              >
+                                <AlertTriangle className="w-4 h-4" />
+                              </div>
+                            )}
                           </div>
                           <div className="text-sm text-gray-500">
                             {user.email || user.anonymousUsername || 'No email'}
