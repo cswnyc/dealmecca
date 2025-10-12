@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get('q') || '';
     const limit = parseInt(searchParams.get('limit') || '8');
 
-    if (query.length < 2) {
+    if (query.length < 1) {
       return NextResponse.json({
         suggestions: [],
         categories: { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },

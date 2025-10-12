@@ -70,7 +70,7 @@ export function GlobalSearchInput({
 
   // Debounced search function
   const debouncedSearch = useCallback(async (searchQuery: string) => {
-    if (searchQuery.length < 2) {
+    if (searchQuery.length < 1) {
       setResults({
         suggestions: [],
         categories: { company: 0, team: 0, businessLine: 0, contact: 0, forumPost: 0, event: 0 },
@@ -261,7 +261,7 @@ export function GlobalSearchInput({
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => query.length >= 2 && setShowDropdown(true)}
+          onFocus={() => query.length >= 1 && setShowDropdown(true)}
           placeholder={placeholder}
           className={cn(
             'w-full pl-10 pr-10 border border-gray-300 rounded-lg',

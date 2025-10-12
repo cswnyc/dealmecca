@@ -385,9 +385,9 @@ export default function OrganizationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Agency view state - Start with rich mock data
-  const [agencies, setAgencies] = useState<Agency[]>(MOCK_AGENCIES);
-  const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>(MOCK_AGENCIES);
+  // Agency view state - Start with empty, will fetch from API
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>([]);
   const [activeTab, setActiveTab] = useState<'agencies' | 'advertisers' | 'people' | 'industries' | 'publisher' | 'dsp-ssp' | 'adtech'>('agencies');
 
   const [showAddEntityModal, setShowAddEntityModal] = useState(false);
@@ -471,6 +471,33 @@ export default function OrganizationsPage() {
       setIsAdmin(true);
     }
   }, [firebaseUser]);
+
+  // Fetch agencies from API
+  useEffect(() => {
+    const fetchAgencies = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/organizations/agencies', {
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAgencies(data.agencies || []);
+        } else {
+          console.error('Failed to fetch agencies:', response.statusText);
+          setError('Failed to load agencies');
+        }
+      } catch (error) {
+        console.error('Error fetching agencies:', error);
+        setError('Failed to load agencies');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgencies();
+  }, []);
 
   // Agency filtering
   useEffect(() => {
