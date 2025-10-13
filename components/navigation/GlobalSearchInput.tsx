@@ -263,6 +263,11 @@ export function GlobalSearchInput({
           onKeyDown={handleKeyDown}
           onFocus={() => query.length >= 1 && setShowDropdown(true)}
           placeholder={placeholder}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          data-form-type="other"
           className={cn(
             'w-full pl-10 pr-10 border border-gray-300 rounded-lg',
             'bg-white text-gray-900 placeholder-gray-500',
@@ -270,6 +275,7 @@ export function GlobalSearchInput({
             'transition-all duration-200',
             sizeClasses[size]
           )}
+          style={{ color: '#111827' }}
         />
         
         {/* Loading or Clear Button */}
