@@ -317,6 +317,11 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
         primaryTopicType: post.primaryTopicType,
         primaryTopicId: post.primaryTopicId,
         primaryTopic: primaryTopic,
+        postType: post.postType,
+        listItems: post.listItems,
+        pollChoices: post.pollChoices,
+        pollDuration: post.pollDuration,
+        pollEndsAt: post.pollEndsAt?.toISOString(),
         author: {
           id: post.User.id,
           name: post.User.name || 'Anonymous User',
