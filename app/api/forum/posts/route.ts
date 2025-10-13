@@ -435,7 +435,7 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
 
 const CreatePostSchema = z.object({
   content: z.string().trim().min(1, 'Content is required').max(50000, 'Content too long'),
-  categoryId: z.string().cuid().optional(),
+  categoryId: z.string().min(1).optional(),
   tags: z.string().optional().default(''),
   isAnonymous: z.boolean().optional().default(false),
   urgency: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional().default('MEDIUM'),
