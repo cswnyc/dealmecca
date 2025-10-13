@@ -124,6 +124,8 @@
   textarea,
   select {
     color: #111827 !important; /* Force dark gray text - gray-900 */
+    -webkit-text-security: none !important; /* Prevent browser password masking */
+    text-security: none !important;
   }
 
   /* Dark mode text color for inputs */
