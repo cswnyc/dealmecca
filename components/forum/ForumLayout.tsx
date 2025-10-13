@@ -19,6 +19,7 @@ interface ForumCategory {
   name: string;
   slug: string;
   color: string;
+  icon?: string;
   _count: {
     posts: number;
   };
@@ -101,7 +102,10 @@ export function ForumLayout({
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span>{category.name}</span>
+                      <div className="flex items-center space-x-2">
+                        {category.icon && <span className="text-base">{category.icon}</span>}
+                        <span>{category.name}</span>
+                      </div>
                       <span className="text-xs text-gray-500">
                         {category._count.posts}
                       </span>
