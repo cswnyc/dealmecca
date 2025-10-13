@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 const UpdatePostSchema = z.object({
   content: z.string().trim().min(1).max(50000).optional(),
-  categoryId: z.string().cuid().optional(),
+  categoryId: z.string().min(1).optional(),
   tags: z.string().optional(),
   urgency: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
   dealSize: z.string().optional(),
