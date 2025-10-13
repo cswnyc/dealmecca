@@ -748,7 +748,15 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           {/* Category Only - Clean display */}
           <div className="flex items-center space-x-2 text-sm text-gray-700 mb-2">
             <span>in</span>
-            <span className="text-gray-900 font-medium">{post.category.name}</span>
+            {post.postType === 'poll' ? (
+              <>
+                <span className="text-gray-900 font-medium">Polls</span>
+                <span className="text-gray-400">›</span>
+                <span className="text-gray-700">{post.category.name}</span>
+              </>
+            ) : (
+              <span className="text-gray-900 font-medium">{post.category.name}</span>
+            )}
           </div>
         </div>
           </div>
@@ -812,6 +820,14 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           </div>
         ) : post.postType === 'poll' && pollChoicesArray.length > 0 ? (
           <div className="space-y-3">
+            {/* Poll Question */}
+            {post.content && (
+              <div className="text-gray-900 font-medium text-lg mb-4">
+                {post.content}
+              </div>
+            )}
+
+            {/* Poll Choices */}
             {pollChoicesArray.map((choice, index) => {
               // Mock percentages for now - would come from actual vote data
               const mockPercentages = [77, 15, 1, 7];
