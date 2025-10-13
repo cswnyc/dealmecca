@@ -636,7 +636,10 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           {/* Primary Display: Company/Agency + Category */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center space-x-2 flex-1 min-w-0">
-              {!post.isAnonymous ? (
+              {post.postType === 'poll' ? (
+                /* For polls, always show "Polls" as the main topic */
+                <span className="font-semibold text-gray-900 text-lg">Polls</span>
+              ) : !post.isAnonymous ? (
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
                   {/* Primary Display - Prioritize Primary Topic, then Topics, then Company */}
                   {post.primaryTopic ? (
@@ -748,15 +751,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           {/* Category Only - Clean display */}
           <div className="flex items-center space-x-2 text-sm text-gray-700 mb-2">
             <span>in</span>
-            {post.postType === 'poll' ? (
-              <>
-                <span className="text-gray-900 font-medium">Polls</span>
-                <span className="text-gray-400">›</span>
-                <span className="text-gray-700">{post.category.name}</span>
-              </>
-            ) : (
-              <span className="text-gray-900 font-medium">{post.category.name}</span>
-            )}
+            <span className="text-gray-900 font-medium">{post.category.name}</span>
           </div>
         </div>
           </div>
