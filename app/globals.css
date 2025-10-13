@@ -123,7 +123,7 @@
   input[type="number"],
   textarea,
   select {
-    @apply text-gray-900;
+    color: #111827 !important; /* Force dark gray text - gray-900 */
   }
 
   /* Dark mode text color for inputs */
@@ -136,7 +136,7 @@
   .dark input[type="number"],
   .dark textarea,
   .dark select {
-    @apply text-gray-100;
+    color: #f3f4f6 !important; /* Force light text for dark mode - gray-100 */
   }
   
   /* Premium Typography Classes */
