@@ -44,6 +44,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     // List specific fields
     listItems: [''],
     // Poll specific fields
+    pollQuestion: '',
     pollChoices: ['', ''],
     pollDuration: 7, // days
     // Code specific fields
@@ -228,10 +229,10 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
     if (postType === 'post' && !formData.content) return;
     if (postType === 'list' && formData.listItems.filter(item => item.trim()).length === 0) return;
-    if (postType === 'poll' && formData.pollChoices.filter(choice => choice.trim()).length < 2) return;
+    if (postType === 'poll' && (!formData.pollQuestion.trim() || formData.pollChoices.filter(choice => choice.trim()).length < 2)) return;
     if (postType === 'code' && !formData.generatedCode && !formData.content) return;
 
-    if (!formData.categoryId) return;
+    if (postType !== 'poll' && !formData.categoryId) return;
 
     // Check authentication with detailed logging
     console.log('🔐 Auth check - user object:', user);
@@ -251,8 +252,8 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           listItems: formData.listItems.filter(item => item.trim())
         };
       } else if (postType === 'poll') {
-        content = formData.pollChoices.filter(choice => choice.trim()).join('\n');
-        additionalData = { 
+        content = formData.pollQuestion;
+        additionalData = {
           postType: 'poll',
           pollChoices: formData.pollChoices.filter(choice => choice.trim()),
           pollDuration: formData.pollDuration,
@@ -459,59 +460,129 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
         {postType === 'poll' && (
           <>
+            {/* Poll Question */}
+            <div>
+              <label htmlFor="pollQuestion" className="block text-sm font-medium text-gray-700 mb-2">
+                Your question *
+              </label>
+              <textarea
+                id="pollQuestion"
+                value={formData.pollQuestion}
+                onChange={(e) => {
+                  if (e.target.value.length <= 140) {
+                    setFormData(prev => ({ ...prev, pollQuestion: e.target.value }));
+                  }
+                }}
+                placeholder="E.g., How do you commute to work?"
+                rows={3}
+                maxLength={140}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+              <div className="text-right text-sm text-gray-500 mt-1">
+                {formData.pollQuestion.length}/140
+              </div>
+            </div>
 
             {/* Poll Choices */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+            <div className="space-y-4">
               {formData.pollChoices.map((choice, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={choice}
-                    onChange={(e) => updatePollChoice(index, e.target.value)}
-                    placeholder={`Choice ${index + 1}`}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                  {formData.pollChoices.length > 2 && (
-                    <button
-                      type="button"
-                      onClick={() => removePollChoice(index)}
-                      className="text-red-500 hover:text-red-700 p-1"
-                    >
-                      ✕
-                    </button>
-                  )}
+                <div key={index}>
+                  <label htmlFor={`option-${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+                    Option {index + 1} *
+                  </label>
+                  <div className="flex items-start space-x-2">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        id={`option-${index}`}
+                        value={choice}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 30) {
+                            updatePollChoice(index, e.target.value);
+                          }
+                        }}
+                        placeholder={index === 0 ? "E.g., Public transportation" : index === 1 ? "E.g., Drive myself" : `Option ${index + 1}`}
+                        maxLength={30}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                      <div className="text-right text-sm text-gray-500 mt-1">
+                        {choice.length}/30
+                      </div>
+                    </div>
+                    {formData.pollChoices.length > 2 && (
+                      <button
+                        type="button"
+                        onClick={() => removePollChoice(index)}
+                        className="mt-3 text-red-500 hover:text-red-700 p-1"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
+
               <button
                 type="button"
                 onClick={addPollChoice}
-                className="w-full text-left px-3 py-2 border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-2 px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-full font-medium hover:bg-blue-50 transition-colors"
               >
-                Add choice
+                <span className="text-xl font-bold">+</span>
+                <span>Add option</span>
               </button>
             </div>
 
             {/* Poll Duration */}
-            <div className="text-sm text-gray-600">
-              <span>Poll ends in </span>
+            <div>
+              <label htmlFor="pollDuration" className="block text-sm font-medium text-gray-700 mb-2">
+                Poll duration
+              </label>
               <select
+                id="pollDuration"
                 value={formData.pollDuration}
                 onChange={(e) => setFormData(prev => ({ ...prev, pollDuration: parseInt(e.target.value) }))}
-                className="mx-1 px-2 py-1 border border-gray-200 rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 1rem center'
+                }}
               >
                 <option value={1}>1 day</option>
                 <option value={3}>3 days</option>
-                <option value={7}>7 days</option>
-                <option value={14}>14 days</option>
-                <option value={30}>30 days</option>
+                <option value={7}>1 week</option>
+                <option value={14}>2 weeks</option>
+                <option value={30}>1 month</option>
+              </select>
+            </div>
+
+            {/* Category for Poll */}
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                Category *
+              </label>
+              <select
+                id="category"
+                value={formData.categoryId}
+                onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Select category</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
           </>
         )}
 
         {/* AI Suggestions */}
-        {showAiSuggestions && (
+        {showAiSuggestions && postType !== 'poll' && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h3 className="text-sm font-medium text-blue-900 mb-3 flex items-center">
               <TagIcon className="w-4 h-4 mr-2" />
@@ -590,153 +661,157 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           </div>
         )}
 
-        {/* Category and Metadata Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Category */}
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              Category *
-            </label>
-            <select
-              id="category"
-              value={formData.categoryId}
-              onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            >
-              <option value="">Select category</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-        </div>
-
-        {/* Location */}
-        <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-            Location (Optional)
-          </label>
-          <input
-            type="text"
-            id="location"
-            value={formData.location}
-            onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-            placeholder="City, state, or region"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Media Types */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Media Types
-          </label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.mediaType.map(media => (
-              <span
-                key={media}
-                className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 text-sm rounded"
-              >
-                {media}
-                <button
-                  type="button"
-                  onClick={() => removeMediaType(media)}
-                  className="ml-1 text-purple-600 hover:text-purple-800"
+        {/* Category and Metadata Row - Hide for polls */}
+        {postType !== 'poll' && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Category */}
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                  Category *
+                </label>
+                <select
+                  id="category"
+                  value={formData.categoryId}
+                  onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
                 >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-          <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-            {['TV', 'RADIO', 'DIGITAL', 'PRINT', 'OOH', 'STREAMING', 'PODCAST', 'SOCIAL', 'PROGRAMMATIC'].map(media => (
-              <button
-                key={media}
-                type="button"
-                onClick={() => addMediaType(media)}
-                className={`px-3 py-2 text-sm rounded border transition-colors ${
-                  formData.mediaType.includes(media)
-                    ? 'bg-purple-100 border-purple-300 text-purple-800'
-                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {media}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tags */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tags
-          </label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.tags.map(tag => (
-              <span
-                key={tag}
-                className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded"
-              >
-                #{tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  className="ml-1 text-blue-600 hover:text-blue-800"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-          <input
-            type="text"
-            placeholder="Add tags (press Enter)"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                e.preventDefault();
-                addTag(e.currentTarget.value.trim().toLowerCase());
-                e.currentTarget.value = '';
-              }
-            }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Anonymous Option */}
-        <div className="space-y-2">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="anonymous"
-              checked={formData.isAnonymous}
-              onChange={(e) => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-            />
-            <label htmlFor="anonymous" className="ml-2 text-sm text-gray-700">
-              Post anonymously
-            </label>
-          </div>
-          
-          {formData.isAnonymous && (
-            <div className="ml-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center space-x-2 text-sm">
-                <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-xs font-medium text-gray-600">?</span>
-                </div>
-                <span className="text-gray-600">Will be posted as:</span>
-                <span className="font-medium text-gray-900">Anonymous User</span>
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Anonymous</span>
+                  <option value="">Select category</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="text-xs text-blue-700 mt-2">
-                💡 Set an anonymous handle in your profile to maintain consistency across anonymous posts
+
+            </div>
+
+            {/* Location */}
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                Location (Optional)
+              </label>
+              <input
+                type="text"
+                id="location"
+                value={formData.location}
+                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="City, state, or region"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Media Types */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Media Types
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.mediaType.map(media => (
+                  <span
+                    key={media}
+                    className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 text-sm rounded"
+                  >
+                    {media}
+                    <button
+                      type="button"
+                      onClick={() => removeMediaType(media)}
+                      className="ml-1 text-purple-600 hover:text-purple-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+                {['TV', 'RADIO', 'DIGITAL', 'PRINT', 'OOH', 'STREAMING', 'PODCAST', 'SOCIAL', 'PROGRAMMATIC'].map(media => (
+                  <button
+                    key={media}
+                    type="button"
+                    onClick={() => addMediaType(media)}
+                    className={`px-3 py-2 text-sm rounded border transition-colors ${
+                      formData.mediaType.includes(media)
+                        ? 'bg-purple-100 border-purple-300 text-purple-800'
+                        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {media}
+                  </button>
+                ))}
               </div>
             </div>
-          )}
-        </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tags
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded"
+                  >
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="ml-1 text-blue-600 hover:text-blue-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <input
+                type="text"
+                placeholder="Add tags (press Enter)"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                    e.preventDefault();
+                    addTag(e.currentTarget.value.trim().toLowerCase());
+                    e.currentTarget.value = '';
+                  }
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Anonymous Option */}
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="anonymous"
+                  checked={formData.isAnonymous}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="anonymous" className="ml-2 text-sm text-gray-700">
+                  Post anonymously
+                </label>
+              </div>
+
+              {formData.isAnonymous && (
+                <div className="ml-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center space-x-2 text-sm">
+                    <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-medium text-gray-600">?</span>
+                    </div>
+                    <span className="text-gray-600">Will be posted as:</span>
+                    <span className="font-medium text-gray-900">Anonymous User</span>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Anonymous</span>
+                  </div>
+                  <div className="text-xs text-blue-700 mt-2">
+                    💡 Set an anonymous handle in your profile to maintain consistency across anonymous posts
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         {/* Submit Button */}
         <div className="flex justify-end space-x-4">
@@ -749,12 +824,12 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           </button>
           <button
             type="submit"
-            disabled={isSubmitting || 
+            disabled={isSubmitting ||
               (postType === 'post' && !formData.content) ||
               (postType === 'list' && formData.listItems.filter(item => item.trim()).length === 0) ||
-              (postType === 'poll' && formData.pollChoices.filter(choice => choice.trim()).length < 2) ||
+              (postType === 'poll' && (!formData.pollQuestion.trim() || formData.pollChoices.filter(choice => choice.trim()).length < 2 || !formData.categoryId)) ||
               (postType === 'code' && !formData.generatedCode && !formData.content) ||
-              !formData.categoryId}
+              (postType !== 'poll' && !formData.categoryId)}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Creating...' : `Create ${postType.charAt(0).toUpperCase() + postType.slice(1)}`}
