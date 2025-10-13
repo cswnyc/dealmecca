@@ -773,31 +773,72 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
       {/* Content preview with mentions - Dynamic based on post type */}
       <div className="text-gray-700 mb-4">
         {post.postType === 'list' && listItemsArray.length > 0 ? (
-          <div className="space-y-2">
-            {listItemsArray.slice(0, 3).map((item, index) => (
-              <div key={index} className="flex items-start space-x-2">
-                <span className="text-gray-400 mt-1">•</span>
-                <span>{item}</span>
+          <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+            {/* Sort dropdown */}
+            <div className="flex justify-end mb-2">
+              <div className="text-sm text-gray-600">
+                Sort by: <span className="font-medium">Chronological ▾</span>
+              </div>
+            </div>
+
+            {/* List items with actions */}
+            {listItemsArray.map((item, index) => (
+              <div key={index} className="bg-white rounded-lg p-4 flex items-center justify-between group hover:shadow-sm transition-shadow">
+                <div className="flex items-center space-x-3 flex-1">
+                  <span className="text-gray-900 font-medium">{item}</span>
+                  <span className="text-gray-400">·</span>
+                  <span className="text-sm text-gray-500">10 mins</span>
+                </div>
+                <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <ChevronUpIcon className="w-4 h-4 text-gray-600" />
+                  </button>
+                  <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium text-gray-700 transition-colors">
+                    Comment
+                  </button>
+                </div>
               </div>
             ))}
-            {listItemsArray.length > 3 && (
-              <div className="text-gray-500 text-sm">+{listItemsArray.length - 3} more items</div>
-            )}
+
+            {/* Add another */}
+            <div className="text-gray-400 text-sm pt-2">
+              Add another...
+            </div>
           </div>
         ) : post.postType === 'poll' && pollChoicesArray.length > 0 ? (
-          <div className="space-y-2">
-            {pollChoicesArray.slice(0, 3).map((choice, index) => (
-              <div key={index} className="flex items-center space-x-2 p-2 border border-gray-200 rounded">
-                <div className="w-4 h-4 border border-gray-300 rounded"></div>
-                <span>{choice}</span>
-              </div>
-            ))}
-            {pollChoicesArray.length > 3 && (
-              <div className="text-gray-500 text-sm">+{pollChoicesArray.length - 3} more choices</div>
-            )}
+          <div className="space-y-3">
+            {pollChoicesArray.map((choice, index) => {
+              // Mock percentages for now - would come from actual vote data
+              const mockPercentages = [77, 15, 1, 7];
+              const percentage = mockPercentages[index] || 0;
+
+              return (
+                <div key={index} className="relative">
+                  {/* Background bar */}
+                  <div className="absolute inset-0 bg-blue-100 rounded-lg" style={{ width: `${percentage}%` }}></div>
+
+                  {/* Content */}
+                  <div className="relative flex items-center justify-between px-4 py-3">
+                    <span className="text-gray-900 font-medium">{choice}</span>
+                    <span className="text-blue-600 font-semibold text-lg">{percentage}%</span>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Poll metadata */}
             {post.pollEndsAt && (
-              <div className="text-xs text-gray-500 mt-2">
-                Poll ends {formatDistanceToNow(new Date(post.pollEndsAt), { addSuffix: true })}
+              <div className="text-sm text-gray-600 pt-2">
+                <span className="font-medium">Final results</span>
+                {' · '}
+                <span>171 votes</span>
+                {' · '}
+                <span>Poll ended {formatDistanceToNow(new Date(post.pollEndsAt), { addSuffix: true })}</span>
               </div>
             )}
           </div>
