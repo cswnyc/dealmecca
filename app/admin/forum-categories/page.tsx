@@ -22,7 +22,18 @@ export default function ForumCategoriesAdmin() {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    slug: '',
+    color: '#3b82f6',
+    icon: '📁',
+    order: 0,
+    isActive: true
+  });
+  const [editFormData, setEditFormData] = useState({
+    id: '',
     name: '',
     description: '',
     slug: '',
@@ -78,6 +89,54 @@ export default function ForumCategoriesAdmin() {
     } catch (error) {
       console.error('Error creating category:', error);
       alert('Error creating category');
+    }
+  };
+
+  const handleStartEdit = (category: Category) => {
+    setEditFormData({
+      id: category.id,
+      name: category.name,
+      description: category.description,
+      slug: category.slug,
+      color: category.color,
+      icon: category.icon,
+      order: category.order,
+      isActive: category.isActive
+    });
+    setShowEditForm(true);
+    setShowCreateForm(false);
+  };
+
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const { id, ...updates } = editFormData;
+      const response = await fetch(`/api/admin/forum/categories/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+
+      if (response.ok) {
+        setShowEditForm(false);
+        setEditFormData({
+          id: '',
+          name: '',
+          description: '',
+          slug: '',
+          color: '#3b82f6',
+          icon: '📁',
+          order: 0,
+          isActive: true
+        });
+        fetchCategories();
+      } else {
+        alert('Failed to update category');
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      alert('Error updating category');
     }
   };
 
@@ -164,7 +223,7 @@ export default function ForumCategoriesAdmin() {
         </div>
 
         {/* Create Form */}
-        {showCreateForm && (
+        {showCreateForm && !showEditForm && (
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Create New Category</h2>
@@ -287,6 +346,154 @@ export default function ForumCategoriesAdmin() {
           </div>
         )}
 
+        {/* Edit Form */}
+        {showEditForm && (
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Edit Category</h2>
+              <button
+                onClick={() => {
+                  setShowEditForm(false);
+                  setEditFormData({
+                    id: '',
+                    name: '',
+                    description: '',
+                    slug: '',
+                    color: '#3b82f6',
+                    icon: '📁',
+                    order: 0,
+                    isActive: true
+                  });
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEdit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.name}
+                    onChange={(e) => {
+                      setEditFormData({
+                        ...editFormData,
+                        name: e.target.value,
+                        slug: generateSlug(e.target.value)
+                      });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    autoComplete="off"
+                    data-form-type="other"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Slug
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.slug}
+                    onChange={(e) => setEditFormData({ ...editFormData, slug: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    autoComplete="off"
+                    data-form-type="other"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Icon (Emoji)
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.icon}
+                    onChange={(e) => setEditFormData({ ...editFormData, icon: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    autoComplete="off"
+                    data-form-type="other"
+                    placeholder="📁"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Color
+                  </label>
+                  <input
+                    type="color"
+                    value={editFormData.color}
+                    onChange={(e) => setEditFormData({ ...editFormData, color: e.target.value })}
+                    className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={editFormData.description}
+                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  autoComplete="off"
+                  data-form-type="other"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={editFormData.isActive}
+                    onChange={(e) => setEditFormData({ ...editFormData, isActive: e.target.checked })}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Active</span>
+                </label>
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditForm(false);
+                    setEditFormData({
+                      id: '',
+                      name: '',
+                      description: '',
+                      slug: '',
+                      color: '#3b82f6',
+                      icon: '📁',
+                      order: 0,
+                      isActive: true
+                    });
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Update Category
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
         {/* Categories List */}
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="overflow-x-auto">
@@ -343,12 +550,22 @@ export default function ForumCategoriesAdmin() {
                       </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleDelete(category.id)}
-                        className="text-red-600 hover:text-red-900 ml-4"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end space-x-3">
+                        <button
+                          onClick={() => handleStartEdit(category)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Edit category"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category.id)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete category"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
