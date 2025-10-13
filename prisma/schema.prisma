@@ -459,6 +459,7 @@ model ForumPost {
   ForumCategory      ForumCategory    @relation(fields: [categoryId], references: [id])
   Event              Event?           @relation(fields: [eventId], references: [id])
   ForumVote          ForumVote[]
+  PollVote           PollVote[]
   PostBookmark       PostBookmark[]
   PostFollow         PostFollow[]
   TopicMention       TopicMention[]
@@ -480,6 +481,20 @@ model ForumVote {
   createdAt DateTime  @default(now())
   ForumPost ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+}
+
+model PollVote {
+  id          String    @id @default(cuid())
+  userId      String
+  postId      String
+  choiceIndex Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  ForumPost   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@index([postId])
@@ -809,6 +824,7 @@ model User {
   ForumCommentVote                                                ForumCommentVote[]
   ForumPost                                                       ForumPost[]
   ForumVote                                                       ForumVote[]
+  PollVote                                                        PollVote[]
   Notification                                                    Notification[]
   Payment                                                         Payment[]
   Post                                                            Post[]

@@ -168,6 +168,16 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showAllComments, setShowAllComments] = useState(false);
+  // Poll state
+  const [pollResults, setPollResults] = useState<{
+    voteCounts: Record<number, number>;
+    percentages: Record<number, number>;
+    totalVotes: number;
+    userVote: number | null;
+    hasEnded: boolean;
+  } | null>(null);
+  const [pollLoading, setPollLoading] = useState(false);
+  const [pollVoting, setPollVoting] = useState(false);
 
   // Helper functions to parse JSON string fields
   const parseListItems = (listItems?: string): string[] => {
@@ -302,6 +312,39 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
     loadUserStatus();
   }, [post.id, firebaseUser?.uid]);
+
+  // Fetch poll results for poll posts
+  useEffect(() => {
+    const fetchPollResults = async () => {
+      if (post.postType !== 'poll') return;
+
+      setPollLoading(true);
+      try {
+        const headers: Record<string, string> = {};
+        if (idToken) {
+          headers['Authorization'] = `Bearer ${idToken}`;
+        }
+
+        const response = await fetch(`/api/forum/posts/${post.id}/poll-results`, { headers });
+        if (response.ok) {
+          const data = await response.json();
+          setPollResults({
+            voteCounts: data.voteCounts || {},
+            percentages: data.percentages || {},
+            totalVotes: data.totalVotes || 0,
+            userVote: data.userVote,
+            hasEnded: data.hasEnded || false,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch poll results:', error);
+      } finally {
+        setPollLoading(false);
+      }
+    };
+
+    fetchPollResults();
+  }, [post.id, post.postType, idToken]);
 
   const urgencyLabels = {
     LOW: 'Low Priority',
@@ -581,7 +624,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
   const handleShare = async (shareType: 'copy' | 'twitter' | 'linkedin') => {
     const postUrl = `${window.location.origin}/forum/posts/${post.slug}`;
-    
+
     switch (shareType) {
       case 'copy':
         try {
@@ -602,6 +645,60 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         break;
     }
     setShowShareMenu(false);
+  };
+
+  const handlePollVote = async (choiceIndex: number) => {
+    if (!firebaseUser || !idToken) {
+      alert('Please sign in to vote');
+      return;
+    }
+
+    if (pollResults?.hasEnded) {
+      alert('This poll has ended');
+      return;
+    }
+
+    if (pollVoting) return;
+
+    setPollVoting(true);
+    try {
+      const response = await fetch(`/api/forum/posts/${post.id}/vote-poll`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ choiceIndex }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPollResults({
+          voteCounts: data.voteCounts || {},
+          percentages: {},
+          totalVotes: data.totalVotes || 0,
+          userVote: data.userVote,
+          hasEnded: pollResults?.hasEnded || false,
+        });
+
+        // Recalculate percentages
+        const newPercentages: Record<number, number> = {};
+        pollChoicesArray.forEach((_, index) => {
+          newPercentages[index] = data.totalVotes > 0
+            ? Math.round((data.voteCounts[index] / data.totalVotes) * 100)
+            : 0;
+        });
+        setPollResults(prev => prev ? { ...prev, percentages: newPercentages } : null);
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to vote');
+      }
+    } catch (error) {
+      console.error('Failed to vote:', error);
+      alert('Failed to vote');
+    } finally {
+      setPollVoting(false);
+    }
   };
 
 
@@ -822,35 +919,85 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               </div>
             )}
 
-            {/* Poll Choices */}
-            {pollChoicesArray.map((choice, index) => {
-              // Mock percentages for now - would come from actual vote data
-              const mockPercentages = [77, 15, 1, 7];
-              const percentage = mockPercentages[index] || 0;
-
-              return (
-                <div key={index} className="relative">
-                  {/* Background bar */}
-                  <div className="absolute inset-0 bg-blue-100 rounded-lg" style={{ width: `${percentage}%` }}></div>
-
-                  {/* Content */}
-                  <div className="relative flex items-center justify-between px-4 py-3">
-                    <span className="text-gray-900 font-medium">{choice}</span>
-                    <span className="text-blue-600 font-semibold text-lg">{percentage}%</span>
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Poll metadata */}
-            {post.pollEndsAt && (
-              <div className="text-sm text-gray-600 pt-2">
-                <span className="font-medium">Final results</span>
-                {' · '}
-                <span>171 votes</span>
-                {' · '}
-                <span>Poll ended {formatDistanceToNow(new Date(post.pollEndsAt), { addSuffix: true })}</span>
+            {/* Loading state */}
+            {pollLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
               </div>
+            ) : (
+              <>
+                {/* Poll Choices */}
+                {pollChoicesArray.map((choice, index) => {
+                  const percentage = pollResults?.percentages[index] || 0;
+                  const voteCount = pollResults?.voteCounts[index] || 0;
+                  const isUserVote = pollResults?.userVote === index;
+                  const hasEnded = pollResults?.hasEnded || false;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => !hasEnded && handlePollVote(index)}
+                      disabled={hasEnded || pollVoting}
+                      className={`relative w-full text-left transition-all ${
+                        !hasEnded && !pollVoting
+                          ? 'cursor-pointer hover:shadow-md'
+                          : 'cursor-not-allowed'
+                      }`}
+                    >
+                      {/* Background bar */}
+                      <div
+                        className={`absolute inset-0 rounded-lg transition-all ${
+                          isUserVote ? 'bg-blue-200' : 'bg-blue-100'
+                        }`}
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+
+                      {/* Content */}
+                      <div className="relative flex items-center justify-between px-4 py-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-900 font-medium">{choice}</span>
+                          {isUserVote && (
+                            <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-blue-600 font-semibold text-lg">{percentage}%</span>
+                          <span className="text-gray-500 text-sm">({voteCount})</span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+
+                {/* Poll metadata */}
+                <div className="text-sm text-gray-600 pt-2">
+                  {pollResults?.hasEnded ? (
+                    <>
+                      <span className="font-medium">Final results</span>
+                      {' · '}
+                      <span>{pollResults.totalVotes} votes</span>
+                      {post.pollEndsAt && (
+                        <>
+                          {' · '}
+                          <span>Poll ended {formatDistanceToNow(new Date(post.pollEndsAt), { addSuffix: true })}</span>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-medium">{pollResults?.totalVotes || 0} votes</span>
+                      {post.pollEndsAt && (
+                        <>
+                          {' · '}
+                          <span>Ends {formatDistanceToNow(new Date(post.pollEndsAt), { addSuffix: true })}</span>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
             )}
           </div>
         ) : (
