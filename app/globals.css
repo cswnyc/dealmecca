@@ -128,6 +128,12 @@
     text-security: none !important;
   }
 
+  /* Ensure select options have visible text color */
+  select option {
+    color: #111827 !important; /* Force dark gray text for dropdown options */
+    background-color: #ffffff !important;
+  }
+
   /* Dark mode text color for inputs */
   .dark input[type="text"],
   .dark input[type="email"],
@@ -139,6 +145,12 @@
   .dark textarea,
   .dark select {
     color: #f3f4f6 !important; /* Force light text for dark mode - gray-100 */
+  }
+
+  /* Dark mode select options */
+  .dark select option {
+    color: #f3f4f6 !important;
+    background-color: #1f2937 !important; /* gray-800 */
   }
   
   /* Premium Typography Classes */
