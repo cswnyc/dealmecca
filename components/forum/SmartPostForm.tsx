@@ -395,7 +395,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                     value={item}
                     onChange={(e) => updateListItem(index, e.target.value)}
                     placeholder="Add an item"
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   {formData.listItems.length > 1 && (
                     <button
@@ -469,7 +469,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                     value={choice}
                     onChange={(e) => updatePollChoice(index, e.target.value)}
                     placeholder={`Choice ${index + 1}`}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                   {formData.pollChoices.length > 2 && (
@@ -601,7 +601,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               id="category"
               value={formData.categoryId}
               onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select category</option>
@@ -626,7 +626,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             value={formData.location}
             onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
             placeholder="City, state, or region"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
@@ -702,7 +702,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 e.currentTarget.value = '';
               }
             }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
