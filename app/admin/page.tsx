@@ -107,13 +107,6 @@ export default function AdminDashboard() {
       href: '/admin/events',
       icon: TrendingUp,
       color: 'text-indigo-600 bg-indigo-50'
-    },
-    {
-      title: 'Performance Monitor',
-      description: 'Monitor system performance metrics',
-      href: '/admin/performance',
-      icon: BarChart3,
-      color: 'text-red-600 bg-red-50'
     }
   ];
 

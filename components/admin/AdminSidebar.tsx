@@ -1,235 +1,232 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { 
-  Building2, 
-  Users, 
-  Shield, 
-  BarChart3, 
-  Settings,
-  Database,
+import {
+  LayoutDashboard,
+  Building2,
+  Users,
+  MessageSquare,
+  Calendar,
+  Upload,
+  Shield,
+  UserCheck,
+  Folder,
   ChevronDown,
   ChevronRight,
-  Plus,
-  Upload,
-  FileText,
-  Calendar,
-  MessageSquare
+  X,
+  Menu,
+  Home,
 } from 'lucide-react';
 
-interface SubMenuItem {
-  name: string;
-  href: string;
-  icon?: React.ComponentType<{ className?: string }>;
-}
-
-interface NavigationItem {
-  name: string;
+interface NavItem {
+  title: string;
   href?: string;
-  icon: React.ComponentType<{ className?: string }>;
-  subItems?: SubMenuItem[];
+  icon: React.ComponentType<any>;
+  children?: NavItem[];
 }
 
-const navigationItems: NavigationItem[] = [
+const navigationItems: NavItem[] = [
   {
-    name: 'Dashboard',
+    title: 'Dashboard',
     href: '/admin',
-    icon: BarChart3
+    icon: LayoutDashboard,
   },
   {
-    name: 'Bulk Import',
+    title: 'Bulk Import',
     href: '/admin/bulk-import',
-    icon: Upload
+    icon: Upload,
   },
   {
-    name: 'Companies',
+    title: 'Organizations',
     icon: Building2,
-    subItems: [
+    children: [
       {
-        name: 'All Companies',
+        title: 'Companies',
         href: '/admin/orgs/companies',
-        icon: Building2
+        icon: Building2,
       },
       {
-        name: 'Add Company',
+        title: 'Create Company',
         href: '/admin/orgs/companies/create',
-        icon: Plus
+        icon: Building2,
       },
       {
-        name: 'Bulk Upload',
-        href: '/admin/bulk-upload',
-        icon: Upload
-      }
-    ]
-  },
-  {
-    name: 'Contacts',
-    icon: Users,
-    subItems: [
-      {
-        name: 'All Contacts',
+        title: 'Contacts',
         href: '/admin/orgs/contacts',
-        icon: Users
+        icon: Users,
       },
       {
-        name: 'Add Contact',
+        title: 'Create Contact',
         href: '/admin/orgs/contacts/create',
-        icon: Plus
+        icon: Users,
       },
       {
-        name: 'Import Contacts',
+        title: 'Import Contacts',
         href: '/admin/orgs/contacts/import',
-        icon: Upload
-      }
-    ]
-  },
-  {
-    name: 'Events',
-    icon: Calendar,
-    subItems: [
-      {
-        name: 'All Events',
-        href: '/admin/events',
-        icon: Calendar
+        icon: Upload,
       },
-      {
-        name: 'Create Event',
-        href: '/admin/events/new',
-        icon: Plus
-      }
-    ]
+    ],
   },
   {
-    name: 'Forum',
+    title: 'Forum',
     icon: MessageSquare,
-    subItems: [
+    children: [
       {
-        name: 'All Posts',
+        title: 'All Posts',
         href: '/admin/forum/posts',
-        icon: MessageSquare
+        icon: MessageSquare,
       },
       {
-        name: 'Categories',
+        title: 'Categories',
         href: '/admin/forum-categories',
-        icon: FileText
-      }
-    ]
-  }
+        icon: Folder,
+      },
+    ],
+  },
+  {
+    title: 'Events',
+    icon: Calendar,
+    children: [
+      {
+        title: 'All Events',
+        href: '/admin/events',
+        icon: Calendar,
+      },
+      {
+        title: 'Create Event',
+        href: '/admin/events/new',
+        icon: Calendar,
+      },
+    ],
+  },
+  {
+    title: 'User Management',
+    icon: UserCheck,
+    children: [
+      {
+        title: 'All Users',
+        href: '/admin/users',
+        icon: UserCheck,
+      },
+      {
+        title: 'Waitlist',
+        href: '/admin/waitlist',
+        icon: Shield,
+      },
+    ],
+  },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['Companies', 'Contacts', 'Events', 'Forum']); // Default expand Companies, Contacts, Events and Forum
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    Organizations: true,
+    Forum: true,
+    Events: true,
+    'User Management': true,
+  });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const toggleExpanded = (itemName: string) => {
-    setExpandedItems(prev => 
-      prev.includes(itemName) 
-        ? prev.filter(name => name !== itemName)
-        : [...prev, itemName]
-    );
+  const toggleSection = (title: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
   };
 
-  const isItemActive = (item: NavigationItem) => {
-    if (item.href) {
-      return pathname === item.href;
+  const isActive = (href: string) => {
+    if (href === '/admin') {
+      return pathname === href;
     }
-    if (item.subItems) {
-      return item.subItems.some(subItem => pathname === subItem.href);
-    }
-    return false;
+    return pathname?.startsWith(href);
   };
 
-  const isSubItemActive = (subItem: SubMenuItem) => {
-    return pathname === subItem.href;
-  };
-
-  return (
-    <div className="w-64 bg-white shadow-md h-full overflow-y-auto">
-      <div className="p-6">
-        <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
-        <p className="text-sm text-gray-500 mt-1">Organization Management</p>
+  const NavContent = () => (
+    <>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <Link href="/admin" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <LayoutDashboard className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
+              <p className="text-xs text-gray-500">DealMecca</p>
+            </div>
+          </Link>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="lg:hidden text-gray-500 hover:text-gray-700"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
       </div>
-      <nav className="mt-6">
-        {navigationItems.map((item) => {
-          const isActive = isItemActive(item);
-          const isExpanded = expandedItems.includes(item.name);
-          const Icon = item.icon;
-          
-          return (
-            <div key={item.name}>
-              {/* Main Item */}
-              {item.subItems ? (
-                <button
-                  onClick={() => toggleExpanded(item.name)}
-                  className={`w-full flex items-center justify-between px-6 py-3 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <Icon className="mr-3 h-5 w-5" />
-                    {item.name}
-                  </div>
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </button>
-              ) : (
-                <Link
-                  href={item.href!}
-                  className={`flex items-center px-6 py-3 text-sm font-medium transition-colors ${
-                    item.name === 'Bulk Import'
-                      ? isActive
-                        ? 'bg-green-50 text-green-700 border-r-2 border-green-700'
-                        : 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
-                      : isActive
-                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <Icon className="mr-3 h-5 w-5" />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span>{item.name}</span>
-                      {item.name === 'Bulk Import' && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                          New
-                        </span>
-                      )}
-                    </div>
-                    {item.name === 'Bulk Import' && (
-                      <p className="text-xs text-green-600 mt-0.5">
-                        Scale to 5000+ companies
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              )}
 
-              {/* Sub Items */}
-              {item.subItems && isExpanded && (
-                <div className="bg-gray-50">
-                  {item.subItems.map((subItem) => {
-                    const SubIcon = subItem.icon;
-                    const isSubActive = isSubItemActive(subItem);
-                    
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const hasChildren = item.children && item.children.length > 0;
+          const isOpen = openSections[item.title];
+
+          if (!hasChildren && item.href) {
+            // Simple link
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  isActive(item.href)
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span>{item.title}</span>
+              </Link>
+            );
+          }
+
+          // Section with children
+          return (
+            <div key={item.title}>
+              <button
+                onClick={() => toggleSection(item.title)}
+                className="w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{item.title}</span>
+                </div>
+                {isOpen ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+
+              {isOpen && item.children && (
+                <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 pl-4">
+                  {item.children.map((child) => {
+                    const ChildIcon = child.icon;
                     return (
                       <Link
-                        key={subItem.name}
-                        href={subItem.href}
-                        className={`flex items-center px-12 py-2.5 text-sm transition-colors ${
-                          isSubActive
-                            ? 'bg-blue-100 text-blue-700 font-medium border-r-2 border-blue-700'
+                        key={child.href}
+                        href={child.href!}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          isActive(child.href!)
+                            ? 'bg-blue-50 text-blue-600 font-medium'
                             : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                         }`}
                       >
-                        {SubIcon && <SubIcon className="mr-2 h-4 w-4" />}
-                        {subItem.name}
+                        <ChildIcon className="w-4 h-4" />
+                        <span>{child.title}</span>
                       </Link>
                     );
                   })}
@@ -240,32 +237,59 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Data Scale Progress Widget */}
-      <div className="mt-8 mx-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
-        <h3 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
-          <BarChart3 className="w-4 h-4 mr-2 text-blue-500" />
-          Data Scale Target
-        </h3>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-700">Current:</span>
-            <span className="font-medium text-gray-900">17 companies</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-700">Goal:</span>
-            <span className="font-medium text-green-700">5,000+ companies</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-            <div 
-              className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all duration-300" 
-              style={{width: '0.34%'}}
-            ></div>
-          </div>
-          <p className="text-xs text-gray-600 mt-2">
-            <span className="font-medium text-green-600">Use bulk import</span> to scale rapidly
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-200 space-y-2">
+        <Link
+          href="/"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <Home className="w-5 h-5" />
+          <span>Exit Admin</span>
+        </Link>
+        <div className="px-3 py-2 bg-gray-50 rounded-lg">
+          <p className="text-xs text-gray-600">
+            <span className="font-semibold">21</span> admin pages
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Phase 6 Consolidation Complete
           </p>
         </div>
       </div>
-    </div>
+    </>
   );
-} 
+
+  return (
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50"
+      >
+        <Menu className="w-6 h-6 text-gray-700" />
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Desktop */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200 z-30">
+        <NavContent />
+      </aside>
+
+      {/* Sidebar - Mobile */}
+      <aside
+        className={`lg:hidden fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-200 ease-in-out ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } flex flex-col`}
+      >
+        <NavContent />
+      </aside>
+    </>
+  );
+}
