@@ -10,11 +10,10 @@ import { IntelligenceSharing } from '@/components/forum/IntelligenceSharing';
 import { ForumSidebar } from '@/components/forum/ForumSidebar';
 import { GlobalSearchInput } from '@/components/navigation/GlobalSearchInput';
 import { ForumLayout } from '@/components/layout/ForumLayout';
-import { 
-  Search, 
-  ChevronDown, 
-  MessageSquare, 
-  List, 
+import {
+  Search,
+  ChevronDown,
+  MessageSquare,
   BarChart3,
   Globe,
   User,
@@ -167,7 +166,7 @@ export default function ForumPage() {
   const [sortBy, setSortBy] = useState('latest');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [postType, setPostType] = useState<'post' | 'list' | 'poll'>('post');
+  const [postType, setPostType] = useState<'post' | 'poll'>('post');
 
   useEffect(() => {
     fetchCategories();
@@ -535,17 +534,6 @@ export default function ForumPage() {
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Post</span>
-                </button>
-                <button
-                  onClick={() => setPostType('list')}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    postType === 'list'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                  <span>List</span>
                 </button>
                 <button
                   onClick={() => setPostType('poll')}
