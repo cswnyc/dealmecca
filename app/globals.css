@@ -352,4 +352,68 @@
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
   }
-} 
+}
+
+/* ============================================================================
+   NUCLEAR FIX: Input Text Visibility
+
+   These rules are placed OUTSIDE all @layer blocks to achieve maximum CSS
+   specificity. This overrides the gradient text classes in @layer components
+   which were causing invisible text in form inputs.
+
+   Tailwind CSS layer precedence:
+   1. @layer base (lowest)
+   2. @layer components (medium)
+   3. @layer utilities (high)
+   4. No layer (HIGHEST) <- This is what we're using here
+   ============================================================================ */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+input[type="number"],
+textarea,
+select {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  -webkit-text-security: none !important;
+  text-security: none !important;
+}
+
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="search"],
+.dark input[type="url"],
+.dark input[type="tel"],
+.dark input[type="number"],
+.dark textarea,
+.dark select {
+  color: #f3f4f6 !important;
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
+select option {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+.dark select option {
+  color: #f3f4f6 !important;
+  background-color: #1f2937 !important;
+}
+
+[contenteditable="true"],
+[contenteditable] {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+.dark [contenteditable="true"],
+.dark [contenteditable] {
+  color: #f3f4f6 !important;
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
