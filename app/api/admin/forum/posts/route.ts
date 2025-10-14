@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
         },
         CompanyMention: {
           include: {
-            companies: {
+            company: {
               select: {
                 id: true,
                 name: true,
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
         },
         ContactMention: {
           include: {
-            contacts: {
+            contact: {
               select: {
                 id: true,
                 firstName: true,
