@@ -257,81 +257,6 @@ export function ForumSidebar() {
 
   return (
     <div className="space-y-4">
-      {/* User Stats Card */}
-      {firebaseUser && userStats && (
-        <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center justify-between text-gray-900">
-              <div className="flex items-center space-x-2">
-                <Trophy className="w-4 h-4 text-yellow-500" />
-                <span>Your Progress</span>
-              </div>
-              <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
-                Coming Soon
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Tier Badge */}
-            <div className="flex items-center justify-between">
-              <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${getTierColor(userStats.tier)} text-white text-xs font-medium`}>
-                {userStats.tier} TIER
-              </div>
-              <div className="flex items-center space-x-1">
-                <Gift className="w-4 h-4 text-green-600" />
-                <span className="font-bold text-green-600">{userStats.gems}</span>
-                <span className="text-xs text-gray-500">gems</span>
-              </div>
-            </div>
-
-            {/* Progress to Next Tier */}
-            <div>
-              <div className="flex justify-between text-xs text-gray-600 mb-1">
-                <span>Progress to next tier</span>
-                <span>{userStats.gems}/{userStats.nextTierGems}</span>
-              </div>
-              <Progress 
-                value={(userStats.gems / userStats.nextTierGems) * 100} 
-                className="h-2" 
-              />
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="text-center p-2 bg-blue-50 rounded">
-                <div className="font-semibold text-blue-600">#{userStats.rank}</div>
-                <div className="text-gray-600">Rank</div>
-              </div>
-              <div className="text-center p-2 bg-green-50 rounded">
-                <div className="font-semibold text-green-600">{userStats.streak}</div>
-                <div className="text-gray-600">Day Streak</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Community Stats */}
-      <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900">
-            <TrendingUp className="w-4 h-4 text-blue-500" />
-            <span>Community Activity</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {quickStats.map((stat, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className={stat.color}>{stat.icon}</div>
-                <span className="text-sm text-gray-600">{stat.label}</span>
-              </div>
-              <span className="font-semibold text-gray-900">{stat.value}</span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
       {/* Quick Actions */}
       <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
         <CardHeader className="pb-3">
@@ -363,6 +288,81 @@ export function ForumSidebar() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Community Stats */}
+      <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900">
+            <TrendingUp className="w-4 h-4 text-blue-500" />
+            <span>Community Activity</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {quickStats.map((stat, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className={stat.color}>{stat.icon}</div>
+                <span className="text-sm text-gray-600">{stat.label}</span>
+              </div>
+              <span className="font-semibold text-gray-900">{stat.value}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* User Stats Card */}
+      {firebaseUser && userStats && (
+        <Card className="border-0 shadow-sm bg-gray-100/80 backdrop-blur-sm opacity-60">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium flex items-center justify-between text-gray-700">
+              <div className="flex items-center space-x-2">
+                <Trophy className="w-4 h-4 text-gray-400" />
+                <span>Your Progress</span>
+              </div>
+              <span className="text-sm px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold shadow-lg animate-pulse">
+                Coming Soon
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Tier Badge */}
+            <div className="flex items-center justify-between">
+              <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${getTierColor(userStats.tier)} text-white text-xs font-medium opacity-50`}>
+                {userStats.tier} TIER
+              </div>
+              <div className="flex items-center space-x-1 opacity-50">
+                <Gift className="w-4 h-4 text-gray-500" />
+                <span className="font-bold text-gray-600">{userStats.gems}</span>
+                <span className="text-xs text-gray-400">gems</span>
+              </div>
+            </div>
+
+            {/* Progress to Next Tier */}
+            <div className="opacity-50">
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Progress to next tier</span>
+                <span>{userStats.gems}/{userStats.nextTierGems}</span>
+              </div>
+              <Progress
+                value={(userStats.gems / userStats.nextTierGems) * 100}
+                className="h-2"
+              />
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 gap-2 text-xs opacity-50">
+              <div className="text-center p-2 bg-gray-200 rounded">
+                <div className="font-semibold text-gray-600">#{userStats.rank}</div>
+                <div className="text-gray-500">Rank</div>
+              </div>
+              <div className="text-center p-2 bg-gray-200 rounded">
+                <div className="font-semibold text-gray-600">{userStats.streak}</div>
+                <div className="text-gray-500">Day Streak</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Top Contributors Mini Leaderboard */}
       <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
