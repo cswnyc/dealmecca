@@ -490,8 +490,8 @@ const MOCK_EVENTS: Event[] = [
 export default function EventsPage() {
   const { user: firebaseUser, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [events, setEvents] = useState<Event[]>(MOCK_EVENTS);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>(MOCK_EVENTS);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -537,13 +537,12 @@ export default function EventsPage() {
           const data = await response.json();
           setEvents(data.events || []);
         } else {
-          // Use mock data if API fails
-          console.log('Using mock events data');
-          setEvents(MOCK_EVENTS);
+          console.error('Failed to fetch events:', response.statusText);
+          setEvents([]);
         }
       } catch (err) {
-        console.log('Using mock events data due to error:', err);
-        setEvents(MOCK_EVENTS);
+        console.error('Error fetching events:', err);
+        setEvents([]);
       } finally {
         setLoading(false);
       }

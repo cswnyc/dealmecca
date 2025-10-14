@@ -68,7 +68,7 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
     if (company) {
       where.CompanyMention = {
         some: {
-          companies: {
+          company: {
             id: company
           }
         }
@@ -139,7 +139,7 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
         },
         CompanyMention: {
           include: {
-            companies: {
+            company: {
               select: {
                 id: true,
                 name: true,
@@ -155,13 +155,13 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
         },
         ContactMention: {
           include: {
-            contacts: {
+            contact: {
               select: {
                 id: true,
                 firstName: true,
                 lastName: true,
                 title: true,
-                companies: {
+                company: {
                   select: {
                     id: true,
                     name: true,
@@ -184,7 +184,7 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
                 icon: true,
                 TopicCompany: {
                   include: {
-                    companies: {
+                    company: {
                       select: {
                         id: true,
                         name: true,
@@ -203,13 +203,13 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
                 },
                 TopicContact: {
                   include: {
-                    contacts: {
+                    contact: {
                       select: {
                         id: true,
                         firstName: true,
                         lastName: true,
                         title: true,
-                        companies: {
+                        company: {
                           select: {
                             id: true,
                             name: true,
@@ -252,21 +252,21 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
       try {
         switch (primaryTopicType) {
           case 'company':
-            const company = await prisma.companies.findUnique({
+            const company = await prisma.Company.findUnique({
               where: { id: primaryTopicId },
               select: { id: true, name: true, logoUrl: true, verified: true }
             });
             return company ? { ...company, type: 'company' } : null;
 
           case 'agency':
-            const agency = await prisma.companies.findUnique({
+            const agency = await prisma.Company.findUnique({
               where: { id: primaryTopicId },
               select: { id: true, name: true, logoUrl: true, verified: true }
             });
             return agency ? { ...agency, type: 'agency' } : null;
 
           case 'contact':
-            const contact = await prisma.contacts.findUnique({
+            const contact = await prisma.Contact.findUnique({
               where: { id: primaryTopicId },
               select: { id: true, firstName: true, lastName: true, title: true }
             });
@@ -339,30 +339,30 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
           icon: post.ForumCategory.icon
         },
         companyMentions: post.CompanyMention
-          .filter(mention => mention.companies)
+          .filter(mention => mention.company)
           .map(mention => ({
             company: {
-              id: mention.companies.id,
-              name: mention.companies.name,
-              logoUrl: mention.companies.logoUrl,
-              verified: mention.companies.verified,
-              companyType: mention.companies.companyType,
-              industry: mention.companies.industry,
-              city: mention.companies.city,
-              state: mention.companies.state
+              id: mention.company.id,
+              name: mention.company.name,
+              logoUrl: mention.company.logoUrl,
+              verified: mention.company.verified,
+              companyType: mention.company.companyType,
+              industry: mention.company.industry,
+              city: mention.company.city,
+              state: mention.company.state
             }
           })),
         contactMentions: post.ContactMention
-          .filter(mention => mention.contacts)
+          .filter(mention => mention.contact)
           .map(mention => ({
             contact: {
-              id: mention.contacts.id,
-              fullName: `${mention.contacts.firstName} ${mention.contacts.lastName}`,
-              title: mention.contacts.title,
-              company: mention.contacts.companies ? {
-                id: mention.contacts.companies.id,
-                name: mention.contacts.companies.name,
-                logoUrl: mention.contacts.companies.logoUrl
+              id: mention.contact.id,
+              fullName: `${mention.contact.firstName} ${mention.contact.lastName}`,
+              title: mention.contact.title,
+              company: mention.contact.company ? {
+                id: mention.contact.company.id,
+                name: mention.contact.company.name,
+                logoUrl: mention.contact.company.logoUrl
               } : null
             }
           })),
@@ -378,35 +378,35 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
               color: mention.Topic.color,
               icon: mention.Topic.icon,
               companies: mention.Topic.TopicCompany
-                .filter(tc => tc.companies)
+                .filter(tc => tc.company)
                 .map(tc => ({
                   id: tc.id,
                   company: {
-                    id: tc.companies.id,
-                    name: tc.companies.name,
-                    logoUrl: tc.companies.logoUrl,
-                    verified: tc.companies.verified,
-                    companyType: tc.companies.companyType,
-                    industry: tc.companies.industry,
-                    city: tc.companies.city,
-                    state: tc.companies.state
+                    id: tc.company.id,
+                    name: tc.company.name,
+                    logoUrl: tc.company.logoUrl,
+                    verified: tc.company.verified,
+                    companyType: tc.company.companyType,
+                    industry: tc.company.industry,
+                    city: tc.company.city,
+                    state: tc.company.state
                   },
                   context: tc.context,
                   role: tc.role,
                   order: tc.order
                 })),
               contacts: mention.Topic.TopicContact
-                .filter(tc => tc.contacts)
+                .filter(tc => tc.contact)
                 .map(tc => ({
                   id: tc.id,
                   contact: {
-                    id: tc.contacts.id,
-                    fullName: `${tc.contacts.firstName} ${tc.contacts.lastName}`,
-                    title: tc.contacts.title,
-                    company: tc.contacts.companies ? {
-                      id: tc.contacts.companies.id,
-                      name: tc.contacts.companies.name,
-                      logoUrl: tc.contacts.companies.logoUrl
+                    id: tc.contact.id,
+                    fullName: `${tc.contact.firstName} ${tc.contact.lastName}`,
+                    title: tc.contact.title,
+                    company: tc.contact.company ? {
+                      id: tc.contact.company.id,
+                      name: tc.contact.company.name,
+                      logoUrl: tc.contact.company.logoUrl
                     } : null
                   },
                   context: tc.context,
@@ -592,7 +592,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
           if (topicGroup.companies.length > 0) {
             const validCompanies = [];
             for (const company of topicGroup.companies) {
-              const exists = await prisma.company.findUnique({ where: { id: company.id } });
+              const exists = await prisma.Company.findUnique({ where: { id: company.id } });
               if (exists) {
                 validCompanies.push(company);
               } else {
@@ -618,7 +618,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
           if (topicGroup.contacts.length > 0) {
             const validContacts = [];
             for (const contact of topicGroup.contacts) {
-              const exists = await prisma.contact.findUnique({ where: { id: contact.id } });
+              const exists = await prisma.Contact.findUnique({ where: { id: contact.id } });
               if (exists) {
                 validContacts.push(contact);
               } else {
@@ -666,7 +666,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
         // Validate company IDs before creating mentions
         const validCompanyMentions = [];
         for (const mention of companyMentions) {
-          const exists = await prisma.company.findUnique({ where: { id: mention.id } });
+          const exists = await prisma.Company.findUnique({ where: { id: mention.id } });
           if (exists) {
             validCompanyMentions.push(mention);
           } else {
@@ -690,7 +690,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
         // Validate contact IDs before creating mentions
         const validContactMentions = [];
         for (const mention of contactMentions) {
-          const exists = await prisma.contact.findUnique({ where: { id: mention.id } });
+          const exists = await prisma.Contact.findUnique({ where: { id: mention.id } });
           if (exists) {
             validContactMentions.push(mention);
           } else {

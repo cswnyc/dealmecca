@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch agencies from database
-    const agencies = await prisma.companies.findMany({
+    const agencies = await prisma.Company.findMany({
       where,
       select: {
         id: true,
