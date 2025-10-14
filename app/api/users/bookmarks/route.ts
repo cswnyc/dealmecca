@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
                     icon: true,
                   },
                   include: {
-                    companies: {
+                    TopicCompany: {
                       include: {
                         company: {
                           select: {
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
                         }
                       }
                     },
-                    contacts: {
+                    TopicContact: {
                       include: {
                         contact: {
                           select: {
@@ -243,14 +243,14 @@ export async function GET(request: NextRequest) {
             context: mention.Topic.context,
             color: mention.Topic.color,
             icon: mention.Topic.icon,
-            companies: mention.Topic.companies.map(tc => ({
+            companies: mention.Topic.TopicCompany.map(tc => ({
               id: tc.id,
               company: tc.company,
               context: tc.context,
               role: tc.role,
               order: tc.order
             })),
-            contacts: mention.Topic.contacts.map(tc => ({
+            contacts: mention.Topic.TopicContact.map(tc => ({
               id: tc.id,
               contact: tc.contact,
               context: tc.context,
