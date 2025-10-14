@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
         if (bookmark.ForumPost.primaryTopicId && bookmark.ForumPost.primaryTopicType) {
           try {
             if (bookmark.ForumPost.primaryTopicType === 'contact') {
-              const contact = await prisma.contacts.findUnique({
+              const contact = await prisma.contact.findUnique({
                 where: { id: bookmark.ForumPost.primaryTopicId },
                 select: { id: true, fullName: true, title: true }
               });
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
                 };
               }
             } else {
-              const company = await prisma.companies.findUnique({
+              const company = await prisma.company.findUnique({
                 where: { id: bookmark.ForumPost.primaryTopicId },
                 select: { id: true, name: true, description: true }
               });
