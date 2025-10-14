@@ -73,6 +73,56 @@ export async function GET(request: NextRequest) {
                 contact: true
               }
             },
+            TopicMention: {
+              include: {
+                Topic: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    context: true,
+                    color: true,
+                    icon: true,
+                  },
+                  include: {
+                    companies: {
+                      include: {
+                        company: {
+                          select: {
+                            id: true,
+                            name: true,
+                            logoUrl: true,
+                            verified: true,
+                            companyType: true,
+                            industry: true,
+                            city: true,
+                            state: true,
+                          }
+                        }
+                      }
+                    },
+                    contacts: {
+                      include: {
+                        contact: {
+                          select: {
+                            id: true,
+                            fullName: true,
+                            title: true,
+                            company: {
+                              select: {
+                                id: true,
+                                name: true,
+                                logoUrl: true,
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
             _count: {
               select: {
                 ForumComment: true
@@ -149,6 +199,11 @@ export async function GET(request: NextRequest) {
       primaryTopicType: bookmark.ForumPost.primaryTopicType,
       primaryTopicId: bookmark.ForumPost.primaryTopicId,
       primaryTopic,
+      postType: bookmark.ForumPost.postType,
+      listItems: bookmark.ForumPost.listItems,
+      pollChoices: bookmark.ForumPost.pollChoices,
+      pollDuration: bookmark.ForumPost.pollDuration,
+      pollEndsAt: bookmark.ForumPost.pollEndsAt?.toISOString(),
       createdAt: bookmark.ForumPost.createdAt.toISOString(),
       updatedAt: bookmark.ForumPost.updatedAt.toISOString(),
       lastActivityAt: bookmark.ForumPost.lastActivityAt.toISOString(),
@@ -177,6 +232,33 @@ export async function GET(request: NextRequest) {
       },
       companyMentions: bookmark.ForumPost.CompanyMention?.map(cm => ({ company: cm.company })) || [],
       contactMentions: bookmark.ForumPost.ContactMention?.map(cm => ({ contact: cm.contact })) || [],
+      topicMentions: bookmark.ForumPost.TopicMention
+        ?.filter(mention => mention.Topic)
+        .map(mention => ({
+          id: mention.id,
+          topic: {
+            id: mention.Topic.id,
+            name: mention.Topic.name,
+            description: mention.Topic.description,
+            context: mention.Topic.context,
+            color: mention.Topic.color,
+            icon: mention.Topic.icon,
+            companies: mention.Topic.companies.map(tc => ({
+              id: tc.id,
+              company: tc.company,
+              context: tc.context,
+              role: tc.role,
+              order: tc.order
+            })),
+            contacts: mention.Topic.contacts.map(tc => ({
+              id: tc.id,
+              contact: tc.contact,
+              context: tc.context,
+              role: tc.role,
+              order: tc.order
+            }))
+          }
+        })) || [],
       _count: {
         comments: bookmark.ForumPost._count.ForumComment
       }
