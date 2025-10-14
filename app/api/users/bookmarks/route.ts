@@ -59,18 +59,18 @@ export async function GET(request: NextRequest) {
           include: {
             User: {
               include: {
-                companies: true
+                company: true
               }
             },
             ForumCategory: true,
             CompanyMention: {
               include: {
-                companies: true
+                company: true
               }
             },
             ContactMention: {
               include: {
-                contacts: true
+                contact: true
               }
             },
             _count: {
@@ -158,15 +158,15 @@ export async function GET(request: NextRequest) {
         email: bookmark.ForumPost.User.email,
         anonymousUsername: bookmark.ForumPost.User.anonymousUsername,
         publicHandle: bookmark.ForumPost.User.publicHandle,
-        company: bookmark.ForumPost.User.companies ? {
-          id: bookmark.ForumPost.User.companies.id,
-          name: bookmark.ForumPost.User.companies.name,
-          logoUrl: bookmark.ForumPost.User.companies.logoUrl,
-          verified: bookmark.ForumPost.User.companies.verified,
-          companyType: bookmark.ForumPost.User.companies.companyType,
-          industry: bookmark.ForumPost.User.companies.industry,
-          city: bookmark.ForumPost.User.companies.city,
-          state: bookmark.ForumPost.User.companies.state,
+        company: bookmark.ForumPost.User.company ? {
+          id: bookmark.ForumPost.User.company.id,
+          name: bookmark.ForumPost.User.company.name,
+          logoUrl: bookmark.ForumPost.User.company.logoUrl,
+          verified: bookmark.ForumPost.User.company.verified,
+          companyType: bookmark.ForumPost.User.company.companyType,
+          industry: bookmark.ForumPost.User.company.industry,
+          city: bookmark.ForumPost.User.company.city,
+          state: bookmark.ForumPost.User.company.state,
         } : undefined
       },
       category: {
@@ -175,8 +175,8 @@ export async function GET(request: NextRequest) {
         slug: bookmark.ForumPost.ForumCategory.slug,
         color: bookmark.ForumPost.ForumCategory.color,
       },
-      companyMentions: bookmark.ForumPost.CompanyMention?.map(cm => ({ company: cm.companies })) || [],
-      contactMentions: bookmark.ForumPost.ContactMention?.map(cm => ({ contact: cm.contacts })) || [],
+      companyMentions: bookmark.ForumPost.CompanyMention?.map(cm => ({ company: cm.company })) || [],
+      contactMentions: bookmark.ForumPost.ContactMention?.map(cm => ({ contact: cm.contact })) || [],
       _count: {
         comments: bookmark.ForumPost._count.ForumComment
       }
