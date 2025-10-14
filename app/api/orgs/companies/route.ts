@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
           select: {
             contacts: true,
             User: true,
-            other_companies: true
+            subsidiaries: true
           }
         }
       },
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
       _count: {
         contacts: company._count.contacts,
         users: company._count.User,
-        subsidiaries: company._count.other_companies
+        subsidiaries: company._count.subsidiaries
       }
     }));
 
