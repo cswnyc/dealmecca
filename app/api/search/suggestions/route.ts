@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     // Search Companies (agencies, advertisers, industries, DSP/SSP, Adtech - limit 3)
     try {
-      const companies = await prisma.companies.findMany({
+      const companies = await prisma.company.findMany({
         where: {
           OR: [
             { name: { contains: query, mode: 'insensitive' } },
@@ -117,18 +117,18 @@ export async function GET(request: NextRequest) {
 
     // Search Contacts/People (limit 3)
     try {
-      const contacts = await prisma.contacts.findMany({
+      const contacts = await prisma.contact.findMany({
         where: {
           OR: [
             { firstName: { contains: query, mode: 'insensitive' } },
             { lastName: { contains: query, mode: 'insensitive' } },
             { fullName: { contains: query, mode: 'insensitive' } },
             { title: { contains: query, mode: 'insensitive' } },
-            { companies: { name: { contains: query, mode: 'insensitive' } } }
+            { company: { name: { contains: query, mode: 'insensitive' } } }
           ]
         },
         include: {
-          companies: {
+          company: {
             select: {
               id: true,
               name: true,
@@ -146,14 +146,14 @@ export async function GET(request: NextRequest) {
       contacts.forEach(contact => {
         suggestions.push({
           id: contact.id,
-          title: `${contact.fullName}${contact.companies ? ` @ ${contact.companies.name}` : ''}`,
+          title: `${contact.fullName}${contact.company ? ` @ ${contact.company.name}` : ''}`,
           type: 'contact',
           category: 'Person',
           icon: '👤',
           metadata: {
             verified: contact.verified,
             description: contact.title || undefined,
-            location: contact.companies?.name || undefined
+            location: contact.company?.name || undefined
           }
         });
       });
