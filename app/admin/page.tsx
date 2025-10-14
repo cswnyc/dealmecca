@@ -34,15 +34,19 @@ export default function AdminDashboard() {
         const usersRes = await fetch('/api/admin/users?include_stats=true&limit=1');
         const usersData = await usersRes.json();
 
+        // Fetch forum posts count
+        const forumPostsRes = await fetch('/api/admin/forum/posts?limit=1');
+        const forumPostsData = await forumPostsRes.json();
+
         setStats({
           totalCompanies: companiesData.total || 0,
           totalContacts: contactsData.total || 0,
           activeUsers: usersData.stats?.activeUsers || 0,
-          forumPosts: 24 // Placeholder - implement forum post counting later
+          forumPosts: forumPostsData.stats?.total || 0
         });
       } catch (error) {
         console.error('Error fetching admin stats:', error);
-        // Keep placeholder values on error
+        // Keep zero values on error
       } finally {
         setLoading(false);
       }
