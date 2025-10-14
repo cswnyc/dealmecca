@@ -1,21 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, BarChart3, UserCheck, Shield, Folder } from 'lucide-react';
+import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, BarChart3, UserCheck, Shield, Folder, Calendar } from 'lucide-react';
 
 interface DashboardStats {
   totalCompanies: number;
   totalContacts: number;
-  activeUsers: number;
+  totalUsers: number;
   forumPosts: number;
+  totalEvents: number;
 }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     totalCompanies: 0,
     totalContacts: 0,
-    activeUsers: 0,
-    forumPosts: 0
+    totalUsers: 0,
+    forumPosts: 0,
+    totalEvents: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -38,11 +40,16 @@ export default function AdminDashboard() {
         const forumPostsRes = await fetch('/api/admin/forum/posts?limit=1');
         const forumPostsData = await forumPostsRes.json();
 
+        // Fetch events count
+        const eventsRes = await fetch('/api/admin/events?limit=1');
+        const eventsData = await eventsRes.json();
+
         setStats({
-          totalCompanies: companiesData.total || 0,
-          totalContacts: contactsData.total || 0,
-          activeUsers: usersData.stats?.activeUsers || 0,
-          forumPosts: forumPostsData.stats?.total || 0
+          totalCompanies: companiesData.pagination?.total || 0,
+          totalContacts: contactsData.pagination?.total || 0,
+          totalUsers: usersData.stats?.total || 0,
+          forumPosts: forumPostsData.stats?.total || 0,
+          totalEvents: eventsData.pagination?.total || 0
         });
       } catch (error) {
         console.error('Error fetching admin stats:', error);
@@ -134,7 +141,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
             <div className="flex items-center justify-between">
               <div>
@@ -170,16 +177,16 @@ export default function AdminDashboard() {
           <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600">Active Users</p>
+                <p className="text-sm font-medium text-purple-600">Total Users</p>
                 <p className="text-3xl font-bold text-purple-900 mt-1">
                   {loading ? (
                     <span className="animate-pulse">...</span>
                   ) : (
-                    stats.activeUsers.toLocaleString()
+                    stats.totalUsers.toLocaleString()
                   )}
                 </p>
               </div>
-              <TrendingUp className="w-8 h-8 text-purple-600" />
+              <Users className="w-8 h-8 text-purple-600" />
             </div>
           </div>
 
@@ -196,6 +203,22 @@ export default function AdminDashboard() {
                 </p>
               </div>
               <MessageSquare className="w-8 h-8 text-orange-600" />
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-6 rounded-xl border border-indigo-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-indigo-600">Total Events</p>
+                <p className="text-3xl font-bold text-indigo-900 mt-1">
+                  {loading ? (
+                    <span className="animate-pulse">...</span>
+                  ) : (
+                    stats.totalEvents.toLocaleString()
+                  )}
+                </p>
+              </div>
+              <Calendar className="w-8 h-8 text-indigo-600" />
             </div>
           </div>
         </div>
