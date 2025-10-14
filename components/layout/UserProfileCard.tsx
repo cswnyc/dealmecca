@@ -160,22 +160,32 @@ function UserProfileContent() {
 
   const fetchAnonymousIdentity = async () => {
     if (!firebaseUser?.uid) {
+      console.log('[UserProfileCard] fetchAnonymousIdentity: No firebaseUser.uid available');
       return;
     }
 
+    console.log('[UserProfileCard] Fetching anonymous identity for uid:', firebaseUser.uid);
+
     try {
-      const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+      const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`, {
+        credentials: 'include', // Ensure cookies are sent (important for Safari)
+      });
+
+      console.log('[UserProfileCard] Identity API response status:', response.status);
 
       if (response.ok) {
         const data = await response.json();
+        console.log('[UserProfileCard] Identity API data:', data);
 
         if (data.currentUsername && data.currentAvatarId) {
+          console.log('[UserProfileCard] Setting identity from API:', data.currentUsername, data.currentAvatarId);
           setAnonymousIdentity({
             username: data.currentUsername,
             avatarId: data.currentAvatarId
           });
         } else {
           // API returned incomplete data, use fallback
+          console.warn('[UserProfileCard] API returned incomplete data, using fallback');
           setAnonymousIdentity({
             username: 'Cloud Hawk',
             avatarId: 'avatar_2'
@@ -183,14 +193,15 @@ function UserProfileContent() {
         }
       } else {
         // API error, use fallback
+        console.warn('[UserProfileCard] API error, using fallback. Status:', response.status);
         setAnonymousIdentity({
           username: 'Cloud Hawk',
           avatarId: 'avatar_2'
         });
       }
     } catch (error) {
-      console.error('Error fetching anonymous identity:', error);
-      // Use fallback data if API fails
+      console.error('[UserProfileCard] Error fetching anonymous identity (Safari ITP might be blocking):', error);
+      // Use fallback data if API fails - critical for Safari compatibility
       setAnonymousIdentity({
         username: 'Cloud Hawk',
         avatarId: 'avatar_2'
@@ -345,29 +356,65 @@ function UserProfileContent() {
       >
         {/* Avatar */}
         <div className="relative">
-          {/* Priority: Custom anonymous avatar → OAuth profile photo → Generated avatar */}
-          {anonymousIdentity?.avatarId ? (
-            <AvatarDisplay
-              avatarId={anonymousIdentity.avatarId}
-              username={anonymousIdentity.username || 'Anonymous'}
-              size={40}
-            />
-          ) : firebaseUser?.photoURL ? (
-            <img
-              src={firebaseUser.photoURL}
-              alt="Profile"
-              className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
-            />
-          ) : (
-            <div className="w-10 h-10 flex-shrink-0">
-              <Avatar
-                userId={firebaseUser?.uid || profile?.id || 'default'}
-                size={40}
-                className="rounded-full"
-                alt="User avatar"
-              />
-            </div>
-          )}
+          {/* Priority: Custom anonymous avatar → OAuth profile photo → Generated avatar → Initials fallback */}
+          {(() => {
+            const userId = firebaseUser?.uid || profile?.id || backendUser?.id;
+            const displayName = getDisplayName();
+
+            console.log('[UserProfileCard] Avatar render - anonymousIdentity:', !!anonymousIdentity, 'photoURL:', !!firebaseUser?.photoURL, 'userId:', userId);
+
+            // Priority 1: Custom anonymous avatar from identity API
+            if (anonymousIdentity?.avatarId) {
+              console.log('[UserProfileCard] Rendering AvatarDisplay with:', anonymousIdentity.avatarId);
+              return (
+                <AvatarDisplay
+                  avatarId={anonymousIdentity.avatarId}
+                  username={anonymousIdentity.username || 'Anonymous'}
+                  size={40}
+                />
+              );
+            }
+
+            // Priority 2: OAuth profile photo (if not blocked by Safari)
+            if (firebaseUser?.photoURL) {
+              console.log('[UserProfileCard] Rendering OAuth photo');
+              return (
+                <img
+                  src={firebaseUser.photoURL}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
+                  onError={(e) => {
+                    console.warn('[UserProfileCard] OAuth photo failed to load (Safari might be blocking)');
+                    // Hide the broken image
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              );
+            }
+
+            // Priority 3: Generated avatar based on userId
+            if (userId && userId !== 'default') {
+              console.log('[UserProfileCard] Rendering generated Avatar with userId:', userId);
+              return (
+                <div className="w-10 h-10 flex-shrink-0">
+                  <Avatar
+                    userId={userId}
+                    size={40}
+                    className="rounded-full"
+                    alt="User avatar"
+                  />
+                </div>
+              );
+            }
+
+            // Priority 4: Initials fallback (last resort)
+            console.log('[UserProfileCard] Rendering initials fallback for:', displayName);
+            return (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                {displayName.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase() || 'U'}
+              </div>
+            );
+          })()}
           {/* Online indicator - small dot */}
           <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
         </div>
