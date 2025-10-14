@@ -76,14 +76,6 @@ export async function GET(request: NextRequest) {
             TopicMention: {
               include: {
                 Topic: {
-                  select: {
-                    id: true,
-                    name: true,
-                    description: true,
-                    context: true,
-                    color: true,
-                    icon: true,
-                  },
                   include: {
                     TopicCompany: {
                       include: {
