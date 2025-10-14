@@ -73,7 +73,7 @@ model CompanyFollow {
   userId    String
   companyId String
   createdAt DateTime  @default(now())
-  companies companies @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, companyId])
@@ -93,7 +93,7 @@ model CompanyInsight {
   isAiGenerated  Boolean     @default(false)
   createdAt      DateTime    @default(now())
   expiresAt      DateTime?
-  companies      companies   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company        Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([companyId, type])
   @@index([createdAt])
@@ -106,7 +106,7 @@ model CompanyMention {
   companyId   String
   mentionedBy String
   createdAt   DateTime  @default(now())
-  companies   companies @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   User        User      @relation(fields: [mentionedBy], references: [id], onDelete: Cascade)
   ForumPost   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 
@@ -118,20 +118,20 @@ model CompanyMention {
 }
 
 model CompanyPartnership {
-  id                                                   String          @id
-  agencyId                                             String
-  advertiserId                                         String
-  relationshipType                                     PartnershipType @default(AGENCY_CLIENT)
-  startDate                                            DateTime?
-  endDate                                              DateTime?
-  isActive                                             Boolean         @default(true)
-  notes                                                String?
-  contractValue                                        Float?
-  primaryContact                                       String?
-  createdAt                                            DateTime        @default(now())
-  updatedAt                                            DateTime
-  companies_CompanyPartnership_advertiserIdTocompanies companies       @relation("CompanyPartnership_advertiserIdTocompanies", fields: [advertiserId], references: [id], onDelete: Cascade)
-  companies_CompanyPartnership_agencyIdTocompanies     companies       @relation("CompanyPartnership_agencyIdTocompanies", fields: [agencyId], references: [id], onDelete: Cascade)
+  id               String          @id
+  agencyId         String
+  advertiserId     String
+  relationshipType PartnershipType @default(AGENCY_CLIENT)
+  startDate        DateTime?
+  endDate          DateTime?
+  isActive         Boolean         @default(true)
+  notes            String?
+  contractValue    Float?
+  primaryContact   String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime
+  advertiser       Company         @relation("CompanyPartnership_advertiserIdToCompany", fields: [advertiserId], references: [id], onDelete: Cascade)
+  agency           Company         @relation("CompanyPartnership_agencyIdToCompany", fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@unique([agencyId, advertiserId])
   @@index([advertiserId])
@@ -154,7 +154,7 @@ model ContactInteraction {
   completedAt DateTime?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime
-  contacts    contacts        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact     Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
   User        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([contactId])
@@ -169,7 +169,7 @@ model ContactMention {
   contactId   String
   mentionedBy String
   createdAt   DateTime  @default(now())
-  contacts    contacts  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact     Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
   User        User      @relation(fields: [mentionedBy], references: [id], onDelete: Cascade)
   ForumPost   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 
@@ -189,7 +189,7 @@ model ContactNote {
   tags      String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime
-  contacts  contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([contactId])
@@ -207,7 +207,7 @@ model ContactStatus {
   nextAction   String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime
-  contacts     contacts   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact      Contact    @relation(fields: [contactId], references: [id], onDelete: Cascade)
   User         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([leadScore])
@@ -297,8 +297,8 @@ model EventAttendee {
   notes               String?
   createdAt           DateTime         @default(now())
   updatedAt           DateTime
-  companies           companies?       @relation(fields: [companyId], references: [id])
-  contacts            contacts?        @relation(fields: [contactId], references: [id])
+  company             Company?         @relation(fields: [companyId], references: [id])
+  contact             Contact?         @relation(fields: [contactId], references: [id])
   Event               Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
   User                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -584,7 +584,7 @@ model PostContactMention {
   verified   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime
-  contacts   contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact    Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
   Post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([postId, contactId])
@@ -630,15 +630,15 @@ model SavedSearch {
 }
 
 model Search {
-  id           String     @id
+  id           String   @id
   userId       String
   query        String
   resultsCount Int
   searchType   String?
   companyId    String?
-  createdAt    DateTime   @default(now())
-  companies    companies? @relation(fields: [companyId], references: [id])
-  User         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  company      Company? @relation(fields: [companyId], references: [id])
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([companyId])
   @@index([createdAt])
@@ -710,15 +710,15 @@ model Topic {
 }
 
 model TopicCompany {
-  id        String    @id
+  id        String   @id
   topicId   String
   companyId String
   role      String?
   context   String?
-  order     Int       @default(0)
-  createdAt DateTime  @default(now())
-  companies companies @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  Topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   @@unique([topicId, companyId])
   @@index([companyId])
@@ -734,7 +734,7 @@ model TopicContact {
   context   String?
   order     Int      @default(0)
   createdAt DateTime @default(now())
-  contacts  contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
   Topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   @@unique([topicId, contactId])
@@ -835,7 +835,7 @@ model User {
   Session                                                         Session[]
   Subscription                                                    Subscription[]
   TopicFollow                                                     TopicFollow[]
-  companies                                                       companies?               @relation(fields: [companyId], references: [id])
+  company                                                         Company?                 @relation(fields: [companyId], references: [id])
   UserConnection                                                  UserConnection[]
   UserFollow_UserFollow_followerIdToUser                          UserFollow[]             @relation("UserFollow_followerIdToUser")
   UserFollow_UserFollow_followingIdToUser                         UserFollow[]             @relation("UserFollow_followingIdToUser")
@@ -857,7 +857,7 @@ model UserConnection {
   lastContact  DateTime?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime
-  contacts     contacts           @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact      Contact            @relation(fields: [contactId], references: [id], onDelete: Cascade)
   User         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, contactId])
@@ -887,7 +887,7 @@ model UserNetworkingActivity {
   interactionType NetworkingActivityType
   metadata        String?
   createdAt       DateTime               @default(now())
-  companies       companies?             @relation(fields: [companyId], references: [id])
+  company         Company?               @relation(fields: [companyId], references: [id])
   User            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([companyId])
@@ -910,7 +910,7 @@ model ViewedContact {
   contactId String
   viewedAt  DateTime @default(now())
   duration  Int?
-  contacts  contacts @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, contactId])
@@ -951,57 +951,58 @@ model analytics_events {
   @@index([userId])
 }
 
-model companies {
-  id                                                            String                   @id
-  name                                                          String                   @unique(map: "unique_company_name")
-  slug                                                          String                   @unique
-  website                                                       String?                  @unique(map: "unique_company_website")
-  logoUrl                                                       String?
-  description                                                   String?
-  companyType                                                   CompanyType
-  agencyType                                                    AgencyType?
-  industry                                                      Industry?
-  address                                                       String?
-  city                                                          String?
-  state                                                         String?
-  region                                                        Region?
-  country                                                       String                   @default("US")
-  zipCode                                                       String?
-  employeeCount                                                 EmployeeRange?
-  revenueRange                                                  RevenueRange?
-  teamCount                                                     Int?
-  foundedYear                                                   Int?
-  stockSymbol                                                   String?
-  linkedinUrl                                                   String?
-  twitterHandle                                                 String?
-  headquarters                                                  String?
-  revenue                                                       String?
-  parentCompanyId                                               String?
-  verified                                                      Boolean                  @default(false)
-  dataQuality                                                   DataQuality              @default(BASIC)
-  lastVerified                                                  DateTime?
-  verifiedBy                                                    String?
-  aiSummary                                                     String?
-  lastInsightUpdate                                             DateTime?
-  createdAt                                                     DateTime                 @default(now())
-  updatedAt                                                     DateTime
-  normalizedName                                                String?
-  normalizedWebsite                                             String?
-  CompanyFollow                                                 CompanyFollow[]
-  CompanyInsight                                                CompanyInsight[]
-  CompanyMention                                                CompanyMention[]
-  CompanyPartnership_CompanyPartnership_advertiserIdTocompanies CompanyPartnership[]     @relation("CompanyPartnership_advertiserIdTocompanies")
-  CompanyPartnership_CompanyPartnership_agencyIdTocompanies     CompanyPartnership[]     @relation("CompanyPartnership_agencyIdTocompanies")
-  EventAttendee                                                 EventAttendee[]
-  Search                                                        Search[]
-  TopicCompany                                                  TopicCompany[]
-  User                                                          User[]
-  UserNetworkingActivity                                        UserNetworkingActivity[]
-  companies                                                     companies?               @relation("companiesTocompanies", fields: [parentCompanyId], references: [id])
-  other_companies                                               companies[]              @relation("companiesTocompanies")
-  contacts                                                      contacts[]
-  introduction_requests                                         introduction_requests[]
+model Company {
+  id                                                          String                   @id
+  name                                                        String                   @unique(map: "unique_company_name")
+  slug                                                        String                   @unique
+  website                                                     String?                  @unique(map: "unique_company_website")
+  logoUrl                                                     String?
+  description                                                 String?
+  companyType                                                 CompanyType
+  agencyType                                                  AgencyType?
+  industry                                                    Industry?
+  address                                                     String?
+  city                                                        String?
+  state                                                       String?
+  region                                                      Region?
+  country                                                     String                   @default("US")
+  zipCode                                                     String?
+  employeeCount                                               EmployeeRange?
+  revenueRange                                                RevenueRange?
+  teamCount                                                   Int?
+  foundedYear                                                 Int?
+  stockSymbol                                                 String?
+  linkedinUrl                                                 String?
+  twitterHandle                                               String?
+  headquarters                                                String?
+  revenue                                                     String?
+  parentCompanyId                                             String?
+  verified                                                    Boolean                  @default(false)
+  dataQuality                                                 DataQuality              @default(BASIC)
+  lastVerified                                                DateTime?
+  verifiedBy                                                  String?
+  aiSummary                                                   String?
+  lastInsightUpdate                                           DateTime?
+  createdAt                                                   DateTime                 @default(now())
+  updatedAt                                                   DateTime
+  normalizedName                                              String?
+  normalizedWebsite                                           String?
+  CompanyFollow                                               CompanyFollow[]
+  CompanyInsight                                              CompanyInsight[]
+  CompanyMention                                              CompanyMention[]
+  CompanyPartnership_advertiserIdToCompany                    CompanyPartnership[]     @relation("CompanyPartnership_advertiserIdToCompany")
+  CompanyPartnership_agencyIdToCompany                        CompanyPartnership[]     @relation("CompanyPartnership_agencyIdToCompany")
+  EventAttendee                                               EventAttendee[]
+  Search                                                      Search[]
+  TopicCompany                                                TopicCompany[]
+  User                                                        User[]
+  UserNetworkingActivity                                      UserNetworkingActivity[]
+  parentCompany                                               Company?                 @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
+  subsidiaries                                                Company[]                @relation("CompanyHierarchy")
+  contacts                                                    Contact[]
+  introduction_requests                                       introduction_requests[]
 
+  @@map("companies")
   @@index([city, state])
   @@index([companyType])
   @@index([industry])
@@ -1012,7 +1013,7 @@ model companies {
   @@index([verified])
 }
 
-model contacts {
+model Contact {
   id                    String                  @id
   firstName             String
   lastName              String
@@ -1049,9 +1050,10 @@ model contacts {
   TopicContact          TopicContact[]
   UserConnection        UserConnection[]
   ViewedContact         ViewedContact[]
-  companies             companies               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company               Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
   introduction_requests introduction_requests[]
 
+  @@map("contacts")
   @@unique([firstName, lastName, companyId], map: "unique_contact_per_company")
   @@index([communityScore])
   @@index([companyId])
@@ -1079,8 +1081,8 @@ model introduction_requests {
   completedAt                                    DateTime?
   User_introduction_requests_facilitatorIdToUser User?              @relation("introduction_requests_facilitatorIdToUser", fields: [facilitatorId], references: [id])
   User_introduction_requests_requesterIdToUser   User               @relation("introduction_requests_requesterIdToUser", fields: [requesterId], references: [id], onDelete: Cascade)
-  companies                                      companies          @relation(fields: [targetCompanyId], references: [id], onDelete: Cascade)
-  contacts                                       contacts           @relation(fields: [targetContactId], references: [id], onDelete: Cascade)
+  company                                        Company            @relation(fields: [targetCompanyId], references: [id], onDelete: Cascade)
+  contact                                        Contact            @relation(fields: [targetContactId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([facilitatorId])
