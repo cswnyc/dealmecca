@@ -8,40 +8,35 @@ export async function GET(
   try {
     const { id } = await params;
 
+    console.log('[COMPANY API] Querying company with id:', id);
+
     const company = await prisma.company.findUnique({
       where: { id },
       include: {
-        // Parent company relationship
         parentCompany: {
           select: {
             id: true,
             name: true,
             logoUrl: true,
-            companyType: true,
-            industry: true,
-            city: true,
-            state: true,
-            verified: true
+            companyType: true
           }
         },
-        // Subsidiaries
         subsidiaries: {
           select: {
             id: true,
             name: true,
             logoUrl: true,
             companyType: true,
-            industry: true,
-            city: true,
-            state: true,
             verified: true
+          },
+          orderBy: {
+            name: 'asc'
           }
         },
-        // Contacts at this company
         contacts: {
-          where: { isActive: true },
-          orderBy: { createdAt: 'desc' },
-          take: 10,
+          where: {
+            isActive: true
+          },
           select: {
             id: true,
             firstName: true,
@@ -50,23 +45,19 @@ export async function GET(
             title: true,
             email: true,
             phone: true,
-            linkedinUrl: true,
-            logoUrl: true,
-            department: true,
-            seniority: true,
-            primaryRole: true,
-            territories: true,
-            accounts: true,
-            isDecisionMaker: true,
             verified: true,
-            dataQuality: true,
-            communityScore: true,
-            createdAt: true,
-            updatedAt: true
-          }
+            seniority: true,
+            department: true
+          },
+          orderBy: {
+            lastName: 'asc'
+          },
+          take: 10
         },
-        // Agency partnerships (when this company is an agency)
         CompanyPartnership_agencyIdToCompany: {
+          where: {
+            isActive: true
+          },
           include: {
             advertiser: {
               select: {
@@ -75,16 +66,18 @@ export async function GET(
                 logoUrl: true,
                 companyType: true,
                 industry: true,
-                city: true,
-                state: true,
                 verified: true
               }
             }
           },
-          orderBy: { startDate: 'desc' }
+          orderBy: {
+            startDate: 'desc'
+          }
         },
-        // Advertiser partnerships (when this company is an advertiser)
         CompanyPartnership_advertiserIdToCompany: {
+          where: {
+            isActive: true
+          },
           include: {
             agency: {
               select: {
@@ -92,39 +85,28 @@ export async function GET(
                 name: true,
                 logoUrl: true,
                 companyType: true,
-                industry: true,
-                city: true,
-                state: true,
+                agencyType: true,
                 verified: true
               }
             }
           },
-          orderBy: { startDate: 'desc' }
-        },
-        // Users associated with this company
-        User: {
-          where: { isActive: true },
-          take: 5,
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            createdAt: true
-          },
-          orderBy: { createdAt: 'desc' }
+          orderBy: {
+            startDate: 'desc'
+          }
         },
         _count: {
           select: {
             contacts: true,
+            User: true,
             subsidiaries: true,
             CompanyPartnership_agencyIdToCompany: true,
-            CompanyPartnership_advertiserIdToCompany: true,
-            User: true
+            CompanyPartnership_advertiserIdToCompany: true
           }
         }
       }
     });
+
+    console.log('[COMPANY API] Found company:', company ? company.name : 'null');
 
     if (!company) {
       return NextResponse.json(
@@ -133,90 +115,21 @@ export async function GET(
       );
     }
 
-    // Format partnerships based on company type
-    const formattedCompany = {
-      id: company.id,
-      name: company.name,
-      logoUrl: company.logoUrl,
-      website: company.website,
-      description: company.description,
-      companyType: company.companyType,
-      industry: company.industry,
-      hqAddress: company.hqAddress,
-      city: company.city,
-      state: company.state,
-      country: company.country,
-      zipCode: company.zipCode,
-      phone: company.phone,
-      email: company.email,
-      linkedinUrl: company.linkedinUrl,
-      employeeCount: company.employeeCount,
-      revenue: company.revenue,
-      yearFounded: company.yearFounded,
-      verified: company.verified,
-      dataQuality: company.dataQuality,
-      lastVerified: company.lastVerified?.toISOString(),
-      communityScore: company.communityScore,
-      parentCompanyId: company.parentCompanyId,
-      createdAt: company.createdAt.toISOString(),
-      updatedAt: company.updatedAt.toISOString(),
+    return NextResponse.json(company);
 
-      // Relationships
-      parentCompany: company.parentCompany,
-      subsidiaries: company.subsidiaries,
-      contacts: company.contacts,
-      users: company.User,
-
-      // Partnerships (formatted based on company type)
-      partnerships: company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
-        ? company.CompanyPartnership_agencyIdToCompany.map(p => ({
-            id: p.id,
-            relationshipType: p.relationshipType,
-            isAOR: p.isAOR,
-            services: p.services,
-            startDate: p.startDate?.toISOString(),
-            endDate: p.endDate?.toISOString(),
-            isActive: p.isActive,
-            contractValue: p.contractValue,
-            notes: p.notes,
-            createdAt: p.createdAt.toISOString(),
-            updatedAt: p.updatedAt.toISOString(),
-            partner: p.advertiser,
-            partnerRole: 'advertiser' as const
-          }))
-        : company.CompanyPartnership_advertiserIdToCompany.map(p => ({
-            id: p.id,
-            relationshipType: p.relationshipType,
-            isAOR: p.isAOR,
-            services: p.services,
-            startDate: p.startDate?.toISOString(),
-            endDate: p.endDate?.toISOString(),
-            isActive: p.isActive,
-            contractValue: p.contractValue,
-            notes: p.notes,
-            createdAt: p.createdAt.toISOString(),
-            updatedAt: p.updatedAt.toISOString(),
-            partner: p.agency,
-            partnerRole: 'agency' as const
-          })),
-
-      // Counts
-      _count: {
-        contacts: company._count.contacts,
-        subsidiaries: company._count.subsidiaries,
-        users: company._count.User,
-        partnerships: company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
-          ? company._count.CompanyPartnership_agencyIdToCompany
-          : company._count.CompanyPartnership_advertiserIdToCompany
-      }
-    };
-
-    return NextResponse.json(formattedCompany);
-
-  } catch (error) {
-    console.error('Error fetching company:', error);
+  } catch (error: any) {
+    console.error('[COMPANY API ERROR] Full error:', {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack
+    });
     return NextResponse.json(
-      { error: 'Failed to fetch company' },
+      {
+        error: 'Failed to fetch company',
+        details: error?.message,
+        code: error?.code
+      },
       { status: 500 }
     );
   }
@@ -248,18 +161,23 @@ export async function PUT(
       website,
       description,
       companyType,
+      agencyType,
+      advertisingModel,
       industry,
-      hqAddress,
+      address,
       city,
       state,
+      region,
       country,
       zipCode,
-      phone,
-      email,
       linkedinUrl,
+      twitterHandle,
+      headquarters,
       employeeCount,
+      revenueRange,
       revenue,
-      yearFounded,
+      foundedYear,
+      stockSymbol,
       verified,
       parentCompanyId
     } = body;
@@ -294,18 +212,23 @@ export async function PUT(
         ...(website !== undefined && { website: website || null }),
         ...(description !== undefined && { description: description || null }),
         ...(companyType !== undefined && { companyType }),
+        ...(agencyType !== undefined && { agencyType: agencyType || null }),
+        ...(advertisingModel !== undefined && { advertisingModel: advertisingModel || null }),
         ...(industry !== undefined && { industry: industry || null }),
-        ...(hqAddress !== undefined && { hqAddress: hqAddress || null }),
+        ...(address !== undefined && { address: address || null }),
         ...(city !== undefined && { city: city || null }),
         ...(state !== undefined && { state: state || null }),
+        ...(region !== undefined && { region: region || null }),
         ...(country !== undefined && { country: country || null }),
         ...(zipCode !== undefined && { zipCode: zipCode || null }),
-        ...(phone !== undefined && { phone: phone || null }),
-        ...(email !== undefined && { email: email || null }),
         ...(linkedinUrl !== undefined && { linkedinUrl: linkedinUrl || null }),
+        ...(twitterHandle !== undefined && { twitterHandle: twitterHandle || null }),
+        ...(headquarters !== undefined && { headquarters: headquarters || null }),
         ...(employeeCount !== undefined && { employeeCount: employeeCount || null }),
+        ...(revenueRange !== undefined && { revenueRange: revenueRange || null }),
         ...(revenue !== undefined && { revenue: revenue || null }),
-        ...(yearFounded !== undefined && { yearFounded: yearFounded || null }),
+        ...(foundedYear !== undefined && { foundedYear: foundedYear || null }),
+        ...(stockSymbol !== undefined && { stockSymbol: stockSymbol || null }),
         ...(verified !== undefined && { verified }),
         ...(parentCompanyId !== undefined && { parentCompanyId: parentCompanyId || null }),
         // Update verification timestamp if verified status changed
