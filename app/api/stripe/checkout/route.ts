@@ -80,7 +80,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe checkout session
-    console.log('🔥 Creating Stripe session with price:', finalPriceId)
+    console.log('🔥 Creating Stripe session with:', {
+      priceId: finalPriceId,
+      customerId,
+      tier,
+      interval,
+      userEmail: user.email
+    })
+
     try {
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
@@ -121,10 +128,28 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Stripe checkout error:', error)
+    console.error('❌ Stripe checkout error:', error)
+
+    // Log detailed error information
+    if (error instanceof Error) {
+      console.error('Error name:', error.name)
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
+
+    // If it's a Stripe error, log more details
+    if (error && typeof error === 'object' && 'type' in error) {
+      const stripeError = error as any
+      console.error('Stripe error type:', stripeError.type)
+      console.error('Stripe error code:', stripeError.code)
+      console.error('Stripe error param:', stripeError.param)
+      console.error('Stripe error raw:', stripeError.raw)
+    }
+
     return NextResponse.json({
       error: 'Failed to create checkout session',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      type: error && typeof error === 'object' && 'type' in error ? (error as any).type : undefined
     }, { status: 500 })
   }
 }
