@@ -74,6 +74,7 @@ export function UserProfileCard() {
 
 function UserProfileContent() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMoreExpanded, setIsMoreExpanded] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [anonymousIdentity, setAnonymousIdentity] = useState<{username: string, avatarId: string} | null>(null);
@@ -440,123 +441,89 @@ function UserProfileContent() {
         )}
       </button>
 
-      {/* Expanded Menu - Improved styling */}
+      {/* Expanded Menu - Compact and Modern */}
       {isExpanded && (
-        <div className="mt-2 py-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-          {/* User Stats Summary */}
+        <div className="mt-2 py-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+          {/* Compact Stats Header - Single Row */}
           {userStats && (
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div>
-                  <p className="text-lg font-semibold text-gray-900">{userStats.rank}</p>
-                  <p className="text-xs text-gray-500">Rank</p>
-                </div>
-                <div>
-                  <p className="text-lg font-semibold text-gray-900">{userStats.contributions}</p>
-                  <p className="text-xs text-gray-500">Contributions</p>
-                </div>
-              </div>
-              <div className="mt-2 text-center">
-                <Badge className={`${getTierColor(tier)} bg-transparent border-current font-medium`}>
-                  {tier} Tier
-                </Badge>
+            <div className="px-3 py-2 border-b border-gray-100">
+              <div className="flex items-center justify-center gap-2 text-xs text-gray-600">
+                <span className="flex items-center gap-1">
+                  <span className="font-semibold text-gray-900">#{userStats.rank}</span>
+                </span>
+                <span className="text-gray-300">•</span>
+                <span className="flex items-center gap-1">
+                  <Gem className={`w-3 h-3 ${getTierColor(tier)}`} />
+                  <span className="font-semibold text-gray-900">{gems}</span>
+                </span>
+                <span className="text-gray-300">•</span>
+                <span className={`${getTierColor(tier)} font-semibold uppercase`}>
+                  {tier}
+                </span>
               </div>
             </div>
           )}
 
-          {/* Subscription Info */}
-          <div className="px-4 py-3 border-b border-gray-100">
-            <div className="flex items-center justify-center">
-              <Badge className={`${subscriptionInfo.color} font-medium`}>
-                {SubscriptionIcon && <SubscriptionIcon className="w-3 h-3 mr-1" />}
-                {subscriptionInfo.label}
-              </Badge>
-            </div>
-            {(profile?.subscriptionTier || 'FREE') === 'FREE' && (
-              <Button
-                onClick={() => handleNavigation('/upgrade')}
-                className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm h-8"
-              >
-                Upgrade Plan
-              </Button>
-            )}
-          </div>
-
-          {/* Menu Items */}
+          {/* Menu Items - Simplified */}
           <div className="py-1">
             <button
-              onClick={() => handleNavigation('/rewards')}
-              className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/settings')}
+              className="w-full flex items-center px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              <div className="flex items-center">
-                <Star className="w-4 h-4 mr-3" />
-                My Rewards
-              </div>
-              <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
-                Coming Soon
-              </span>
+              <Settings className="w-4 h-4 mr-2.5 text-gray-500" />
+              Settings
             </button>
 
             <button
               onClick={() => handleNavigation('/billing')}
-              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              <Receipt className="w-4 h-4 mr-3" />
+              <Receipt className="w-4 h-4 mr-2.5 text-gray-500" />
               Billing
             </button>
-            
-            <button
-              onClick={() => handleNavigation('/settings')}
-              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <Settings className="w-4 h-4 mr-3" />
-              Settings
-            </button>
-            
-            <button
-              onClick={() => handleNavigation('/help')}
-              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <HelpCircle className="w-4 h-4 mr-3" />
-              Get Support
-            </button>
+
+            {/* More Submenu - Progressive Disclosure */}
+            <div>
+              <button
+                onClick={() => setIsMoreExpanded(!isMoreExpanded)}
+                className="w-full flex items-center justify-between px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <span className="flex items-center">
+                  <ChevronDown className={`w-4 h-4 mr-2.5 text-gray-500 transition-transform ${isMoreExpanded ? 'rotate-180' : ''}`} />
+                  More
+                </span>
+              </button>
+
+              {isMoreExpanded && (
+                <div className="bg-gray-50">
+                  <button
+                    onClick={() => handleNavigation('/help')}
+                    className="w-full flex items-center px-3 py-1.5 pl-9 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5 mr-2.5 text-gray-400" />
+                    Get Support
+                  </button>
+
+                  <button
+                    onClick={() => handleNavigation('/terms')}
+                    className="w-full flex items-center px-3 py-1.5 pl-9 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-xs">Terms & Privacy</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sign Out */}
           <div className="border-t border-gray-100 pt-1">
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+              className="w-full flex items-center px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
             >
-              <LogOut className="w-4 h-4 mr-3" />
+              <LogOut className="w-4 h-4 mr-2.5" />
               Sign Out
             </button>
-          </div>
-
-          {/* Footer Links */}
-          <div className="border-t border-gray-100 pt-2 pb-1">
-            <div className="flex justify-center space-x-4 text-xs text-gray-400">
-              <button 
-                onClick={() => handleNavigation('/contact')}
-                className="hover:text-gray-600 transition-colors"
-              >
-                Contact
-              </button>
-              <span>•</span>
-              <button 
-                onClick={() => handleNavigation('/privacy')}
-                className="hover:text-gray-600 transition-colors"
-              >
-                Privacy
-              </button>
-              <span>•</span>
-              <button 
-                onClick={() => handleNavigation('/terms')}
-                className="hover:text-gray-600 transition-colors"
-              >
-                Terms
-              </button>
-            </div>
           </div>
         </div>
       )}
