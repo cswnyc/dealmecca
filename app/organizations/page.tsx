@@ -357,7 +357,7 @@ const INDUSTRY_COLORS: Record<string, string> = {
   'FOOD_DELIVERY': 'bg-orange-100 text-orange-800',
   'E_COMMERCE': 'bg-green-100 text-green-800',
   'INSURANCE': 'bg-red-100 text-red-800',
-  'FOOD_BEVERAGE': 'bg-yellow-100 text-yellow-800',
+  'FOOD_BEVERAGE': 'bg-amber-100 text-amber-800',
   'EDUCATION': 'bg-indigo-100 text-indigo-800',
   'TRAVEL': 'bg-pink-100 text-pink-800',
   'ENTERTAINMENT_MEDIA': 'bg-violet-100 text-violet-800',
@@ -776,7 +776,7 @@ export default function OrganizationsPage() {
                                         <SearchHighlight
                                           text={agency.name}
                                           searchTerm={searchQuery}
-                                          highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-semibold"
+                                          highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-semibold"
                                         />
                                       </h3>
                                     </Link>
@@ -790,7 +790,7 @@ export default function OrganizationsPage() {
                                           <SearchHighlight
                                             text={`${agency.city || ''}, ${agency.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
                                             searchTerm={searchQuery}
-                                            highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                            highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-medium"
                                           />
                                         </span>
                                       )}
@@ -822,7 +822,7 @@ export default function OrganizationsPage() {
                                         <SearchHighlight
                                           text={client.name}
                                           searchTerm={searchQuery}
-                                          highlightClassName="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
+                                          highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-medium"
                                         />
                                       </span>
                                     ))}
