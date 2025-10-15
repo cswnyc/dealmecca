@@ -20,14 +20,15 @@ export async function GET(
             industry: true,
             city: true,
             state: true,
-            website: true
+            website: true,
+            verified: true
           }
         },
-        interactions: {
+        ContactInteraction: {
           orderBy: { createdAt: 'desc' },
           take: 5, // Recent interactions
           include: {
-            user: {
+            User: {
               select: {
                 id: true,
                 name: true,
@@ -36,11 +37,11 @@ export async function GET(
             }
           }
         },
-        notes: {
+        ContactNote: {
           orderBy: { createdAt: 'desc' },
           take: 5, // Recent notes
           include: {
-            user: {
+            User: {
               select: {
                 id: true,
                 name: true,
@@ -49,12 +50,11 @@ export async function GET(
             }
           }
         },
-        status: true,
         _count: {
           select: {
-            interactions: true,
-            notes: true,
-            connections: true
+            ContactInteraction: true,
+            ContactNote: true,
+            UserConnection: true
           }
         }
       }
@@ -96,10 +96,14 @@ export async function GET(
       createdAt: contact.createdAt.toISOString(),
       updatedAt: contact.updatedAt.toISOString(),
       company: contact.company,
-      recentInteractions: contact.interactions,
-      recentNotes: contact.notes,
-      status: contact.status,
-      _count: contact._count
+      recentInteractions: contact.ContactInteraction || [],
+      recentNotes: contact.ContactNote || [],
+      status: null,
+      _count: {
+        interactions: contact._count.ContactInteraction,
+        notes: contact._count.ContactNote,
+        connections: contact._count.UserConnection
+      }
     };
 
     return NextResponse.json(formattedContact);
@@ -262,9 +266,9 @@ export async function DELETE(
       include: {
         _count: {
           select: {
-            interactions: true,
-            notes: true,
-            connections: true
+            ContactInteraction: true,
+            ContactNote: true,
+            UserConnection: true
           }
         }
       }
@@ -278,9 +282,9 @@ export async function DELETE(
     }
 
     // Check if contact has related data
-    const hasRelatedData = existingContact._count.interactions > 0 ||
-                          existingContact._count.notes > 0 ||
-                          existingContact._count.connections > 0;
+    const hasRelatedData = existingContact._count.ContactInteraction > 0 ||
+                          existingContact._count.ContactNote > 0 ||
+                          existingContact._count.UserConnection > 0;
 
     if (hasRelatedData) {
       // Instead of deleting, mark as inactive

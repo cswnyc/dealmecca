@@ -62,11 +62,11 @@ export async function GET(request: NextRequest) {
     }
 
     if (hasInteractions === 'true') {
-      where.interactions = {
+      where.ContactInteraction = {
         some: {}
       };
     } else if (hasInteractions === 'false') {
-      where.interactions = {
+      where.ContactInteraction = {
         none: {}
       };
     }
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
             verified: true
           }
         },
-        status: {
+        ContactStatus: {
           include: {
             user: {
               select: {
@@ -147,10 +147,10 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            interactions: true,
-            notes: true,
-            connections: true,
-            viewedBy: true
+            ContactInteraction: true,
+            ContactNote: true,
+            UserConnection: true,
+            ViewedContact: true
           }
         }
       },
@@ -236,11 +236,11 @@ export async function GET(request: NextRequest) {
       createdAt: contact.createdAt.toISOString(),
       updatedAt: contact.updatedAt.toISOString(),
       company: contact.company,
-      status: contact.status,
+      status: contact.ContactStatus,
       _count: contact._count,
       // Admin-specific metrics
-      engagementScore: contact._count.interactions * 2 + contact._count.notes,
-      popularityScore: contact._count.viewedBy,
+      engagementScore: contact._count.ContactInteraction * 2 + contact._count.ContactNote,
+      popularityScore: contact._count.ViewedContact,
       completenessScore: [
         contact.email ? 1 : 0,
         contact.phone ? 1 : 0,

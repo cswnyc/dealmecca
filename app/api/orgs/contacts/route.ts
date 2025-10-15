@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createId } from '@paralleldrive/cuid2';
 
 export async function GET(request: NextRequest) {
   try {
@@ -179,8 +180,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  let body: any;
   try {
-    const body = await request.json();
+    body = await request.json();
     const {
       firstName,
       lastName,
@@ -240,23 +242,24 @@ export async function POST(request: NextRequest) {
 
     const contact = await prisma.contact.create({
       data: {
+        id: createId(),
         firstName,
         lastName,
         fullName,
         title,
-        email,
-        phone,
-        linkedinUrl,
-        personalEmail,
-        department,
+        email: email || null,
+        phone: phone || null,
+        linkedinUrl: linkedinUrl || null,
+        personalEmail: personalEmail || null,
+        department: department || null,
         seniority,
-        primaryRole,
+        primaryRole: primaryRole || null,
         companyId,
-        territories,
-        accounts,
-        budgetRange,
+        territories: territories || null,
+        accounts: accounts || null,
+        budgetRange: budgetRange || null,
         isDecisionMaker,
-        preferredContact,
+        preferredContact: preferredContact || null,
         updatedAt: new Date()
       },
       include: {
