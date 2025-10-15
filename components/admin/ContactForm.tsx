@@ -295,26 +295,33 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
         // Default save logic
         const url = mode === 'create' ? '/api/orgs/contacts' : `/api/orgs/contacts/${contact?.id}`;
         const method = mode === 'create' ? 'POST' : 'PUT';
-        
+
+        const payload = {
+          ...formData,
+          fullName: `${formData.firstName} ${formData.lastName}`.trim()
+        };
+
+        console.log('Submitting contact data:', payload);
+
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...formData,
-            fullName: `${formData.firstName} ${formData.lastName}`.trim()
-          })
+          body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
           let errorMessage = 'Failed to save contact';
+          let errorDetails = '';
           try {
             const error = await response.json();
             errorMessage = error.error || error.message || errorMessage;
+            errorDetails = error.details ? ` (${error.details})` : '';
+            console.error('Server error response:', error);
           } catch (jsonError) {
             // If response isn't JSON, use the status text
             errorMessage = response.statusText || errorMessage;
           }
-          throw new Error(errorMessage);
+          throw new Error(errorMessage + errorDetails);
         }
 
         router.push('/admin/orgs/contacts');
