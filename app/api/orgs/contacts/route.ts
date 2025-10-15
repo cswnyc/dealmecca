@@ -9,11 +9,20 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const search = searchParams.get('search');
     const companyId = searchParams.get('companyId');
+    const companyType = searchParams.get('companyType');
+    const industry = searchParams.get('industry');
+    const city = searchParams.get('city');
+    const state = searchParams.get('state');
     const department = searchParams.get('department');
     const seniority = searchParams.get('seniority');
     const primaryRole = searchParams.get('primaryRole');
     const verified = searchParams.get('verified');
     const isActive = searchParams.get('isActive');
+    const isDecisionMaker = searchParams.get('isDecisionMaker');
+    const territory = searchParams.get('territory');
+    const account = searchParams.get('account');
+    const budgetRange = searchParams.get('budgetRange');
+    const agencyPartner = searchParams.get('agencyPartner');
     const sortBy = searchParams.get('sortBy') || 'fullName';
 
     const skip = (page - 1) * limit;
@@ -36,6 +45,38 @@ export async function GET(request: NextRequest) {
       where.companyId = companyId;
     }
 
+    // Filter by company type (agency or advertiser)
+    if (companyType) {
+      where.company = {
+        ...where.company,
+        companyType: companyType
+      };
+    }
+
+    // Filter by company industry
+    if (industry) {
+      where.company = {
+        ...where.company,
+        industry: industry
+      };
+    }
+
+    // Filter by company city
+    if (city) {
+      where.company = {
+        ...where.company,
+        city: { contains: city, mode: 'insensitive' }
+      };
+    }
+
+    // Filter by company state
+    if (state) {
+      where.company = {
+        ...where.company,
+        state: state
+      };
+    }
+
     if (department) {
       where.department = department;
     }
@@ -54,6 +95,41 @@ export async function GET(request: NextRequest) {
 
     if (isActive !== null && isActive !== undefined) {
       where.isActive = isActive === 'true';
+    }
+
+    if (isDecisionMaker !== null && isDecisionMaker !== undefined) {
+      where.isDecisionMaker = isDecisionMaker === 'true';
+    }
+
+    // Filter by territory (JSON field)
+    if (territory) {
+      where.territories = {
+        contains: territory
+      };
+    }
+
+    // Filter by account (JSON field)
+    if (account) {
+      where.accounts = {
+        contains: account
+      };
+    }
+
+    if (budgetRange) {
+      where.budgetRange = budgetRange;
+    }
+
+    // Filter contacts at advertisers by their agency partner
+    if (agencyPartner) {
+      where.company = {
+        ...where.company,
+        CompanyPartnership_advertiserIdToCompany: {
+          some: {
+            agencyId: agencyPartner,
+            isActive: true
+          }
+        }
+      };
     }
 
     // Build orderBy clause

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createId } from '@paralleldrive/cuid2';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,14 +12,20 @@ export async function GET(request: NextRequest) {
     const industry = searchParams.get('industry');
     const city = searchParams.get('city');
     const state = searchParams.get('state');
+    const region = searchParams.get('region');
     const verified = searchParams.get('verified');
+    const parentCompanyId = searchParams.get('parentCompanyId');
+    const hasParent = searchParams.get('hasParent');
+    const hasSubsidiaries = searchParams.get('hasSubsidiaries');
+    const partnerIndustry = searchParams.get('partnerIndustry');
+    const hasActivePartnerships = searchParams.get('hasActivePartnerships');
     const sortBy = searchParams.get('sortBy') || 'name';
-    
+
     const skip = (page - 1) * limit;
-    
+
     // Build where clause
     const where: any = {};
-    
+
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
@@ -26,25 +33,70 @@ export async function GET(request: NextRequest) {
         { website: { contains: search, mode: 'insensitive' } }
       ];
     }
-    
+
     if (companyType) {
       where.companyType = companyType;
     }
-    
+
     if (industry) {
       where.industry = industry;
     }
-    
+
     if (city) {
       where.city = { contains: city, mode: 'insensitive' };
     }
-    
+
     if (state) {
       where.state = state;
     }
-    
+
+    if (region) {
+      where.region = region;
+    }
+
     if (verified !== null && verified !== undefined) {
       where.verified = verified === 'true';
+    }
+
+    if (parentCompanyId) {
+      where.parentCompanyId = parentCompanyId;
+    }
+
+    if (hasParent === 'true') {
+      where.parentCompanyId = { not: null };
+    } else if (hasParent === 'false') {
+      where.parentCompanyId = null;
+    }
+
+    if (hasSubsidiaries === 'true') {
+      where.subsidiaries = { some: {} };
+    }
+
+    // Filter by partner industry (agencies with clients in specific industry)
+    if (partnerIndustry) {
+      where.CompanyPartnership_agencyIdToCompany = {
+        some: {
+          advertiser: {
+            industry: partnerIndustry
+          }
+        }
+      };
+    }
+
+    // Filter by companies with active partnerships
+    if (hasActivePartnerships === 'true') {
+      where.OR = [
+        {
+          CompanyPartnership_agencyIdToCompany: {
+            some: { isActive: true }
+          }
+        },
+        {
+          CompanyPartnership_advertiserIdToCompany: {
+            some: { isActive: true }
+          }
+        }
+      ];
     }
 
     // Build orderBy clause
@@ -108,6 +160,7 @@ export async function GET(request: NextRequest) {
       description: company.description,
       companyType: company.companyType,
       agencyType: company.agencyType,
+      advertisingModel: company.advertisingModel,
       industry: company.industry,
       address: company.address,
       city: company.city,
@@ -172,11 +225,12 @@ export async function POST(request: NextRequest) {
       description,
       companyType,
       agencyType,
+      advertisingModel,
       industry,
       address,
       city,
       state,
-      region = 'NORTH_AMERICA',
+      region = 'NATIONAL',
       country = 'US',
       zipCode,
       employeeCount,
@@ -188,7 +242,9 @@ export async function POST(request: NextRequest) {
       twitterHandle,
       headquarters,
       revenue,
-      parentCompanyId
+      parentCompanyId,
+      logoUrl,
+      verified
     } = body;
 
     if (!name || !companyType) {
@@ -213,14 +269,17 @@ export async function POST(request: NextRequest) {
       counter++;
     }
 
-    const company = await prisma.company.create({
+    const company = await prisma.Company.create({
       data: {
+        id: createId(),
         name,
         slug,
         website,
+        logoUrl,
         description,
         companyType,
         agencyType,
+        advertisingModel,
         industry,
         address,
         city,
@@ -238,8 +297,10 @@ export async function POST(request: NextRequest) {
         headquarters,
         revenue,
         parentCompanyId,
+        verified: verified || false,
         normalizedName: name.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim(),
-        normalizedWebsite: website?.toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '')
+        normalizedWebsite: website?.toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, ''),
+        updatedAt: new Date()
       },
       include: {
         parentCompany: {
@@ -254,10 +315,58 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(company, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating company:', error);
+
+    // Handle Prisma unique constraint errors
+    if (error.code === 'P2002') {
+      const field = error.meta?.target?.[0] || 'field';
+
+      // Find the duplicate company to provide helpful details
+      try {
+        let duplicateCompany = null;
+
+        if (field === 'name') {
+          duplicateCompany = await prisma.Company.findUnique({
+            where: { name },
+            select: { id: true, name: true, companyType: true, website: true }
+          });
+        } else if (field === 'website' && website) {
+          duplicateCompany = await prisma.Company.findUnique({
+            where: { website },
+            select: { id: true, name: true, companyType: true, website: true }
+          });
+        }
+
+        if (duplicateCompany) {
+          return NextResponse.json(
+            {
+              error: `A company with this ${field} already exists`,
+              duplicateField: field,
+              duplicateValue: field === 'name' ? name : website,
+              existingCompany: {
+                id: duplicateCompany.id,
+                name: duplicateCompany.name,
+                companyType: duplicateCompany.companyType,
+                website: duplicateCompany.website
+              }
+            },
+            { status: 409 }
+          );
+        }
+      } catch (lookupError) {
+        console.error('Error looking up duplicate:', lookupError);
+      }
+
+      // Fallback to generic error if lookup fails
+      return NextResponse.json(
+        { error: `A company with this ${field} already exists` },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to create company' },
+      { error: error.message || 'Failed to create company' },
       { status: 500 }
     );
   }
