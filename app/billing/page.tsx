@@ -402,16 +402,25 @@ export default function BillingPage() {
 
             <div className="mb-6">
               <div className="flex items-baseline">
-                <span className="text-4xl font-bold text-gray-900">Custom</span>
+                <span className="text-4xl font-bold text-gray-900">${getPrice(teamPlan)}</span>
+                <span className="text-gray-600 ml-2">
+                  /{billingInterval === 'yearly' ? 'user per month' : 'month'}
+                </span>
               </div>
-              <p className="text-sm text-gray-600 mt-1">Maximize ROI across teams and departments</p>
             </div>
 
             <button
-              onClick={() => window.location.href = '/contact?subject=Team+Plan+Demo'}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors mb-6"
+              onClick={() => createCheckoutSession('TEAM', billingInterval === 'yearly' ? 'annual' : 'monthly')}
+              disabled={upgradeLoading === `TEAM_${billingInterval}` || subscription?.tier === 'TEAM'}
+              className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 transition-colors mb-6"
             >
-              Get a Demo
+              {upgradeLoading === `TEAM_${billingInterval}` ? (
+                <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+              ) : subscription?.tier === 'TEAM' ? (
+                'Current Plan'
+              ) : (
+                'Start Free Trial'
+              )}
             </button>
 
             <div className="border-t border-gray-100 pt-4">
