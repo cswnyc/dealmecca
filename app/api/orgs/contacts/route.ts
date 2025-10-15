@@ -200,9 +200,9 @@ export async function POST(request: NextRequest) {
       preferredContact
     } = body;
 
-    if (!firstName || !lastName || !title || !companyId) {
+    if (!firstName || !lastName || !title || !companyId || !seniority) {
       return NextResponse.json(
-        { error: 'First name, last name, title, and company are required' },
+        { error: 'First name, last name, title, company, and seniority are required' },
         { status: 400 }
       );
     }
@@ -274,10 +274,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(contact, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating contact:', error);
     return NextResponse.json(
-      { error: 'Failed to create contact' },
+      {
+        error: 'Failed to create contact',
+        details: error?.message || String(error),
+        body: JSON.stringify(body)
+      },
       { status: 500 }
     );
   }
