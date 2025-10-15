@@ -256,7 +256,8 @@ export async function POST(request: NextRequest) {
         accounts,
         budgetRange,
         isDecisionMaker,
-        preferredContact
+        preferredContact,
+        updatedAt: new Date()
       },
       include: {
         company: {
