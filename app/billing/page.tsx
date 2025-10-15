@@ -191,7 +191,7 @@ export default function BillingPage() {
           name: 'Pro',
           description: 'For media professionals',
           monthlyPrice: 29,
-          annualPrice: 24, // ~18% discount
+          annualPrice: 299, // $299/year
           features: [
             'Unlimited company & contact searches',
             'Advanced filtering & insights',
@@ -206,7 +206,7 @@ export default function BillingPage() {
           name: 'Team',
           description: 'For agencies & teams',
           monthlyPrice: 99,
-          annualPrice: 82, // ~18% discount
+          annualPrice: 999, // $999/year
           features: [
             'Team performance analytics',
             'User roles & permissions',
@@ -361,7 +361,7 @@ export default function BillingPage() {
               <div className="flex items-baseline">
                 <span className="text-4xl font-bold text-gray-900">${getPrice(proPlan)}</span>
                 <span className="text-gray-600 ml-2">
-                  /{billingInterval === 'yearly' ? 'creator per month' : 'month'}
+                  /{billingInterval === 'yearly' ? 'year' : 'month'}
                 </span>
               </div>
             </div>
@@ -404,7 +404,7 @@ export default function BillingPage() {
               <div className="flex items-baseline">
                 <span className="text-4xl font-bold text-gray-900">${getPrice(teamPlan)}</span>
                 <span className="text-gray-600 ml-2">
-                  /{billingInterval === 'yearly' ? 'user per month' : 'month'}
+                  /{billingInterval === 'yearly' ? 'year' : 'month'}
                 </span>
               </div>
             </div>
