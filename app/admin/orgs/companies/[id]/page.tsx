@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import PartnershipModal from '@/components/admin/PartnershipModal';
 
 interface Company {
   id: string;
@@ -68,6 +69,9 @@ export default function CompanyViewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'partnerships' | 'contacts' | 'subsidiaries'>('overview');
+  const [showPartnershipModal, setShowPartnershipModal] = useState(false);
+  const [partnershipSaving, setPartnershipSaving] = useState(false);
+  const [partnershipError, setPartnershipError] = useState('');
 
   useEffect(() => {
     if (params.id) {
@@ -319,12 +323,18 @@ export default function CompanyViewPage() {
 
       {activeTab === 'partnerships' && (
         <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">
               {company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
                 ? 'Clients'
                 : 'Agency Partners'}
             </h2>
+            <button
+              onClick={() => setShowPartnershipModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+            >
+              Add Partnership
+            </button>
           </div>
           <div className="divide-y divide-gray-200">
             {company.partnerships.length === 0 ? (
@@ -472,6 +482,18 @@ export default function CompanyViewPage() {
           </div>
         </div>
       )}
+
+      {/* Partnership Modal */}
+      <PartnershipModal
+        isOpen={showPartnershipModal}
+        onClose={() => setShowPartnershipModal(false)}
+        companyId={company.id}
+        companyType={company.companyType}
+        onSuccess={() => {
+          setShowPartnershipModal(false);
+          fetchCompany(company.id);
+        }}
+      />
     </div>
   );
 }

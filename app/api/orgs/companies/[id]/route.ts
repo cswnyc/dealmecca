@@ -115,7 +115,55 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(company);
+    // Format partnerships for frontend
+    const partnerships = [
+      ...company.CompanyPartnership_agencyIdToCompany.map(p => ({
+        id: p.id,
+        relationshipType: p.relationshipType,
+        isAOR: p.isAOR,
+        services: p.services,
+        startDate: p.startDate?.toISOString() || null,
+        endDate: p.endDate?.toISOString() || null,
+        isActive: p.isActive,
+        contractValue: p.contractValue,
+        notes: p.notes,
+        partner: p.advertiser,
+        partnerRole: 'advertiser' as const
+      })),
+      ...company.CompanyPartnership_advertiserIdToCompany.map(p => ({
+        id: p.id,
+        relationshipType: p.relationshipType,
+        isAOR: p.isAOR,
+        services: p.services,
+        startDate: p.startDate?.toISOString() || null,
+        endDate: p.endDate?.toISOString() || null,
+        isActive: p.isActive,
+        contractValue: p.contractValue,
+        notes: p.notes,
+        partner: p.agency,
+        partnerRole: 'agency' as const
+      }))
+    ];
+
+    // Calculate partnership counts
+    const partnershipCount = company.CompanyPartnership_agencyIdToCompany.length +
+                            company.CompanyPartnership_advertiserIdToCompany.length;
+
+    // Format response
+    const formattedCompany = {
+      ...company,
+      partnerships,
+      _count: {
+        ...company._count,
+        partnerships: partnershipCount
+      }
+    };
+
+    // Remove the raw partnership arrays
+    delete (formattedCompany as any).CompanyPartnership_agencyIdToCompany;
+    delete (formattedCompany as any).CompanyPartnership_advertiserIdToCompany;
+
+    return NextResponse.json(formattedCompany);
 
   } catch (error: any) {
     console.error('[COMPANY API ERROR] Full error:', {

@@ -122,6 +122,8 @@ model CompanyPartnership {
   agencyId         String
   advertiserId     String
   relationshipType PartnershipType @default(AGENCY_CLIENT)
+  isAOR            Boolean         @default(false)
+  services         String?
   startDate        DateTime?
   endDate          DateTime?
   isActive         Boolean         @default(true)
@@ -976,6 +978,7 @@ model Company {
   twitterHandle                                               String?
   headquarters                                                String?
   revenue                                                     String?
+  advertisingModel                                            AdvertisingModel?
   parentCompanyId                                             String?
   verified                                                    Boolean                  @default(false)
   dataQuality                                                 DataQuality              @default(BASIC)
@@ -1103,6 +1106,27 @@ enum ActivityType {
   UPGRADE_PROMPT_SHOWN
   UPGRADE_COMPLETED
   ACHIEVEMENT_UNLOCKED
+}
+
+enum AdvertisingModel {
+  AGENCY_MANAGED    // Works with external agencies
+  IN_HOUSE          // Internal marketing team
+  HYBRID            // Mix of both
+}
+
+enum AgencyServiceType {
+  CREATIVE
+  MEDIA_PLANNING
+  MEDIA_BUYING
+  DIGITAL_MARKETING
+  SOCIAL_MEDIA
+  STRATEGY
+  ANALYTICS
+  PRODUCTION
+  PR_COMMUNICATIONS
+  INFLUENCER
+  PERFORMANCE_MARKETING
+  SEO_SEM
 }
 
 enum AgencyType {
