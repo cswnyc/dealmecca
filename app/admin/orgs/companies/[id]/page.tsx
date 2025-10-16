@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Info } from 'lucide-react';
 import PartnershipModal from '@/components/admin/PartnershipModal';
 
 interface Company {
@@ -193,13 +194,15 @@ export default function CompanyViewPage() {
           </button>
           <button
             onClick={() => setActiveTab('partnerships')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+            className={`pb-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
               activeTab === 'partnerships'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
+            title="Agency-client working relationships (not ownership)"
           >
             Partnerships ({company._count.partnerships})
+            <Info className="w-3 h-3 opacity-50" />
           </button>
           <button
             onClick={() => setActiveTab('contacts')}
@@ -214,13 +217,15 @@ export default function CompanyViewPage() {
           {company.subsidiaries.length > 0 && (
             <button
               onClick={() => setActiveTab('subsidiaries')}
-              className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+              className={`pb-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
                 activeTab === 'subsidiaries'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
+              title="Companies owned by this organization (corporate hierarchy)"
             >
               Subsidiaries ({company._count.subsidiaries})
+              <Info className="w-3 h-3 opacity-50" />
             </button>
           )}
         </nav>
@@ -323,18 +328,25 @@ export default function CompanyViewPage() {
 
       {activeTab === 'partnerships' && (
         <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
+                  ? 'Clients'
+                  : 'Agency Partners'}
+              </h2>
+              <button
+                onClick={() => setShowPartnershipModal(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+              >
+                Add Partnership
+              </button>
+            </div>
+            <p className="text-sm text-gray-600">
               {company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
-                ? 'Clients'
-                : 'Agency Partners'}
-            </h2>
-            <button
-              onClick={() => setShowPartnershipModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-            >
-              Add Partnership
-            </button>
+                ? 'Agency-client working relationships. Track clients this agency works with, services provided, and contract details.'
+                : 'Agency-client working relationships. Track which agencies work with this company and the services they provide.'}
+            </p>
           </div>
           <div className="divide-y divide-gray-200">
             {company.partnerships.length === 0 ? (
@@ -451,7 +463,10 @@ export default function CompanyViewPage() {
       {activeTab === 'subsidiaries' && (
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Subsidiaries</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Subsidiaries</h2>
+            <p className="text-sm text-gray-600">
+              Companies owned by this organization in the corporate hierarchy. For example, WPP owns GroupM, which owns Mindshare.
+            </p>
           </div>
           <div className="divide-y divide-gray-200">
             {company.subsidiaries.map((subsidiary) => (

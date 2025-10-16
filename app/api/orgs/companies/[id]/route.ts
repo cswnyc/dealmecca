@@ -51,8 +51,7 @@ export async function GET(
           },
           orderBy: {
             lastName: 'asc'
-          },
-          take: 10
+          }
         },
         CompanyPartnership_agencyIdToCompany: {
           where: {
@@ -96,11 +95,23 @@ export async function GET(
         },
         _count: {
           select: {
-            contacts: true,
+            contacts: {
+              where: {
+                isActive: true
+              }
+            },
             User: true,
             subsidiaries: true,
-            CompanyPartnership_agencyIdToCompany: true,
-            CompanyPartnership_advertiserIdToCompany: true
+            CompanyPartnership_agencyIdToCompany: {
+              where: {
+                isActive: true
+              }
+            },
+            CompanyPartnership_advertiserIdToCompany: {
+              where: {
+                isActive: true
+              }
+            }
           }
         }
       }

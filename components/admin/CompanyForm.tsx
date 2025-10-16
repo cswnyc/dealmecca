@@ -751,6 +751,14 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-4">
+                <div className="flex items-start space-x-2">
+                  <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-blue-900">
+                    <strong>Advertiser companies</strong> are brands, publishers, or organizations that advertise products/services. They work with agencies for marketing services.
+                  </p>
+                </div>
+              </div>
               <div>
                 <Label htmlFor="advertisingModel" className="flex items-center space-x-1">
                   <span>Advertising Model</span>

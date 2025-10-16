@@ -23,7 +23,9 @@ export async function GET(
     }
 
     // Get partnerships based on company type
-    const partnerships = company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
+    const AGENCY_TYPES = ['AGENCY', 'INDEPENDENT_AGENCY', 'HOLDING_COMPANY_AGENCY', 'MEDIA_HOLDING_COMPANY'];
+
+    const partnerships = AGENCY_TYPES.includes(company.companyType)
       ? await prisma.companyPartnership.findMany({
           where: { agencyId: id },
           include: {
@@ -143,15 +145,18 @@ export async function POST(
     }
 
     // Determine which is the agency and which is the advertiser
+    const AGENCY_TYPES = ['AGENCY', 'INDEPENDENT_AGENCY', 'HOLDING_COMPANY_AGENCY', 'MEDIA_HOLDING_COMPANY'];
+    const ADVERTISER_TYPES = ['ADVERTISER', 'NATIONAL_ADVERTISER', 'LOCAL_ADVERTISER'];
+
     let agencyId: string;
     let advertiserId: string;
 
-    if (company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY') {
+    if (AGENCY_TYPES.includes(company.companyType)) {
       agencyId = id;
       advertiserId = partnerId;
 
       // Verify partner is an advertiser
-      if (partnerCompany.companyType === 'AGENCY' || partnerCompany.companyType === 'MEDIA_HOLDING_COMPANY') {
+      if (AGENCY_TYPES.includes(partnerCompany.companyType)) {
         return NextResponse.json(
           { error: 'Cannot create partnership between two agencies' },
           { status: 400 }
@@ -162,7 +167,7 @@ export async function POST(
       advertiserId = id;
 
       // Verify partner is an agency
-      if (partnerCompany.companyType !== 'AGENCY' && partnerCompany.companyType !== 'MEDIA_HOLDING_COMPANY') {
+      if (!AGENCY_TYPES.includes(partnerCompany.companyType)) {
         return NextResponse.json(
           { error: 'Partner must be an agency or media holding company' },
           { status: 400 }
@@ -198,7 +203,8 @@ export async function POST(
         endDate: endDate ? new Date(endDate) : null,
         isActive: isActive !== undefined ? isActive : true,
         contractValue: contractValue || null,
-        notes: notes || null
+        notes: notes || null,
+        updatedAt: new Date()
       },
       include: {
         agency: {

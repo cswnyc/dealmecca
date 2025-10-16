@@ -54,7 +54,7 @@ export default function PartnershipModal({
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        limit: '100',
+        limit: '1000', // Increased to get more companies for client-side filtering
         sortBy: 'name'
       });
 
@@ -62,20 +62,27 @@ export default function PartnershipModal({
         params.append('search', searchTerm);
       }
 
-      // Filter by opposite company type
-      if (companyType === 'AGENCY' || companyType === 'MEDIA_HOLDING_COMPANY') {
-        // For agencies, show advertisers/brands
-        params.append('companyType', 'ADVERTISER');
-      } else {
-        // For advertisers, show agencies
-        params.append('companyType', 'AGENCY');
-      }
-
       const response = await fetch(`/api/orgs/companies?${params}`);
       if (!response.ok) throw new Error('Failed to fetch companies');
 
       const data = await response.json();
-      setCompanies(data.companies || []);
+      const allCompanies = data.companies || [];
+
+      // Define company type groups
+      const AGENCY_TYPES = ['AGENCY', 'INDEPENDENT_AGENCY', 'HOLDING_COMPANY_AGENCY', 'MEDIA_HOLDING_COMPANY'];
+      const ADVERTISER_TYPES = ['ADVERTISER', 'NATIONAL_ADVERTISER', 'LOCAL_ADVERTISER'];
+
+      // Filter by opposite company type
+      let filtered;
+      if (AGENCY_TYPES.includes(companyType)) {
+        // For agencies, show advertisers/brands
+        filtered = allCompanies.filter((c: Company) => ADVERTISER_TYPES.includes(c.companyType));
+      } else {
+        // For advertisers, show agencies
+        filtered = allCompanies.filter((c: Company) => AGENCY_TYPES.includes(c.companyType));
+      }
+
+      setCompanies(filtered);
     } catch (err: any) {
       console.error('Error fetching companies:', err);
       setError(err.message);
@@ -90,6 +97,11 @@ export default function PartnershipModal({
     setError('');
 
     try {
+      // Convert contractValue to number or null
+      const contractValueNum = formData.contractValue
+        ? parseFloat(formData.contractValue.replace(/[^0-9.-]/g, ''))
+        : null;
+
       const response = await fetch(`/api/orgs/companies/${companyId}/partnerships`, {
         method: 'POST',
         headers: {
@@ -97,7 +109,7 @@ export default function PartnershipModal({
         },
         body: JSON.stringify({
           ...formData,
-          contractValue: formData.contractValue || null,
+          contractValue: contractValueNum,
           startDate: formData.startDate || null,
           endDate: formData.endDate || null,
           services: formData.services || null,
