@@ -5,17 +5,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
-    const type = searchParams.get('type') || '';
     const location = searchParams.get('location') || '';
 
     // Build where clause
     const where: any = {
-      OR: [
-        { companyType: 'AGENCY' },
-        { companyType: 'INDEPENDENT_AGENCY' },
-        { companyType: 'HOLDING_COMPANY_AGENCY' },
-        { companyType: 'MEDIA_HOLDING_COMPANY' }
-      ]
+      companyType: 'ADTECH'
     };
 
     // Add search filter if provided
@@ -31,17 +25,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Add type filter if provided
-    if (type && type !== 'all') {
-      where.AND = where.AND || [];
-      where.AND.push({
-        OR: [
-          { companyType: type.toUpperCase() },
-          { agencyType: type.toUpperCase() }
-        ]
-      });
-    }
-
     // Add location filter if provided
     if (location && location !== 'all') {
       where.AND = where.AND || [];
@@ -53,19 +36,20 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Fetch agencies from database
-    const agencies = await prisma.company.findMany({
+    // Fetch adtech companies from database
+    const adtechCompanies = await prisma.company.findMany({
       where,
       select: {
         id: true,
         name: true,
         companyType: true,
-        agencyType: true,
+        industry: true,
         city: true,
         state: true,
         country: true,
         verified: true,
         logoUrl: true,
+        website: true,
         updatedAt: true,
         _count: {
           select: {
@@ -74,18 +58,21 @@ export async function GET(request: NextRequest) {
             },
             CompanyPartnership_agencyIdToCompany: {
               where: { isActive: true }
+            },
+            CompanyPartnership_advertiserIdToCompany: {
+              where: { isActive: true }
             }
           }
         },
         CompanyPartnership_agencyIdToCompany: {
           where: { isActive: true },
-          take: 10,
+          take: 5,
           select: {
             advertiser: {
               select: {
                 id: true,
                 name: true,
-                industry: true,
+                companyType: true,
                 logoUrl: true,
                 verified: true
               }
@@ -103,20 +90,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform to match expected format
-    const transformedAgencies = agencies.map(agency => {
-      // Determine agency type
-      let type: 'INDEPENDENT_AGENCY' | 'HOLDING_COMPANY_AGENCY' | 'MEDIA_HOLDING_COMPANY' = 'INDEPENDENT_AGENCY';
-
-      if (agency.companyType === 'HOLDING_COMPANY_AGENCY' || agency.agencyType === 'HOLDING_COMPANY') {
-        type = 'HOLDING_COMPANY_AGENCY';
-      } else if (agency.companyType === 'MEDIA_HOLDING_COMPANY') {
-        type = 'MEDIA_HOLDING_COMPANY';
-      } else if (agency.companyType === 'INDEPENDENT_AGENCY' || agency.agencyType === 'INDEPENDENT') {
-        type = 'INDEPENDENT_AGENCY';
-      }
-
+    const transformedAdtech = adtechCompanies.map(company => {
       // Calculate last activity (for now, use updatedAt)
-      const lastActivityDate = new Date(agency.updatedAt);
+      const lastActivityDate = new Date(company.updatedAt);
       const now = new Date();
       const diffMs = now.getTime() - lastActivityDate.getTime();
       const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -134,20 +110,23 @@ export async function GET(request: NextRequest) {
       }
 
       return {
-        id: agency.id,
-        name: agency.name,
-        type,
-        city: agency.city || '',
-        state: agency.state || '',
-        country: agency.country || 'US',
-        verified: agency.verified,
-        logoUrl: agency.logoUrl || undefined,
-        teamCount: agency._count.contacts || 0,
+        id: company.id,
+        name: company.name,
+        type: company.companyType,
+        industry: company.industry || '',
+        city: company.city || '',
+        state: company.state || '',
+        country: company.country || 'US',
+        verified: company.verified,
+        logoUrl: company.logoUrl || undefined,
+        website: company.website || undefined,
+        teamCount: company._count.contacts || 0,
         lastActivity,
-        clients: agency.CompanyPartnership_agencyIdToCompany.map(partnership => ({
+        partnerCount: company._count.CompanyPartnership_agencyIdToCompany + company._count.CompanyPartnership_advertiserIdToCompany,
+        clients: company.CompanyPartnership_agencyIdToCompany.map(partnership => ({
           id: partnership.advertiser.id,
           name: partnership.advertiser.name,
-          industry: partnership.advertiser.industry || '',
+          companyType: partnership.advertiser.companyType,
           logoUrl: partnership.advertiser.logoUrl || undefined,
           verified: partnership.advertiser.verified
         }))
@@ -156,14 +135,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      agencies: transformedAgencies,
-      total: transformedAgencies.length
+      adtech: transformedAdtech,
+      total: transformedAdtech.length
     });
 
   } catch (error) {
-    console.error('Error fetching agencies:', error);
+    console.error('Error fetching adtech companies:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch agencies' },
+      { error: 'Failed to fetch adtech companies' },
       { status: 500 }
     );
   }
