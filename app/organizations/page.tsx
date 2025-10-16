@@ -22,6 +22,9 @@ import {
 import { SearchHighlight } from '@/components/ui/SearchHighlight';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { AddEntityModal } from '@/components/org-charts/AddEntityModal';
+import { ComprehensiveFilterPanel } from '@/components/filters/ComprehensiveFilterPanel';
+import { ComprehensiveAdvertiserFilterPanel } from '@/components/filters/ComprehensiveAdvertiserFilterPanel';
+import { ComprehensivePeopleFilterPanel } from '@/components/filters/ComprehensivePeopleFilterPanel';
 
 // Force dynamic rendering for user-specific content
 export const dynamic = 'force-dynamic'
@@ -79,277 +82,294 @@ interface Agency {
   }>
 }
 
-const MOCK_AGENCIES: Agency[] = [
-  {
-    id: '1',
-    name: 'Kinesso SF',
-    type: 'NETWORK_AGENCY',
-    city: 'San Francisco',
-    state: 'CA',
-    verified: true,
-    teamCount: 12,
-    lastActivity: '2 hrs',
-    clients: [
-      { id: '1', name: 'DoPro', industry: 'TECHNOLOGY', verified: true },
-      { id: '2', name: 'Boeing', industry: 'AEROSPACE', verified: true },
-      { id: '3', name: 'GrubHub', industry: 'FOOD_DELIVERY', verified: true }
-    ]
-  },
-  {
-    id: '2',
-    name: 'OMD Chicago',
-    type: 'NETWORK_AGENCY',
-    city: 'Chicago',
-    state: 'IL',
-    verified: true,
-    teamCount: 22,
-    lastActivity: '2 hrs',
-    clients: [
-      { id: '4', name: 'Amazon', industry: 'E_COMMERCE', verified: true },
-      { id: '5', name: 'State Farm', industry: 'INSURANCE', verified: true },
-      { id: '6', name: 'Pepsi Co', industry: 'FOOD_BEVERAGE', verified: true }
-    ]
-  },
-  {
-    id: '3',
-    name: 'The Marketing Practice Denver',
-    type: 'INDEPENDENT_AGENCY',
-    city: 'Denver',
-    state: 'CO',
-    verified: true,
-    teamCount: 8,
-    lastActivity: '3 hrs',
-    clients: [
-      { id: '7', name: 'Commvault', industry: 'TECHNOLOGY', verified: true },
-      { id: '8', name: 'GE Aerospace', industry: 'AEROSPACE', verified: true }
-    ]
-  },
-  {
-    id: '4',
-    name: 'Billups NY',
-    type: 'INDEPENDENT_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 81,
-    lastActivity: '3 hrs',
-    clients: [
-      { id: '9', name: 'University of Virginia', industry: 'EDUCATION', verified: true },
-      { id: '10', name: 'Kennedy Space Center', industry: 'AEROSPACE', verified: true },
-      { id: '11', name: 'Etihad Airways', industry: 'TRAVEL', verified: true }
-    ]
-  },
-  {
-    id: '5',
-    name: 'EssenceMediacom NY',
-    type: 'NETWORK_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 49,
-    lastActivity: '3 hrs',
-    clients: [
-      { id: '12', name: 'NBCUniversal', industry: 'ENTERTAINMENT_MEDIA', verified: true },
-      { id: '13', name: 'Google', industry: 'TECHNOLOGY', verified: true },
-      { id: '14', name: 'Target', industry: 'RETAIL', verified: true }
-    ]
-  },
-  {
-    id: '6',
-    name: 'Wieden+Kennedy',
-    type: 'INDEPENDENT_AGENCY',
-    city: 'Portland',
-    state: 'OR',
-    verified: true,
-    teamCount: 67,
-    lastActivity: '4 hrs',
-    clients: [
-      { id: '15', name: 'Nike', industry: 'SPORTS_APPAREL', verified: true },
-      { id: '16', name: 'Old Spice', industry: 'PERSONAL_CARE', verified: true },
-      { id: '17', name: 'Chrysler', industry: 'AUTOMOTIVE', verified: true }
-    ]
-  },
-  {
-    id: '7',
-    name: 'GroupM',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 89,
-    lastActivity: '1 hr',
-    clients: [
-      { id: '18', name: 'Unilever', industry: 'CONSUMER_GOODS', verified: true },
-      { id: '19', name: 'HSBC', industry: 'FINANCIAL_SERVICES', verified: true },
-      { id: '20', name: 'Nestlé', industry: 'FOOD_BEVERAGE', verified: true }
-    ]
-  },
-  {
-    id: '8',
-    name: 'Publicis Media',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'Chicago',
-    state: 'IL',
-    verified: true,
-    teamCount: 71,
-    lastActivity: '2 hrs',
-    clients: [
-      { id: '21', name: 'Samsung', industry: 'ELECTRONICS', verified: true },
-      { id: '22', name: 'Walmart', industry: 'RETAIL', verified: true },
-      { id: '23', name: 'Procter & Gamble', industry: 'CONSUMER_GOODS', verified: true }
-    ]
-  },
-  {
-    id: '9',
-    name: 'Havas Media',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'Los Angeles',
-    state: 'CA',
-    verified: true,
-    teamCount: 54,
-    lastActivity: '5 hrs',
-    clients: [
-      { id: '24', name: 'Reckitt', industry: 'CONSUMER_GOODS', verified: true },
-      { id: '25', name: 'Hyundai', industry: 'AUTOMOTIVE', verified: true },
-      { id: '26', name: 'Pernod Ricard', industry: 'BEVERAGES', verified: true }
-    ]
-  },
-  {
-    id: '10',
-    name: 'IPG Mediabrands',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 93,
-    lastActivity: '3 hrs',
-    clients: [
-      { id: '27', name: 'Johnson & Johnson', industry: 'HEALTHCARE', verified: true },
-      { id: '28', name: 'Spotify', industry: 'ENTERTAINMENT_MEDIA', verified: true },
-      { id: '29', name: 'American Express', industry: 'FINANCIAL_SERVICES', verified: true }
-    ]
-  },
-  {
-    id: '11',
-    name: 'Dentsu',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 76,
-    lastActivity: '4 hrs',
-    clients: [
-      { id: '30', name: 'Toyota', industry: 'AUTOMOTIVE', verified: true },
-      { id: '31', name: 'Microsoft', industry: 'TECHNOLOGY', verified: true },
-      { id: '32', name: 'General Mills', industry: 'FOOD_BEVERAGE', verified: true }
-    ]
-  },
-  {
-    id: '12',
-    name: 'R/GA',
-    type: 'INDEPENDENT_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 45,
-    lastActivity: '6 hrs',
-    clients: [
-      { id: '33', name: 'Nike', industry: 'SPORTS_APPAREL', verified: true },
-      { id: '34', name: 'Samsung', industry: 'ELECTRONICS', verified: true },
-      { id: '35', name: 'Google', industry: 'TECHNOLOGY', verified: true }
-    ]
-  },
-  {
-    id: '13',
-    name: 'BBDO',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 82,
-    lastActivity: '2 hrs',
-    clients: [
-      { id: '36', name: 'PepsiCo', industry: 'FOOD_BEVERAGE', verified: true },
-      { id: '37', name: 'AT&T', industry: 'TELECOMMUNICATIONS', verified: true },
-      { id: '38', name: 'Visa', industry: 'FINANCIAL_SERVICES', verified: true }
-    ]
-  },
-  {
-    id: '14',
-    name: 'DDB',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 67,
-    lastActivity: '5 hrs',
-    clients: [
-      { id: '39', name: 'McDonald\'s', industry: 'FOOD_BEVERAGE', verified: true },
-      { id: '40', name: 'Volkswagen', industry: 'AUTOMOTIVE', verified: true },
-      { id: '41', name: 'State Farm', industry: 'INSURANCE', verified: true }
-    ]
-  },
-  {
-    id: '15',
-    name: 'McCann',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 74,
-    lastActivity: '3 hrs',
-    clients: [
-      { id: '42', name: 'Coca-Cola', industry: 'BEVERAGES', verified: true },
-      { id: '43', name: 'Mastercard', industry: 'FINANCIAL_SERVICES', verified: true },
-      { id: '44', name: 'L\'Oréal', industry: 'BEAUTY', verified: true }
-    ]
-  },
-  {
-    id: '16',
-    name: 'Ogilvy',
-    type: 'HOLDING_COMPANY_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 69,
-    lastActivity: '4 hrs',
-    clients: [
-      { id: '45', name: 'IBM', industry: 'TECHNOLOGY', verified: true },
-      { id: '46', name: 'Unilever', industry: 'CONSUMER_GOODS', verified: true },
-      { id: '47', name: 'Ford', industry: 'AUTOMOTIVE', verified: true }
-    ]
-  },
-  {
-    id: '17',
-    name: 'AKQA',
-    type: 'INDEPENDENT_AGENCY',
-    city: 'San Francisco',
-    state: 'CA',
-    verified: true,
-    teamCount: 38,
-    lastActivity: '7 hrs',
-    clients: [
-      { id: '48', name: 'Nike', industry: 'SPORTS_APPAREL', verified: true },
-      { id: '49', name: 'Audi', industry: 'AUTOMOTIVE', verified: true },
-      { id: '50', name: 'Xbox', industry: 'GAMING', verified: true }
-    ]
-  },
-  {
-    id: '18',
-    name: 'Droga5',
-    type: 'INDEPENDENT_AGENCY',
-    city: 'New York City',
-    state: 'NY',
-    verified: true,
-    teamCount: 52,
-    lastActivity: '5 hrs',
-    clients: [
-      { id: '51', name: 'Under Armour', industry: 'SPORTS_APPAREL', verified: true },
-      { id: '52', name: 'The New York Times', industry: 'MEDIA', verified: true },
-      { id: '53', name: 'Puma', industry: 'SPORTS_APPAREL', verified: true }
-    ]
+interface Advertiser {
+  id: string
+  name: string
+  type: string
+  industry: string
+  city: string
+  state: string
+  country: string
+  verified: boolean
+  logoUrl?: string
+  teamCount: number
+  lastActivity: string
+  agencies: Array<{
+    id: string
+    name: string
+    companyType: string
+    logoUrl?: string
+    verified: boolean
+    isAOR: boolean
+  }>
+}
+
+interface Contact {
+  id: string
+  firstName: string
+  lastName: string
+  fullName: string
+  title: string
+  email: string
+  phone: string
+  linkedinUrl?: string
+  primaryRole: string
+  seniority: string
+  department: string
+  isDecisionMaker: boolean
+  lastActivity: string
+  company: {
+    id: string
+    name: string
+    companyType: string
+    industry: string
+    logoUrl?: string
+    verified: boolean
+    city: string
+    state: string
   }
-]
+  interactionCount: number
+  noteCount: number
+}
+
+interface Publisher {
+  id: string
+  name: string
+  type: string
+  industry: string
+  city: string
+  state: string
+  country: string
+  verified: boolean
+  logoUrl?: string
+  website?: string
+  teamCount: number
+  lastActivity: string
+}
+
+interface Platform {
+  id: string
+  name: string
+  type: string
+  industry: string
+  city: string
+  state: string
+  country: string
+  verified: boolean
+  logoUrl?: string
+  website?: string
+  teamCount: number
+  lastActivity: string
+  partnerCount: number
+  clients: Array<{
+    id: string
+    name: string
+    companyType: string
+    logoUrl?: string
+    verified: boolean
+  }>
+}
+
+// Mock agencies removed - now using real data from API
+
+// Industries with post counts
+const INDUSTRIES_DATA = [
+  { name: 'CPG', posts: 27865 },
+  { name: 'Consumer Goods', posts: 26441 },
+  { name: 'Retail', posts: 22583 },
+  { name: 'Health', posts: 15340 },
+  { name: 'Media / Entertainment', posts: 15130 },
+  { name: 'Telecom / Cable', posts: 13293 },
+  { name: 'Technology', posts: 13228 },
+  { name: 'Food', posts: 12780 },
+  { name: 'Financial Services', posts: 12675 },
+  { name: 'Apparel / Accessories', posts: 11314 },
+  { name: 'Travel', posts: 11267 },
+  { name: 'Beverages', posts: 10220 },
+  { name: 'Pharma', posts: 9254 },
+  { name: 'Internet', posts: 8822 },
+  { name: 'Personal Care', posts: 8594 },
+  { name: 'eCommerce', posts: 8552 },
+  { name: 'Automotive', posts: 8461 },
+  { name: 'Consumer Electronics', posts: 8256 },
+  { name: 'Beauty', posts: 7303 },
+  { name: 'Household Products', posts: 6868 },
+  { name: 'Restaurants', posts: 6523 },
+  { name: 'Alcohol', posts: 5009 },
+  { name: 'Software', posts: 4805 },
+  { name: 'Gaming', posts: 4690 },
+  { name: 'Luxury Goods', posts: 4082 },
+  { name: 'Insurance', posts: 4044 },
+  { name: 'Banks', posts: 4043 },
+  { name: 'Pets', posts: 3911 },
+  { name: 'Business Services', posts: 3681 },
+  { name: 'Wine / Spirits', posts: 3457 },
+  { name: 'Sports', posts: 3277 },
+  { name: 'Home Furnishings', posts: 3192 },
+  { name: 'Appliances', posts: 3112 },
+  { name: 'Tourism', posts: 2980 },
+  { name: 'Wealth Management', posts: 2853 },
+  { name: 'Credit Cards', posts: 2837 },
+  { name: 'Theme Parks', posts: 2687 },
+  { name: 'Sporting Goods', posts: 2644 },
+  { name: 'Footwear', posts: 2616 },
+  { name: 'Home Improvement', posts: 2519 },
+  { name: 'Music', posts: 2407 },
+  { name: 'Education', posts: 2394 },
+  { name: 'Beer', posts: 2246 },
+  { name: 'Hotels', posts: 2214 },
+  { name: 'Computers', posts: 2196 },
+  { name: 'Medical Devices & Equipment', posts: 2090 },
+  { name: 'Airlines', posts: 1970 },
+  { name: 'Fragrance', posts: 1948 },
+  { name: 'DTC Retail', posts: 1863 },
+  { name: 'Social Network', posts: 1830 },
+  { name: 'Manufacturing', posts: 1826 },
+  { name: 'Consumer Services', posts: 1780 },
+  { name: 'Jewelry', posts: 1759 },
+  { name: 'Government', posts: 1490 },
+  { name: 'Security Systems', posts: 1455 },
+  { name: 'Gambling', posts: 1423 },
+  { name: 'Vision', posts: 1354 },
+  { name: 'Publishing', posts: 1345 },
+  { name: 'Discount Stores', posts: 1344 },
+  { name: 'Automotive Accessories', posts: 1305 },
+  { name: 'Fashion', posts: 1300 },
+  { name: 'Computer Hardware', posts: 1233 },
+  { name: 'Baby Products', posts: 1231 },
+  { name: 'Auto Parts', posts: 1228 },
+  { name: 'Fitness', posts: 1135 },
+  { name: 'Auto Services', posts: 1068 },
+  { name: 'Health Care Insurance', posts: 1066 },
+  { name: 'Luggage', posts: 1054 },
+  { name: 'B2B', posts: 1016 },
+  { name: 'Grocery Stores', posts: 1005 },
+  { name: 'Transportation', posts: 991 },
+  { name: 'Advocacy', posts: 975 },
+  { name: 'Toys / Games', posts: 936 },
+  { name: 'Delivery & Subscription Services', posts: 889 },
+  { name: 'Oil & Gas', posts: 876 },
+  { name: 'Non-Profit', posts: 826 },
+  { name: 'Politics', posts: 815 },
+  { name: 'Agriculture', posts: 743 },
+  { name: 'Resorts', posts: 704 },
+  { name: 'Industrial', posts: 700 },
+  { name: 'Shipping / Mailing', posts: 675 },
+  { name: 'Drug Stores', posts: 617 },
+  { name: 'Cruise', posts: 609 },
+  { name: 'Office Products', posts: 600 },
+  { name: 'Diversified Industrial', posts: 598 },
+  { name: 'Real Estate', posts: 587 },
+  { name: 'Hospitality', posts: 544 },
+  { name: 'Information Technology and Services', posts: 523 },
+  { name: 'Biotechnology', posts: 522 },
+  { name: 'Municipal Services', posts: 505 },
+  { name: 'Utility', posts: 477 },
+  { name: 'Wellness', posts: 419 },
+  { name: 'Armed Forces', posts: 415 },
+  { name: 'Recreation', posts: 377 },
+  { name: 'Auto Rental', posts: 374 },
+  { name: 'Golf', posts: 354 },
+  { name: 'Energy', posts: 337 },
+  { name: 'Building Materials', posts: 327 },
+  { name: 'Department Stores', posts: 308 },
+  { name: 'Cannabis / CBD', posts: 282 },
+  { name: 'Weight Loss', posts: 276 },
+  { name: 'Aerospace / Defense', posts: 250 },
+  { name: 'Football', posts: 241 },
+  { name: 'Tax Services', posts: 237 },
+  { name: 'Floral', posts: 208 },
+  { name: 'Employment & Staffing', posts: 201 },
+  { name: 'Lawn and Garden Equipment & Products', posts: 201 },
+  { name: 'Construction', posts: 197 },
+  { name: 'Tobacco', posts: 189 },
+  { name: 'Stock Market', posts: 183 },
+  { name: 'Convenience Stores', posts: 180 },
+  { name: 'Electric', posts: 179 },
+  { name: 'Motorcycles', posts: 178 },
+  { name: 'Basketball', posts: 178 },
+  { name: 'Chemical', posts: 173 },
+  { name: 'Kitchen Appliances', posts: 167 },
+  { name: 'Power Tools', posts: 159 },
+  { name: 'Legal', posts: 156 },
+  { name: 'B2C', posts: 149 },
+  { name: 'Salons', posts: 133 },
+  { name: 'Solar Power', posts: 128 },
+  { name: 'Dental', posts: 125 },
+  { name: 'Tools', posts: 109 },
+  { name: 'Heavy Equipment', posts: 108 },
+  { name: 'ATV / Power Sports', posts: 106 },
+  { name: 'Soccer', posts: 97 },
+  { name: 'Management Consulting', posts: 93 },
+  { name: 'Festivals', posts: 90 },
+  { name: 'Arts & Crafts', posts: 89 },
+  { name: 'Skiing / Snowboarding', posts: 86 },
+  { name: 'Baseball', posts: 78 },
+  { name: 'Museum', posts: 63 },
+  { name: 'Cryptocurrency', posts: 63 },
+  { name: 'Moving, Storage & Warehousing', posts: 57 },
+  { name: 'Cleaning Services', posts: 56 },
+  { name: 'Zoo', posts: 54 },
+  { name: 'Hockey', posts: 53 },
+  { name: 'Credit Reporting', posts: 53 },
+  { name: 'Pest Control', posts: 52 },
+  { name: 'Marketing & Advertising', posts: 52 },
+  { name: 'Theater', posts: 48 },
+  { name: 'Car Racing', posts: 43 },
+  { name: 'Greeting Cards', posts: 42 },
+  { name: 'Religion', posts: 42 },
+  { name: 'Photographic Service', posts: 42 },
+  { name: 'Party Supplies', posts: 41 },
+  { name: 'Research', posts: 38 },
+  { name: 'Recreational Vehicles', posts: 37 },
+  { name: 'Boats', posts: 37 },
+  { name: 'Instruments', posts: 36 },
+  { name: 'Packaging', posts: 32 },
+  { name: 'Logistics Services', posts: 32 },
+  { name: 'Tennis', posts: 31 },
+  { name: 'Aquariums', posts: 28 },
+  { name: 'POC', posts: 26 },
+  { name: 'Aviation Services', posts: 24 },
+  { name: 'Individual & Family Services', posts: 19 },
+  { name: 'Fine Art', posts: 19 },
+  { name: 'Animal Health Care', posts: 19 },
+  { name: 'Performing Arts', posts: 18 },
+  { name: 'Fintech', posts: 18 },
+  { name: 'Collectibles', posts: 18 },
+  { name: 'Retirement Community', posts: 17 },
+  { name: 'Auctions', posts: 17 },
+  { name: 'Optical', posts: 15 },
+  { name: 'Adult Products', posts: 15 },
+  { name: 'Bridal', posts: 14 },
+  { name: 'Water', posts: 13 },
+  { name: 'Wholesale', posts: 12 },
+  { name: 'Textiles', posts: 10 },
+  { name: 'Environmental Services', posts: 9 },
+  { name: 'Firearms', posts: 9 },
+  { name: 'Waste / Disposal Management', posts: 8 },
+  { name: 'Public Safety', posts: 7 },
+  { name: 'Magazines', posts: 7 },
+  { name: 'Machinery', posts: 6 },
+  { name: 'Mining & Metals', posts: 5 },
+  { name: 'Funeral Homes/Services', posts: 4 },
+  { name: 'Web Hosting', posts: 4 },
+  { name: 'Engineering', posts: 4 },
+  { name: 'Horse Racing', posts: 3 },
+  { name: 'Event Planning', posts: 3 },
+  { name: 'Gardens', posts: 3 },
+  { name: 'Video Production', posts: 2 },
+  { name: 'Trade Shows', posts: 2 },
+  { name: 'Wind Power', posts: 2 },
+  { name: 'Recycling', posts: 2 },
+  { name: 'Plastic Products', posts: 2 },
+  { name: 'Architecture', posts: 1 },
+  { name: 'Arena Football', posts: 1 },
+  { name: 'Paper & Forest Products', posts: 1 },
+  { name: 'Volleyball', posts: 1 },
+  { name: 'Robotics', posts: 1 },
+  { name: 'Advertising Agency', posts: 0 },
+  { name: 'Natural Gas', posts: 0 }
+];
 
 const INDUSTRY_COLORS: Record<string, string> = {
   'TECHNOLOGY': 'bg-blue-100 text-blue-800',
@@ -388,20 +408,53 @@ export default function OrganizationsPage() {
   // Agency view state - Start with empty, will fetch from API
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>([]);
+  const [advertisers, setAdvertisers] = useState<Advertiser[]>([]);
+  const [filteredAdvertisers, setFilteredAdvertisers] = useState<Advertiser[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
+  const [publishers, setPublishers] = useState<Publisher[]>([]);
+  const [filteredPublishers, setFilteredPublishers] = useState<Publisher[]>([]);
+  const [platforms, setPlatforms] = useState<Platform[]>([]);
+  const [filteredPlatforms, setFilteredPlatforms] = useState<Platform[]>([]);
+  const [adtech, setAdtech] = useState<Platform[]>([]);
+  const [filteredAdtech, setFilteredAdtech] = useState<Platform[]>([]);
   const [activeTab, setActiveTab] = useState<'agencies' | 'advertisers' | 'people' | 'industries' | 'publisher' | 'dsp-ssp' | 'adtech'>('agencies');
 
   const [showAddEntityModal, setShowAddEntityModal] = useState(false);
   const [selectedEntityType, setSelectedEntityType] = useState<'agency' | 'advertiser' | 'person'>('agency');
 
-  // Persistent filter states across all tabs
+  // Persistent filter states across all tabs - Enhanced multi-select structure
   const [filterState, setFilterState] = useState({
-    agencyType: 'all',
-    geography: 'all',
-    industry: 'all',
-    status: 'all',
-    client: 'all',
-    clientIndustry: 'all',
-    duty: 'all'
+    // Agency filters
+    agencyType: [] as string[],
+    holdingCompany: [] as string[],
+
+    // Geography filters (multi-level)
+    regions: [] as string[],
+    states: [] as string[],
+    cities: [] as string[],
+
+    // Relationship filters
+    client: [] as string[],
+    clientIndustry: [] as string[],
+    agencyPartner: [] as string[],
+
+    // Role/Duty filters
+    role: [] as string[],
+    duty: [] as string[],
+
+    // Attribute filters
+    mediaTypes: [] as string[],
+    goals: [] as string[],
+    audiences: [] as string[],
+
+    // People filters
+    company: [] as string[],
+    seniority: [] as string[],
+    department: [] as string[],
+
+    // Industry filter (for advertisers)
+    industry: [] as string[]
   });
 
   // UI state
@@ -499,6 +552,106 @@ export default function OrganizationsPage() {
     fetchAgencies();
   }, []);
 
+  // Fetch advertisers from API
+  useEffect(() => {
+    const fetchAdvertisers = async () => {
+      try {
+        const response = await fetch('/api/organizations/advertisers', {
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAdvertisers(data.advertisers || []);
+        }
+      } catch (error) {
+        console.error('Error fetching advertisers:', error);
+      }
+    };
+
+    fetchAdvertisers();
+  }, []);
+
+  // Fetch people from API
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const response = await fetch('/api/organizations/people', {
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setContacts(data.contacts || []);
+        }
+      } catch (error) {
+        console.error('Error fetching contacts:', error);
+      }
+    };
+
+    fetchContacts();
+  }, []);
+
+  // Fetch publishers from API
+  useEffect(() => {
+    const fetchPublishers = async () => {
+      try {
+        const response = await fetch('/api/organizations/publishers', {
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setPublishers(data.publishers || []);
+        }
+      } catch (error) {
+        console.error('Error fetching publishers:', error);
+      }
+    };
+
+    fetchPublishers();
+  }, []);
+
+  // Fetch DSP/SSP from API
+  useEffect(() => {
+    const fetchPlatforms = async () => {
+      try {
+        const response = await fetch('/api/organizations/dsp-ssp', {
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setPlatforms(data.platforms || []);
+        }
+      } catch (error) {
+        console.error('Error fetching DSP/SSP:', error);
+      }
+    };
+
+    fetchPlatforms();
+  }, []);
+
+  // Fetch Adtech from API
+  useEffect(() => {
+    const fetchAdtech = async () => {
+      try {
+        const response = await fetch('/api/organizations/adtech', {
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAdtech(data.adtech || []);
+        }
+      } catch (error) {
+        console.error('Error fetching adtech:', error);
+      }
+    };
+
+    fetchAdtech();
+  }, []);
+
   // Agency filtering
   useEffect(() => {
     if (!Array.isArray(agencies)) {
@@ -508,6 +661,7 @@ export default function OrganizationsPage() {
 
     let filtered = [...agencies];
 
+    // Search query filter
     if (searchQuery.trim()) {
       filtered = filtered.filter(agency =>
         (agency.name && agency.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -519,16 +673,231 @@ export default function OrganizationsPage() {
       );
     }
 
-    if (filterState.agencyType !== 'all') {
-      filtered = filtered.filter(agency => agency.type === filterState.agencyType);
+    // Agency type filter (multi-select)
+    if (filterState.agencyType.length > 0) {
+      filtered = filtered.filter(agency => filterState.agencyType.includes(agency.type));
     }
 
-    if (filterState.geography !== 'all') {
-      filtered = filtered.filter(agency => agency.state === filterState.geography);
+    // State filter (multi-select)
+    if (filterState.states.length > 0) {
+      filtered = filtered.filter(agency => agency.state && filterState.states.includes(agency.state));
+    }
+
+    // City filter (multi-select)
+    if (filterState.cities.length > 0) {
+      filtered = filtered.filter(agency => agency.city && filterState.cities.includes(agency.city));
+    }
+
+    // Client filter (multi-select)
+    if (filterState.client.length > 0) {
+      filtered = filtered.filter(agency =>
+        agency.clients && agency.clients.some(client =>
+          filterState.client.includes(client.name)
+        )
+      );
+    }
+
+    // Client industry filter (multi-select)
+    if (filterState.clientIndustry.length > 0) {
+      filtered = filtered.filter(agency =>
+        agency.clients && agency.clients.some(client =>
+          filterState.clientIndustry.includes(client.industry)
+        )
+      );
     }
 
     setFilteredAgencies(filtered);
-  }, [searchQuery, agencies, filterState.agencyType, filterState.geography]);
+  }, [searchQuery, agencies, filterState.agencyType, filterState.states, filterState.cities, filterState.client, filterState.clientIndustry]);
+
+  // Advertiser filtering
+  useEffect(() => {
+    if (!Array.isArray(advertisers)) {
+      setFilteredAdvertisers([]);
+      return;
+    }
+
+    let filtered = [...advertisers];
+
+    // Search query filter
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(advertiser =>
+        (advertiser.name && advertiser.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (advertiser.industry && advertiser.industry.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (advertiser.city && advertiser.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (advertiser.state && advertiser.state.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // Industry filter (multi-select)
+    if (filterState.industry.length > 0) {
+      filtered = filtered.filter(advertiser => advertiser.industry && filterState.industry.includes(advertiser.industry));
+    }
+
+    // State filter (multi-select)
+    if (filterState.states.length > 0) {
+      filtered = filtered.filter(advertiser => advertiser.state && filterState.states.includes(advertiser.state));
+    }
+
+    // City filter (multi-select)
+    if (filterState.cities.length > 0) {
+      filtered = filtered.filter(advertiser => advertiser.city && filterState.cities.includes(advertiser.city));
+    }
+
+    // Agency partner filter (multi-select)
+    if (filterState.agencyPartner.length > 0) {
+      filtered = filtered.filter(advertiser =>
+        advertiser.agencies && advertiser.agencies.some(agency =>
+          filterState.agencyPartner.includes(agency.name)
+        )
+      );
+    }
+
+    setFilteredAdvertisers(filtered);
+  }, [searchQuery, advertisers, filterState.industry, filterState.states, filterState.cities, filterState.agencyPartner]);
+
+  // Contact filtering
+  useEffect(() => {
+    if (!Array.isArray(contacts)) {
+      setFilteredContacts([]);
+      return;
+    }
+
+    let filtered = [...contacts];
+
+    // Search query filter
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(contact =>
+        (contact.firstName && contact.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (contact.lastName && contact.lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (contact.title && contact.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (contact.email && contact.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (contact.company && contact.company.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // Company filter (multi-select)
+    if (filterState.company.length > 0) {
+      filtered = filtered.filter(contact =>
+        contact.company && filterState.company.includes(contact.company.name)
+      );
+    }
+
+    // Role/Title filter (multi-select)
+    if (filterState.role.length > 0) {
+      filtered = filtered.filter(contact =>
+        contact.primaryRole && filterState.role.includes(contact.primaryRole)
+      );
+    }
+
+    // Seniority filter (multi-select)
+    if (filterState.seniority.length > 0) {
+      filtered = filtered.filter(contact =>
+        contact.seniority && filterState.seniority.includes(contact.seniority)
+      );
+    }
+
+    // Department filter (multi-select)
+    if (filterState.department.length > 0) {
+      filtered = filtered.filter(contact =>
+        contact.department && filterState.department.includes(contact.department)
+      );
+    }
+
+    // Industry filter (via company) (multi-select)
+    if (filterState.industry.length > 0) {
+      filtered = filtered.filter(contact =>
+        contact.company && contact.company.industry && filterState.industry.includes(contact.company.industry)
+      );
+    }
+
+    // State filter (via company) (multi-select)
+    if (filterState.states.length > 0) {
+      filtered = filtered.filter(contact =>
+        contact.company && contact.company.state && filterState.states.includes(contact.company.state)
+      );
+    }
+
+    // City filter (via company) (multi-select)
+    if (filterState.cities.length > 0) {
+      filtered = filtered.filter(contact =>
+        contact.company && contact.company.city && filterState.cities.includes(contact.company.city)
+      );
+    }
+
+    setFilteredContacts(filtered);
+  }, [searchQuery, contacts, filterState.company, filterState.role, filterState.seniority, filterState.department, filterState.industry, filterState.states, filterState.cities]);
+
+  // Publisher filtering
+  useEffect(() => {
+    if (!Array.isArray(publishers)) {
+      setFilteredPublishers([]);
+      return;
+    }
+
+    let filtered = [...publishers];
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(publisher =>
+        (publisher.name && publisher.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (publisher.city && publisher.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (publisher.state && publisher.state.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    if (filterState.geography !== 'all') {
+      filtered = filtered.filter(publisher => publisher.state === filterState.geography);
+    }
+
+    setFilteredPublishers(filtered);
+  }, [searchQuery, publishers, filterState.geography]);
+
+  // Platform (DSP/SSP) filtering
+  useEffect(() => {
+    if (!Array.isArray(platforms)) {
+      setFilteredPlatforms([]);
+      return;
+    }
+
+    let filtered = [...platforms];
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(platform =>
+        (platform.name && platform.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (platform.city && platform.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (platform.state && platform.state.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    if (filterState.geography !== 'all') {
+      filtered = filtered.filter(platform => platform.state === filterState.geography);
+    }
+
+    setFilteredPlatforms(filtered);
+  }, [searchQuery, platforms, filterState.geography]);
+
+  // Adtech filtering
+  useEffect(() => {
+    if (!Array.isArray(adtech)) {
+      setFilteredAdtech([]);
+      return;
+    }
+
+    let filtered = [...adtech];
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(company =>
+        (company.name && company.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (company.city && company.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (company.state && company.state.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    if (filterState.geography !== 'all') {
+      filtered = filtered.filter(company => company.state === filterState.geography);
+    }
+
+    setFilteredAdtech(filtered);
+  }, [searchQuery, adtech, filterState.geography]);
 
   // Early return for loading state - must come after all hooks
   if (authLoading) {
@@ -746,6 +1115,17 @@ export default function OrganizationsPage() {
                   </div>
                 </div>
 
+                {/* Filter Panel */}
+                {showFilters && (
+                  <ComprehensiveFilterPanel
+                    filterState={filterState}
+                    setFilterState={setFilterState}
+                    filteredCount={filteredAgencies.length}
+                    totalCount={agencies.length}
+                    onClose={() => setShowFilters(false)}
+                  />
+                )}
+
                 {/* Agencies List */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                   <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
@@ -771,7 +1151,7 @@ export default function OrganizationsPage() {
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-start justify-between mb-2">
                                   <div>
-                                    <Link href={`/orgs/companies/${agency.id}`} className="group">
+                                    <Link href={`/companies/${agency.id}`} className="group">
                                       <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                                         <SearchHighlight
                                           text={agency.name}
@@ -850,89 +1230,574 @@ export default function OrganizationsPage() {
               </div>
             )}
 
-            {/* Other Tab Contents */}
+            {/* Advertisers Tab */}
             {activeTab === 'advertisers' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Globe className="h-5 w-5" />
-                    <span>Advertisers</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">Advertiser directory coming soon...</p>
-                </CardContent>
-              </Card>
+              <div className="w-full">
+                {/* Stats Bar */}
+                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
+                          <Globe className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Total Advertisers</p>
+                          <p className="text-2xl font-bold text-gray-900">{filteredAdvertisers.length}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
+                          <Users className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Team Members</p>
+                          <p className="text-2xl font-bold text-gray-900">
+                            {filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
+                          <CheckCircle className="h-5 w-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Verified Rate</p>
+                          <p className="text-2xl font-bold text-gray-900">
+                            {filteredAdvertisers.length > 0
+                              ? Math.round((filteredAdvertisers.filter(a => a.verified).length / filteredAdvertisers.length) * 100)
+                              : 0}%
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Filter Toggle */}
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200"
+                    >
+                      <Filter className="h-4 w-4 text-gray-600" />
+                      <span className="text-sm font-medium text-gray-700">Filters</span>
+                      <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Filter Panel */}
+                {showFilters && (
+                  <ComprehensiveAdvertiserFilterPanel
+                    filterState={filterState}
+                    setFilterState={setFilterState}
+                    filteredCount={filteredAdvertisers.length}
+                    totalCount={advertisers.length}
+                    onClose={() => setShowFilters(false)}
+                  />
+                )}
+
+                {/* Advertisers List */}
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {searchQuery ? `Search Results (${filteredAdvertisers.length})` : 'Advertiser Directory'}
+                    </h3>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid gap-4">
+                      {filteredAdvertisers.map((advertiser) => (
+                        <div key={advertiser.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start space-x-4 flex-1">
+                              <CompanyLogo
+                                logoUrl={advertiser.logoUrl}
+                                companyName={advertiser.name}
+                                size="lg"
+                                className="rounded-xl"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div>
+                                    <Link href={`/companies/${advertiser.id}`} className="group">
+                                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                                        {advertiser.name}
+                                      </h3>
+                                    </Link>
+                                    <div className="flex items-center space-x-2 mt-1">
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${INDUSTRY_COLORS[advertiser.industry] || 'bg-gray-100 text-gray-800'}`}>
+                                        {advertiser.industry}
+                                      </span>
+                                      {(advertiser.city || advertiser.state) && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                          <MapPin className="w-3 h-3 mr-1" />
+                                          {`${advertiser.city || ''}, ${advertiser.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
+                                        </span>
+                                      )}
+                                      {advertiser.verified && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                          <CheckCircle className="w-3 h-3 mr-1" />
+                                          Verified
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                    <Users className="w-4 h-4" />
+                                    <span>{advertiser.teamCount} people</span>
+                                  </div>
+                                </div>
+                                {/* Agency Partners */}
+                                {advertiser.agencies && advertiser.agencies.length > 0 && (
+                                  <div className="mt-2">
+                                    <p className="text-xs font-medium text-gray-500 mb-1">Agency Partners:</p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {advertiser.agencies.slice(0, 3).map((agency, index) => (
+                                        <span
+                                          key={index}
+                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                                        >
+                                          {agency.name}
+                                          {agency.isAOR && ' (AOR)'}
+                                        </span>
+                                      ))}
+                                      {advertiser.agencies.length > 3 && (
+                                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
+                                          +{advertiser.agencies.length - 3} more
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
+            {/* People Tab */}
             {activeTab === 'people' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <User className="h-5 w-5" />
-                    <span>People</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">People directory coming soon...</p>
-                </CardContent>
-              </Card>
+              <div className="w-full">
+                {/* Stats Bar */}
+                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
+                          <User className="h-5 w-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Total People</p>
+                          <p className="text-2xl font-bold text-gray-900">{filteredContacts.length}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
+                          <Building2 className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Companies</p>
+                          <p className="text-2xl font-bold text-gray-900">
+                            {new Set(filteredContacts.map(c => c.company.id)).size}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Decision Makers</p>
+                          <p className="text-2xl font-bold text-gray-900">
+                            {filteredContacts.filter(c => c.isDecisionMaker).length}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Filter Toggle */}
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200"
+                    >
+                      <Filter className="h-4 w-4 text-gray-600" />
+                      <span className="text-sm font-medium text-gray-700">Filters</span>
+                      <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Filter Panel */}
+                {showFilters && (
+                  <ComprehensivePeopleFilterPanel
+                    filterState={filterState}
+                    setFilterState={setFilterState}
+                    filteredCount={filteredContacts.length}
+                    totalCount={contacts.length}
+                    onClose={() => setShowFilters(false)}
+                  />
+                )}
+
+                {/* People List */}
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {searchQuery ? `Search Results (${filteredContacts.length})` : 'People Directory'}
+                    </h3>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid gap-4">
+                      {filteredContacts.slice(0, 100).map((contact) => (
+                        <div key={contact.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start space-x-4 flex-1">
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                                {contact.firstName[0]}{contact.lastName[0]}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div>
+                                    <Link href={`/people/${contact.id}`} className="group">
+                                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                                        {contact.fullName}
+                                      </h3>
+                                    </Link>
+                                    <p className="text-sm text-gray-600">{contact.title}</p>
+                                    <div className="flex items-center space-x-2 mt-1">
+                                      <Link
+                                        href={`/companies/${contact.company.id}`}
+                                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100"
+                                      >
+                                        <Building2 className="w-3 h-3 mr-1" />
+                                        {contact.company.name}
+                                      </Link>
+                                      {contact.seniority && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                          {contact.seniority}
+                                        </span>
+                                      )}
+                                      {contact.isDecisionMaker && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                          <CheckCircle className="w-3 h-3 mr-1" />
+                                          Decision Maker
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col items-end space-y-1 text-xs text-gray-500">
+                                    <span className="flex items-center">
+                                      <Network className="w-3 h-3 mr-1" />
+                                      {contact.interactionCount} interactions
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {filteredContacts.length > 100 && (
+                      <div className="mt-4 text-center text-sm text-gray-500">
+                        Showing first 100 of {filteredContacts.length} contacts. Use search to narrow results.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
 
             {activeTab === 'industries' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Briefcase className="h-5 w-5" />
-                    <span>Industries</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">Industry analysis coming soon...</p>
-                </CardContent>
-              </Card>
+              <div className="w-full">
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {INDUSTRIES_DATA.length} Industries
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Browse industries and explore associated posts
+                    </p>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {INDUSTRIES_DATA.filter(industry =>
+                        industry.name.toLowerCase().includes(searchQuery.toLowerCase())
+                      ).map((industry) => (
+                        <Link
+                          key={industry.name}
+                          href={`/industries/${encodeURIComponent(industry.name)}`}
+                          className="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                {industry.name}
+                              </h4>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {industry.posts.toLocaleString()} {industry.posts === 1 ? 'Post' : 'Posts'}
+                              </p>
+                            </div>
+                            <Briefcase className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors ml-2 flex-shrink-0" />
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
+            {/* Publishers Tab */}
             {activeTab === 'publisher' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Monitor className="h-5 w-5" />
-                    <span>Publishers</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">Publisher directory coming soon...</p>
-                </CardContent>
-              </Card>
+              <div className="w-full">
+                {/* Stats Bar */}
+                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-red-50 rounded-lg">
+                        <Monitor className="h-5 w-5 text-red-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Total Publishers</p>
+                        <p className="text-2xl font-bold text-gray-900">{filteredPublishers.length}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Verified</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {filteredPublishers.filter(p => p.verified).length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Publishers List */}
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-lg font-semibold text-gray-900">Publisher Directory</h3>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid gap-4">
+                      {filteredPublishers.map((publisher) => (
+                        <div key={publisher.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                          <div className="flex items-start space-x-4">
+                            <CompanyLogo
+                              logoUrl={publisher.logoUrl}
+                              companyName={publisher.name}
+                              size="lg"
+                              className="rounded-xl"
+                            />
+                            <div className="flex-1">
+                              <Link href={`/companies/${publisher.id}`}>
+                                <h3 className="text-lg font-semibold text-gray-900 hover:text-red-600 transition-colors">
+                                  {publisher.name}
+                                </h3>
+                              </Link>
+                              <div className="flex items-center space-x-2 mt-1">
+                                {(publisher.city || publisher.state) && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <MapPin className="w-3 h-3 mr-1" />
+                                    {`${publisher.city || ''}, ${publisher.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
+                                  </span>
+                                )}
+                                {publisher.verified && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Verified
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
+            {/* DSP/SSP Tab */}
             {activeTab === 'dsp-ssp' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Satellite className="h-5 w-5" />
-                    <span>DSP/SSP</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">DSP/SSP directory coming soon...</p>
-                </CardContent>
-              </Card>
+              <div className="w-full">
+                {/* Stats Bar */}
+                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-indigo-50 rounded-lg">
+                        <Satellite className="h-5 w-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Total Platforms</p>
+                        <p className="text-2xl font-bold text-gray-900">{filteredPlatforms.length}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
+                        <Network className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Total Partnerships</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {filteredPlatforms.reduce((sum, p) => sum + p.partnerCount, 0)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Verified</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {filteredPlatforms.filter(p => p.verified).length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Platforms List */}
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-lg font-semibold text-gray-900">DSP/SSP Directory</h3>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid gap-4">
+                      {filteredPlatforms.map((platform) => (
+                        <div key={platform.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                          <div className="flex items-start space-x-4">
+                            <CompanyLogo
+                              logoUrl={platform.logoUrl}
+                              companyName={platform.name}
+                              size="lg"
+                              className="rounded-xl"
+                            />
+                            <div className="flex-1">
+                              <Link href={`/companies/${platform.id}`}>
+                                <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+                                  {platform.name}
+                                </h3>
+                              </Link>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${platform.type === 'DSP' ? 'bg-indigo-100 text-indigo-800' : 'bg-purple-100 text-purple-800'}`}>
+                                  {platform.type}
+                                </span>
+                                {(platform.city || platform.state) && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <MapPin className="w-3 h-3 mr-1" />
+                                    {`${platform.city || ''}, ${platform.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
+                                  </span>
+                                )}
+                                {platform.verified && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Verified
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
+            {/* Adtech Tab */}
             {activeTab === 'adtech' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="h-5 w-5" />
-                    <span>Adtech</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">Adtech directory coming soon...</p>
-                </CardContent>
-              </Card>
+              <div className="w-full">
+                {/* Stats Bar */}
+                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-pink-50 rounded-lg">
+                        <BarChart3 className="h-5 w-5 text-pink-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Total Adtech</p>
+                        <p className="text-2xl font-bold text-gray-900">{filteredAdtech.length}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
+                        <Network className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Total Partnerships</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {filteredAdtech.reduce((sum, c) => sum + c.partnerCount, 0)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Verified</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {filteredAdtech.filter(c => c.verified).length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Adtech List */}
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-lg font-semibold text-gray-900">Adtech Directory</h3>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid gap-4">
+                      {filteredAdtech.map((company) => (
+                        <div key={company.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                          <div className="flex items-start space-x-4">
+                            <CompanyLogo
+                              logoUrl={company.logoUrl}
+                              companyName={company.name}
+                              size="lg"
+                              className="rounded-xl"
+                            />
+                            <div className="flex-1">
+                              <Link href={`/companies/${company.id}`}>
+                                <h3 className="text-lg font-semibold text-gray-900 hover:text-pink-600 transition-colors">
+                                  {company.name}
+                                </h3>
+                              </Link>
+                              <div className="flex items-center space-x-2 mt-1">
+                                {(company.city || company.state) && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <MapPin className="w-3 h-3 mr-1" />
+                                    {`${company.city || ''}, ${company.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
+                                  </span>
+                                )}
+                                {company.verified && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Verified
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Add Entity Modal */}
@@ -949,135 +1814,6 @@ export default function OrganizationsPage() {
                   }
                 }}
               />
-            )}
-
-            {/* Persistent Filter Panel */}
-            {showFilters && (
-              <div className="bg-white border border-gray-200 rounded-xl mb-6 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                  <h3 className="text-lg font-semibold text-gray-900">Filter Options</h3>
-                  <p className="text-sm text-gray-600 mt-1">Refine your search to find the perfect agency partners</p>
-                </div>
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* By Agency Type */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-900">Agency Type</label>
-                      <Select
-                        value={filterState.agencyType}
-                        onValueChange={(value) => setFilterState(prev => ({...prev, agencyType: value}))}
-                      >
-                        <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                          <SelectValue placeholder="Select agency type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Types</SelectItem>
-                          <SelectItem value="INDEPENDENT_AGENCY">Independent Agency</SelectItem>
-                          <SelectItem value="HOLDING_COMPANY_AGENCY">Holding Company</SelectItem>
-                          <SelectItem value="NETWORK_AGENCY">Network Agency</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* By Location */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-900">Location</label>
-                      <Select
-                        value={filterState.geography}
-                        onValueChange={(value) => setFilterState(prev => ({...prev, geography: value}))}
-                      >
-                        <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                          <SelectValue placeholder="Select location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Locations</SelectItem>
-                          <SelectItem value="CA">California</SelectItem>
-                          <SelectItem value="NY">New York</SelectItem>
-                          <SelectItem value="IL">Illinois</SelectItem>
-                          <SelectItem value="TX">Texas</SelectItem>
-                          <SelectItem value="FL">Florida</SelectItem>
-                          <SelectItem value="OR">Oregon</SelectItem>
-                          <SelectItem value="CO">Colorado</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* By Client */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-900">Client</label>
-                      <Select
-                        value={filterState.client}
-                        onValueChange={(value) => setFilterState(prev => ({...prev, client: value}))}
-                      >
-                        <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                          <SelectValue placeholder="Select client" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Clients</SelectItem>
-                          <SelectItem value="nike">Nike</SelectItem>
-                          <SelectItem value="coca-cola">Coca-Cola</SelectItem>
-                          <SelectItem value="apple">Apple</SelectItem>
-                          <SelectItem value="mcdonalds">McDonald's</SelectItem>
-                          <SelectItem value="google">Google</SelectItem>
-                          <SelectItem value="samsung">Samsung</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* By Client Industry */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-900">Client Industry</label>
-                      <Select
-                        value={filterState.clientIndustry}
-                        onValueChange={(value) => setFilterState(prev => ({...prev, clientIndustry: value}))}
-                      >
-                        <SelectTrigger className="w-full h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                          <SelectValue placeholder="Select industry" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Industries</SelectItem>
-                          <SelectItem value="TECHNOLOGY">Technology</SelectItem>
-                          <SelectItem value="RETAIL">Retail</SelectItem>
-                          <SelectItem value="AUTOMOTIVE">Automotive</SelectItem>
-                          <SelectItem value="FOOD_BEVERAGE">Food & Beverage</SelectItem>
-                          <SelectItem value="FINANCIAL_SERVICES">Financial Services</SelectItem>
-                          <SelectItem value="SPORTS_APPAREL">Sports & Apparel</SelectItem>
-                          <SelectItem value="ENTERTAINMENT_MEDIA">Entertainment & Media</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-                {/* Filter Actions */}
-                <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <div className="text-sm text-gray-600">
-                    {activeTab === 'agencies' && `Showing ${filteredAgencies.length} of ${agencies.length} agencies`}
-                    {activeTab !== 'agencies' && `Filters applied to ${activeTab}`}
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => setFilterState({
-                        agencyType: 'all',
-                        geography: 'all',
-                        industry: 'all',
-                        status: 'all',
-                        client: 'all',
-                        clientIndustry: 'all',
-                        duty: 'all'
-                      })}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                    >
-                      Clear All
-                    </button>
-                    <button
-                      onClick={() => setShowFilters(false)}
-                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                    >
-                      Apply Filters
-                    </button>
-                  </div>
-                </div>
-              </div>
             )}
           </div>
         </div>
