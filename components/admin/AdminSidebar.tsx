@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Building2,
@@ -18,7 +18,10 @@ import {
   X,
   Menu,
   Home,
+  LogOut,
 } from 'lucide-react';
+import { auth } from '@/lib/firebase';
+import { signOut as firebaseSignOut } from 'firebase/auth';
 
 interface NavItem {
   title: string;
@@ -121,6 +124,7 @@ const navigationItems: NavItem[] = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     Organizations: true,
     Forum: true,
@@ -128,6 +132,17 @@ export function AdminSidebar() {
     'User Management': true,
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    try {
+      localStorage.removeItem('linkedin-session');
+      localStorage.removeItem('auth-token');
+      await firebaseSignOut(auth);
+      router.push('/auth/signup');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   const toggleSection = (title: string) => {
     setOpenSections(prev => ({
@@ -239,6 +254,13 @@ export function AdminSidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 space-y-2">
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+        >
+          <LogOut className="w-5 h-5" />
+          <span>Sign Out</span>
+        </button>
         <Link
           href="/"
           onClick={() => setIsMobileMenuOpen(false)}

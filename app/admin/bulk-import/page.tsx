@@ -241,13 +241,27 @@ export default function BulkImportPage() {
     setSelectedFile(file);
     setIsLoading(true);
     setError(null);
-    
+
     try {
+      // Get Firebase auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      const token = await user.getIdToken();
+
       const formData = new FormData();
       formData.append('file', file);
 
       const response = await fetch('/api/admin/bulk-import/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
 
@@ -346,10 +360,22 @@ export default function BulkImportPage() {
         });
       }, 200);
 
+      // Get Firebase auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      const token = await user.getIdToken();
+
       const response = await fetch('/api/admin/bulk-import/import', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           companies: parsedData.companies,

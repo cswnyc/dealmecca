@@ -9,21 +9,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowLeft, 
-  Building2, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  Shield, 
-  Trash2, 
-  Save, 
+import { ContactPhotoUpload } from '@/components/admin/ContactPhotoUpload';
+import {
+  ArrowLeft,
+  Building2,
+  Mail,
+  Phone,
+  Calendar,
+  Shield,
+  Trash2,
+  Save,
   X,
   Search,
   User,
   MapPin,
   Globe,
-  AlertCircle
+  AlertCircle,
+  Camera
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -154,6 +156,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
   const [companySearchTerm, setCompanySearchTerm] = useState('');
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isDirty, setIsDirty] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(contact?.logoUrl || '');
 
   const [formData, setFormData] = useState<FormData>({
     firstName: contact?.firstName || '',
@@ -296,9 +299,14 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
         const url = mode === 'create' ? '/api/orgs/contacts' : `/api/orgs/contacts/${contact?.id}`;
         const method = mode === 'create' ? 'POST' : 'PUT';
 
+        // Convert empty strings to null for optional enum fields
         const payload = {
           ...formData,
-          fullName: `${formData.firstName} ${formData.lastName}`.trim()
+          fullName: `${formData.firstName} ${formData.lastName}`.trim(),
+          department: formData.department || null,
+          preferredContact: formData.preferredContact || null,
+          // Ensure seniority has a value (required field)
+          seniority: formData.seniority || 'UNKNOWN'
         };
 
         console.log('Submitting contact data:', payload);
@@ -526,6 +534,26 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
             </div>
           </CardContent>
         </Card>
+
+        {/* Contact Photo - Only in edit mode */}
+        {mode === 'edit' && contact && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Camera className="w-5 h-5" />
+                <span>Contact Photo</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ContactPhotoUpload
+                contactId={contact.id}
+                currentPhotoUrl={photoUrl}
+                contactName={contact.fullName}
+                onPhotoChange={(newPhotoUrl) => setPhotoUrl(newPhotoUrl || '')}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Company Information */}
         <Card>

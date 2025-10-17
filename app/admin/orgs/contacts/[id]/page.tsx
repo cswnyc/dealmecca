@@ -290,7 +290,7 @@ export default function ViewContact() {
                       <Star className="w-4 h-4 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-900">Preferred Contact</p>
-                        <p className="text-sm text-gray-600">{contact.preferredContact.replace(/_/g, ' ')}</p>
+                        <p className="text-sm text-gray-600">{contact.preferredContact?.replace(/_/g, ' ') || contact.preferredContact}</p>
                       </div>
                     </div>
                   )}
@@ -310,8 +310,8 @@ export default function ViewContact() {
                 <div className="flex items-start space-x-4">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-900">{contact.company.name}</h3>
-                    <p className="text-gray-600">{contact.company.companyType.replace(/_/g, ' ')}</p>
-                    <p className="text-gray-600">{contact.company.industry.replace(/_/g, ' ')}</p>
+                    <p className="text-gray-600">{contact.company.companyType?.replace(/_/g, ' ') || contact.company.companyType || 'N/A'}</p>
+                    <p className="text-gray-600">{contact.company.industry?.replace(/_/g, ' ') || contact.company.industry || 'N/A'}</p>
                     {(contact.company.city || contact.company.state) && (
                       <div className="flex items-center space-x-1 mt-2">
                         <MapPin className="w-4 h-4 text-gray-500" />
@@ -376,7 +376,7 @@ export default function ViewContact() {
                   {contact.primaryRole && (
                     <div>
                       <p className="text-sm font-medium text-gray-900 mb-1">Primary Role</p>
-                      <p className="text-sm text-gray-600">{contact.primaryRole.replace(/_/g, ' ')}</p>
+                      <p className="text-sm text-gray-600">{contact.primaryRole?.replace(/_/g, ' ') || contact.primaryRole}</p>
                     </div>
                   )}
 

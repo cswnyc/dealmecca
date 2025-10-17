@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { findCompanyDuplicates, findContactDuplicates } from './duplicate-detection'
 import { prepareCompanyForDatabase, normalizeEmail } from '@/lib/normalization-utils'
+import { getCompanyLogoUrl, getContactPhotoUrl } from '@/lib/logo-utils'
 
 const prisma = new PrismaClient()
 
@@ -97,12 +98,20 @@ export async function processBulkImport(data: ImportData[]): Promise<BulkImportR
         if (record.description && record.description !== existingCompany.description) {
           updateData.description = record.description
         }
-        if ((record.domain || record.website) && 
+        if ((record.domain || record.website) &&
             (record.domain || record.website) !== existingCompany.website) {
           updateData.website = record.domain || record.website
         }
         if (record.companyType && record.companyType !== existingCompany.companyType) {
           updateData.companyType = record.companyType
+        }
+
+        // Add logo if missing
+        if (!existingCompany.logoUrl && (record.domain || record.website)) {
+          const logoUrl = getCompanyLogoUrl(record.domain || record.website, record.companyName)
+          if (logoUrl) {
+            updateData.logoUrl = logoUrl
+          }
         }
 
         // Update normalized fields if data changed
@@ -184,10 +193,17 @@ export async function processBulkImport(data: ImportData[]): Promise<BulkImportR
 
 // Helper function to create company with normalization
 async function createCompanyWithNormalization(record: ImportData) {
+  // Generate logo URL
+  const logoUrl = getCompanyLogoUrl(
+    record.domain || record.website,
+    record.companyName
+  )
+
   const companyData = prepareCompanyForDatabase({
     name: record.companyName,
     slug: record.companyName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''),
     website: record.domain || record.website,
+    logoUrl: logoUrl, // Add generated logo
     industry: record.industry,
     employeeCount: record.employeeCount,
     revenue: record.revenue,
@@ -205,6 +221,12 @@ async function createCompanyWithNormalization(record: ImportData) {
 
 // Helper function to update contact with intelligent merging
 async function updateContactWithMerge(contactId: string, record: ImportData) {
+  // Fetch existing contact to check for uploaded photos
+  const existingContact = await prisma.contact.findUnique({
+    where: { id: contactId },
+    select: { logoUrl: true }
+  })
+
   const updateData: any = {
     updatedAt: new Date()
   }
@@ -232,6 +254,16 @@ async function updateContactWithMerge(contactId: string, record: ImportData) {
     updateData.isDecisionMaker = record.isDecisionMaker
   }
 
+  // Generate photo URL, but only update if no uploaded photo exists (preserve manual uploads)
+  if (!existingContact?.logoUrl || existingContact.logoUrl.includes('dicebear')) {
+    const photoUrl = getContactPhotoUrl(
+      record.firstName,
+      record.lastName,
+      record.email
+    )
+    updateData.logoUrl = photoUrl
+  }
+
   // Only update if there are actual changes
   if (Object.keys(updateData).length > 1) { // More than just updatedAt
     await prisma.contact.update({
@@ -243,6 +275,13 @@ async function updateContactWithMerge(contactId: string, record: ImportData) {
 
 // Helper function to create contact with validation
 async function createContactWithValidation(record: ImportData, companyId: string) {
+  // Generate photo URL with Gravatar/DiceBear fallback
+  const photoUrl = getContactPhotoUrl(
+    record.firstName,
+    record.lastName,
+    record.email
+  )
+
   const contactData = {
     firstName: record.firstName.trim(),
     lastName: record.lastName.trim(),
@@ -251,6 +290,7 @@ async function createContactWithValidation(record: ImportData, companyId: string
     email: record.email ? normalizeEmail(record.email) : null,
     phone: record.phone?.trim() || null,
     linkedinUrl: record.linkedinUrl?.trim() || null,
+    logoUrl: photoUrl, // Add generated photo
     department: mapDepartmentValue(record.department) as any,
     seniority: mapSeniorityValue(record.seniority) || 'SPECIALIST' as any,
     isDecisionMaker: record.isDecisionMaker || false,

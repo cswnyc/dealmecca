@@ -1,7 +1,6 @@
-import { PrismaClient, Company, Contact } from '@prisma/client'
+import { Company, Contact } from '@prisma/client'
 import { normalizeCompanyName, normalizeWebsite, normalizeEmail } from '@/lib/normalization-utils'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 // Enhanced company duplicate detection using normalized fields
 export async function findCompanyDuplicates(companyData: {

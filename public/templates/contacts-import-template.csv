@@ -1,0 +1,11 @@
+firstName,lastName,title,email,phone,linkedinUrl,personalEmail,companyName,companyWebsite,companyIndustry,companyType,companyEmployeeCount,companyHeadquarters,department,seniority,isDecisionMaker,verified,photoUrl
+John,Doe,VP of Marketing,john.doe@acme.com,+1-555-0100,https://linkedin.com/in/johndoe,john@gmail.com,Acme Corporation,acme.com,Consumer Goods,ADVERTISER,1000-5000,New York NY,MARKETING,VP,true,true,https://example.com/photos/john-doe.jpg
+Jane,Smith,Director of Sales,jane.smith@techcorp.com,+1-555-0101,https://linkedin.com/in/janesmith,,TechCorp Inc,techcorp.com,Technology,ADVERTISER,500-1000,San Francisco CA,SALES,DIRECTOR,true,true,
+Michael,Johnson,Chief Creative Officer,michael@creative.agency,+1-555-0102,https://linkedin.com/in/michaeljohnson,mike@yahoo.com,Creative Agency LLC,creative.agency,Advertising,AGENCY,50-100,Los Angeles CA,CREATIVE,C_LEVEL,true,true,
+Sarah,Williams,Media Manager,sarah.w@mediaco.com,+1-555-0103,,,MediaCo Partners,mediaco.com,Media & Entertainment,AGENCY,100-250,Chicago IL,MEDIA,MANAGER,false,false,
+Robert,Brown,Senior Account Executive,robert@adtech.io,,,robert.b@gmail.com,AdTech Solutions,adtech.io,Ad Tech,ADTECH,250-500,Boston MA,ACCOUNT_MANAGEMENT,SENIOR,false,true,
+Emily,Davis,Marketing Coordinator,emily.davis@brand.com,+1-555-0105,https://linkedin.com/in/emilydavis,,Global Brands Inc,globalbrands.com,Consumer Goods,ADVERTISER,5000-10000,Atlanta GA,MARKETING,COORDINATOR,false,false,
+David,Martinez,Business Development VP,david.m@bizdev.com,+1-555-0106,https://linkedin.com/in/davidmartinez,david.martinez@personal.com,BizDev Partners,bizdev.com,Business Services,AGENCY,10-50,Miami FL,BUSINESS_DEVELOPMENT,VP,true,true,
+Jennifer,Garcia,Strategy Director,jennifer@strategy.co,+1-555-0107,,,Strategy Co,strategy.co,Marketing,AGENCY,50-100,Seattle WA,STRATEGY,DIRECTOR,true,true,
+Christopher,Rodriguez,Operations Manager,chris.r@ops.com,+1-555-0108,https://linkedin.com/in/chrisrodriguez,,Operations LLC,ops.com,Operations,VENDOR,100-250,Austin TX,OPERATIONS,MANAGER,false,true,
+Lisa,Wilson,HR Director,lisa.wilson@talent.agency,+1-555-0109,https://linkedin.com/in/lisawilson,lisa@hotmail.com,Talent Agency Group,talent.agency,Human Resources,AGENCY,10-50,Denver CO,HR,DIRECTOR,false,false,
