@@ -242,9 +242,12 @@ export async function PUT(
     } = body;
 
     // If parent company is being changed, verify it exists
-    if (parentCompanyId !== undefined && parentCompanyId !== null && parentCompanyId !== existingCompany.parentCompanyId) {
+    // Treat empty string as null (no parent company)
+    const normalizedParentId = parentCompanyId === '' ? null : parentCompanyId;
+
+    if (normalizedParentId !== undefined && normalizedParentId !== null && normalizedParentId !== existingCompany.parentCompanyId) {
       const parentCompany = await prisma.company.findUnique({
-        where: { id: parentCompanyId }
+        where: { id: normalizedParentId }
       });
 
       if (!parentCompany) {
@@ -255,7 +258,7 @@ export async function PUT(
       }
 
       // Prevent circular hierarchy
-      if (parentCompanyId === id) {
+      if (normalizedParentId === id) {
         return NextResponse.json(
           { error: 'Company cannot be its own parent' },
           { status: 400 }
@@ -289,7 +292,7 @@ export async function PUT(
         ...(foundedYear !== undefined && { foundedYear: foundedYear || null }),
         ...(stockSymbol !== undefined && { stockSymbol: stockSymbol || null }),
         ...(verified !== undefined && { verified }),
-        ...(parentCompanyId !== undefined && { parentCompanyId: parentCompanyId || null }),
+        ...(parentCompanyId !== undefined && { parentCompanyId: normalizedParentId }),
         // Update verification timestamp if verified status changed
         ...(verified !== undefined && verified !== existingCompany.verified && {
           lastVerified: verified ? new Date() : null
