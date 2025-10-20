@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { initiateLinkedInAuth } from '@/lib/auth/linkedin-oauth'
 import { Linkedin, Loader2 } from 'lucide-react'
 
 interface LinkedInSignInButtonProps {
@@ -28,11 +27,8 @@ export default function LinkedInSignInButton({
 
     try {
       console.log('LinkedIn sign-in initiated by user')
-      const redirectUri = `${window.location.origin}/api/auth/linkedin-callback`
-      const state = `linkedin-auth-${Date.now()}`
-
-      // This will redirect to LinkedIn OAuth
-      initiateLinkedInAuth(redirectUri, state)
+      // Use the server-side start route which properly sets cookies and redirects
+      window.location.href = '/api/linkedin/start'
     } catch (error) {
       console.error('LinkedIn sign-in error:', error)
       alert('Failed to start LinkedIn sign-in. Please try again.')

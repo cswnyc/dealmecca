@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { UserProfileCard } from './UserProfileCard';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import {
   MessageSquare,
   Search,
@@ -57,31 +58,23 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export function ForumLayout({ children }: ForumLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  // Safe authentication state - handles missing Firebase provider
-  const hasFirebaseSession = false;
-  const firebaseUser = null;
-  const authLoading = false;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    // Close sidebar when route changes on mobile
-    setSidebarOpen(false);
-  }, [pathname]);
-
   const handleNavigate = (path: string) => {
     router.push(path);
-    setSidebarOpen(false); // Close mobile sidebar after navigation
   };
 
   const isActive = (path: string): boolean => {
     if (path === '/forum' && (pathname === '/' || pathname === '/forum')) {
+      return true;
+    }
+    if (path === '/organizations' && (pathname === '/orgs' || pathname === '/organizations' || pathname.startsWith('/orgs/'))) {
       return true;
     }
     return pathname === path || pathname.startsWith(path + '/');
@@ -98,42 +91,13 @@ export function ForumLayout({ children }: ForumLayoutProps) {
   }
 
   return (
-    <div className="h-screen bg-gray-50 flex">
-      {/* Mobile Menu Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setSidebarOpen(true)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-md"
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
-
-      {/* Mobile Overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Left Sidebar - Always visible on desktop */}
+    <div className="h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Left Sidebar - Hidden on mobile, visible on desktop */}
       <div className="
-        w-64 bg-white border-r border-gray-200 
-        flex flex-col h-full
+        hidden md:flex
+        w-64 bg-white border-r border-gray-200
+        flex-col h-full
       ">
-        {/* Mobile Close Button */}
-        <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
         {/* Navigation */}
         <div className="flex-1 px-4 py-6">
           <nav className="space-y-2">
@@ -146,8 +110,8 @@ export function ForumLayout({ children }: ForumLayoutProps) {
                   className={`
                     w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg
                     transition-all duration-200 group
-                    ${active 
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700' 
+                    ${active
+                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }
                   `}
@@ -168,18 +132,54 @@ export function ForumLayout({ children }: ForumLayoutProps) {
           </nav>
         </div>
 
-        {/* User Profile Card at Bottom */}
+        {/* User Profile Card and Theme Toggle at Bottom - Desktop only */}
         <div className="border-t border-gray-200 p-4 space-y-4">
-          <UserProfileCard />
+          <div className="flex items-center justify-between">
+            <UserProfileCard />
+            <ThemeToggle />
+          </div>
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Main Content - No top header, just the content */}
-        <main className="flex-1 overflow-auto">
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto pb-16 md:pb-0">
           {children}
         </main>
+
+        {/* Mobile Bottom Navigation - Only visible on mobile */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-inset-bottom">
+          <div className="flex items-center justify-around px-2 py-2">
+            {navigationItems.map((item) => {
+              const active = isActive(item.path);
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavigate(item.path)}
+                  className={`
+                    flex flex-col items-center justify-center px-3 py-2 rounded-lg
+                    transition-all duration-200 relative
+                    ${active ? 'text-blue-600' : 'text-gray-600'}
+                  `}
+                >
+                  <item.icon className={`
+                    h-6 w-6
+                    ${active ? 'text-blue-600' : 'text-gray-400'}
+                  `} />
+                  <span className={`text-xs mt-1 font-medium ${active ? 'text-blue-600' : 'text-gray-600'}`}>
+                    {item.label}
+                  </span>
+                  {item.badge && item.badge > 0 && (
+                    <span className="absolute top-1 right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
       </div>
     </div>
   );

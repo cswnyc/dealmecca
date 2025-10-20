@@ -17,11 +17,45 @@ export async function GET(
             name: true,
             logoUrl: true,
             companyType: true,
+            agencyType: true,
             industry: true,
             city: true,
             state: true,
             website: true,
-            verified: true
+            verified: true,
+            CompanyPartnership_agencyIdToCompany: {
+              where: { isActive: true },
+              include: {
+                advertiser: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logoUrl: true,
+                    companyType: true,
+                    verified: true
+                  }
+                }
+              },
+              orderBy: { startDate: 'desc' },
+              take: 5
+            },
+            CompanyPartnership_advertiserIdToCompany: {
+              where: { isActive: true },
+              include: {
+                agency: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logoUrl: true,
+                    companyType: true,
+                    agencyType: true,
+                    verified: true
+                  }
+                }
+              },
+              orderBy: { startDate: 'desc' },
+              take: 5
+            }
           }
         },
         ContactInteraction: {
@@ -67,6 +101,32 @@ export async function GET(
       );
     }
 
+    // Format partnerships from company data
+    const partnerships = [
+      ...contact.company.CompanyPartnership_agencyIdToCompany.map(p => ({
+        id: p.id,
+        relationshipType: p.relationshipType,
+        isAOR: p.isAOR,
+        services: p.services,
+        startDate: p.startDate?.toISOString() || null,
+        endDate: p.endDate?.toISOString() || null,
+        isActive: p.isActive,
+        partner: p.advertiser,
+        partnerRole: 'advertiser' as const
+      })),
+      ...contact.company.CompanyPartnership_advertiserIdToCompany.map(p => ({
+        id: p.id,
+        relationshipType: p.relationshipType,
+        isAOR: p.isAOR,
+        services: p.services,
+        startDate: p.startDate?.toISOString() || null,
+        endDate: p.endDate?.toISOString() || null,
+        isActive: p.isActive,
+        partner: p.agency,
+        partnerRole: 'agency' as const
+      }))
+    ];
+
     // Format the response
     const formattedContact = {
       id: contact.id,
@@ -95,14 +155,21 @@ export async function GET(
       communityScore: contact.communityScore,
       createdAt: contact.createdAt.toISOString(),
       updatedAt: contact.updatedAt.toISOString(),
-      company: contact.company,
+      company: {
+        ...contact.company,
+        // Remove partnership arrays from company object
+        CompanyPartnership_agencyIdToCompany: undefined,
+        CompanyPartnership_advertiserIdToCompany: undefined
+      },
+      partnerships,
       recentInteractions: contact.ContactInteraction || [],
       recentNotes: contact.ContactNote || [],
       status: null,
       _count: {
         interactions: contact._count.ContactInteraction,
         notes: contact._count.ContactNote,
-        connections: contact._count.UserConnection
+        connections: contact._count.UserConnection,
+        partnerships: partnerships.length
       }
     };
 

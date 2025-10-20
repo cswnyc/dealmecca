@@ -20,8 +20,29 @@ import {
   ArrowLeft,
   Briefcase,
   TrendingUp,
-  Award
+  Award,
+  Network,
+  Lock,
+  Shield
 } from 'lucide-react';
+
+interface Partnership {
+  id: string;
+  relationshipType: string;
+  isAOR: boolean;
+  services?: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  isActive: boolean;
+  partner: {
+    id: string;
+    name: string;
+    logoUrl?: string;
+    companyType: string;
+    verified: boolean;
+  };
+  partnerRole: 'agency' | 'advertiser';
+}
 
 interface Contact {
   id: string;
@@ -55,12 +76,14 @@ interface Contact {
     name: string;
     logoUrl?: string;
     companyType: string;
+    agencyType?: string;
     industry?: string;
     city?: string;
     state?: string;
     website?: string;
     verified: boolean;
   };
+  partnerships?: Partnership[];
   recentInteractions: Array<{
     id: string;
     type: string;
@@ -88,6 +111,7 @@ interface Contact {
     interactions: number;
     notes: number;
     connections: number;
+    partnerships?: number;
   };
 }
 
@@ -99,6 +123,8 @@ export default function ContactDetailPage() {
   const [contact, setContact] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPro, setIsPro] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -148,6 +174,22 @@ export default function ContactDetailPage() {
   const formatSeniority = (seniority?: string) => {
     if (!seniority) return '';
     return seniority.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const handleProAction = (action: string) => {
+    if (!isPro) {
+      setShowUpgradePrompt(true);
+      return false;
+    }
+    return true;
+  };
+
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      year: 'numeric'
+    });
   };
 
   if (loading) {
@@ -209,17 +251,17 @@ export default function ContactDetailPage() {
               </div>
 
               {/* Contact Header */}
-              <div className="flex items-start space-x-6">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                 {/* Avatar */}
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold text-3xl flex-shrink-0">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold text-2xl sm:text-3xl flex-shrink-0">
                   {contact.firstName[0]}{contact.lastName[0]}
                 </div>
 
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-3xl font-bold text-gray-900">
+                <div className="flex-1 w-full">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                           {contact.fullName}
                         </h1>
                         {contact.verified && (
@@ -272,22 +314,68 @@ export default function ContactDetailPage() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                       {contact.email && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={`mailto:${contact.email}`}>
-                            <Mail className="h-4 w-4 mr-2" />
+                        isPro ? (
+                          <Button variant="outline" size="sm" asChild className="flex-1 sm:flex-none">
+                            <a href={`mailto:${contact.email}`}>
+                              <Mail className="h-4 w-4 mr-2" />
+                              Email
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleProAction('email')}
+                            className="flex-1 sm:flex-none"
+                          >
+                            <Lock className="h-4 w-4 mr-2" />
                             Email
-                          </a>
-                        </Button>
+                          </Button>
+                        )
+                      )}
+                      {contact.phone && (
+                        isPro ? (
+                          <Button variant="outline" size="sm" asChild className="flex-1 sm:flex-none">
+                            <a href={`tel:${contact.phone}`}>
+                              <Phone className="h-4 w-4 mr-2" />
+                              Call
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleProAction('phone')}
+                            className="flex-1 sm:flex-none"
+                          >
+                            <Lock className="h-4 w-4 mr-2" />
+                            Call
+                          </Button>
+                        )
                       )}
                       {contact.linkedinUrl && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                            <Linkedin className="h-4 w-4 mr-2" />
-                            LinkedIn
-                          </a>
-                        </Button>
+                        isPro ? (
+                          <Button variant="outline" size="sm" asChild className="flex-1 sm:flex-none">
+                            <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                              <Linkedin className="h-4 w-4 mr-2" />
+                              <span className="hidden sm:inline">LinkedIn</span>
+                              <span className="sm:hidden">LI</span>
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleProAction('linkedin')}
+                            className="flex-1 sm:flex-none"
+                          >
+                            <Lock className="h-4 w-4 mr-2" />
+                            <span className="hidden sm:inline">LinkedIn</span>
+                            <span className="sm:hidden">LI</span>
+                          </Button>
+                        )
                       )}
                     </div>
                   </div>
@@ -296,6 +384,33 @@ export default function ContactDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Pro Upgrade Prompt */}
+        {showUpgradePrompt && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="max-w-md">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lock className="h-5 w-5" />
+                  Upgrade to Pro
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-gray-600">
+                  Unlock direct contact access including email, phone, and LinkedIn with a Pro subscription.
+                </p>
+                <div className="flex gap-2">
+                  <Button onClick={() => router.push('/pricing')} className="flex-1">
+                    View Plans
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowUpgradePrompt(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -448,6 +563,66 @@ export default function ContactDetailPage() {
                   </Link>
                 </CardContent>
               </Card>
+
+              {/* Company Partnerships & Teams */}
+              {contact.partnerships && contact.partnerships.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Network className="h-5 w-5" />
+                      Company Network
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {contact.partnerships.map((partnership) => (
+                        <Link
+                          key={partnership.id}
+                          href={`/companies/${partnership.partner.id}`}
+                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100 group"
+                        >
+                          <CompanyLogo
+                            logoUrl={partnership.partner.logoUrl}
+                            companyName={partnership.partner.name}
+                            size="sm"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-medium text-gray-900 group-hover:text-blue-600 truncate text-sm">
+                                {partnership.partner.name}
+                              </h4>
+                              {partnership.partner.verified && (
+                                <Shield className="h-3 w-3 text-green-600 flex-shrink-0" />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                              <Badge variant="outline" className="text-xs">
+                                {partnership.partnerRole === 'agency' ? 'Agency Partner' : 'Client'}
+                              </Badge>
+                              {partnership.startDate && (
+                                <span className="text-xs text-gray-500">
+                                  Since {formatDate(partnership.startDate)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                    {contact._count.partnerships && contact._count.partnerships > 5 && (
+                      <div className="mt-3 pt-3 border-t">
+                        <Link
+                          href={`/companies/${contact.company.id}?tab=partnerships`}
+                          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          View all {contact._count.partnerships} partnerships →
+                        </Link>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Sidebar */}
