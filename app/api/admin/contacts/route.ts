@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
         },
         ContactStatus: {
           include: {
-            user: {
+            User: {
               select: {
                 id: true,
                 name: true,
@@ -163,7 +163,10 @@ export async function GET(request: NextRequest) {
     const total = await prisma.contact.count({ where });
     const pages = Math.ceil(total / limit);
 
-    // Get admin statistics
+    // Get admin statistics (not affected by pagination)
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
     const adminStats = await prisma.contact.aggregate({
       where,
       _count: {
@@ -205,6 +208,26 @@ export async function GET(request: NextRequest) {
         }
       },
       take: 10
+    });
+
+    // Get unique companies count
+    const uniqueCompaniesResult = await prisma.contact.findMany({
+      where,
+      select: {
+        companyId: true
+      },
+      distinct: ['companyId']
+    });
+    const uniqueCompaniesCount = uniqueCompaniesResult.length;
+
+    // Get contacts created this month
+    const contactsThisMonth = await prisma.contact.count({
+      where: {
+        ...where,
+        createdAt: {
+          gte: startOfMonth
+        }
+      }
     });
 
     // Transform data with admin-specific information
@@ -261,6 +284,8 @@ export async function GET(request: NextRequest) {
       adminStats: {
         totalContacts: adminStats._count.id,
         averageCommunityScore: adminStats._avg.communityScore,
+        uniqueCompaniesCount,
+        contactsThisMonth,
         verificationStats: verificationStats.reduce((acc, stat) => {
           acc[stat.verified ? 'verified' : 'unverified'] = stat._count.id;
           return acc;

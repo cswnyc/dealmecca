@@ -86,6 +86,8 @@ interface Pagination {
 interface AdminStats {
   totalContacts: number;
   averageCommunityScore: number;
+  uniqueCompaniesCount: number;
+  contactsThisMonth: number;
   verificationStats: Record<string, number>;
   qualityStats: Record<string, number>;
   departmentStats: Array<{ department: string; count: number }>;
@@ -132,19 +134,13 @@ export default function ContactsAdmin() {
       if (verifiedFilter) params.append('verified', verifiedFilter);
       if (activeFilter) params.append('isActive', activeFilter);
 
-      const response = await fetch(`/api/orgs/contacts?${params}`);
+      const response = await fetch(`/api/admin/contacts?${params}`);
       const data = await response.json();
 
       if (response.ok) {
         setContacts(data.contacts);
         setPagination(data.pagination);
-
-        // Fetch admin stats separately from admin API
-        const adminResponse = await fetch(`/api/admin/contacts?${params}`);
-        if (adminResponse.ok) {
-          const adminData = await adminResponse.json();
-          setAdminStats(adminData.adminStats);
-        }
+        setAdminStats(data.adminStats);
       } else {
         setError(data.error || 'Failed to fetch contacts');
       }
@@ -324,7 +320,7 @@ export default function ContactsAdmin() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Companies</p>
               <p className="text-2xl font-bold text-gray-900">
-                {new Set(contacts.map(c => c.companyId)).size}
+                {adminStats?.uniqueCompaniesCount || 0}
               </p>
             </div>
           </div>
@@ -352,11 +348,7 @@ export default function ContactsAdmin() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">This Month</p>
               <p className="text-2xl font-bold text-gray-900">
-                {contacts.filter(c => {
-                  const created = new Date(c.createdAt);
-                  const now = new Date();
-                  return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
-                }).length}
+                {adminStats?.contactsThisMonth || 0}
               </p>
             </div>
           </div>
@@ -420,18 +412,26 @@ export default function ContactsAdmin() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Departments</option>
-            <option value="MARKETING">Marketing</option>
-            <option value="SALES">Sales</option>
+            <option value="MEDIA_PLANNING">Media Planning</option>
+            <option value="MEDIA_BUYING">Media Buying</option>
+            <option value="DIGITAL_MARKETING">Digital Marketing</option>
+            <option value="PROGRAMMATIC">Programmatic</option>
+            <option value="SOCIAL_MEDIA">Social Media</option>
+            <option value="SEARCH_MARKETING">Search Marketing</option>
+            <option value="STRATEGY_PLANNING">Strategy & Planning</option>
+            <option value="ANALYTICS_INSIGHTS">Analytics & Insights</option>
+            <option value="CREATIVE_SERVICES">Creative Services</option>
+            <option value="ACCOUNT_MANAGEMENT">Account Management</option>
             <option value="BUSINESS_DEVELOPMENT">Business Development</option>
-            <option value="STRATEGY">Strategy</option>
-            <option value="MEDIA">Media</option>
-            <option value="CREATIVE">Creative</option>
-            <option value="TECHNOLOGY">Technology</option>
             <option value="OPERATIONS">Operations</option>
+            <option value="TECHNOLOGY">Technology</option>
             <option value="FINANCE">Finance</option>
-            <option value="HR">HR</option>
-            <option value="LEGAL">Legal</option>
-            <option value="OTHER">Other</option>
+            <option value="LEADERSHIP">Leadership</option>
+            <option value="HUMAN_RESOURCES">Human Resources</option>
+            <option value="SALES">Sales</option>
+            <option value="MARKETING">Marketing</option>
+            <option value="PRODUCT">Product</option>
+            <option value="DATA_SCIENCE">Data Science</option>
           </select>
 
           {/* Seniority Filter */}
@@ -442,16 +442,18 @@ export default function ContactsAdmin() {
           >
             <option value="">All Levels</option>
             <option value="INTERN">Intern</option>
-            <option value="JUNIOR">Junior</option>
-            <option value="MID">Mid</option>
-            <option value="SENIOR">Senior</option>
-            <option value="LEAD">Lead</option>
+            <option value="COORDINATOR">Coordinator</option>
+            <option value="SPECIALIST">Specialist</option>
+            <option value="SENIOR_SPECIALIST">Senior Specialist</option>
             <option value="MANAGER">Manager</option>
+            <option value="SENIOR_MANAGER">Senior Manager</option>
             <option value="DIRECTOR">Director</option>
+            <option value="SENIOR_DIRECTOR">Senior Director</option>
             <option value="VP">VP</option>
             <option value="SVP">SVP</option>
             <option value="EVP">EVP</option>
             <option value="C_LEVEL">C-Level</option>
+            <option value="FOUNDER_OWNER">Founder/Owner</option>
           </select>
 
           {/* Verified Filter */}

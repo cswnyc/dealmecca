@@ -55,6 +55,15 @@ interface Pagination {
   pages: number;
 }
 
+interface AdminStats {
+  totalCompanies: number;
+  verifiedCount: number;
+  totalContacts: number;
+  companiesThisMonth: number;
+  typeDistribution: Array<{ type: string; count: number }>;
+  industryDistribution: Array<{ industry: string; count: number }>;
+}
+
 export default function CompaniesAdmin() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
@@ -63,6 +72,7 @@ export default function CompaniesAdmin() {
     total: 0,
     pages: 0
   });
+  const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -90,12 +100,13 @@ export default function CompaniesAdmin() {
       if (selectedIndustry) params.append('industry', selectedIndustry);
       if (verifiedFilter) params.append('verified', verifiedFilter);
 
-      const response = await fetch(`/api/orgs/companies?${params}`);
+      const response = await fetch(`/api/admin/companies?${params}`);
       const data = await response.json();
 
       if (response.ok) {
         setCompanies(data.companies);
         setPagination(data.pagination);
+        setAdminStats(data.adminStats);
       } else {
         setError(data.error || 'Failed to fetch companies');
       }
@@ -195,7 +206,7 @@ export default function CompaniesAdmin() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Companies</p>
-              <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+              <p className="text-2xl font-bold text-gray-900">{adminStats?.totalCompanies || pagination.total}</p>
             </div>
           </div>
         </div>
@@ -208,7 +219,7 @@ export default function CompaniesAdmin() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Verified</p>
               <p className="text-2xl font-bold text-gray-900">
-                {companies.filter(c => c.verified).length}
+                {adminStats?.verifiedCount || 0}
               </p>
             </div>
           </div>
@@ -222,7 +233,7 @@ export default function CompaniesAdmin() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Contacts</p>
               <p className="text-2xl font-bold text-gray-900">
-                {companies.reduce((acc, c) => acc + c._count.contacts, 0)}
+                {adminStats?.totalContacts || 0}
               </p>
             </div>
           </div>
@@ -236,11 +247,7 @@ export default function CompaniesAdmin() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">This Month</p>
               <p className="text-2xl font-bold text-gray-900">
-                {companies.filter(c => {
-                  const created = new Date(c.createdAt);
-                  const now = new Date();
-                  return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
-                }).length}
+                {adminStats?.companiesThisMonth || 0}
               </p>
             </div>
           </div>
@@ -269,10 +276,24 @@ export default function CompaniesAdmin() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Types</option>
-            <option value="AGENCY">Agency</option>
-            <option value="BRAND">Brand</option>
-            <option value="VENDOR">Vendor</option>
+            <option value="INDEPENDENT_AGENCY">Independent Agency</option>
+            <option value="HOLDING_COMPANY_AGENCY">Holding Company Agency</option>
+            <option value="MEDIA_HOLDING_COMPANY">Media Holding Company</option>
+            <option value="NATIONAL_ADVERTISER">National Advertiser</option>
+            <option value="LOCAL_ADVERTISER">Local Advertiser</option>
+            <option value="ADTECH_VENDOR">AdTech Vendor</option>
+            <option value="MARTECH_VENDOR">MarTech Vendor</option>
+            <option value="MEDIA_OWNER">Media Owner</option>
+            <option value="BROADCASTER">Broadcaster</option>
             <option value="PUBLISHER">Publisher</option>
+            <option value="CONSULTANCY">Consultancy</option>
+            <option value="PRODUCTION_COMPANY">Production Company</option>
+            <option value="ADVERTISER">Advertiser</option>
+            <option value="AGENCY">Agency</option>
+            <option value="MEDIA_COMPANY">Media Company</option>
+            <option value="TECH_VENDOR">Tech Vendor</option>
+            <option value="DSP_SSP">DSP/SSP</option>
+            <option value="ADTECH">AdTech</option>
           </select>
 
           {/* Industry Filter */}
@@ -282,11 +303,31 @@ export default function CompaniesAdmin() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Industries</option>
-            <option value="Technology">Technology</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Finance">Finance</option>
-            <option value="Retail">Retail</option>
-            <option value="Media">Media</option>
+            <option value="AUTOMOTIVE">Automotive</option>
+            <option value="CPG_FOOD_BEVERAGE">CPG - Food & Beverage</option>
+            <option value="CPG_PERSONAL_CARE">CPG - Personal Care</option>
+            <option value="CPG_HOUSEHOLD">CPG - Household</option>
+            <option value="FINANCIAL_SERVICES">Financial Services</option>
+            <option value="HEALTHCARE_PHARMA">Healthcare & Pharma</option>
+            <option value="RETAIL_ECOMMERCE">Retail & E-commerce</option>
+            <option value="TECHNOLOGY">Technology</option>
+            <option value="ENTERTAINMENT_MEDIA">Entertainment & Media</option>
+            <option value="TRAVEL_HOSPITALITY">Travel & Hospitality</option>
+            <option value="TELECOM">Telecom</option>
+            <option value="FASHION_BEAUTY">Fashion & Beauty</option>
+            <option value="SPORTS_FITNESS">Sports & Fitness</option>
+            <option value="EDUCATION">Education</option>
+            <option value="REAL_ESTATE">Real Estate</option>
+            <option value="ENERGY">Energy</option>
+            <option value="GOVERNMENT_NONPROFIT">Government & Nonprofit</option>
+            <option value="GAMING">Gaming</option>
+            <option value="CRYPTOCURRENCY">Cryptocurrency</option>
+            <option value="INSURANCE">Insurance</option>
+            <option value="B2B_SERVICES">B2B Services</option>
+            <option value="STARTUPS">Startups</option>
+            <option value="NONPROFIT">Nonprofit</option>
+            <option value="PROFESSIONAL_SERVICES">Professional Services</option>
+            <option value="LOGISTICS">Logistics</option>
           </select>
 
           {/* Verified Filter */}
