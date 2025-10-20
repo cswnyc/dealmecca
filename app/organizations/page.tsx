@@ -485,23 +485,6 @@ export default function OrganizationsPage() {
     }
   };
 
-  // Mock data for client relationships
-  const getCompanyClients = (companyId: string) => {
-    const agency = agencies.find(a => a.id === companyId);
-    if (agency && agency.clients) {
-      return agency.clients.map(c => c.name);
-    }
-
-    const clientData: Record<string, string[]> = {
-      '1': ['Nike', 'Adidas', 'Under Armour'],
-      '2': ['Coca-Cola', 'Pepsi', 'Dr Pepper'],
-      '3': ['Apple', 'Microsoft', 'Google'],
-      '4': ['McDonald\'s', 'Burger King', 'KFC'],
-      '5': ['Toyota', 'Honda', 'Ford']
-    };
-    return clientData[companyId] || ['Client A', 'Client B'];
-  };
-
   const toggleCompanyExpansion = (companyId: string) => {
     setExpandedCompanies(prev => {
       const newSet = new Set(prev);
