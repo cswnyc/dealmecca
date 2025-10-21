@@ -19,6 +19,7 @@ import {
   Menu,
   Home,
   LogOut,
+  BarChart3,
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut as firebaseSignOut } from 'firebase/auth';
@@ -35,6 +36,11 @@ const navigationItems: NavItem[] = [
     title: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Analytics',
+    href: '/admin/analytics',
+    icon: BarChart3,
   },
   {
     title: 'Bulk Import',
@@ -64,11 +70,6 @@ const navigationItems: NavItem[] = [
         title: 'Create Contact',
         href: '/admin/orgs/contacts/create',
         icon: Users,
-      },
-      {
-        title: 'Import Contacts',
-        href: '/admin/orgs/contacts/import',
-        icon: Upload,
       },
     ],
   },

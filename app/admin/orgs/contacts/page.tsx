@@ -318,7 +318,7 @@ export default function ContactsAdmin() {
               <Building2 className="w-6 h-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Companies</p>
+              <p className="text-sm font-medium text-gray-500">Companies with Contacts</p>
               <p className="text-2xl font-bold text-gray-900">
                 {adminStats?.uniqueCompaniesCount || 0}
               </p>

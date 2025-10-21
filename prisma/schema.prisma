@@ -808,6 +808,7 @@ model User {
   companyId                                                       String?
   provider                                                        String?
   publicHandle                                                    String?                  @unique
+  verifiedSeller                                                  Boolean                  @default(false)
   Account                                                         Account[]
   CodeGeneration                                                  CodeGeneration[]
   Comment                                                         Comment[]

@@ -15,15 +15,22 @@ import {
   Crown,
   Shield,
   User,
-  AlertTriangle
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Linkedin,
+  Gem,
+  Award,
+  ShieldCheck
 } from 'lucide-react';
+import { EditUserModal } from '@/components/admin/EditUserModal';
 
 interface UserData {
   id: string;
   email: string;
   name: string;
   firebaseUid: string;
-  role: 'FREE' | 'PREMIUM' | 'ADMIN';
+  role: 'FREE' | 'PREMIUM' | 'PRO' | 'ADMIN';
   subscriptionTier: 'FREE' | 'PREMIUM' | 'ENTERPRISE';
   subscriptionStatus: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'PAST_DUE';
   isAnonymous: boolean;
@@ -39,17 +46,32 @@ interface UserData {
   createdAt: string;
   updatedAt: string;
   lastDashboardVisit: string;
+  emailVerified: boolean;
+  linkedinVerified: boolean;
+  linkedinUrl?: string;
+  companyId?: string;
+  company?: {
+    id: string;
+    name: string;
+  };
+  forumGems?: number;
+  forumContributions?: number;
+  verifiedSeller: boolean;
   _count: {
     comments: number;
     posts: number;
     bookmarks: number;
     follows: number;
+    ForumPost: number;
+    ForumComment: number;
   };
 }
 
 interface UserStats {
   total: number;
   activeUsers: number;
+  verifiedUsers: number;
+  totalForumGems: number;
   byRole: Record<string, number>;
   bySubscriptionTier: Record<string, number>;
   bySubscriptionStatus: Record<string, number>;
@@ -77,6 +99,10 @@ export default function UsersAdminPage() {
   const [subscriptionFilter, setSubscriptionFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Edit modal
+  const [editingUser, setEditingUser] = useState<UserData | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -148,6 +174,28 @@ export default function UsersAdminPage() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Export failed:', err);
+    }
+  };
+
+  const handleEditUser = (user: UserData) => {
+    setEditingUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveUser = async (userId: string, updates: any) => {
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, updates })
+      });
+
+      if (!response.ok) throw new Error('Failed to update user');
+
+      // Refresh the users list
+      await fetchUsers();
+    } catch (err) {
+      throw err;
     }
   };
 
@@ -238,7 +286,7 @@ export default function UsersAdminPage() {
 
         {/* Stats Cards */}
         {data?.stats && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <motion.div
               className="bg-white p-6 rounded-lg shadow-sm border"
               whileHover={{ scale: 1.02 }}
@@ -259,7 +307,21 @@ export default function UsersAdminPage() {
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-center">
-                <Activity className="w-8 h-8 text-green-600" />
+                <CheckCircle className="w-8 h-8 text-green-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Verified Users</p>
+                  <p className="text-2xl font-bold text-gray-900">{data.stats.verifiedUsers}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-sm border"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center">
+                <Activity className="w-8 h-8 text-purple-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Active (30 days)</p>
                   <p className="text-2xl font-bold text-gray-900">{data.stats.activeUsers}</p>
@@ -273,10 +335,10 @@ export default function UsersAdminPage() {
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-center">
-                <Shield className="w-8 h-8 text-blue-600" />
+                <Gem className="w-8 h-8 text-amber-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Premium Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{data.stats.bySubscriptionTier.PREMIUM || 0}</p>
+                  <p className="text-sm font-medium text-gray-600">Total Forum Gems</p>
+                  <p className="text-2xl font-bold text-gray-900">{data.stats.totalForumGems.toLocaleString()}</p>
                 </div>
               </div>
             </motion.div>
@@ -375,13 +437,13 @@ export default function UsersAdminPage() {
                     User
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Verification
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role & Tier
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Activity
+                    Forum Gems
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created
@@ -425,6 +487,54 @@ export default function UsersAdminPage() {
                           {user.anonymousUsername && (
                             <div className="text-xs text-purple-600">@{user.anonymousUsername}</div>
                           )}
+                          {user.company && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              {user.company.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-1">
+                          {user.emailVerified ? (
+                            <>
+                              <CheckCircle className="w-4 h-4 text-green-600" />
+                              <span className="text-xs text-green-700 font-medium">Email</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-4 h-4 text-gray-400" />
+                              <span className="text-xs text-gray-500">No Email</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {user.linkedinVerified ? (
+                            <>
+                              <Linkedin className="w-4 h-4 text-blue-600" />
+                              <span className="text-xs text-blue-700 font-medium">LinkedIn</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-4 h-4 text-gray-400" />
+                              <span className="text-xs text-gray-500">No LinkedIn</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {user.verifiedSeller ? (
+                            <>
+                              <ShieldCheck className="w-4 h-4 text-purple-600" />
+                              <span className="text-xs text-purple-700 font-medium">Verified Seller</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-4 h-4 text-gray-400" />
+                              <span className="text-xs text-gray-500">Not Verified</span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -437,15 +547,16 @@ export default function UsersAdminPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(user.subscriptionStatus)}`}>
-                        {user.subscriptionStatus}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="space-y-1">
-                        <div>{user.searchesThisMonth || 0} searches</div>
-                        <div>{user.dashboardVisits || 0} visits</div>
-                        <div>{user._count.posts || 0} posts</div>
+                        <div className="flex items-center space-x-1">
+                          <Gem className="w-4 h-4 text-amber-600" />
+                          <span className="text-sm font-bold text-amber-700">
+                            {user.forumGems || 0}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {user._count.ForumPost || 0} posts, {user._count.ForumComment || 0} comments
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -457,8 +568,12 @@ export default function UsersAdminPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-gray-400 hover:text-gray-600">
-                        <MoreVertical className="w-4 h-4" />
+                      <button
+                        onClick={() => handleEditUser(user)}
+                        className="inline-flex items-center space-x-1 px-3 py-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                        <span>Edit</span>
                       </button>
                     </td>
                   </motion.tr>
@@ -504,6 +619,19 @@ export default function UsersAdminPage() {
           )}
         </div>
       </motion.div>
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <EditUserModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingUser(null);
+          }}
+          user={editingUser}
+          onSave={handleSaveUser}
+        />
+      )}
     </div>
   );
 }

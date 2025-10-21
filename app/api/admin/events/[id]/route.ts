@@ -3,15 +3,13 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
-
     const event = await prisma.event.findUnique({
-      where: { id },
+      where: { id: params.id },
       include: {
-        creator: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -20,9 +18,9 @@ export async function GET(
         },
         _count: {
           select: {
-            attendees: true,
-            ratings: true,
-            forumPosts: true
+            EventAttendee: true,
+            EventRating: true,
+            ForumPost: true
           }
         }
       }
@@ -35,7 +33,6 @@ export async function GET(
       );
     }
 
-    // Transform data to match frontend expectations (following user-facing API structure)
     const formattedEvent = {
       id: event.id,
       name: event.name,
@@ -69,15 +66,15 @@ export async function GET(
       totalRatings: event.totalRatings,
       createdAt: event.createdAt.toISOString(),
       updatedAt: event.updatedAt.toISOString(),
-      creator: event.creator ? {
-        id: event.creator.id,
-        name: event.creator.name || 'Anonymous',
-        email: event.creator.email
+      creator: event.User ? {
+        id: event.User.id,
+        name: event.User.name || 'Anonymous',
+        email: event.User.email
       } : null,
       _count: {
-        attendees: event._count.attendees,
-        ratings: event._count.ratings,
-        forumPosts: event._count.forumPosts
+        attendees: event._count.EventAttendee,
+        ratings: event._count.EventRating,
+        forumPosts: event._count.ForumPost
       }
     };
 
@@ -94,10 +91,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
     const body = await request.json();
     const {
       name,
@@ -111,16 +107,16 @@ export async function PUT(
       industry,
       estimatedCost,
       attendeeCount,
-      isVirtual = false,
-      isHybrid = false,
+      isVirtual,
+      isHybrid,
       imageUrl,
       logoUrl,
       organizerName,
       organizerUrl,
       registrationUrl,
-      callForSpeakers = false,
-      sponsorshipAvailable = false,
-      status = 'DRAFT',
+      callForSpeakers,
+      sponsorshipAvailable,
+      status,
       capacity,
       registrationDeadline,
       eventType
@@ -133,19 +129,8 @@ export async function PUT(
       );
     }
 
-    const existingEvent = await prisma.event.findUnique({
-      where: { id }
-    });
-
-    if (!existingEvent) {
-      return NextResponse.json(
-        { error: 'Event not found' },
-        { status: 404 }
-      );
-    }
-
-    const updatedEvent = await prisma.event.update({
-      where: { id },
+    const event = await prisma.event.update({
+      where: { id: params.id },
       data: {
         name,
         description,
@@ -156,42 +141,26 @@ export async function PUT(
         venue,
         category,
         industry,
-        estimatedCost,
-        attendeeCount,
-        isVirtual,
-        isHybrid,
+        estimatedCost: estimatedCost ? parseInt(estimatedCost) : null,
+        attendeeCount: attendeeCount ? parseInt(String(attendeeCount)) : null,
+        isVirtual: Boolean(isVirtual),
+        isHybrid: Boolean(isHybrid),
         imageUrl,
         logoUrl,
         organizerName,
         organizerUrl,
         registrationUrl,
-        callForSpeakers,
-        sponsorshipAvailable,
+        callForSpeakers: Boolean(callForSpeakers),
+        sponsorshipAvailable: Boolean(sponsorshipAvailable),
         status,
-        capacity,
+        capacity: capacity ? parseInt(String(capacity)) : null,
         registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
         eventType,
         updatedAt: new Date()
-      },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        _count: {
-          select: {
-            attendees: true,
-            ratings: true,
-            forumPosts: true
-          }
-        }
       }
     });
 
-    return NextResponse.json(updatedEvent);
+    return NextResponse.json(event);
 
   } catch (error) {
     console.error('Error updating event:', error);
@@ -204,29 +173,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
-
-    const event = await prisma.event.findUnique({
-      where: { id }
-    });
-
-    if (!event) {
-      return NextResponse.json(
-        { error: 'Event not found' },
-        { status: 404 }
-      );
-    }
-
     await prisma.event.delete({
-      where: { id }
+      where: { id: params.id }
     });
 
-    return NextResponse.json({
-      message: 'Event deleted successfully'
-    });
+    return NextResponse.json({ success: true });
 
   } catch (error) {
     console.error('Error deleting event:', error);

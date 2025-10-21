@@ -35,81 +35,51 @@ export async function GET(request: NextRequest) {
         avatarSeed: true,
         anonymousUsername: true,
         role: true,
-        _count: {
-          select: {
-            ForumPost: Object.keys(dateFilter).length > 0
-              ? { where: { createdAt: dateFilter } }
-              : true,
-            ForumComment: Object.keys(dateFilter).length > 0
-              ? { where: { createdAt: dateFilter } }
-              : true,
-            ForumPostVote: true,
-          }
-        }
+        ForumPost: Object.keys(dateFilter).length > 0
+          ? {
+              where: { createdAt: dateFilter },
+              select: { id: true }
+            }
+          : {
+              select: { id: true }
+            },
+        ForumComment: Object.keys(dateFilter).length > 0
+          ? {
+              where: { createdAt: dateFilter },
+              select: { id: true }
+            }
+          : {
+              select: { id: true }
+            }
       },
       take: limit * 2 // Get more to calculate scores
     });
 
     // Calculate contribution score for each user
-    const scoredContributors = await Promise.all(
-      contributors.map(async (user) => {
-        // Get additional metrics
-        const [postsUpvoted, commentsUpvoted, helpfulVotes] = await Promise.all([
-          // Posts the user created that were upvoted
-          prisma.forumPostVote.count({
-            where: {
-              post: { authorId: user.id },
-              voteType: 'UPVOTE'
-            }
-          }),
-          // Comments the user created that were upvoted
-          prisma.forumCommentVote.count({
-            where: {
-              comment: { userId: user.id },
-              voteType: 'UPVOTE'
-            }
-          }),
-          // Helpful votes on user's content
-          prisma.forumComment.count({
-            where: {
-              userId: user.id,
-              markedHelpful: true
-            }
-          })
-        ]);
+    const scoredContributors = contributors.map((user) => {
+      // Calculate gems (contribution score)
+      // Formula: Posts = 10 gems, Comments = 5 gems
+      // (Aligned with admin backend calculation)
+      const postCount = user.ForumPost?.length || 0;
+      const commentCount = user.ForumComment?.length || 0;
 
-        // Calculate gems (contribution score)
-        // Formula:
-        // - Post created: 10 gems
-        // - Comment created: 5 gems
-        // - Post upvote received: 2 gems
-        // - Comment upvote received: 1 gem
-        // - Helpful vote: 5 gems
-        const gems =
-          (user._count.ForumPost * 10) +
-          (user._count.ForumComment * 5) +
-          (postsUpvoted * 2) +
-          (commentsUpvoted * 1) +
-          (helpfulVotes * 5);
+      const gems = (postCount * 10) + (commentCount * 5);
 
-        // Determine if user is VIP (PRO or ADMIN)
-        const isVIP = user.role === 'PRO' || user.role === 'ADMIN';
+      // Determine if user is VIP (PRO or ADMIN)
+      const isVIP = user.role === 'PRO' || user.role === 'ADMIN';
 
-        return {
-          id: user.id,
-          name: user.name || user.anonymousUsername || 'Anonymous User',
-          email: user.email,
-          avatarSeed: user.avatarSeed,
-          gems,
-          contributions: user._count.ForumPost + user._count.ForumComment,
-          posts: user._count.ForumPost,
-          comments: user._count.ForumComment,
-          upvotes: postsUpvoted + commentsUpvoted,
-          helpfulVotes,
-          isVIP
-        };
-      })
-    );
+      return {
+        id: user.id,
+        name: user.anonymousUsername || user.name || 'Anonymous User',
+        email: user.email,
+        avatarSeed: user.avatarSeed,
+        gems,
+        contributions: postCount + commentCount,
+        posts: postCount,
+        comments: commentCount,
+        isVIP
+      };
+    });
 
     // Sort by gems and assign ranks
     const rankedContributors = scoredContributors

@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
     const events = await prisma.event.findMany({
       where,
       include: {
-        creator: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -92,9 +92,9 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            attendees: true,
-            ratings: true,
-            forumPosts: true
+            EventAttendee: true,
+            EventRating: true,
+            ForumPost: true
           }
         }
       },
@@ -141,15 +141,15 @@ export async function GET(request: NextRequest) {
       totalRatings: event.totalRatings,
       createdAt: event.createdAt.toISOString(),
       updatedAt: event.updatedAt.toISOString(),
-      creator: event.creator ? {
-        id: event.creator.id,
-        name: event.creator.name || 'Anonymous',
-        email: event.creator.email
+      creator: event.User ? {
+        id: event.User.id,
+        name: event.User.name || 'Anonymous',
+        email: event.User.email
       } : null,
       _count: {
-        attendees: event._count.attendees,
-        ratings: event._count.ratings,
-        forumPosts: event._count.forumPosts
+        attendees: event._count.EventAttendee,
+        ratings: event._count.EventRating,
+        forumPosts: event._count.ForumPost
       }
     }));
 
@@ -212,6 +212,7 @@ export async function POST(request: NextRequest) {
 
     const event = await prisma.event.create({
       data: {
+        id: require('crypto').randomBytes(16).toString('hex').substring(0, 24),
         name,
         description,
         website,
@@ -236,10 +237,11 @@ export async function POST(request: NextRequest) {
         status,
         capacity,
         registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
-        eventType
+        eventType,
+        updatedAt: new Date()
       },
       include: {
-        creator: {
+        User: {
           select: {
             id: true,
             name: true,

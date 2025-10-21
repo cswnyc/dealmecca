@@ -55,6 +55,11 @@ export function ForumSidebar() {
     rank: number;
     isVIP: boolean;
   }>>([]);
+  const [communityStats, setCommunityStats] = useState({
+    activeUsers: 0,
+    todaysPosts: 0,
+    onlineNow: 0
+  });
 
   useEffect(() => {
     console.log('🎯 ForumSidebar: Firebase user state:', { firebaseUser: !!firebaseUser, authLoading, hasFirebaseSession });
@@ -118,12 +123,22 @@ export function ForumSidebar() {
       console.log('🎯 ForumSidebar: Already fetching, skipping...');
       return;
     }
-    
+
     isFetchingRef.current = true;
     try {
       console.log('🎯 ForumSidebar: Fetching user stats...');
-      const response = await fetch('/api/rewards/stats', {
-        credentials: 'include',  // Include cookies
+
+      // Build URL with firebaseUid if available
+      let url = '/api/rewards/stats';
+      if (firebaseUser?.uid) {
+        url += `?firebaseUid=${firebaseUser.uid}`;
+        console.log('🎯 ForumSidebar: Using firebaseUid:', firebaseUser.uid);
+      } else {
+        console.log('🎯 ForumSidebar: No firebaseUid, using session fallback');
+      }
+
+      const response = await fetch(url, {
+        credentials: 'include',  // Include cookies for session fallback
         headers: {
           'Content-Type': 'application/json',
         }
@@ -200,9 +215,28 @@ export function ForumSidebar() {
     }
   };
 
-  // Fetch notification count and top contributors when component mounts
+  // Fetch community stats
+  const fetchCommunityStats = async () => {
+    try {
+      const response = await fetch('/api/forum/community-stats');
+      if (response.ok) {
+        const data = await response.json();
+        setCommunityStats({
+          activeUsers: data.activeUsers || 0,
+          todaysPosts: data.todaysPosts || 0,
+          onlineNow: data.onlineNow || 0
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching community stats:', error);
+      // Keep default values on error
+    }
+  };
+
+  // Fetch notification count, top contributors, and community stats when component mounts
   useEffect(() => {
     fetchTopContributors();
+    fetchCommunityStats();
   }, []);
 
   // Fetch notification count when user is available
@@ -223,10 +257,18 @@ export function ForumSidebar() {
     }
   };
 
+  // Format number with k suffix for thousands
+  const formatNumber = (num: number): string => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+  };
+
   const quickStats: QuickStat[] = [
-    { label: 'Active Users', value: '2.3k', icon: <Users className="w-4 h-4" />, color: 'text-blue-600' },
-    { label: 'Today\'s Posts', value: '47', icon: <MessageSquare className="w-4 h-4" />, color: 'text-green-600' },
-    { label: 'Online Now', value: '156', icon: <Eye className="w-4 h-4" />, color: 'text-purple-600' },
+    { label: 'Active Users', value: formatNumber(communityStats.activeUsers), icon: <Users className="w-4 h-4" />, color: 'text-blue-600' },
+    { label: 'Today\'s Posts', value: communityStats.todaysPosts, icon: <MessageSquare className="w-4 h-4" />, color: 'text-green-600' },
+    { label: 'Online Now', value: communityStats.onlineNow, icon: <Eye className="w-4 h-4" />, color: 'text-purple-600' },
   ];
 
   console.log('🎯 ForumSidebar: Render state check:', { 

@@ -121,12 +121,25 @@ function UserProfileContent() {
 
   const fetchUserStats = async () => {
     try {
-      const response = await fetch('/api/rewards/stats');
+      // Build URL with firebaseUid if available
+      let url = '/api/rewards/stats';
+      if (firebaseUser?.uid) {
+        url += `?firebaseUid=${firebaseUser.uid}`;
+        console.log('[UserProfileCard] Fetching stats with firebaseUid:', firebaseUser.uid);
+      } else {
+        console.log('[UserProfileCard] Fetching stats without firebaseUid (fallback to session)');
+      }
+
+      const response = await fetch(url, {
+        credentials: 'include', // Include cookies for session fallback
+      });
+
       if (response.ok) {
         const data = await response.json();
+        console.log('[UserProfileCard] Stats API response:', data);
         setUserStats(data);
       } else {
-        console.log('Rewards API not available, using default stats');
+        console.log('Rewards API not available, using default stats. Status:', response.status);
         // Use default stats when API fails
         setUserStats({
           gems: 0,

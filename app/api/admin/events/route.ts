@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createId } from '@paralleldrive/cuid2';
 
 export async function GET(request: NextRequest) {
   try {
@@ -206,6 +207,7 @@ export async function POST(request: NextRequest) {
 
     const event = await prisma.event.create({
       data: {
+        id: createId(),
         name,
         description,
         website,
@@ -226,14 +228,15 @@ export async function POST(request: NextRequest) {
         registrationUrl,
         callForSpeakers,
         sponsorshipAvailable,
-        createdBy,
+        ...(createdBy && { createdBy }), // Only include if provided
         status,
         capacity,
         registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
-        eventType
+        eventType,
+        updatedAt: new Date()
       },
       include: {
-        creator: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -242,9 +245,9 @@ export async function POST(request: NextRequest) {
         },
         _count: {
           select: {
-            attendees: true,
-            ratings: true,
-            forumPosts: true
+            EventAttendee: true,
+            EventRating: true,
+            ForumPost: true
           }
         }
       }

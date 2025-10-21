@@ -10,22 +10,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  Users, 
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
   Globe,
   Monitor,
   Wifi,
-  Save, 
+  Save,
   X,
   Trash2,
   AlertCircle,
   CheckCircle,
   Settings,
-  Building2
+  Building2,
+  Link as LinkIcon,
+  Loader2
 } from 'lucide-react';
 
 // Form validation rules
@@ -38,14 +40,22 @@ interface ValidationRule {
 
 const VALIDATION_RULES: Record<string, ValidationRule> = {
   name: { required: true, minLength: 3, maxLength: 100 },
-  description: { required: false, maxLength: 2000 },
+  description: { required: true, maxLength: 2000 },
+  website: { required: true },
   startDate: { required: true },
   endDate: { required: true },
   location: { required: true, minLength: 3, maxLength: 200 },
-  venue: { required: false, maxLength: 200 },
+  venue: { required: true, maxLength: 200 },
   category: { required: true },
-  capacity: { required: false },
-  registrationDeadline: { required: false }
+  industry: { required: true },
+  estimatedCost: { required: true },
+  attendeeCount: { required: true },
+  organizerName: { required: true },
+  organizerUrl: { required: true },
+  registrationUrl: { required: true },
+  capacity: { required: true },
+  registrationDeadline: { required: true },
+  eventType: { required: true }
 };
 
 const eventCategories = [
@@ -76,6 +86,21 @@ const eventTypes = [
   { value: 'TRAINING', label: 'Training', description: 'Educational training session' },
   { value: 'SOCIAL', label: 'Social', description: 'Social networking event' },
   { value: 'CORPORATE', label: 'Corporate', description: 'Corporate function' }
+];
+
+const industries = [
+  { value: 'TECHNOLOGY_SOFTWARE', label: 'Technology & Software' },
+  { value: 'ENTERTAINMENT_MEDIA', label: 'Entertainment & Media' },
+  { value: 'HEALTHCARE', label: 'Healthcare' },
+  { value: 'FINANCE', label: 'Finance' },
+  { value: 'RETAIL', label: 'Retail' },
+  { value: 'MANUFACTURING', label: 'Manufacturing' },
+  { value: 'EDUCATION', label: 'Education' },
+  { value: 'REAL_ESTATE', label: 'Real Estate' },
+  { value: 'AUTOMOTIVE', label: 'Automotive' },
+  { value: 'TELECOMMUNICATIONS', label: 'Telecommunications' },
+  { value: 'ENERGY', label: 'Energy' },
+  { value: 'OTHER', label: 'Other' }
 ];
 
 interface Event {
@@ -128,6 +153,7 @@ interface FormData {
   location: string;
   venue: string;
   category: string;
+  industry: string;
   status: string;
   capacity: string;
   registrationDeadline: string;
@@ -158,6 +184,12 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isDirty, setIsDirty] = useState(false);
 
+  // URL parsing state
+  const [urlToParse, setUrlToParse] = useState('');
+  const [parsing, setParsing] = useState(false);
+  const [parseSuccess, setParseSuccess] = useState(false);
+  const [parseError, setParseError] = useState('');
+
   const [formData, setFormData] = useState<FormData>({
     name: event?.name || '',
     description: event?.description || '',
@@ -166,6 +198,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
     location: event?.location || '',
     venue: event?.venue || '',
     category: event?.category || '',
+    industry: (event as any)?.industry || 'TECHNOLOGY_SOFTWARE',
     status: event?.status || 'DRAFT',
     capacity: event?.capacity?.toString() || '',
     registrationDeadline: event?.registrationDeadline ? new Date(event.registrationDeadline).toISOString().slice(0, 16) : '',
@@ -258,10 +291,60 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
     return isValid;
   }, [formData, validateField]);
 
+  const handleParseUrl = async () => {
+    if (!urlToParse.trim()) {
+      setParseError('Please enter a URL');
+      return;
+    }
+
+    try {
+      setParsing(true);
+      setParseError('');
+      setParseSuccess(false);
+
+      const response = await fetch('/api/admin/events/parse-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: urlToParse })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to parse URL');
+      }
+
+      const data = await response.json();
+
+      // Update form with parsed data, preserving existing values
+      setFormData(prev => ({
+        ...prev,
+        name: data.name || prev.name,
+        description: data.description || prev.description,
+        website: data.website || urlToParse,
+        startDate: data.startDate ? new Date(data.startDate).toISOString().slice(0, 16) : prev.startDate,
+        endDate: data.endDate ? new Date(data.endDate).toISOString().slice(0, 16) : prev.endDate,
+        location: data.location || prev.location,
+        venue: data.venue || prev.venue,
+        organizerName: data.organizerName || prev.organizerName,
+        organizerUrl: data.organizerUrl || prev.organizerUrl,
+        imageUrl: data.imageUrl || prev.imageUrl,
+        logoUrl: data.logoUrl || prev.logoUrl,
+      }));
+
+      setParseSuccess(true);
+      setIsDirty(true);
+      setTimeout(() => setParseSuccess(false), 3000);
+    } catch (err) {
+      console.error('Error parsing URL:', err);
+      setParseError(err instanceof Error ? err.message : 'Failed to parse URL');
+    } finally {
+      setParsing(false);
+    }
+  };
+
   const updateFormData = useCallback((field: keyof FormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setIsDirty(true);
-    
+
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -269,9 +352,9 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
 
     // Auto-update location for virtual events
     if (field === 'isVirtual' && value) {
-      setFormData(prev => ({ 
-        ...prev, 
-        [field]: value, 
+      setFormData(prev => ({
+        ...prev,
+        [field]: value,
         location: prev.location.includes('Virtual') ? prev.location : 'Virtual Event',
         isHybrid: false
       }));
@@ -279,9 +362,9 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
 
     // Auto-update for hybrid events
     if (field === 'isHybrid' && value) {
-      setFormData(prev => ({ 
-        ...prev, 
-        [field]: value, 
+      setFormData(prev => ({
+        ...prev,
+        [field]: value,
         isVirtual: false
       }));
     }
@@ -305,6 +388,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
         location: formData.location,
         venue: formData.venue || undefined,
         category: formData.category,
+        industry: formData.industry,
         status: formData.status,
         capacity: formData.capacity ? parseInt(formData.capacity) : null,
         registrationDeadline: formData.registrationDeadline ? new Date(formData.registrationDeadline).toISOString() : null,
@@ -327,9 +411,9 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
         await onSave(eventData);
       } else {
         // Default save logic
-        const url = mode === 'create' ? '/api/events' : `/api/events/${event?.id}`;
+        const url = mode === 'create' ? '/api/admin/events' : `/api/admin/events/${event?.id}`;
         const method = mode === 'create' ? 'POST' : 'PUT';
-        
+
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
@@ -366,7 +450,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
       if (onDelete) {
         await onDelete();
       } else {
-        const response = await fetch(`/api/events/${event.id}`, {
+        const response = await fetch(`/api/admin/events/${event.id}`, {
           method: 'DELETE'
         });
 
@@ -476,6 +560,72 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* URL Parser - Only show in create mode */}
+        {mode === 'create' && (
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-blue-900">
+                <LinkIcon className="w-5 h-5" />
+                <span>Quick Import from URL</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-blue-800">
+                Paste an event website URL to automatically extract event details like name, description, dates, location, and more.
+              </p>
+
+              <div className="flex gap-3">
+                <Input
+                  type="url"
+                  value={urlToParse}
+                  onChange={(e) => setUrlToParse(e.target.value)}
+                  placeholder="https://example.com/event"
+                  className="flex-1 bg-white"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleParseUrl();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={handleParseUrl}
+                  disabled={parsing || !urlToParse.trim()}
+                  variant="default"
+                  className="min-w-[120px]"
+                >
+                  {parsing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Parsing...
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon className="w-4 h-4 mr-2" />
+                      Parse URL
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {parseError && (
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{parseError}</span>
+                </div>
+              )}
+
+              {parseSuccess && (
+                <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>Event details imported successfully! Review and edit the form below.</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -506,7 +656,10 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="flex items-center space-x-1">
+                <span>Description</span>
+                <span className="text-red-500">*</span>
+              </Label>
               <Textarea
                 id="description"
                 value={formData.description}
@@ -514,6 +667,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                 placeholder="Describe your event, its objectives, and what attendees can expect..."
                 rows={4}
                 className={errors.description ? 'border-red-500' : ''}
+                required
               />
               {errors.description && (
                 <p className="text-sm text-red-500 mt-1 flex items-center">
@@ -560,12 +714,15 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
               </div>
 
               <div>
-                <Label htmlFor="eventType">Event Type</Label>
-                <Select 
-                  value={formData.eventType} 
+                <Label htmlFor="eventType" className="flex items-center space-x-1">
+                  <span>Event Type</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.eventType}
                   onValueChange={(value) => updateFormData('eventType', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={errors.eventType ? 'border-red-500' : ''}>
                     <SelectValue placeholder="Select event type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -583,7 +740,41 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                     </Badge>
                   </div>
                 )}
+                {errors.eventType && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.eventType}
+                  </p>
+                )}
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor="industry" className="flex items-center space-x-1">
+                <span>Industry</span>
+                <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={formData.industry}
+                onValueChange={(value) => updateFormData('industry', value)}
+              >
+                <SelectTrigger className={errors.industry ? 'border-red-500' : ''}>
+                  <SelectValue placeholder="Select industry" />
+                </SelectTrigger>
+                <SelectContent>
+                  {industries.map((industry) => (
+                    <SelectItem key={industry.value} value={industry.value}>
+                      {industry.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.industry && (
+                <p className="text-sm text-red-500 mt-1 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.industry}
+                </p>
+              )}
             </div>
 
             <div>
@@ -669,13 +860,17 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
             </div>
 
             <div>
-              <Label htmlFor="registrationDeadline">Registration Deadline</Label>
+              <Label htmlFor="registrationDeadline" className="flex items-center space-x-1">
+                <span>Registration Deadline</span>
+                <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="registrationDeadline"
                 type="datetime-local"
                 value={formData.registrationDeadline}
                 onChange={(e) => updateFormData('registrationDeadline', e.target.value)}
                 className={errors.registrationDeadline ? 'border-red-500' : ''}
+                required
               />
               {errors.registrationDeadline && (
                 <p className="text-sm text-red-500 mt-1 flex items-center">
@@ -683,9 +878,6 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                   {errors.registrationDeadline}
                 </p>
               )}
-              <p className="text-sm text-gray-500 mt-1">
-                Optional: Last date for attendee registration
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -747,13 +939,17 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
               </div>
               
               <div>
-                <Label htmlFor="venue">Venue</Label>
+                <Label htmlFor="venue" className="flex items-center space-x-1">
+                  <span>Venue</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="venue"
                   value={formData.venue}
                   onChange={(e) => updateFormData('venue', e.target.value)}
                   placeholder="e.g., Moscone Center, Hall A"
                   className={errors.venue ? 'border-red-500' : ''}
+                  required
                 />
                 {errors.venue && (
                   <p className="text-sm text-red-500 mt-1 flex items-center">
@@ -777,15 +973,19 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="capacity">Event Capacity</Label>
+                <Label htmlFor="capacity" className="flex items-center space-x-1">
+                  <span>Event Capacity</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="capacity"
                   type="number"
                   min="1"
                   value={formData.capacity}
                   onChange={(e) => updateFormData('capacity', e.target.value)}
-                  placeholder="e.g., 500 (leave empty for unlimited)"
+                  placeholder="e.g., 500"
                   className={errors.capacity ? 'border-red-500' : ''}
+                  required
                 />
                 {errors.capacity && (
                   <p className="text-sm text-red-500 mt-1 flex items-center">
@@ -793,13 +993,13 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                     {errors.capacity}
                   </p>
                 )}
-                <p className="text-sm text-gray-500 mt-1">
-                  Leave empty for unlimited capacity
-                </p>
               </div>
-              
+
               <div>
-                <Label htmlFor="attendeeCount">Expected Attendees</Label>
+                <Label htmlFor="attendeeCount" className="flex items-center space-x-1">
+                  <span>Expected Attendees</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="attendeeCount"
                   type="number"
@@ -807,16 +1007,24 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                   value={formData.attendeeCount}
                   onChange={(e) => updateFormData('attendeeCount', e.target.value)}
                   placeholder="e.g., 300"
+                  className={errors.attendeeCount ? 'border-red-500' : ''}
+                  required
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Estimated number of attendees
-                </p>
+                {errors.attendeeCount && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.attendeeCount}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="estimatedCost">Estimated Cost (USD)</Label>
+                <Label htmlFor="estimatedCost" className="flex items-center space-x-1">
+                  <span>Estimated Cost (USD)</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="estimatedCost"
                   type="number"
@@ -824,10 +1032,15 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                   value={formData.estimatedCost}
                   onChange={(e) => updateFormData('estimatedCost', e.target.value)}
                   placeholder="e.g., 299"
+                  className={errors.estimatedCost ? 'border-red-500' : ''}
+                  required
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Average cost per attendee
-                </p>
+                {errors.estimatedCost && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.estimatedCost}
+                  </p>
+                )}
               </div>
               
               <div className="flex items-center space-x-4 pt-6">
@@ -864,25 +1077,47 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="website">Event Website</Label>
+                <Label htmlFor="website" className="flex items-center space-x-1">
+                  <span>Event Website</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="website"
                   type="url"
                   value={formData.website}
                   onChange={(e) => updateFormData('website', e.target.value)}
                   placeholder="https://example.com"
+                  className={errors.website ? 'border-red-500' : ''}
+                  required
                 />
+                {errors.website && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.website}
+                  </p>
+                )}
               </div>
-              
+
               <div>
-                <Label htmlFor="registrationUrl">Registration URL</Label>
+                <Label htmlFor="registrationUrl" className="flex items-center space-x-1">
+                  <span>Registration URL</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="registrationUrl"
                   type="url"
                   value={formData.registrationUrl}
                   onChange={(e) => updateFormData('registrationUrl', e.target.value)}
                   placeholder="https://eventbrite.com/..."
+                  className={errors.registrationUrl ? 'border-red-500' : ''}
+                  required
                 />
+                {errors.registrationUrl && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.registrationUrl}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -912,24 +1147,46 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="organizerName">Organizer Name</Label>
+                <Label htmlFor="organizerName" className="flex items-center space-x-1">
+                  <span>Organizer Name</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="organizerName"
                   value={formData.organizerName}
                   onChange={(e) => updateFormData('organizerName', e.target.value)}
                   placeholder="e.g., Tech Events Inc."
+                  className={errors.organizerName ? 'border-red-500' : ''}
+                  required
                 />
+                {errors.organizerName && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.organizerName}
+                  </p>
+                )}
               </div>
-              
+
               <div>
-                <Label htmlFor="organizerUrl">Organizer Website</Label>
+                <Label htmlFor="organizerUrl" className="flex items-center space-x-1">
+                  <span>Organizer Website</span>
+                  <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="organizerUrl"
                   type="url"
                   value={formData.organizerUrl}
                   onChange={(e) => updateFormData('organizerUrl', e.target.value)}
                   placeholder="https://organizer.com"
+                  className={errors.organizerUrl ? 'border-red-500' : ''}
+                  required
                 />
+                {errors.organizerUrl && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.organizerUrl}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>

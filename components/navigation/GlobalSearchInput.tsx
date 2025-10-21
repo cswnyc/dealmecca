@@ -173,9 +173,9 @@ export function GlobalSearchInput({
 
     // Navigate based on suggestion type
     if (suggestion.type === 'company') {
-      router.push(`/orgs/companies/${suggestion.id}`);
+      router.push(`/companies/${suggestion.id}`);
     } else if (suggestion.type === 'contact') {
-      router.push(`/orgs/contacts/${suggestion.id}`);
+      router.push(`/people/${suggestion.id}`);
     } else if (suggestion.type === 'forumPost') {
       router.push(`/forum/posts/${suggestion.id}`);
     } else if (suggestion.type === 'forumCategory') {

@@ -70,21 +70,60 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         updatedAt: true,
         lastDashboardVisit: true,
+        companyId: true,
+        provider: true,
+        verifiedSeller: true,
+        company: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
         // Include related data counts
         _count: {
           select: {
             ForumComment: true,
             ForumPost: true,
             PostBookmark: true,
-            PostFollow: true
+            PostFollow: true,
+            Comment: true,
+            Post: true
           }
         }
       }
     });
 
+    // Enhance users with verification status and simplified gem calculation
+    const usersWithGems = users.map((user) => {
+      // Simple gem calculation based on counts (10 per post, 5 per comment)
+      const postCount = user._count?.ForumPost || 0;
+      const commentCount = user._count?.ForumComment || 0;
+      const forumGems = (postCount * 10) + (commentCount * 5);
+
+      // Check verification status
+      const emailVerified = !!user.email && !!user.firebaseUid;
+      const linkedinVerified = user.provider === 'linkedin';
+
+      return {
+        ...user,
+        forumGems,
+        forumContributions: postCount + commentCount,
+        emailVerified,
+        linkedinVerified,
+        linkedinUrl: linkedinVerified ? `https://www.linkedin.com/` : undefined,
+        _count: {
+          ...user._count,
+          comments: user._count?.Comment || 0,
+          posts: user._count?.Post || 0,
+          bookmarks: user._count?.PostBookmark || 0,
+          follows: user._count?.PostFollow || 0
+        }
+      };
+    });
+
     // Prepare response
     const response: any = {
-      users,
+      users: usersWithGems,
       pagination: {
         page,
         limit,
@@ -98,6 +137,7 @@ export async function GET(request: NextRequest) {
       const [
         totalCount,
         activeUsers,
+        verifiedUsers,
         roleStats,
         subscriptionStats,
         statusStats
@@ -108,6 +148,14 @@ export async function GET(request: NextRequest) {
             lastDashboardVisit: {
               gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
             }
+          }
+        }),
+        prisma.user.count({
+          where: {
+            AND: [
+              { email: { not: null } },
+              { firebaseUid: { not: null } }
+            ]
           }
         }),
         prisma.user.groupBy({
@@ -124,9 +172,14 @@ export async function GET(request: NextRequest) {
         })
       ]);
 
+      // Calculate total forum gems across all users
+      const totalForumGems = usersWithGems.reduce((sum, user) => sum + user.forumGems, 0);
+
       response.stats = {
         total: totalCount,
         activeUsers: activeUsers,
+        verifiedUsers: verifiedUsers,
+        totalForumGems: totalForumGems,
         byRole: roleStats.reduce((acc, stat) => {
           acc[stat.role] = stat._count.role;
           return acc;
@@ -213,6 +266,7 @@ export async function PATCH(request: NextRequest) {
     if (updates.role) allowedUpdates.role = updates.role;
     if (updates.subscriptionTier) allowedUpdates.subscriptionTier = updates.subscriptionTier;
     if (updates.subscriptionStatus) allowedUpdates.subscriptionStatus = updates.subscriptionStatus;
+    if (updates.verifiedSeller !== undefined) allowedUpdates.verifiedSeller = updates.verifiedSeller;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },

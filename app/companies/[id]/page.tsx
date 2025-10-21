@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CapabilitiesSection } from '@/components/companies/CapabilitiesSection';
 import { PartnershipCard } from '@/components/companies/PartnershipCard';
+import { RelationshipGraph } from '@/components/companies/RelationshipGraph';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import {
   Building2,
@@ -32,7 +33,8 @@ import {
   Bell,
   Activity as ActivityIcon,
   UserPlus,
-  Edit3
+  Edit3,
+  GitFork
 } from 'lucide-react';
 
 interface Company {
@@ -123,7 +125,7 @@ export default function CompanyDetailPage() {
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'partnerships' | 'subsidiaries' | 'activity'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'partnerships' | 'relationships' | 'subsidiaries' | 'activity'>('overview');
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
@@ -411,6 +413,7 @@ export default function CompanyDetailPage() {
                   { id: 'overview', label: 'Overview', icon: Building2 },
                   { id: 'team', label: `Team (${company._count.contacts})`, icon: Users },
                   { id: 'partnerships', label: `Partnerships (${company._count.partnerships})`, icon: Network },
+                  { id: 'relationships', label: 'Relationship Graph', icon: GitFork },
                   ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: `Subsidiaries (${company._count.subsidiaries})`, icon: Briefcase }] : []),
                   { id: 'activity', label: 'Activity', icon: ActivityIcon }
                 ].map((tab) => {
@@ -756,6 +759,77 @@ export default function CompanyDetailPage() {
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {/* Relationships Tab */}
+          {activeTab === 'relationships' && (
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <GitFork className="h-5 w-5" />
+                    Relationship Graph
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Interactive visualization of {company.name}'s business relationships, including parent companies, subsidiaries, agency partnerships, and key contacts.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <RelationshipGraph companyId={company.id} includeContacts={true} />
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Legend</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded bg-blue-600 ring-2 ring-blue-200"></div>
+                        <span>Central Company (this company)</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded bg-purple-500"></div>
+                        <span>Agency Partners</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded bg-green-500"></div>
+                        <span>Client/Advertiser</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded bg-gray-400"></div>
+                        <span>Contacts/People</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-0.5 bg-purple-500"></div>
+                        <span>Agency-Client Relationship (animated)</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-1 bg-gray-600"></div>
+                        <span>Parent-Subsidiary Relationship</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Controls</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm text-gray-600">
+                      <p><strong>• Zoom:</strong> Use mouse wheel or pinch gesture</p>
+                      <p><strong>• Pan:</strong> Click and drag background</p>
+                      <p><strong>• Move nodes:</strong> Drag individual nodes to reposition</p>
+                      <p><strong>• Fit view:</strong> Use the "Fit View" button in bottom-left controls</p>
+                      <p><strong>• Minimap:</strong> Click on minimap to quickly navigate large graphs</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           )}
 
           {/* Activity Tab */}

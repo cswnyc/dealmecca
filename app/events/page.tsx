@@ -799,14 +799,18 @@ export default function EventsPage() {
                 ) : (
                   <div className="grid gap-6">
                     {filteredEvents.map((event) => (
-                      <div key={event.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                      <div
+                        key={event.id}
+                        onClick={() => router.push(`/events/${event.id}`)}
+                        className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer"
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-4 flex-1">
                             {/* Event Image/Logo */}
                             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                               <Calendar className="w-8 h-8 text-white" />
                             </div>
-                            
+
                             <div className="min-w-0 flex-1">
                               <div className="flex items-start justify-between mb-2">
                                 <div className="flex-1">
@@ -876,7 +880,7 @@ export default function EventsPage() {
                               </div>
 
                               {/* Action Buttons */}
-                              <div className="flex items-center space-x-3 mt-4">
+                              <div className="flex items-center space-x-3 mt-4" onClick={(e) => e.stopPropagation()}>
                                 {event.registrationUrl && (
                                   <Link href={event.registrationUrl} target="_blank">
                                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
