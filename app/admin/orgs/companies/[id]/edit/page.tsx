@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 interface CompanyFormData {
   name: string;
@@ -202,15 +203,13 @@ export default function EditCompanyPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Logo URL
-              </label>
-              <input
-                type="url"
-                value={formData.logoUrl}
-                onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                placeholder="https://example.com/logo.png"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              <ImageUpload
+                label="Company Logo"
+                currentImageUrl={formData.logoUrl}
+                entityType="company"
+                entityId={params.id as string}
+                onUploadSuccess={(url) => setFormData({ ...formData, logoUrl: url })}
+                onRemove={() => setFormData({ ...formData, logoUrl: '' })}
               />
             </div>
 

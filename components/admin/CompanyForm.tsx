@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import ImageUpload from '@/components/admin/ImageUpload';
 import {
   ArrowLeft,
   Building2,
@@ -676,13 +677,13 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
               </div>
 
               <div>
-                <Label htmlFor="logoUrl">Logo URL</Label>
-                <Input
-                  id="logoUrl"
-                  type="url"
-                  value={formData.logoUrl}
-                  onChange={(e) => updateFormData('logoUrl', e.target.value)}
-                  placeholder="https://example.com/logo.png"
+                <ImageUpload
+                  label="Company Logo"
+                  currentImageUrl={formData.logoUrl}
+                  entityType="company"
+                  entityId={company?.id}
+                  onUploadSuccess={(url) => updateFormData('logoUrl', url)}
+                  onRemove={() => updateFormData('logoUrl', '')}
                 />
               </div>
             </div>

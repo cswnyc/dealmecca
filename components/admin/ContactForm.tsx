@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ContactPhotoUpload } from '@/components/admin/ContactPhotoUpload';
+import ImageUpload from '@/components/admin/ImageUpload';
 import {
   ArrowLeft,
   Building2,
@@ -535,25 +536,25 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
           </CardContent>
         </Card>
 
-        {/* Contact Photo - Only in edit mode */}
-        {mode === 'edit' && contact && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Camera className="w-5 h-5" />
-                <span>Contact Photo</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ContactPhotoUpload
-                contactId={contact.id}
-                currentPhotoUrl={photoUrl}
-                contactName={contact.fullName}
-                onPhotoChange={(newPhotoUrl) => setPhotoUrl(newPhotoUrl || '')}
-              />
-            </CardContent>
-          </Card>
-        )}
+        {/* Contact Photo */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Camera className="w-5 h-5" />
+              <span>Contact Photo</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ImageUpload
+              label="Contact Photo"
+              currentImageUrl={photoUrl}
+              entityType="contact"
+              entityId={contact?.id}
+              onUploadSuccess={(url) => setPhotoUrl(url)}
+              onRemove={() => setPhotoUrl('')}
+            />
+          </CardContent>
+        </Card>
 
         {/* Company Information */}
         <Card>
