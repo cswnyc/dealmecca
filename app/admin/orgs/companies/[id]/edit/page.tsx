@@ -293,26 +293,39 @@ export default function EditCompanyPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Employee Count
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.employeeCount}
                   onChange={(e) => setFormData({ ...formData, employeeCount: e.target.value })}
-                  placeholder="e.g., 50-100, 500+"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Select range</option>
+                  <option value="STARTUP_1_10">1-10 employees</option>
+                  <option value="SMALL_11_50">11-50 employees</option>
+                  <option value="MEDIUM_51_200">51-200 employees</option>
+                  <option value="LARGE_201_1000">201-1,000 employees</option>
+                  <option value="ENTERPRISE_1001_5000">1,001-5,000 employees</option>
+                  <option value="MEGA_5000_PLUS">5,000+ employees</option>
+                </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Revenue
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.revenue}
                   onChange={(e) => setFormData({ ...formData, revenue: e.target.value })}
-                  placeholder="e.g., $10M-$50M"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Select range</option>
+                  <option value="UNDER_1M">Under $1M</option>
+                  <option value="RANGE_1M_5M">$1M - $5M</option>
+                  <option value="RANGE_5M_25M">$5M - $25M</option>
+                  <option value="RANGE_25M_100M">$25M - $100M</option>
+                  <option value="RANGE_100M_500M">$100M - $500M</option>
+                  <option value="RANGE_500M_1B">$500M - $1B</option>
+                  <option value="OVER_1B">Over $1B</option>
+                </select>
               </div>
             </div>
 
