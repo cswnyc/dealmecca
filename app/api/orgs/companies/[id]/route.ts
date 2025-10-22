@@ -321,10 +321,19 @@ export async function PUT(
 
     return NextResponse.json(updatedCompany);
 
-  } catch (error) {
-    console.error('Error updating company:', error);
+  } catch (error: any) {
+    console.error('[COMPANY UPDATE ERROR] Full error:', {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack
+    });
     return NextResponse.json(
-      { error: 'Failed to update company' },
+      {
+        error: 'Failed to update company',
+        details: error?.message,
+        code: error?.code
+      },
       { status: 500 }
     );
   }
