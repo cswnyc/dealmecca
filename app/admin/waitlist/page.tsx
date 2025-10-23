@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Users, Mail, Calendar, Filter } from 'lucide-react';
+import { motionVariants, designTokens, shouldReduceMotion } from '@/lib/design-tokens';
 
 interface WaitlistEntry {
   id: string;
@@ -23,6 +24,9 @@ export default function WaitlistAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  // Accessibility
+  const reducedMotion = shouldReduceMotion();
 
   useEffect(() => {
     fetchWaitlistData();
@@ -125,9 +129,9 @@ export default function WaitlistAdminPage() {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: reducedMotion ? 0 : 0.6 }}
       >
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Waitlist Management</h1>
@@ -144,8 +148,7 @@ export default function WaitlistAdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <motion.div
             className="bg-white p-6 rounded-lg shadow-sm border"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
+            whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Users className="w-8 h-8 text-emerald-600" />
@@ -158,8 +161,7 @@ export default function WaitlistAdminPage() {
 
           <motion.div
             className="bg-white p-6 rounded-lg shadow-sm border"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
+            whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Mail className="w-8 h-8 text-yellow-600" />
@@ -172,8 +174,7 @@ export default function WaitlistAdminPage() {
 
           <motion.div
             className="bg-white p-6 rounded-lg shadow-sm border"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
+            whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Calendar className="w-8 h-8 text-blue-600" />
@@ -186,8 +187,7 @@ export default function WaitlistAdminPage() {
 
           <motion.div
             className="bg-white p-6 rounded-lg shadow-sm border"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
+            whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Users className="w-8 h-8 text-green-600" />
@@ -247,9 +247,8 @@ export default function WaitlistAdminPage() {
                 {getFilteredEmails().map((entry) => (
                   <motion.tr
                     key={entry.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    {...motionVariants.fadeIn}
+                    transition={{ duration: reducedMotion ? 0 : 0.3 }}
                     className="hover:bg-gray-50"
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

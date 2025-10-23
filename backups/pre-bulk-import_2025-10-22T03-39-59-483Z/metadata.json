@@ -1,0 +1,19 @@
+{
+  "backupId": "pre-bulk-import_2025-10-22T03-39-59-483Z",
+  "timestamp": "2025-10-22T03:40:00.572Z",
+  "type": "pre-bulk-import",
+  "recordCounts": {
+    "companies": 820,
+    "contacts": 2042,
+    "users": 7,
+    "forumPosts": 16,
+    "events": 11,
+    "total": 2896
+  },
+  "files": [
+    "data-snapshot.json",
+    "database.sql",
+    "metadata.json"
+  ],
+  "purpose": "Pre-bulk-import safety backup"
+}

@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { LogoWithIcon } from '@/components/brand/Logo';
 import { GradientHero } from '@/components/invite-only/gradient-hero';
 import { WaitlistForm } from '@/components/invite-only/waitlist-form';
+import { shouldReduceMotion } from '@/lib/design-tokens';
 
 export default function InviteOnlyPage() {
+  const reducedMotion = shouldReduceMotion();
   return (
     <div className="h-dvh bg-slate-900 text-white relative overflow-hidden"
          style={{ isolation: 'isolate', zIndex: 9999 }}>
@@ -14,9 +16,9 @@ export default function InviteOnlyPage() {
       <div className="relative z-10 h-full flex flex-col">
         {/* Minimal Header */}
         <motion.header
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: reducedMotion ? 0 : -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: reducedMotion ? 0 : 0.8 }}
           className="p-6 md:p-8"
         >
           <div className="max-w-7xl mx-auto flex justify-center md:justify-start">
@@ -45,7 +47,7 @@ export default function InviteOnlyPage() {
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 3, duration: 0.6 }}
+          transition={{ delay: reducedMotion ? 0 : 3, duration: reducedMotion ? 0 : 0.6 }}
           className="pt-6 pb-4 px-6 md:pt-8 md:pb-6 md:px-8"
         >
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">

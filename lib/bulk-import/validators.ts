@@ -358,7 +358,9 @@ export class DataValidator {
   }
 
   private static isValidLinkedInUrl(url: string): boolean {
-    const linkedinRegex = /^https?:\/\/(www\.)?linkedin\.com\/(in|pub|profile)\/[\w\-_À-ÿ%]+\/?$/i;
+    // More permissive regex to handle URL-encoded characters (e.g., %C3%AD for í)
+    // Allows: letters, numbers, hyphens, underscores, accented chars, and percent-encoded sequences
+    const linkedinRegex = /^https?:\/\/(www\.)?linkedin\.com\/(in|pub|profile)\/[a-zA-Z0-9\-_À-ÿ%]+\/?$/i;
     return linkedinRegex.test(url);
   }
 

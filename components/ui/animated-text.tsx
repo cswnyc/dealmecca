@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { motionVariants, shouldReduceMotion } from '@/lib/design-tokens';
 
 interface AnimatedTextProps {
   text: string;
@@ -21,12 +22,14 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
   const words = text.split(' ');
   const highlightIndex = highlightWord ? words.findIndex(word => word.toLowerCase().includes(highlightWord.toLowerCase())) : -1;
 
+  const reducedMotion = shouldReduceMotion();
+
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={{ duration: reducedMotion ? 0 : 0.8, ease: "easeOut" }}
     >
       {(() => {
         // Find typewriter phrases and their positions
@@ -62,11 +65,10 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
               <motion.span
                 key={`typewriter-${currentIndex}`}
                 className="inline-block mr-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.0 }}
+                {...motionVariants.fadeIn}
+                transition={{ delay: reducedMotion ? 0 : 1.0 }}
               >
-                <TypewriterText text={typewriterSegment.text} delay={1200} />
+                <TypewriterText text={typewriterSegment.text} delay={reducedMotion ? 0 : 1200} />
                 {typewriterSegment.endIndex < words.length - 1 && ' '}
               </motion.span>
             );
@@ -81,25 +83,25 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
                 <motion.span
                   key={currentIndex}
                   className={`inline-block mr-1 ${highlightClassName}`}
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.8 }}
                   animate={{
                     opacity: 1,
                     scale: 1,
                   }}
                   transition={{
-                    duration: 0.6,
-                    delay: 0.8,
+                    duration: reducedMotion ? 0 : 0.6,
+                    delay: reducedMotion ? 0 : 0.8,
                     ease: "easeOut"
                   }}
                 >
                   <motion.span
-                    animate={{
+                    animate={reducedMotion ? {} : {
                       backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
                     }}
                     transition={{
                       duration: 3,
                       ease: "easeInOut",
-                      repeat: Infinity,
+                      repeat: reducedMotion ? 0 : Infinity,
                       repeatDelay: 1
                     }}
                     className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent bg-[length:200%_100%]"
@@ -114,11 +116,11 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
                 <motion.span
                   key={currentIndex}
                   className="inline-block mr-1"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
-                    duration: 0.5,
-                    delay: currentIndex * 0.1 + 0.2,
+                    duration: reducedMotion ? 0 : 0.5,
+                    delay: reducedMotion ? 0 : currentIndex * 0.1 + 0.2,
                     ease: "easeOut"
                   }}
                 >
@@ -147,9 +149,16 @@ export function TypewriterText({ text, className = '', delay = 0 }: TypewriterTe
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
+  const reducedMotion = shouldReduceMotion();
 
   useEffect(() => {
     if (!isStarted) return;
+
+    // If reduced motion, show all text immediately
+    if (reducedMotion) {
+      setDisplayText(text);
+      return;
+    }
 
     if (currentIndex < text.length) {
       const timeout = setTimeout(() => {
@@ -167,7 +176,7 @@ export function TypewriterText({ text, className = '', delay = 0 }: TypewriterTe
 
       return () => clearTimeout(restartTimeout);
     }
-  }, [currentIndex, text, isStarted]);
+  }, [currentIndex, text, isStarted, reducedMotion]);
 
   useEffect(() => {
     const startTimeout = setTimeout(() => {
@@ -179,23 +188,26 @@ export function TypewriterText({ text, className = '', delay = 0 }: TypewriterTe
     return () => clearTimeout(startTimeout);
   }, [delay]);
 
+  const reducedMotionCheck = shouldReduceMotion();
+
   return (
     <motion.span
       className={className}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: delay / 1000 }}
+      {...motionVariants.fadeIn}
+      transition={{ delay: reducedMotionCheck ? 0 : delay / 1000 }}
     >
       {displayText}
-      <motion.span
-        className="inline-block w-0.5 h-6 bg-current ml-1 align-middle"
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{
-          duration: 1,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+      {!reducedMotionCheck && (
+        <motion.span
+          className="inline-block w-0.5 h-6 bg-current ml-1 align-middle"
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      )}
     </motion.span>
   );
 }

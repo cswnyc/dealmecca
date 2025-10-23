@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { shouldReduceMotion } from '@/lib/design-tokens';
 
 interface GradientHeroProps {
   className?: string;
@@ -9,6 +10,7 @@ interface GradientHeroProps {
 
 export function GradientHero({ className = '' }: GradientHeroProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const reducedMotion = shouldReduceMotion();
 
   useEffect(() => {
     setIsVisible(true);
@@ -17,16 +19,16 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
   const letterVariants = {
     hidden: {
       opacity: 0,
-      y: 50,
-      scale: 0.8
+      y: reducedMotion ? 0 : 50,
+      scale: reducedMotion ? 1 : 0.8
     },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
-        delay: i * 0.1,
-        duration: 0.8,
+        delay: reducedMotion ? 0 : i * 0.1,
+        duration: reducedMotion ? 0 : 0.8,
         ease: [0.215, 0.61, 0.355, 1],
       }
     })
@@ -62,8 +64,8 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
                     WebkitBackgroundClip: 'text',
                     color: 'transparent',
                     backgroundSize: '200% 200%',
-                    animation: 'gradientShift 4s ease-in-out infinite',
-                    animationDelay: `${letterIndex * 0.02}s`,
+                    animation: reducedMotion ? 'none' : 'gradientShift 4s ease-in-out infinite',
+                    animationDelay: reducedMotion ? '0s' : `${letterIndex * 0.02}s`,
                     textShadow: '0 0 30px rgba(16, 185, 129, 0.3)',
                     filter: 'brightness(1.2) contrast(1.1)'
                   }}
@@ -94,9 +96,9 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
       {/* Subtitle with typewriter effect */}
       <motion.div
         className="mt-8 md:mt-12"
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.6 }}
+        transition={{ delay: reducedMotion ? 0 : 1, duration: reducedMotion ? 0 : 0.6 }}
       >
         <p className="text-lg md:text-xl lg:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
           The intelligence platform that{' '}
@@ -104,7 +106,7 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
             className="text-emerald-400 font-semibold"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.4 }}
+            transition={{ delay: reducedMotion ? 0 : 1.5, duration: reducedMotion ? 0 : 0.4 }}
           >
             closes deals faster
           </motion.span>
@@ -114,7 +116,7 @@ export function GradientHero({ className = '' }: GradientHeroProps) {
           className="text-md md:text-lg text-slate-400 mt-4 max-w-2xl mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 0.6 }}
+          transition={{ delay: reducedMotion ? 0 : 2, duration: reducedMotion ? 0 : 0.6 }}
         >
           Limited beta access for media sales professionals
         </motion.p>

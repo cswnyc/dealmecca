@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { TrendingUp, Users, Target, Zap, DollarSign, BarChart3 } from 'lucide-react';
+import { motionVariants, shouldReduceMotion } from '@/lib/design-tokens';
 
 interface StatCardProps {
   icon: React.ElementType;
@@ -16,48 +17,49 @@ interface StatCardProps {
 function StatCard({ icon: Icon, value, label, description, delay }: StatCardProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const reducedMotion = shouldReduceMotion();
 
   return (
     <motion.div
       ref={ref}
       className="text-center group"
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: reducedMotion ? 0 : 30 }}
+      transition={{ duration: reducedMotion ? 0 : 0.6, delay: reducedMotion ? 0 : delay, ease: "easeOut" }}
     >
       <motion.div
         className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
         style={{background: 'var(--gradient-accent)'}}
-        initial={{ scale: 0.8 }}
-        animate={isInView ? { scale: 1 } : { scale: 0.8 }}
-        transition={{ duration: 0.5, delay: delay + 0.1 }}
+        initial={{ scale: reducedMotion ? 1 : 0.8 }}
+        animate={isInView ? { scale: 1 } : { scale: reducedMotion ? 1 : 0.8 }}
+        transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.1 }}
       >
         <Icon className="w-8 h-8 text-white" />
       </motion.div>
 
       <motion.div
         className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-2"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-        transition={{ duration: 0.5, delay: delay + 0.2 }}
+        {...motionVariants.scaleIn}
+        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: reducedMotion ? 1 : 0.8 }}
+        transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.2 }}
       >
         {value}
       </motion.div>
 
       <motion.h3
         className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2"
-        initial={{ opacity: 0 }}
+        {...motionVariants.fadeIn}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5, delay: delay + 0.3 }}
+        transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.3 }}
       >
         {label}
       </motion.h3>
 
       <motion.p
         className="text-slate-600 dark:text-slate-400 text-sm"
-        initial={{ opacity: 0 }}
+        {...motionVariants.fadeIn}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5, delay: delay + 0.4 }}
+        transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.4 }}
       >
         {description}
       </motion.p>

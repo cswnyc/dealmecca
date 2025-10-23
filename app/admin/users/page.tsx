@@ -24,6 +24,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { EditUserModal } from '@/components/admin/EditUserModal';
+import { motionVariants, designTokens, shouldReduceMotion } from '@/lib/design-tokens';
 
 interface UserData {
   id: string;
@@ -103,6 +104,9 @@ export default function UsersAdminPage() {
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Accessibility
+  const reducedMotion = shouldReduceMotion();
 
   useEffect(() => {
     fetchUsers();
@@ -269,9 +273,9 @@ export default function UsersAdminPage() {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: reducedMotion ? 0 : 0.6 }}
       >
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
@@ -289,8 +293,7 @@ export default function UsersAdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <motion.div
               className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
+              whileHover={reducedMotion ? {} : designTokens.hover.card}
             >
               <div className="flex items-center">
                 <Users className="w-8 h-8 text-emerald-600" />
@@ -303,8 +306,7 @@ export default function UsersAdminPage() {
 
             <motion.div
               className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
+              whileHover={reducedMotion ? {} : designTokens.hover.card}
             >
               <div className="flex items-center">
                 <CheckCircle className="w-8 h-8 text-green-600" />
@@ -317,8 +319,7 @@ export default function UsersAdminPage() {
 
             <motion.div
               className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
+              whileHover={reducedMotion ? {} : designTokens.hover.card}
             >
               <div className="flex items-center">
                 <Activity className="w-8 h-8 text-purple-600" />
@@ -331,8 +332,7 @@ export default function UsersAdminPage() {
 
             <motion.div
               className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
+              whileHover={reducedMotion ? {} : designTokens.hover.card}
             >
               <div className="flex items-center">
                 <Gem className="w-8 h-8 text-amber-600" />
@@ -345,8 +345,7 @@ export default function UsersAdminPage() {
 
             <motion.div
               className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
+              whileHover={reducedMotion ? {} : designTokens.hover.card}
             >
               <div className="flex items-center">
                 <Crown className="w-8 h-8 text-yellow-600" />
@@ -457,9 +456,8 @@ export default function UsersAdminPage() {
                 {data?.users.map((user) => (
                   <motion.tr
                     key={user.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    {...motionVariants.fadeIn}
+                    transition={{ duration: reducedMotion ? 0 : 0.3 }}
                     className="hover:bg-gray-50"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">

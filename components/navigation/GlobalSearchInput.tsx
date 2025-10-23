@@ -254,7 +254,7 @@ export function GlobalSearchInput({
     <div ref={searchRef} className={cn('relative', className)}>
       {/* Search Input */}
       <div className="relative">
-        <Search className={cn('absolute left-3 top-1/2 -translate-y-1/2 text-gray-400', iconSizes[size])} />
+        <Search className={cn('absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500', iconSizes[size])} />
         <input
           ref={inputRef}
           type="text"
@@ -269,22 +269,21 @@ export function GlobalSearchInput({
           spellCheck="false"
           data-form-type="other"
           className={cn(
-            'w-full pl-10 pr-10 border border-gray-300 rounded-lg',
-            'bg-white text-gray-900 placeholder-gray-500',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+            'w-full pl-10 pr-10 border border-gray-300 dark:border-slate-700 rounded-lg',
+            'bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-slate-400',
+            'focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent',
             'transition-all duration-200',
             sizeClasses[size]
           )}
-          style={{ color: '#111827' }}
         />
         
         {/* Loading or Clear Button */}
         {loading ? (
-          <Loader2 className={cn('absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 animate-spin', iconSizes[size])} />
+          <Loader2 className={cn('absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 animate-spin', iconSizes[size])} />
         ) : query && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-200"
           >
             <X className={iconSizes[size]} />
           </button>
@@ -293,25 +292,25 @@ export function GlobalSearchInput({
 
       {/* Search Dropdown */}
       {showDropdown && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
           {results.totalResults > 0 ? (
             <>
               {/* See All Results Option */}
               <button
                 onClick={handleSeeAllResults}
                 className={cn(
-                  'w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100',
+                  'w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 border-b border-gray-100 dark:border-slate-700',
                   'flex items-center justify-between group transition-colors',
-                  selectedIndex === 0 && 'bg-blue-50'
+                  selectedIndex === 0 && 'bg-blue-50 dark:bg-blue-900/30'
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <Search className="w-5 h-5 text-gray-400" />
-                  <span className="text-gray-900">
+                  <Search className="w-5 h-5 text-gray-400 dark:text-slate-500" />
+                  <span className="text-gray-900 dark:text-white">
                     See all results for: <span className="font-medium">{results.seeAllQuery}</span>
                   </span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="w-4 h-4 text-gray-400 dark:text-slate-500 group-hover:text-gray-600 dark:group-hover:text-slate-200" />
               </button>
 
               {/* Suggestions */}
@@ -324,34 +323,34 @@ export function GlobalSearchInput({
                     key={suggestion.id}
                     onClick={() => handleSuggestionClick(suggestion)}
                     className={cn(
-                      'w-full px-4 py-3 text-left hover:bg-gray-50',
+                      'w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700',
                       'flex items-center justify-between group transition-colors',
-                      isSelected && 'bg-blue-50',
-                      index === results.suggestions.length - 1 ? '' : 'border-b border-gray-100'
+                      isSelected && 'bg-blue-50 dark:bg-blue-900/30',
+                      index === results.suggestions.length - 1 ? '' : 'border-b border-gray-100 dark:border-slate-700'
                     )}
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <IconComponent className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                      <IconComponent className="w-5 h-5 text-gray-400 dark:text-slate-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-900 font-medium truncate">
+                          <span className="text-gray-900 dark:text-white font-medium truncate">
                             {suggestion.title}
                           </span>
                           {suggestion.metadata?.verified && (
-                            <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
+                            <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full flex-shrink-0" />
                           )}
                         </div>
                         {suggestion.metadata?.location && (
-                          <div className="text-xs text-gray-500 truncate">
+                          <div className="text-xs text-gray-500 dark:text-slate-400 truncate">
                             {suggestion.metadata.location}
                           </div>
                         )}
                       </div>
                     </div>
-                    
+
                     {/* Category Badge */}
                     <div className="ml-2 flex-shrink-0">
-                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+                      <span className="text-xs text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 px-2 py-1 rounded-full">
                         {suggestion.category}
                       </span>
                     </div>
@@ -362,11 +361,11 @@ export function GlobalSearchInput({
           ) : (
             // No Results
             <div className="px-4 py-6 text-center">
-              <Search className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-              <div className="text-gray-500 text-sm">
+              <Search className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
+              <div className="text-gray-500 dark:text-slate-400 text-sm">
                 No results found for "{query}"
               </div>
-              <div className="text-gray-400 text-xs mt-1">
+              <div className="text-gray-400 dark:text-slate-500 text-xs mt-1">
                 Try searching for companies, contacts, or teams
               </div>
             </div>

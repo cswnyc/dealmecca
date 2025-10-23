@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Zap, Layers } from 'lucide-react';
+import { shouldReduceMotion } from '@/lib/design-tokens';
 
 interface FloatingDashboardProps {
   className?: string;
@@ -9,18 +10,27 @@ interface FloatingDashboardProps {
 }
 
 export function PipelineDashboard({ className = '', delay = 0 }: FloatingDashboardProps) {
+  const reducedMotion = shouldReduceMotion();
+
   return (
     <motion.div
       className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 w-80 ${className}`}
-      initial={{ opacity: 0, y: 20, rotate: -5 }}
-      animate={{
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 20, rotate: reducedMotion ? 0 : -5 }}
+      animate={reducedMotion ? {
+        opacity: 1,
+        y: 0,
+        rotate: 0
+      } : {
         opacity: 1,
         y: 0,
         rotate: -3,
         x: [0, 5, 0],
         y: [0, -8, 0]
       }}
-      transition={{
+      transition={reducedMotion ? {
+        duration: 0,
+        delay: 0
+      } : {
         initial: { duration: 0.8, delay },
         animate: {
           duration: 4,
@@ -44,9 +54,9 @@ export function PipelineDashboard({ className = '', delay = 0 }: FloatingDashboa
           <motion.div
             key={item.label}
             className="flex items-center justify-between"
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: reducedMotion ? 0 : -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: delay + 0.2 + index * 0.1 }}
+            transition={{ delay: reducedMotion ? 0 : delay + 0.2 + index * 0.1 }}
           >
             <div className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${item.color}`} />
@@ -61,18 +71,27 @@ export function PipelineDashboard({ className = '', delay = 0 }: FloatingDashboa
 }
 
 export function AnalyticsDashboard({ className = '', delay = 0 }: FloatingDashboardProps) {
+  const reducedMotion = shouldReduceMotion();
+
   return (
     <motion.div
       className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 w-72 ${className}`}
-      initial={{ opacity: 0, y: 20, rotate: 5 }}
-      animate={{
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 20, rotate: reducedMotion ? 0 : 5 }}
+      animate={reducedMotion ? {
+        opacity: 1,
+        y: 0,
+        rotate: 0
+      } : {
         opacity: 1,
         y: 0,
         rotate: 4,
         x: [0, -3, 0],
         y: [0, 6, 0]
       }}
-      transition={{
+      transition={reducedMotion ? {
+        duration: 0,
+        delay: 0
+      } : {
         initial: { duration: 0.8, delay },
         animate: {
           duration: 5,
@@ -97,10 +116,10 @@ export function AnalyticsDashboard({ className = '', delay = 0 }: FloatingDashbo
             <motion.div
               key={index}
               className="bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-sm flex-1"
-              style={{ height: `${height}%` }}
-              initial={{ height: 0 }}
+              style={{ height: reducedMotion ? `${height}%` : undefined }}
+              initial={{ height: reducedMotion ? `${height}%` : 0 }}
               animate={{ height: `${height}%` }}
-              transition={{ delay: delay + 0.5 + index * 0.05 }}
+              transition={{ delay: reducedMotion ? 0 : delay + 0.5 + index * 0.05 }}
             />
           ))}
         </div>
@@ -115,18 +134,27 @@ export function AnalyticsDashboard({ className = '', delay = 0 }: FloatingDashbo
 }
 
 export function CRMIntegration({ className = '', delay = 0 }: FloatingDashboardProps) {
+  const reducedMotion = shouldReduceMotion();
+
   return (
     <motion.div
       className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 w-64 ${className}`}
-      initial={{ opacity: 0, y: 20, rotate: -3 }}
-      animate={{
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 20, rotate: reducedMotion ? 0 : -3 }}
+      animate={reducedMotion ? {
+        opacity: 1,
+        y: 0,
+        rotate: 0
+      } : {
         opacity: 1,
         y: 0,
         rotate: -2,
         x: [0, 4, 0],
         y: [0, -5, 0]
       }}
-      transition={{
+      transition={reducedMotion ? {
+        duration: 0,
+        delay: 0
+      } : {
         initial: { duration: 0.8, delay },
         animate: {
           duration: 6,
@@ -149,9 +177,9 @@ export function CRMIntegration({ className = '', delay = 0 }: FloatingDashboardP
           <motion.div
             key={item.name}
             className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-700"
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: delay + 0.3 + index * 0.15 }}
+            transition={{ delay: reducedMotion ? 0 : delay + 0.3 + index * 0.15 }}
           >
             <div className="flex items-center space-x-2">
               <span>{item.icon}</span>
@@ -172,18 +200,27 @@ export function CRMIntegration({ className = '', delay = 0 }: FloatingDashboardP
 }
 
 export function ForecastDashboard({ className = '', delay = 0 }: FloatingDashboardProps) {
+  const reducedMotion = shouldReduceMotion();
+
   return (
     <motion.div
       className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 w-76 ${className}`}
-      initial={{ opacity: 0, y: 20, rotate: 2 }}
-      animate={{
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 20, rotate: reducedMotion ? 0 : 2 }}
+      animate={reducedMotion ? {
+        opacity: 1,
+        y: 0,
+        rotate: 0
+      } : {
         opacity: 1,
         y: 0,
         rotate: 3,
         x: [0, -2, 0],
         y: [0, 4, 0]
       }}
-      transition={{
+      transition={reducedMotion ? {
+        duration: 0,
+        delay: 0
+      } : {
         initial: { duration: 0.8, delay },
         animate: {
           duration: 7,
@@ -215,9 +252,9 @@ export function ForecastDashboard({ className = '', delay = 0 }: FloatingDashboa
           <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
             <motion.div
               className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full"
-              initial={{ width: 0 }}
+              initial={{ width: reducedMotion ? '94%' : 0 }}
               animate={{ width: '94%' }}
-              transition={{ delay: delay + 0.5, duration: 1 }}
+              transition={{ delay: reducedMotion ? 0 : delay + 0.5, duration: reducedMotion ? 0 : 1 }}
             />
           </div>
         </div>

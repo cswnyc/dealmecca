@@ -243,7 +243,7 @@ export default function MobileNavigation({
         <Button
           variant={active ? 'default' : 'ghost'}
           className={`w-full justify-start h-auto py-3 px-4 ${
-            level > 0 ? 'ml-4 border-l-2 border-gray-200 dark:border-gray-700' : ''
+            level > 0 ? 'ml-4 border-l-2 border-gray-200 dark:border-slate-700' : ''
           }`}
           onClick={() => {
             if (hasChildren) {
@@ -295,14 +295,14 @@ export default function MobileNavigation({
 
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden">
-          <div className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-gray-900 shadow-xl">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-slate-900 shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <User className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                  <p className="font-medium text-gray-900 dark:text-white truncate">
                     {userName}
                   </p>
                   <div className="flex items-center space-x-2">
@@ -325,7 +325,7 @@ export default function MobileNavigation({
 
             <div className="flex-1 overflow-y-auto py-4">
               <div className="px-4">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-3">
                   Navigation
                 </h3>
                 <div className="space-y-1">
@@ -333,8 +333,8 @@ export default function MobileNavigation({
                 </div>
               </div>
 
-              <div className="px-4 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+              <div className="px-4 mt-8 pt-4 border-t border-gray-200 dark:border-slate-700">
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-3">
                   Account
                 </h3>
                 <div className="space-y-1">
@@ -343,15 +343,15 @@ export default function MobileNavigation({
               </div>
             </div>
 
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-t border-gray-200 dark:border-slate-700">
               <Card>
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-medium text-gray-900 dark:text-gray-100">
+                      <p className="text-xs font-medium text-gray-900 dark:text-white">
                         Mobile Optimized
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-500 dark:text-slate-400">
                         Enhanced for mobile devices
                       </p>
                     </div>

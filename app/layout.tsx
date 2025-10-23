@@ -6,6 +6,7 @@ import { FirebaseProvider } from '@/components/providers/FirebaseProvider';
 import AuthHeader from '@/components/navigation/AuthHeader';
 import ConditionalUserProvider from '@/components/providers/conditional-user-provider';
 import { ThemeProvider } from '@/lib/theme-context';
+import ConditionalSidebar from '@/components/layout/ConditionalSidebar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -109,16 +110,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen bg-background text-foreground transition-colors duration-300`}>
         <ThemeProvider>
           <FirebaseProvider>
             <ConditionalUserProvider>
-              <div className="min-h-screen">
-                <AuthHeader />
-                <main>
-                  {children}
-                </main>
+              <div className="flex h-screen overflow-hidden">
+                {/* Collapsible Sidebar - Only shown for authenticated users on app pages */}
+                <ConditionalSidebar />
+
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  {/* Auth Header */}
+                  <AuthHeader />
+
+                  {/* Scrollable Main Content */}
+                  <main className="flex-1 overflow-y-auto">
+                    {children}
+                  </main>
+                </div>
               </div>
             </ConditionalUserProvider>
           </FirebaseProvider>

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Mail, ArrowRight, CheckCircle } from 'lucide-react';
+import { motionVariants, designTokens, shouldReduceMotion } from '@/lib/design-tokens';
 
 interface WaitlistFormProps {
   className?: string;
@@ -13,6 +14,9 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Accessibility
+  const reducedMotion = shouldReduceMotion();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,16 +69,14 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
   if (isSubmitted) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
+        {...motionVariants.scaleIn}
+        transition={{ duration: reducedMotion ? 0 : 0.5 }}
         className={`max-w-md mx-auto text-center ${className}`}
       >
         <div className="bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-8">
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            {...motionVariants.scaleIn}
+            transition={reducedMotion ? { duration: 0 } : { delay: 0.2, ...designTokens.transitions.spring }}
           >
             <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
           </motion.div>
@@ -89,9 +91,9 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2, duration: 0.6 }}
+      transition={{ delay: reducedMotion ? 0 : 2, duration: reducedMotion ? 0 : 0.6 }}
       className={`max-w-md mx-auto ${className}`}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,8 +115,8 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
                 type="submit"
                 disabled={isLoading || !email}
                 className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-4 py-4 rounded-xl font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 transition-all hover:shadow-lg hover:shadow-emerald-500/25"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={reducedMotion ? {} : designTokens.hover.button}
+                whileTap={reducedMotion ? {} : designTokens.tap.button}
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -131,8 +133,8 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
 
         {error && (
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            {...motionVariants.fadeIn}
+            transition={{ duration: reducedMotion ? 0 : 0.3 }}
             className="text-red-400 text-sm text-center"
           >
             {error}

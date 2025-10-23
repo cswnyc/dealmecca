@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getRateLimiter, BULK_IMPORT_RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
-  
+
   const userId = request.headers.get('x-user-id');
   const userRole = request.headers.get('x-user-role');
   if (!userId || userRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // Rate limiting check for enhanced import
+  const rateLimiter = getRateLimiter();
+  const rateLimitResult = rateLimiter.check(
+    `enhanced-import:${userId}`,
+    BULK_IMPORT_RATE_LIMITS.ENHANCED
+  );
+
+  if (!rateLimitResult.allowed) {
+    return createRateLimitResponse(rateLimitResult);
   }
 
   try {
@@ -45,9 +57,73 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Process the bulk import with enhanced duplicate handling
-    // Temporarily disabled during system optimization
-    const results = { companiesCreated: 0, companiesUpdated: 0, contactsCreated: 0, contactsUpdated: 0, duplicatesFound: 0, merged: 0 }
+    // Transform flat data format into companies and contacts arrays
+    const companies = new Map<string, any>();
+    const contacts: any[] = [];
+
+    // Group by company and extract contacts
+    data.forEach((record: any) => {
+      const companyKey = record.companyName.toLowerCase();
+
+      // Store unique companies
+      if (!companies.has(companyKey)) {
+        companies.set(companyKey, {
+          name: record.companyName,
+          domain: record.domain,
+          website: record.website,
+          industry: record.industry,
+          employeeCount: record.employeeCount,
+          revenue: record.revenue,
+          headquarters: record.headquarters,
+          description: record.description,
+          type: record.companyType
+        });
+      }
+
+      // Store all contacts
+      contacts.push({
+        companyName: record.companyName,
+        firstName: record.firstName,
+        lastName: record.lastName,
+        title: record.title,
+        email: record.email,
+        phone: record.phone,
+        department: record.department,
+        seniority: record.seniority,
+        linkedinUrl: record.linkedinUrl,
+        isDecisionMaker: record.isDecisionMaker
+      });
+    });
+
+    // Redirect to the working import endpoint
+    const importRequest = new Request(new URL('/api/admin/bulk-import/import', request.url), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId || '',
+        'x-user-role': userRole || ''
+      },
+      body: JSON.stringify({
+        companies: Array.from(companies.values()),
+        contacts: contacts,
+        uploadId: `enhanced_${Date.now()}`
+      })
+    });
+
+    // Use dynamic import for the route handler
+    const { POST: importHandler } = await import('@/app/api/admin/bulk-import/import/route');
+    const response = await importHandler(importRequest as any);
+    const importResults = await response.json();
+
+    // Transform response to match enhanced format
+    const results = {
+      companiesCreated: importResults.results?.companiesCreated || 0,
+      companiesUpdated: importResults.results?.companiesUpdated || 0,
+      contactsCreated: importResults.results?.contactsCreated || 0,
+      contactsUpdated: importResults.results?.contactsUpdated || 0,
+      duplicatesFound: importResults.results?.companiesSkipped + importResults.results?.contactsSkipped || 0,
+      merged: importResults.results?.companiesUpdated + importResults.results?.contactsUpdated || 0
+    };
 
     return NextResponse.json({
       success: true,
@@ -55,9 +131,10 @@ export async function POST(request: NextRequest) {
       results,
       summary: {
         totalRecords: data.length,
-        successRate: Math.round(((results.companiesCreated + results.companiesUpdated + results.contactsCreated + results.contactsUpdated) / (data.length * 2)) * 100),
+        successRate: importResults.results?.summary?.successRate || 0,
         duplicatesHandled: results.duplicatesFound,
-        dataMerged: results.merged
+        dataMerged: results.merged,
+        executionTime: importResults.results?.executionTime || 0
       }
     })
 

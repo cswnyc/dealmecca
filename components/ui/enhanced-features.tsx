@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { motionVariants, shouldReduceMotion } from '@/lib/design-tokens';
 import {
   Database,
   BarChart3,
@@ -29,15 +30,16 @@ interface FeatureCardProps {
 function FeatureCard({ icon: Icon, title, description, gradient, delay }: FeatureCardProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const reducedMotion = shouldReduceMotion();
 
   return (
     <motion.div
       ref={ref}
       className="group relative bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300"
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.6, delay, ease: "easeOut" }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: reducedMotion ? 0 : 30 }}
+      transition={{ duration: reducedMotion ? 0 : 0.6, delay: reducedMotion ? 0 : delay, ease: "easeOut" }}
+      whileHover={reducedMotion ? {} : { y: -8, transition: { duration: 0.2 } }}
     >
       {/* Gradient Background */}
       <div className={`absolute inset-0 ${gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`} />
@@ -46,9 +48,9 @@ function FeatureCard({ icon: Icon, title, description, gradient, delay }: Featur
       <motion.div
         className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
         style={{background: 'var(--gradient-accent)'}}
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.5, delay: delay + 0.1 }}
+        initial={{ scale: reducedMotion ? 1 : 0.8, opacity: 0 }}
+        animate={isInView ? { scale: 1, opacity: 1 } : { scale: reducedMotion ? 1 : 0.8, opacity: 0 }}
+        transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.1 }}
       >
         <Icon className="w-7 h-7 text-white" />
       </motion.div>
@@ -56,18 +58,18 @@ function FeatureCard({ icon: Icon, title, description, gradient, delay }: Featur
       {/* Content */}
       <motion.h3
         className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4"
-        initial={{ opacity: 0 }}
+        {...motionVariants.fadeIn}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5, delay: delay + 0.2 }}
+        transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.2 }}
       >
         {title}
       </motion.h3>
 
       <motion.p
         className="text-slate-600 dark:text-slate-300 leading-relaxed"
-        initial={{ opacity: 0 }}
+        {...motionVariants.fadeIn}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5, delay: delay + 0.3 }}
+        transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.3 }}
       >
         {description}
       </motion.p>
@@ -76,8 +78,8 @@ function FeatureCard({ icon: Icon, title, description, gradient, delay }: Featur
       <motion.div
         className={`absolute bottom-0 left-0 h-1 ${gradient} rounded-b-2xl`}
         initial={{ width: 0 }}
-        whileHover={{ width: '100%' }}
-        transition={{ duration: 0.3 }}
+        whileHover={reducedMotion ? {} : { width: '100%' }}
+        transition={{ duration: reducedMotion ? 0 : 0.3 }}
       />
     </motion.div>
   );

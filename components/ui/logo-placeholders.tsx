@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { shouldReduceMotion } from '@/lib/design-tokens';
 
 interface LogoPlaceholderProps {
   className?: string;
@@ -19,18 +20,27 @@ interface LogoGridProps {
 }
 
 export function LogoGrid({ title, logos, className = '', delay = 0 }: LogoGridProps) {
+  const reducedMotion = shouldReduceMotion();
+
   return (
     <motion.div
       className={`bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-6 w-80 ${className}`}
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 20, scale: reducedMotion ? 1 : 0.95 }}
+      animate={reducedMotion ? {
+        opacity: 1,
+        y: 0,
+        scale: 1
+      } : {
         opacity: 1,
         y: 0,
         scale: 1,
         x: [0, 3, 0],
         y: [0, -5, 0]
       }}
-      transition={{
+      transition={reducedMotion ? {
+        duration: 0,
+        delay: 0
+      } : {
         initial: { duration: 0.8, delay },
         animate: {
           duration: 6,
@@ -48,13 +58,13 @@ export function LogoGrid({ title, logos, className = '', delay = 0 }: LogoGridPr
           <motion.div
             key={logo.name}
             className={`${logo.color} rounded-lg p-3 flex items-center justify-center h-16 shadow-sm`}
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
-              delay: delay + 0.1 + index * 0.05,
-              duration: 0.4
+              delay: reducedMotion ? 0 : delay + 0.1 + index * 0.05,
+              duration: reducedMotion ? 0 : 0.4
             }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={reducedMotion ? {} : { scale: 1.05 }}
           >
             <div className="text-center">
               <div className="text-lg font-bold text-white/90 mb-1">

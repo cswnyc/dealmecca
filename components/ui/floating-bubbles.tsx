@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { shouldReduceMotion } from '@/lib/design-tokens';
 
 interface CompanyLogo {
   name: string;
@@ -22,11 +23,13 @@ function FloatingBubble({ company, delay, side, index }: FloatingBubbleProps) {
   const [isVisible, setIsVisible] = useState(false);
   // Always use fallback since logos don't exist yet
   const [imageError, setImageError] = useState(true);
+  const reducedMotion = shouldReduceMotion();
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), delay * 1000);
+    // Skip delay for reduced motion
+    const timer = setTimeout(() => setIsVisible(true), reducedMotion ? 0 : delay * 1000);
     return () => clearTimeout(timer);
-  }, [delay]);
+  }, [delay, reducedMotion]);
 
   const xPosition = side === 'left'
     ? `${10 + (index % 3) * 15}%`
@@ -38,10 +41,12 @@ function FloatingBubble({ company, delay, side, index }: FloatingBubbleProps) {
       style={{
         left: side === 'left' ? xPosition : 'auto',
         right: side === 'right' ? `calc(100% - ${xPosition})` : 'auto',
-        top: '50%'
+        top: reducedMotion ? '20%' : '50%' // Static position for reduced motion
       }}
-      initial={{ y: '50vh', opacity: 0, rotate: 0 }}
-      animate={isVisible ? {
+      initial={reducedMotion ? { y: 0, opacity: 0.6, rotate: 0 } : { y: '50vh', opacity: 0, rotate: 0 }}
+      animate={isVisible ? (reducedMotion ? {
+        opacity: 0.6 // Just fade in, no movement
+      } : {
         y: ['-30vh'],
         opacity: [0, 1, 1, 0],
         rotate: [0, 360],
@@ -52,7 +57,7 @@ function FloatingBubble({ company, delay, side, index }: FloatingBubbleProps) {
           repeatDelay: Math.random() * 2,
           ease: "linear"
         }
-      } : {}}
+      }) : {}}
     >
       <div
         className="w-16 h-16 rounded-full shadow-lg border-2 border-white/50 backdrop-blur-sm flex items-center justify-center overflow-hidden"
