@@ -44,7 +44,7 @@ const VALIDATION_RULES: Record<string, ValidationRule> = {
   title: { required: true, minLength: 2, maxLength: 100 },
   email: { required: false, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
   phone: { required: false, pattern: /^[\+]?[1-9][\d]{0,15}$/ },
-  linkedinUrl: { required: false, pattern: /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/ },
+  linkedinUrl: { required: false, pattern: /^https?:\/\/(www\.)?linkedin\.com\/(in|pub|profile)\/[a-zA-Z0-9\-_À-ÿ%]+\/?$/ },
   personalEmail: { required: false, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
   companyId: { required: true },
   seniority: { required: true }
