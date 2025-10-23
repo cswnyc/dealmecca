@@ -75,6 +75,7 @@ const departments = [
 
 const seniorityLevels = [
   { value: 'C_LEVEL', label: 'C-Level', icon: '🏆', color: 'bg-purple-100 text-purple-800' },
+  { value: 'FOUNDER_OWNER', label: 'Founder/Owner', icon: '👤', color: 'bg-purple-100 text-purple-800' },
   { value: 'VP', label: 'Vice President', icon: '👑', color: 'bg-blue-100 text-blue-800' },
   { value: 'SVP', label: 'Senior Vice President', icon: '👑', color: 'bg-blue-100 text-blue-800' },
   { value: 'EVP', label: 'Executive Vice President', icon: '👑', color: 'bg-blue-100 text-blue-800' },
@@ -82,12 +83,10 @@ const seniorityLevels = [
   { value: 'SENIOR_DIRECTOR', label: 'Senior Director', icon: '⭐', color: 'bg-green-100 text-green-800' },
   { value: 'MANAGER', label: 'Manager', icon: '📊', color: 'bg-yellow-100 text-yellow-800' },
   { value: 'SENIOR_MANAGER', label: 'Senior Manager', icon: '📊', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'SENIOR', label: 'Senior Level', icon: '🌟', color: 'bg-orange-100 text-orange-800' },
-  { value: 'ASSOCIATE', label: 'Associate', icon: '🔹', color: 'bg-gray-100 text-gray-800' },
-  { value: 'COORDINATOR', label: 'Coordinator', icon: '📋', color: 'bg-gray-100 text-gray-800' },
-  { value: 'ANALYST', label: 'Analyst', icon: '📈', color: 'bg-gray-100 text-gray-800' },
+  { value: 'SENIOR_SPECIALIST', label: 'Senior Specialist', icon: '🌟', color: 'bg-orange-100 text-orange-800' },
   { value: 'SPECIALIST', label: 'Specialist', icon: '🔧', color: 'bg-gray-100 text-gray-800' },
-  { value: 'UNKNOWN', label: 'Unknown', icon: '❓', color: 'bg-gray-100 text-gray-800' }
+  { value: 'COORDINATOR', label: 'Coordinator', icon: '📋', color: 'bg-gray-100 text-gray-800' },
+  { value: 'INTERN', label: 'Intern', icon: '🎓', color: 'bg-gray-100 text-gray-800' }
 ];
 
 const contactMethods = [
