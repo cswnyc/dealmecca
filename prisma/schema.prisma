@@ -958,7 +958,7 @@ model Company {
   id                                                          String                   @id
   name                                                        String                   @unique(map: "unique_company_name")
   slug                                                        String                   @unique
-  website                                                     String?                  @unique(map: "unique_company_website")
+  website                                                     String?
   logoUrl                                                     String?
   description                                                 String?
   companyType                                                 CompanyType
