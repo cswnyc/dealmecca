@@ -8,13 +8,13 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') || '';
     const location = searchParams.get('location') || '';
 
-    // Build where clause
+    // Build where clause - Include all agency-related types
     const where: any = {
       OR: [
         { companyType: 'AGENCY' },
         { companyType: 'INDEPENDENT_AGENCY' },
-        { companyType: 'HOLDING_COMPANY_AGENCY' },
-        { companyType: 'MEDIA_HOLDING_COMPANY' }
+        { companyType: 'HOLDING_COMPANY_AGENCY' }, // Both top-level holding companies AND regional offices
+        { companyType: 'MEDIA_HOLDING_COMPANY' } // Agency brands like WPP Media
       ]
     };
 
@@ -105,19 +105,27 @@ export async function GET(request: NextRequest) {
 
     // Transform to match expected format
     const transformedAgencies = agencies.map(agency => {
-      // Determine agency type
-      let type: 'INDEPENDENT_AGENCY' | 'HOLDING_COMPANY_AGENCY' | 'MEDIA_HOLDING_COMPANY' = 'INDEPENDENT_AGENCY';
+      // Determine agency type based on hierarchy:
+      // - HOLDING_COMPANY_AGENCY without parent → Top-level holding company (WPP, Omnicom, etc.)
+      // - MEDIA_HOLDING_COMPANY → Agency brand/network (WPP Media, GroupM, etc.)
+      // - AGENCY with parent → Regional office (WPP Media NY)
+      // - AGENCY/INDEPENDENT_AGENCY without parent → Independent agency
 
-      if (agency.companyType === 'HOLDING_COMPANY_AGENCY' || agency.agencyType === 'HOLDING_COMPANY') {
-        type = 'HOLDING_COMPANY_AGENCY';
+      let type: 'INDEPENDENT_AGENCY' | 'HOLDING_COMPANY_AGENCY' | 'MEDIA_HOLDING_COMPANY' | 'HOLDING_COMPANY' = 'INDEPENDENT_AGENCY';
+
+      if (agency.companyType === 'HOLDING_COMPANY_AGENCY') {
+        // If has NO parent company → Top-level holding company (WPP, Omnicom, etc.)
+        // If has parent → Should not happen, but treat as holding company agency
+        type = !agency.parentCompanyId ? 'HOLDING_COMPANY' : 'HOLDING_COMPANY_AGENCY';
       } else if (agency.companyType === 'MEDIA_HOLDING_COMPANY') {
+        // Agency brands/networks (WPP Media, GroupM, Mindshare, etc.)
         type = 'MEDIA_HOLDING_COMPANY';
-      } else if (agency.companyType === 'INDEPENDENT_AGENCY' || agency.agencyType === 'INDEPENDENT') {
-        type = 'INDEPENDENT_AGENCY';
       } else if (agency.companyType === 'AGENCY') {
-        // If it has a parent company, it's part of a holding company network
+        // If it has a parent company, it's a regional office
         // Otherwise, treat as independent
         type = agency.parentCompanyId ? 'HOLDING_COMPANY_AGENCY' : 'INDEPENDENT_AGENCY';
+      } else if (agency.companyType === 'INDEPENDENT_AGENCY' || agency.agencyType === 'INDEPENDENT') {
+        type = 'INDEPENDENT_AGENCY';
       }
 
       // Calculate last activity (for now, use updatedAt)

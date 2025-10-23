@@ -65,7 +65,7 @@ interface BulkUploadResult {
 interface Agency {
   id: string
   name: string
-  type: 'INDEPENDENT_AGENCY' | 'HOLDING_COMPANY_AGENCY' | 'NETWORK_AGENCY'
+  type: 'INDEPENDENT_AGENCY' | 'HOLDING_COMPANY_AGENCY' | 'NETWORK_AGENCY' | 'MEDIA_HOLDING_COMPANY' | 'HOLDING_COMPANY'
   city: string
   state: string
   country?: string
@@ -469,20 +469,22 @@ export default function OrganizationsPage() {
   // Helper functions for agency view
   const getAgencyTypeLabel = (type: string) => {
     switch (type) {
-      case 'INDEPENDENT_AGENCY': return 'Independent Agency';
+      case 'HOLDING_COMPANY': return 'Holding Company';
+      case 'MEDIA_HOLDING_COMPANY': return 'Media Holding Company';
       case 'HOLDING_COMPANY_AGENCY': return 'Agency';
+      case 'INDEPENDENT_AGENCY': return 'Independent Agency';
       case 'NETWORK_AGENCY': return 'Network Agency';
-      case 'MEDIA_HOLDING_COMPANY': return 'Holding Company';
       default: return type;
     }
   };
 
   const getAgencyTypeBadgeColor = (type: string) => {
     switch (type) {
-      case 'INDEPENDENT_AGENCY': return 'bg-green-100 text-green-800';
-      case 'HOLDING_COMPANY_AGENCY': return 'bg-blue-100 text-blue-800';
-      case 'NETWORK_AGENCY': return 'bg-purple-100 text-purple-800';
+      case 'HOLDING_COMPANY': return 'bg-purple-100 text-purple-800';
       case 'MEDIA_HOLDING_COMPANY': return 'bg-indigo-100 text-indigo-800';
+      case 'HOLDING_COMPANY_AGENCY': return 'bg-blue-100 text-blue-800';
+      case 'INDEPENDENT_AGENCY': return 'bg-green-100 text-green-800';
+      case 'NETWORK_AGENCY': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
