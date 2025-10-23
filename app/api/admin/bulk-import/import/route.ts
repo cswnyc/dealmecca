@@ -9,6 +9,7 @@ import { prepareCompanyForDatabase } from '@/lib/normalization-utils';
 import { getCompanyLogoUrl, getContactPhotoUrl } from '@/lib/logo-utils';
 import { requireAuth } from '@/server/requireAuth';
 import { createId } from '@paralleldrive/cuid2';
+import { getRateLimiter, BULK_IMPORT_RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -17,6 +18,17 @@ export async function POST(request: NextRequest) {
     // Verify authentication and ensure user exists in database
     const auth = await requireAuth(request);
     if (auth instanceof NextResponse) return auth; // Auth failed
+
+    // Rate limiting check
+    const rateLimiter = getRateLimiter();
+    const rateLimitResult = rateLimiter.check(
+      `bulk-import:${auth.dbUserId}`,
+      BULK_IMPORT_RATE_LIMITS.STANDARD
+    );
+
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult);
+    }
 
     // Check if user is admin
     const user = await prisma.user.findUnique({
@@ -31,6 +43,12 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('🚀 Bulk import execution started by user:', auth.dbUserId);
+
+    // Mark import as in progress to prevent concurrent imports
+    rateLimiter.markInProgress(
+      `bulk-import:${auth.dbUserId}`,
+      BULK_IMPORT_RATE_LIMITS.MAX_IMPORT_DURATION
+    );
 
     const { companies, contacts, uploadId } = await request.json();
 
@@ -319,7 +337,7 @@ export async function POST(request: NextRequest) {
                 logoUrl: photoUrl, // Add generated photo
                 companyId: finalCompanyId,
                 seniority: contactData.seniority || 'SPECIALIST',
-                isDecisionMaker: contactData.decisionMaking || false,
+                isDecisionMaker: contactData.isDecisionMaker || contactData.decisionMaking || false,
                 dataQuality: 'BASIC',
                 verified: false,
                 isActive: true,
@@ -375,6 +393,9 @@ export async function POST(request: NextRequest) {
     const totalOperations = companies.length + contacts.length;
     const successRate = Math.round((successfulOperations / totalOperations) * 100);
 
+    // Mark import as complete
+    rateLimiter.markComplete(`bulk-import:${auth.dbUserId}`);
+
     return NextResponse.json({
       success: true,
       results: {
@@ -394,6 +415,16 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const executionTime = Date.now() - startTime;
     console.error('❌ Bulk import execution error:', error);
+
+    // Mark import as complete even on error
+    try {
+      const auth = await requireAuth(request);
+      if (!(auth instanceof NextResponse)) {
+        getRateLimiter().markComplete(`bulk-import:${auth.dbUserId}`);
+      }
+    } catch (e) {
+      // Ignore errors in cleanup
+    }
 
     return NextResponse.json({
       error: error instanceof Error ? error.message : 'Import execution failed',
