@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
         name: true,
         companyType: true,
         agencyType: true,
+        parentCompanyId: true,
         city: true,
         state: true,
         country: true,
@@ -113,6 +114,10 @@ export async function GET(request: NextRequest) {
         type = 'MEDIA_HOLDING_COMPANY';
       } else if (agency.companyType === 'INDEPENDENT_AGENCY' || agency.agencyType === 'INDEPENDENT') {
         type = 'INDEPENDENT_AGENCY';
+      } else if (agency.companyType === 'AGENCY') {
+        // If it has a parent company, it's part of a holding company network
+        // Otherwise, treat as independent
+        type = agency.parentCompanyId ? 'HOLDING_COMPANY_AGENCY' : 'INDEPENDENT_AGENCY';
       }
 
       // Calculate last activity (for now, use updatedAt)

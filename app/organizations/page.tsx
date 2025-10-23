@@ -470,8 +470,9 @@ export default function OrganizationsPage() {
   const getAgencyTypeLabel = (type: string) => {
     switch (type) {
       case 'INDEPENDENT_AGENCY': return 'Independent Agency';
-      case 'HOLDING_COMPANY_AGENCY': return 'Holding Company';
+      case 'HOLDING_COMPANY_AGENCY': return 'Agency';
       case 'NETWORK_AGENCY': return 'Network Agency';
+      case 'MEDIA_HOLDING_COMPANY': return 'Holding Company';
       default: return type;
     }
   };
@@ -481,6 +482,7 @@ export default function OrganizationsPage() {
       case 'INDEPENDENT_AGENCY': return 'bg-green-100 text-green-800';
       case 'HOLDING_COMPANY_AGENCY': return 'bg-blue-100 text-blue-800';
       case 'NETWORK_AGENCY': return 'bg-purple-100 text-purple-800';
+      case 'MEDIA_HOLDING_COMPANY': return 'bg-indigo-100 text-indigo-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
