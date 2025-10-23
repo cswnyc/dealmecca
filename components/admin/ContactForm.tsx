@@ -51,18 +51,26 @@ const VALIDATION_RULES: Record<string, ValidationRule> = {
 };
 
 const departments = [
-  { value: 'MARKETING', label: 'Marketing', icon: '📢' },
-  { value: 'SALES', label: 'Sales', icon: '💰' },
-  { value: 'BUSINESS_DEVELOPMENT', label: 'Business Development', icon: '🤝' },
+  { value: 'MEDIA_PLANNING', label: 'Media Planning', icon: '📋' },
+  { value: 'MEDIA_BUYING', label: 'Media Buying', icon: '💰' },
+  { value: 'DIGITAL_MARKETING', label: 'Digital Marketing', icon: '📱' },
+  { value: 'PROGRAMMATIC', label: 'Programmatic', icon: '🤖' },
+  { value: 'SOCIAL_MEDIA', label: 'Social Media', icon: '📱' },
+  { value: 'SEARCH_MARKETING', label: 'Search Marketing', icon: '🔍' },
+  { value: 'STRATEGY_PLANNING', label: 'Strategy & Planning', icon: '🎯' },
+  { value: 'ANALYTICS_INSIGHTS', label: 'Analytics & Insights', icon: '📊' },
+  { value: 'CREATIVE_SERVICES', label: 'Creative Services', icon: '🎨' },
   { value: 'ACCOUNT_MANAGEMENT', label: 'Account Management', icon: '👥' },
-  { value: 'CREATIVE', label: 'Creative', icon: '🎨' },
-  { value: 'STRATEGY', label: 'Strategy', icon: '🎯' },
-  { value: 'MEDIA', label: 'Media', icon: '📺' },
+  { value: 'BUSINESS_DEVELOPMENT', label: 'Business Development', icon: '🤝' },
   { value: 'OPERATIONS', label: 'Operations', icon: '⚙️' },
   { value: 'TECHNOLOGY', label: 'Technology', icon: '💻' },
   { value: 'FINANCE', label: 'Finance', icon: '💳' },
-  { value: 'HR', label: 'Human Resources', icon: '👤' },
-  { value: 'EXECUTIVE', label: 'Executive', icon: '👔' }
+  { value: 'LEADERSHIP', label: 'Leadership', icon: '👔' },
+  { value: 'HUMAN_RESOURCES', label: 'Human Resources', icon: '👤' },
+  { value: 'SALES', label: 'Sales', icon: '💼' },
+  { value: 'MARKETING', label: 'Marketing', icon: '📢' },
+  { value: 'PRODUCT', label: 'Product', icon: '📦' },
+  { value: 'DATA_SCIENCE', label: 'Data Science', icon: '🔬' }
 ];
 
 const seniorityLevels = [
