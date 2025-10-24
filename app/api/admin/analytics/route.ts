@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
           OR: [
             { companyType: 'AGENCY' },
             { companyType: 'INDEPENDENT_AGENCY' },
-            { companyType: 'HOLDING_COMPANY_AGENCY' }
+            { companyType: 'HOLDING_COMPANY_AGENCY' },
+            { companyType: 'MEDIA_HOLDING_COMPANY' }
           ]
         }
       }),
