@@ -98,32 +98,32 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
-          <div className="relative bg-slate-800/80 border border-slate-600/70 rounded-2xl p-1 shadow-xl">
-            <div className="flex items-center">
+          <div className="relative bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-1.5 shadow-2xl">
+            <div className="flex items-center gap-2">
               <div className="flex-1 relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-300 w-5 h-5" />
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full bg-transparent text-white placeholder-slate-300 pl-12 pr-4 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm md:text-base font-medium"
+                  className="w-full bg-transparent text-white placeholder:text-white/90 placeholder:font-normal pl-12 pr-4 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 text-base font-medium"
                   required
                 />
               </div>
               <motion.button
                 type="submit"
                 disabled={isLoading || !email}
-                className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-6 py-4 rounded-xl font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 transition-all hover:shadow-lg hover:shadow-emerald-500/25 shadow-md"
+                className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 rounded-xl font-black text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all hover:shadow-xl shadow-lg"
                 whileHover={reducedMotion ? {} : designTokens.hover.button}
                 whileTap={reducedMotion ? {} : designTokens.tap.button}
               >
                 {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span className="drop-shadow-sm">Join</span>
-                    <ArrowRight className="w-4 h-4 drop-shadow-sm" />
+                    <span className="tracking-wide">Join</span>
+                    <ArrowRight className="w-5 h-5" />
                   </>
                 )}
               </motion.button>

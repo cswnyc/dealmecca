@@ -33,13 +33,13 @@ export default function InviteOnlyPage() {
         </motion.header>
 
         {/* Main Content */}
-        <main className="flex-1 flex items-center justify-center px-6 md:px-8 py-12">
-          <div className="max-w-4xl mx-auto text-center space-y-12">
+        <main className="flex-1 flex items-center justify-center px-6 md:px-8 py-8">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
             {/* Hero Section */}
             <GradientHero />
 
             {/* Waitlist Form */}
-            <WaitlistForm className="mt-16" />
+            <WaitlistForm className="mt-8" />
           </div>
         </main>
 
