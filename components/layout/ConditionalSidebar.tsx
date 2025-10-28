@@ -13,6 +13,7 @@ import CollapsibleSidebar from './CollapsibleSidebar';
  * - Auth pages (/auth/*)
  * - Sign-in/sign-up pages
  * - Admin pages (/admin/*)
+ * - Invite-only page (/invite-only)
  * - When user is not authenticated
  */
 export default function ConditionalSidebar() {
@@ -29,14 +30,15 @@ export default function ConditionalSidebar() {
     return null;
   }
 
-  // Don't render sidebar on landing page, auth pages, or admin pages
+  // Don't render sidebar on landing page, auth pages, admin pages, or invite-only page
   const isLandingPage = pathname === '/';
   const isAuthPage = pathname?.startsWith('/auth/') ||
                      pathname?.startsWith('/sign-in') ||
                      pathname?.startsWith('/sign-up');
   const isAdminPage = pathname?.startsWith('/admin');
+  const isInviteOnlyPage = pathname?.startsWith('/invite-only');
 
-  if (isLandingPage || isAuthPage || isAdminPage) {
+  if (isLandingPage || isAuthPage || isAdminPage || isInviteOnlyPage) {
     return null;
   }
 
