@@ -86,7 +86,7 @@ export default function EditCompanyPage() {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('/api/orgs/companies?limit=1000');
+      const response = await fetch('/api/orgs/companies?limit=10000');
       if (response.ok) {
         const data = await response.json();
         setCompanies(data.companies || []);
