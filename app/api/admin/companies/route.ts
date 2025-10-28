@@ -241,9 +241,70 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  // Delegate to main companies API
   try {
     const body = await request.json();
+
+    // Handle bulk operations
+    if (body.operation === 'bulk') {
+      const { action, companyIds } = body;
+
+      switch (action) {
+        case 'verify':
+          await prisma.company.updateMany({
+            where: {
+              id: {
+                in: companyIds
+              }
+            },
+            data: {
+              verified: true,
+              lastVerified: new Date()
+            }
+          });
+
+          return NextResponse.json({
+            message: `${companyIds.length} compan${companyIds.length !== 1 ? 'ies' : 'y'} verified successfully`
+          });
+
+        case 'unverify':
+          await prisma.company.updateMany({
+            where: {
+              id: {
+                in: companyIds
+              }
+            },
+            data: {
+              verified: false,
+              lastVerified: null
+            }
+          });
+
+          return NextResponse.json({
+            message: `${companyIds.length} compan${companyIds.length !== 1 ? 'ies' : 'y'} unverified successfully`
+          });
+
+        case 'delete':
+          await prisma.company.deleteMany({
+            where: {
+              id: {
+                in: companyIds
+              }
+            }
+          });
+
+          return NextResponse.json({
+            message: `${companyIds.length} compan${companyIds.length !== 1 ? 'ies' : 'y'} deleted successfully`
+          });
+
+        default:
+          return NextResponse.json(
+            { error: 'Invalid bulk action' },
+            { status: 400 }
+          );
+      }
+    }
+
+    // Delegate regular POST to main companies API
     const response = await fetch(`${request.nextUrl.origin}/api/orgs/companies`, {
       method: 'POST',
       headers: {
@@ -258,7 +319,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in admin companies POST:', error);
     return NextResponse.json(
-      { error: 'Failed to create company' },
+      { error: 'Failed to process request' },
       { status: 500 }
     );
   }

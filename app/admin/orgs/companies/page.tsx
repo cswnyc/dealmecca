@@ -18,7 +18,11 @@ import {
   MapPin,
   Globe,
   Calendar,
-  TrendingUp
+  TrendingUp,
+  CheckSquare,
+  XSquare,
+  UserCheck,
+  UserX
 } from 'lucide-react';
 
 interface Company {
@@ -80,6 +84,7 @@ export default function CompaniesAdmin() {
   const [selectedIndustry, setSelectedIndustry] = useState('');
   const [verifiedFilter, setVerifiedFilter] = useState('');
   const [sortBy, setSortBy] = useState('name');
+  const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
 
   const router = useRouter();
 
@@ -151,6 +156,53 @@ export default function CompaniesAdmin() {
   // Handle page change
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }));
+  };
+
+  // Handle company selection
+  const handleCompanySelect = (companyId: string) => {
+    setSelectedCompanies(prev =>
+      prev.includes(companyId)
+        ? prev.filter(id => id !== companyId)
+        : [...prev, companyId]
+    );
+  };
+
+  // Handle select all
+  const handleSelectAll = () => {
+    if (selectedCompanies.length === companies.length) {
+      setSelectedCompanies([]);
+    } else {
+      setSelectedCompanies(companies.map(c => c.id));
+    }
+  };
+
+  // Handle bulk actions
+  const handleBulkAction = async (action: string) => {
+    if (selectedCompanies.length === 0) return;
+
+    try {
+      const response = await fetch('/api/admin/companies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          operation: 'bulk',
+          action,
+          companyIds: selectedCompanies
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message);
+        setSelectedCompanies([]);
+        fetchCompanies(); // Refresh the list
+      } else {
+        const error = await response.json();
+        alert('Bulk action failed: ' + error.error);
+      }
+    } catch (err) {
+      alert('Bulk action failed');
+    }
   };
 
   // Delete company
@@ -254,8 +306,43 @@ export default function CompaniesAdmin() {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters & Bulk Actions */}
       <div className="bg-white p-6 rounded-lg border border-gray-200 mb-6">
+        {/* Bulk Actions */}
+        {selectedCompanies.length > 0 && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-blue-800">
+                {selectedCompanies.length} compan{selectedCompanies.length !== 1 ? 'ies' : 'y'} selected
+              </span>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleBulkAction('verify')}
+                  className="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  <UserCheck className="w-3 h-3 inline mr-1" />
+                  Verify
+                </button>
+                <button
+                  onClick={() => handleBulkAction('unverify')}
+                  className="text-xs px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                >
+                  <UserX className="w-3 h-3 inline mr-1" />
+                  Unverify
+                </button>
+                <button
+                  onClick={() => handleBulkAction('delete')}
+                  className="text-xs px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  <XSquare className="w-3 h-3 inline mr-1" />
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Search */}
           <div className="relative">
@@ -385,6 +472,14 @@ export default function CompaniesAdmin() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="px-6 py-3 text-left">
+                      <input
+                        type="checkbox"
+                        checked={selectedCompanies.length === companies.length}
+                        onChange={handleSelectAll}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Company
                     </th>
@@ -408,6 +503,14 @@ export default function CompaniesAdmin() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {companies.map((company) => (
                     <tr key={company.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input
+                          type="checkbox"
+                          checked={selectedCompanies.includes(company.id)}
+                          onChange={() => handleCompanySelect(company.id)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
