@@ -98,23 +98,23 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
-          <div className="relative bg-slate-800/60 border border-slate-600/50 rounded-2xl p-1">
+          <div className="relative bg-slate-800/80 border border-slate-600/70 rounded-2xl p-1 shadow-xl">
             <div className="flex items-center">
               <div className="flex-1 relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-300 w-5 h-5" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full bg-transparent text-white placeholder-slate-400 pl-12 pr-4 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm md:text-base"
+                  className="w-full bg-transparent text-white placeholder-slate-300 pl-12 pr-4 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm md:text-base font-medium"
                   required
                 />
               </div>
               <motion.button
                 type="submit"
                 disabled={isLoading || !email}
-                className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-4 py-4 rounded-xl font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 transition-all hover:shadow-lg hover:shadow-emerald-500/25"
+                className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-6 py-4 rounded-xl font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 transition-all hover:shadow-lg hover:shadow-emerald-500/25 shadow-md"
                 whileHover={reducedMotion ? {} : designTokens.hover.button}
                 whileTap={reducedMotion ? {} : designTokens.tap.button}
               >
@@ -122,8 +122,8 @@ export function WaitlistForm({ className = '' }: WaitlistFormProps) {
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Join</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span className="drop-shadow-sm">Join</span>
+                    <ArrowRight className="w-4 h-4 drop-shadow-sm" />
                   </>
                 )}
               </motion.button>
