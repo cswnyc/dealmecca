@@ -143,10 +143,10 @@ export default function AdminDashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-600">Total Companies</p>
-                <p className="text-3xl font-bold text-blue-900 mt-1">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-blue-600 mb-2">Total Companies</p>
+                <p className="text-3xl font-bold text-blue-900">
                   {loading ? (
                     <span className="animate-pulse">...</span>
                   ) : (
@@ -154,15 +154,15 @@ export default function AdminDashboard() {
                   )}
                 </p>
               </div>
-              <Building2 className="w-8 h-8 text-blue-600" />
+              <Building2 className="w-8 h-8 text-blue-600 flex-shrink-0" />
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-600">Total Contacts</p>
-                <p className="text-3xl font-bold text-green-900 mt-1">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-green-600 mb-2">Total Contacts</p>
+                <p className="text-3xl font-bold text-green-900">
                   {loading ? (
                     <span className="animate-pulse">...</span>
                   ) : (
@@ -170,15 +170,15 @@ export default function AdminDashboard() {
                   )}
                 </p>
               </div>
-              <Users className="w-8 h-8 text-green-600" />
+              <Users className="w-8 h-8 text-green-600 flex-shrink-0" />
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-purple-600">Total Users</p>
-                <p className="text-3xl font-bold text-purple-900 mt-1">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-purple-600 mb-2">Total Users</p>
+                <p className="text-3xl font-bold text-purple-900">
                   {loading ? (
                     <span className="animate-pulse">...</span>
                   ) : (
@@ -186,15 +186,15 @@ export default function AdminDashboard() {
                   )}
                 </p>
               </div>
-              <Users className="w-8 h-8 text-purple-600" />
+              <Users className="w-8 h-8 text-purple-600 flex-shrink-0" />
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-xl border border-orange-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-orange-600">Forum Posts</p>
-                <p className="text-3xl font-bold text-orange-900 mt-1">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-orange-600 mb-2">Forum Posts</p>
+                <p className="text-3xl font-bold text-orange-900">
                   {loading ? (
                     <span className="animate-pulse">...</span>
                   ) : (
@@ -202,15 +202,15 @@ export default function AdminDashboard() {
                   )}
                 </p>
               </div>
-              <MessageSquare className="w-8 h-8 text-orange-600" />
+              <MessageSquare className="w-8 h-8 text-orange-600 flex-shrink-0" />
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-6 rounded-xl border border-indigo-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-indigo-600">Total Events</p>
-                <p className="text-3xl font-bold text-indigo-900 mt-1">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-indigo-600 mb-2">Total Events</p>
+                <p className="text-3xl font-bold text-indigo-900">
                   {loading ? (
                     <span className="animate-pulse">...</span>
                   ) : (
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                   )}
                 </p>
               </div>
-              <Calendar className="w-8 h-8 text-indigo-600" />
+              <Calendar className="w-8 h-8 text-indigo-600 flex-shrink-0" />
             </div>
           </div>
         </div>
@@ -234,11 +234,11 @@ export default function AdminDashboard() {
                 className="group p-6 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
               >
                 <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-lg ${action.color}`}>
+                  <div className={`p-3 rounded-lg ${action.color} flex-shrink-0`}>
                     <action.icon className="w-6 h-6" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 group-hover:text-gray-700">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 group-hover:text-gray-700">
                       {action.title}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">

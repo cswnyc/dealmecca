@@ -1,0 +1,33 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Kinesso Detroit,Agency,Contact,Managing Director,https://www.kinesso.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,Birmingham MI
+Amazon,Main,Contact,Media Director,https://www.amazon.com,TECHNOLOGY,MEGA_5000_PLUS,Seattle WA
+Anthropic,Main,Contact,Media Director,https://www.anthropic.com,TECHNOLOGY,LARGE_201_1000,San Francisco CA
+Arby's,Main,Contact,Media Director,https://www.arbys.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Atlanta GA
+Australia Tourism,Main,Contact,Media Director,https://www.australia.com,TRAVEL_HOSPITALITY,LARGE_201_1000,Sydney
+Cigna,Main,Contact,Media Director,https://www.cigna.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Bloomfield CT
+CME,Main,Contact,Media Director,https://www.cmegroup.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Chicago IL
+Constellation Brands,Main,Contact,Media Director,https://www.cbrands.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Victor NY
+Crate & Barrel,Main,Contact,Media Director,https://www.crateandbarrel.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Northbrook IL
+Eggland's Best,Main,Contact,Media Director,https://www.egglandsbest.com,CPG_FOOD_BEVERAGE,LARGE_201_1000,Malvern PA
+El Pollo Loco,Main,Contact,Media Director,https://www.elpolloloco.com,CPG_FOOD_BEVERAGE,LARGE_201_1000,Costa Mesa CA
+Enterprise Mobility,Main,Contact,Media Director,https://www.enterprise.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,St. Louis MO
+ExxonMobil,Main,Contact,Media Director,https://www.exxonmobil.com,AUTOMOTIVE,MEGA_5000_PLUS,Irving TX
+General Mills,Main,Contact,Media Director,https://www.generalmills.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Minneapolis MN
+GetYourGuide,Main,Contact,Media Director,https://www.getyourguide.com,TRAVEL_HOSPITALITY,ENTERPRISE_1001_5000,Berlin
+Gilead Sciences,Main,Contact,Media Director,https://www.gilead.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Foster City CA
+Henkel,Main,Contact,Media Director,https://www.henkel.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Düsseldorf
+IHOP,Main,Contact,Media Director,https://www.ihop.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Pasadena CA
+Little Caesars Pizza,Main,Contact,Media Director,https://www.littlecaesars.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Detroit MI
+Madrigal Pharmaceuticals,Main,Contact,Media Director,https://www.madrigalpharma.com,HEALTHCARE_PHARMA,MEDIUM_51_200,West Conshohocken PA
+MFS Investment Management,Main,Contact,Media Director,https://www.mfs.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Boston MA
+New Balance,Main,Contact,Media Director,https://www.newbalance.com,FASHION_BEAUTY,MEGA_5000_PLUS,Boston MA
+Nintendo,Main,Contact,Media Director,https://www.nintendo.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Kyoto
+Paramount,Main,Contact,Media Director,https://www.paramount.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+Salesforce,Main,Contact,Media Director,https://www.salesforce.com,TECHNOLOGY,MEGA_5000_PLUS,San Francisco CA
+Stitch Fix,Main,Contact,Media Director,https://www.stitchfix.com,FASHION_BEAUTY,ENTERPRISE_1001_5000,San Francisco CA
+The Storck Group,Main,Contact,Media Director,https://www.storck.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Berlin
+Truth Initiative,Main,Contact,Media Director,https://www.truthinitiative.org,HEALTHCARE_PHARMA,LARGE_201_1000,Washington DC
+TXU Energy,Main,Contact,Media Director,https://www.txu.com,AUTOMOTIVE,LARGE_201_1000,Dallas TX
+ULTA,Main,Contact,Media Director,https://www.ulta.com,FASHION_BEAUTY,MEGA_5000_PLUS,Bolingbrook IL
+USPS,Main,Contact,Media Director,https://www.usps.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Washington DC
+Volvo,Main,Contact,Media Director,https://www.volvo.com,AUTOMOTIVE,MEGA_5000_PLUS,Gothenburg

@@ -1,0 +1,41 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Initiative NY,Agency,Contact,Managing Director,https://www.initiative.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+AB InBev,Main,Contact,Media Director,https://www.ab-inbev.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Leuven
+Alexion Pharmaceuticals,Main,Contact,Media Director,https://www.alexion.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Boston MA
+Amazon,Main,Contact,Media Director,https://www.amazon.com,TECHNOLOGY,MEGA_5000_PLUS,Seattle WA
+Amgen,Main,Contact,Media Director,https://www.amgen.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Thousand Oaks CA
+Anthropic,Main,Contact,Media Director,https://www.anthropic.com,TECHNOLOGY,LARGE_201_1000,San Francisco CA
+Applebee's,Main,Contact,Media Director,https://www.applebees.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Glendale CA
+AstraZeneca,Main,Contact,Media Director,https://www.astrazeneca.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Cambridge
+Austrian Airlines,Main,Contact,Media Director,https://www.austrian.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Vienna
+Bristol Myers Squibb,Main,Contact,Media Director,https://www.bms.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,New York NY
+Canada Goose,Main,Contact,Media Director,https://www.canadagoose.com,FASHION_BEAUTY,ENTERPRISE_1001_5000,Toronto
+CareMore Health System,Main,Contact,Media Director,https://www.caremore.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Cerritos CA
+Carnival Corporation,Main,Contact,Media Director,https://www.carnivalcorp.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Miami FL
+Cigna,Main,Contact,Media Director,https://www.cigna.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Bloomfield CT
+CME,Main,Contact,Media Director,https://www.cmegroup.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Chicago IL
+Comparion Insurance Agency,Main,Contact,Media Director,https://www.comparion.com,FINANCIAL_SERVICES,LARGE_201_1000,Jacksonville FL
+Constellation Brands,Main,Contact,Media Director,https://www.cbrands.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Victor NY
+Eggland's Best,Main,Contact,Media Director,https://www.egglandsbest.com,CPG_FOOD_BEVERAGE,LARGE_201_1000,Malvern PA
+Endo Pharmaceuticals,Main,Contact,Media Director,https://www.endo.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,Malvern PA
+Energizer Holdings,Main,Contact,Media Director,https://www.energizer.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,St. Louis MO
+FDA,Main,Contact,Media Director,https://www.fda.gov,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Silver Spring MD
+GetYourGuide,Main,Contact,Media Director,https://www.getyourguide.com,TRAVEL_HOSPITALITY,ENTERPRISE_1001_5000,Berlin
+Gilead Sciences,Main,Contact,Media Director,https://www.gilead.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Foster City CA
+IHOP,Main,Contact,Media Director,https://www.ihop.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Pasadena CA
+Intuit,Main,Contact,Media Director,https://www.intuit.com,TECHNOLOGY,MEGA_5000_PLUS,Mountain View CA
+Johnson & Johnson,Main,Contact,Media Director,https://www.jnj.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,New Brunswick NJ
+Kindred Group,Main,Contact,Media Director,https://www.kindredgroup.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,Sliema
+KPMG,Main,Contact,Media Director,https://www.kpmg.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Amstelveen
+Liberty Mutual,Main,Contact,Media Director,https://www.libertymutual.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Boston MA
+Little Caesars Pizza,Main,Contact,Media Director,https://www.littlecaesars.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Detroit MI
+Merck,Main,Contact,Media Director,https://www.merck.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Rahway NJ
+MFS Investment Management,Main,Contact,Media Director,https://www.mfs.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Boston MA
+Nintendo,Main,Contact,Media Director,https://www.nintendo.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Kyoto
+OptiNose,Main,Contact,Media Director,https://www.optinose.com,HEALTHCARE_PHARMA,MEDIUM_51_200,Yardley PA
+Paramount,Main,Contact,Media Director,https://www.paramount.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+Subaru,Main,Contact,Media Director,https://www.subaru.com,AUTOMOTIVE,MEGA_5000_PLUS,Tokyo
+T-Mobile,Main,Contact,Media Director,https://www.t-mobile.com,TELECOM,MEGA_5000_PLUS,Bellevue WA
+Teva Pharmaceuticals,Main,Contact,Media Director,https://www.tevapharm.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Petah Tikva
+Truth Initiative,Main,Contact,Media Director,https://www.truthinitiative.org,HEALTHCARE_PHARMA,LARGE_201_1000,Washington DC
+Volvo,Main,Contact,Media Director,https://www.volvo.com,AUTOMOTIVE,MEGA_5000_PLUS,Gothenburg

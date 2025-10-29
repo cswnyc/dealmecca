@@ -1,0 +1,180 @@
+companyName,companyType,industry,website,city,state,country,parentCompanyName
+Dentsu,MEDIA_HOLDING_COMPANY,Advertising & Marketing,https://www.dentsu.com,Tokyo,,Japan,
+Carat,AGENCY,Media Planning & Buying,https://www.carat.com,New York,NY,US,Dentsu
+Carat Amsterdam,AGENCY,Media Planning & Buying,https://www.carat.com,Amsterdam,,Netherlands,Carat
+Carat Atlanta,AGENCY,Media Planning & Buying,https://www.carat.com,Atlanta,GA,US,Carat
+Carat Chicago,AGENCY,Media Planning & Buying,https://www.carat.com,Chicago,IL,US,Carat
+Carat Detroit,AGENCY,Media Planning & Buying,https://www.carat.com,Detroit,MI,US,Carat
+Carat Dubai,AGENCY,Media Planning & Buying,https://www.carat.com,Dubai,,UAE,Carat
+Carat Dublin,AGENCY,Media Planning & Buying,https://www.carat.com,Dublin,,Ireland,Carat
+Carat Edinburgh,AGENCY,Media Planning & Buying,https://www.carat.com,Edinburgh,,United Kingdom,Carat
+Carat LA,AGENCY,Media Planning & Buying,https://www.carat.com,Los Angeles,CA,US,Carat
+Carat Leeds,AGENCY,Media Planning & Buying,https://www.carat.com,Leeds,,United Kingdom,Carat
+Carat London,AGENCY,Media Planning & Buying,https://www.carat.com,London,,United Kingdom,Carat
+Carat Madrid,AGENCY,Media Planning & Buying,https://www.carat.com,Madrid,,Spain,Carat
+Carat Manchester,AGENCY,Media Planning & Buying,https://www.carat.com,Manchester,,United Kingdom,Carat
+Carat Melbourne,AGENCY,Media Planning & Buying,https://www.carat.com,Melbourne,,Australia,Carat
+Carat Montreal,AGENCY,Media Planning & Buying,https://www.carat.com,Montreal,,Canada,Carat
+Carat Newcastle,AGENCY,Media Planning & Buying,https://www.carat.com,Newcastle,,United Kingdom,Carat
+Carat NY,AGENCY,Media Planning & Buying,https://www.carat.com,New York,NY,US,Carat
+Carat Portland,AGENCY,Media Planning & Buying,https://www.carat.com,Portland,OR,US,Carat
+Carat Seoul,AGENCY,Media Planning & Buying,https://www.carat.com,Seoul,,South Korea,Carat
+Carat Singapore,AGENCY,Media Planning & Buying,https://www.carat.com,Singapore,,Singapore,Carat
+Carat Sydney,AGENCY,Media Planning & Buying,https://www.carat.com,Sydney,,Australia,Carat
+Carat Tokyo,AGENCY,Media Planning & Buying,https://www.carat.com,Tokyo,,Japan,Carat
+Carat Toronto,AGENCY,Media Planning & Buying,https://www.carat.com,Toronto,,Canada,Carat
+Carat Vancouver,AGENCY,Media Planning & Buying,https://www.carat.com,Vancouver,,Canada,Carat
+dentsu international,AGENCY,Advertising & Marketing,https://www.dentsu.com,London,,United Kingdom,Dentsu
+Dentsu B2B London,AGENCY,B2B Marketing,https://www.dentsu.com,London,,United Kingdom,dentsu international
+dentsu health,AGENCY,Healthcare Marketing,https://www.dentsu.com,New York,NY,US,dentsu international
+Dentsu International Amsterdam,AGENCY,Advertising & Marketing,https://www.dentsu.com,Amsterdam,,Netherlands,dentsu international
+Dentsu International Atlanta,AGENCY,Advertising & Marketing,https://www.dentsu.com,Atlanta,GA,US,dentsu international
+Dentsu international Boston,AGENCY,Advertising & Marketing,https://www.dentsu.com,Boston,MA,US,dentsu international
+Dentsu International Buenos Aires,AGENCY,Advertising & Marketing,https://www.dentsu.com,Buenos Aires,,Argentina,dentsu international
+Dentsu International Calgary,AGENCY,Advertising & Marketing,https://www.dentsu.com,Calgary,,Canada,dentsu international
+Dentsu International Chicago,AGENCY,Advertising & Marketing,https://www.dentsu.com,Chicago,IL,US,dentsu international
+Dentsu International Dallas-Fort Worth,AGENCY,Advertising & Marketing,https://www.dentsu.com,Dallas,TX,US,dentsu international
+Dentsu International Detroit,AGENCY,Advertising & Marketing,https://www.dentsu.com,Detroit,MI,US,dentsu international
+Dentsu International Dublin,AGENCY,Advertising & Marketing,https://www.dentsu.com,Dublin,,Ireland,dentsu international
+Dentsu International LA,AGENCY,Advertising & Marketing,https://www.dentsu.com,Los Angeles,CA,US,dentsu international
+Dentsu International London,AGENCY,Advertising & Marketing,https://www.dentsu.com,London,,United Kingdom,dentsu international
+Dentsu International Manchester,AGENCY,Advertising & Marketing,https://www.dentsu.com,Manchester,,United Kingdom,dentsu international
+Dentsu International Miami,AGENCY,Advertising & Marketing,https://www.dentsu.com,Miami,FL,US,dentsu international
+Dentsu International Montreal,AGENCY,Advertising & Marketing,https://www.dentsu.com,Montreal,,Canada,dentsu international
+Dentsu International Mumbai,AGENCY,Advertising & Marketing,https://www.dentsu.com,Mumbai,,India,dentsu international
+Dentsu International New Delhi,AGENCY,Advertising & Marketing,https://www.dentsu.com,New Delhi,,India,dentsu international
+Dentsu International NY,AGENCY,Advertising & Marketing,https://www.dentsu.com,New York,NY,US,dentsu international
+Dentsu international Pune,AGENCY,Advertising & Marketing,https://www.dentsu.com,Pune,,India,dentsu international
+Dentsu International Sao Paulo,AGENCY,Advertising & Marketing,https://www.dentsu.com,Sao Paulo,,Brazil,dentsu international
+Dentsu International SF,AGENCY,Advertising & Marketing,https://www.dentsu.com,San Francisco,CA,US,dentsu international
+Dentsu International Singapore,AGENCY,Advertising & Marketing,https://www.dentsu.com,Singapore,,Singapore,dentsu international
+Dentsu International Toronto,AGENCY,Advertising & Marketing,https://www.dentsu.com,Toronto,,Canada,dentsu international
+Dentsu International Vancouver,AGENCY,Advertising & Marketing,https://www.dentsu.com,Vancouver,,Canada,dentsu international
+Dentsu Jayme Syfu,AGENCY,Advertising & Marketing,https://www.dentsu.com,Manila,,Philippines,dentsu international
+dentsu X,AGENCY,Media Planning & Buying,https://www.dentsux.com,New York,NY,US,Dentsu
+dentsu X Atlanta,AGENCY,Media Planning & Buying,https://www.dentsux.com,Atlanta,GA,US,dentsu X
+dentsu X Chicago,AGENCY,Media Planning & Buying,https://www.dentsux.com,Chicago,IL,US,dentsu X
+dentsu X LA,AGENCY,Media Planning & Buying,https://www.dentsux.com,Los Angeles,CA,US,dentsu X
+dentsu X London,AGENCY,Media Planning & Buying,https://www.dentsux.com,London,,United Kingdom,dentsu X
+dentsu X Melbourne,AGENCY,Media Planning & Buying,https://www.dentsux.com,Melbourne,,Australia,dentsu X
+dentsu X NY,AGENCY,Media Planning & Buying,https://www.dentsux.com,New York,NY,US,dentsu X
+dentsu X San Francisco,AGENCY,Media Planning & Buying,https://www.dentsux.com,San Francisco,CA,US,dentsu X
+dentsu X Toronto,AGENCY,Media Planning & Buying,https://www.dentsux.com,Toronto,,Canada,dentsu X
+iProspect,AGENCY,Digital Marketing,https://www.iprospect.com,New York,NY,US,Dentsu
+iProspect Atlanta,AGENCY,Digital Marketing,https://www.iprospect.com,Atlanta,GA,US,iProspect
+iProspect Auckland,AGENCY,Digital Marketing,https://www.iprospect.com,Auckland,,New Zealand,iProspect
+iProspect Austin,AGENCY,Digital Marketing,https://www.iprospect.com,Austin,TX,US,iProspect
+iProspect Bend,AGENCY,Digital Marketing,https://www.iprospect.com,Bend,OR,US,iProspect
+iProspect Birmingham,AGENCY,Digital Marketing,https://www.iprospect.com,Birmingham,,United Kingdom,iProspect
+iProspect Boston,AGENCY,Digital Marketing,https://www.iprospect.com,Boston,MA,US,iProspect
+iProspect Charlottesville,AGENCY,Digital Marketing,https://www.iprospect.com,Charlottesville,VA,US,iProspect
+iProspect Chicago,AGENCY,Digital Marketing,https://www.iprospect.com,Chicago,IL,US,iProspect
+iProspect Columbia,AGENCY,Digital Marketing,https://www.iprospect.com,Columbia,SC,US,iProspect
+iProspect Dallas,AGENCY,Digital Marketing,https://www.iprospect.com,Dallas,TX,US,iProspect
+iProspect Denver,AGENCY,Digital Marketing,https://www.iprospect.com,Denver,CO,US,iProspect
+iProspect Detroit,AGENCY,Digital Marketing,https://www.iprospect.com,Detroit,MI,US,iProspect
+iProspect Dubai,AGENCY,Digital Marketing,https://www.iprospect.com,Dubai,,UAE,iProspect
+iProspect Edinburgh,AGENCY,Digital Marketing,https://www.iprospect.com,Edinburgh,,United Kingdom,iProspect
+iProspect Hagerstown,AGENCY,Digital Marketing,https://www.iprospect.com,Hagerstown,MD,US,iProspect
+iProspect LA,AGENCY,Digital Marketing,https://www.iprospect.com,Los Angeles,CA,US,iProspect
+iProspect Leeds,AGENCY,Digital Marketing,https://www.iprospect.com,Leeds,,United Kingdom,iProspect
+iProspect Little Rock,AGENCY,Digital Marketing,https://www.iprospect.com,Little Rock,AR,US,iProspect
+iProspect London,AGENCY,Digital Marketing,https://www.iprospect.com,London,,United Kingdom,iProspect
+iProspect Manchester,AGENCY,Digital Marketing,https://www.iprospect.com,Manchester,,United Kingdom,iProspect
+iProspect Melbourne,AGENCY,Digital Marketing,https://www.iprospect.com,Melbourne,,Australia,iProspect
+iProspect Miami,AGENCY,Digital Marketing,https://www.iprospect.com,Miami,FL,US,iProspect
+iProspect Minneapolis,AGENCY,Digital Marketing,https://www.iprospect.com,Minneapolis,MN,US,iProspect
+iProspect Montreal,AGENCY,Digital Marketing,https://www.iprospect.com,Montreal,,Canada,iProspect
+iProspect NY,AGENCY,Digital Marketing,https://www.iprospect.com,New York,NY,US,iProspect
+iProspect Paris,AGENCY,Digital Marketing,https://www.iprospect.com,Paris,,France,iProspect
+iProspect Philadelphia,AGENCY,Digital Marketing,https://www.iprospect.com,Philadelphia,PA,US,iProspect
+iProspect Raleigh,AGENCY,Digital Marketing,https://www.iprospect.com,Raleigh,NC,US,iProspect
+iProspect San Diego,AGENCY,Digital Marketing,https://www.iprospect.com,San Diego,CA,US,iProspect
+iProspect Seattle,AGENCY,Digital Marketing,https://www.iprospect.com,Seattle,WA,US,iProspect
+iProspect SF,AGENCY,Digital Marketing,https://www.iprospect.com,San Francisco,CA,US,iProspect
+iProspect Singapore,AGENCY,Digital Marketing,https://www.iprospect.com,Singapore,,Singapore,iProspect
+iProspect Sydney,AGENCY,Digital Marketing,https://www.iprospect.com,Sydney,,Australia,iProspect
+iProspect Toronto,AGENCY,Digital Marketing,https://www.iprospect.com,Toronto,,Canada,iProspect
+iProspect Vancouver,AGENCY,Digital Marketing,https://www.iprospect.com,Vancouver,,Canada,iProspect
+Merkle Bristol,AGENCY,Customer Experience,https://www.merkle.com,Bristol,,United Kingdom,iProspect
+Merkle London,AGENCY,Customer Experience,https://www.merkle.com,London,,United Kingdom,iProspect
+Merkle Sokrati,AGENCY,Digital Marketing,https://www.merkle.com,Mumbai,,India,iProspect
+Merkle Sydney,AGENCY,Customer Experience,https://www.merkle.com,Sydney,,Australia,iProspect
+Dentsu Creative,AGENCY,Advertising & Marketing,https://www.dentsucreative.com,New York,NY,US,Dentsu
+Dentsu Creative Atlanta,AGENCY,Advertising & Marketing,https://www.dentsucreative.com,Atlanta,GA,US,Dentsu Creative
+Dentsu Creative Chicago,AGENCY,Advertising & Marketing,https://www.dentsucreative.com,Chicago,IL,US,Dentsu Creative
+Dentsu Creative London,AGENCY,Advertising & Marketing,https://www.dentsucreative.com,London,,United Kingdom,Dentsu Creative
+Dentsu Creative NY,AGENCY,Advertising & Marketing,https://www.dentsucreative.com,New York,NY,US,Dentsu Creative
+Dentsu Creative SF,AGENCY,Advertising & Marketing,https://www.dentsucreative.com,San Francisco,CA,US,Dentsu Creative
+Dentsu Creative Toronto,AGENCY,Advertising & Marketing,https://www.dentsucreative.com,Toronto,,Canada,Dentsu Creative
+AMNET Group,AGENCY,Advertising Technology,https://www.amnetgroup.com,New York,NY,US,Dentsu
+AMNET Atlanta,AGENCY,Advertising Technology,https://www.amnetgroup.com,Atlanta,GA,US,AMNET Group
+AMNET Chicago,AGENCY,Advertising Technology,https://www.amnetgroup.com,Chicago,IL,US,AMNET Group
+AMNET Dallas,AGENCY,Advertising Technology,https://www.amnetgroup.com,Dallas,TX,US,AMNET Group
+AMNET Detroit,AGENCY,Advertising Technology,https://www.amnetgroup.com,Detroit,MI,US,AMNET Group
+AMNET Dublin,AGENCY,Advertising Technology,https://www.amnetgroup.com,Dublin,,Ireland,AMNET Group
+AMNET LA,AGENCY,Advertising Technology,https://www.amnetgroup.com,Los Angeles,CA,US,AMNET Group
+AMNET Manila,AGENCY,Advertising Technology,https://www.amnetgroup.com,Manila,,Philippines,AMNET Group
+AMNET NY,AGENCY,Advertising Technology,https://www.amnetgroup.com,New York,NY,US,AMNET Group
+AMNET Sao Paulo,AGENCY,Advertising Technology,https://www.amnetgroup.com,Sao Paulo,,Brazil,AMNET Group
+AMNET SF,AGENCY,Advertising Technology,https://www.amnetgroup.com,San Francisco,CA,US,AMNET Group
+AMNET Toronto,AGENCY,Advertising Technology,https://www.amnetgroup.com,Toronto,,Canada,AMNET Group
+AMNET UK,AGENCY,Advertising Technology,https://www.amnetgroup.com,London,,United Kingdom,AMNET Group
+Amplifi,AGENCY,Media Investment,https://www.amplifiagency.com,New York,NY,US,Dentsu
+Amplifi Atlanta,AGENCY,Media Investment,https://www.amplifiagency.com,Atlanta,GA,US,Amplifi
+Amplifi London,AGENCY,Media Investment,https://www.amplifiagency.com,London,,United Kingdom,Amplifi
+Amplifi Manchester,AGENCY,Media Investment,https://www.amplifiagency.com,Manchester,,United Kingdom,Amplifi
+Amplifi NY,AGENCY,Media Investment,https://www.amplifiagency.com,New York,NY,US,Amplifi
+Amplifi Singapore,AGENCY,Media Investment,https://www.amplifiagency.com,Singapore,,Singapore,Amplifi
+Amplifi Toronto,AGENCY,Media Investment,https://www.amplifiagency.com,Toronto,,Canada,Amplifi
+Dentsu McGarryBowen Canada,AGENCY,Advertising & Marketing,https://www.dentsu.com,Toronto,,Canada,Dentsu
+Dentsu McGarryBowen Montreal,AGENCY,Advertising & Marketing,https://www.dentsu.com,Montreal,,Canada,Dentsu McGarryBowen Canada
+Dentsu McGarryBowen Toronto,AGENCY,Advertising & Marketing,https://www.dentsu.com,Toronto,,Canada,Dentsu McGarryBowen Canada
+The Story Lab,AGENCY,Content Marketing,https://www.thestorylab.com,New York,NY,US,Dentsu
+The Story Lab Toronto,AGENCY,Content Marketing,https://www.thestorylab.com,Toronto,,Canada,The Story Lab
+The Story Lab NY,AGENCY,Content Marketing,https://www.thestorylab.com,New York,NY,US,The Story Lab
+The Story Lab LA,AGENCY,Content Marketing,https://www.thestorylab.com,Los Angeles,CA,US,The Story Lab
+The Story Lab UK,AGENCY,Content Marketing,https://www.thestorylab.com,London,,United Kingdom,The Story Lab
+Media Storm,AGENCY,Media Planning & Buying,https://www.mediastorm.com,New York,NY,US,Dentsu
+Media Storm LA,AGENCY,Media Planning & Buying,https://www.mediastorm.com,Los Angeles,CA,US,Media Storm
+Media Storm Norwalk,AGENCY,Media Planning & Buying,https://www.mediastorm.com,Norwalk,CT,US,Media Storm
+Media Storm NY,AGENCY,Media Planning & Buying,https://www.mediastorm.com,New York,NY,US,Media Storm
+Isobar,AGENCY,Digital Marketing,https://www.isobar.com,New York,NY,US,Dentsu
+Isobar Chicago,AGENCY,Digital Marketing,https://www.isobar.com,Chicago,IL,US,Isobar
+Isobar London,AGENCY,Digital Marketing,https://www.isobar.com,London,,United Kingdom,Isobar
+Isobar NY,AGENCY,Digital Marketing,https://www.isobar.com,New York,NY,US,Isobar
+Isobar Toronto,AGENCY,Digital Marketing,https://www.isobar.com,Toronto,,Canada,Isobar
+dentsu One,AGENCY,Integrated Marketing,https://www.dentsu.com,New York,NY,US,Dentsu
+Firstborn,AGENCY,Digital Creative,https://www.firstborn.com,New York,NY,US,Dentsu
+M8 Agency,AGENCY,Marketing Services,https://www.m8agency.com,Miami,FL,US,Dentsu
+M8 Miami,AGENCY,Marketing Services,https://www.m8agency.com,Miami,FL,US,M8 Agency
+M8 NY,AGENCY,Marketing Services,https://www.m8agency.com,New York,NY,US,M8 Agency
+MKTG INC,AGENCY,Experiential Marketing,https://www.mktg.com,New York,NY,US,Dentsu
+MKTG Atlanta,AGENCY,Experiential Marketing,https://www.mktg.com,Atlanta,GA,US,MKTG INC
+MKTG Chicago,AGENCY,Experiential Marketing,https://www.mktg.com,Chicago,IL,US,MKTG INC
+MKTG Cincinnati,AGENCY,Experiential Marketing,https://www.mktg.com,Cincinnati,OH,US,MKTG INC
+MKTG LA,AGENCY,Experiential Marketing,https://www.mktg.com,Los Angeles,CA,US,MKTG INC
+MKTG London,AGENCY,Experiential Marketing,https://www.mktg.com,London,,United Kingdom,MKTG INC
+MKTG NY,AGENCY,Experiential Marketing,https://www.mktg.com,New York,NY,US,MKTG INC
+MKTG Portland,AGENCY,Experiential Marketing,https://www.mktg.com,Portland,OR,US,MKTG INC
+MKTG SF,AGENCY,Experiential Marketing,https://www.mktg.com,San Francisco,CA,US,MKTG INC
+MuteSix,AGENCY,Digital Performance Marketing,https://www.mutesix.com,New York,NY,US,Dentsu
+Merkle B2B,AGENCY,B2B Marketing,https://www.merkleb2b.com,Cincinnati,OH,US,Dentsu
+Merkle B2B Cincinnati,AGENCY,B2B Marketing,https://www.merkleb2b.com,Cincinnati,OH,US,Merkle B2B
+Merkle B2B London,AGENCY,B2B Marketing,https://www.merkleb2b.com,London,,United Kingdom,Merkle B2B
+Merkle B2B Manchester,AGENCY,B2B Marketing,https://www.merkleb2b.com,Manchester,,United Kingdom,Merkle B2B
+Merkle B2B Sydney,AGENCY,B2B Marketing,https://www.merkleb2b.com,Sydney,,Australia,Merkle B2B
+Dentsu Group Inc.,AGENCY,Advertising & Marketing,https://www.dentsu.com,Tokyo,,Japan,Dentsu
+Dentsu Singapore,AGENCY,Advertising & Marketing,https://www.dentsu.com,Singapore,,Singapore,Dentsu Group Inc.
+Dentsu Sydney,AGENCY,Advertising & Marketing,https://www.dentsu.com,Sydney,,Australia,Dentsu Group Inc.
+Dentsu Tokyo,AGENCY,Advertising & Marketing,https://www.dentsu.com,Tokyo,,Japan,Dentsu Group Inc.
+Cardinal Path,AGENCY,Digital Analytics,https://www.cardinalpath.com,Vancouver,,Canada,Dentsu
+Cardinal Path Chicago,AGENCY,Digital Analytics,https://www.cardinalpath.com,Chicago,IL,US,Cardinal Path
+Cardinal Path Toronto,AGENCY,Digital Analytics,https://www.cardinalpath.com,Toronto,,Canada,Cardinal Path
+Cardinal Path Vancouver,AGENCY,Digital Analytics,https://www.cardinalpath.com,Vancouver,,Canada,Cardinal Path
+dentsu Finland,AGENCY,Advertising & Marketing,https://www.dentsu.com,Helsinki,,Finland,Dentsu
+Global Mind,AGENCY,Advertising & Marketing,https://www.globalmind.com,New York,NY,US,Dentsu
+ICUC,AGENCY,Social Media Management,https://www.icuc.social,Toronto,,Canada,Dentsu
+ICUC London,AGENCY,Social Media Management,https://www.icuc.social,London,,United Kingdom,ICUC
+ICUC Winnipeg,AGENCY,Social Media Management,https://www.icuc.social,Winnipeg,,Canada,ICUC
+BWM Isobar Sydney,AGENCY,Digital Marketing,https://www.isobar.com,Sydney,,Australia,Dentsu

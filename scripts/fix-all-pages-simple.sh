@@ -4,7 +4,7 @@
 echo "🚀 Starting mass page simplification for deployment..."
 
 # Create backup directory
-BACKUP_DIR="/Users/csw/website/backup-original-pages-$(date +%Y%m%d_%H%M%S)"
+BACKUP_DIR="backup-original-pages-$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
 # Function to backup and replace a file
@@ -17,18 +17,18 @@ replace_page() {
     local page_type="$6"
     
     # Create backup
-    if [ -f "/Users/csw/website/$file_path" ]; then
+    if [ -f "$file_path" ]; then
         echo "📦 Backing up $file_path"
         backup_name=$(echo "$file_path" | sed 's/\//-/g')
-        cp "/Users/csw/website/$file_path" "$BACKUP_DIR/$backup_name"
-        
+        cp "$file_path" "$BACKUP_DIR/$backup_name"
+
         # Replace placeholders in template
         echo "🔄 Replacing $file_path with $template_file template"
         sed -e "s/REPLACE_COMPONENT_NAME/$component_name/g" \
             -e "s/REPLACE_PAGE_TITLE/$page_title/g" \
             -e "s/REPLACE_PAGE_DESCRIPTION/$page_description/g" \
             -e "s/REPLACE_PAGE_TYPE/$page_type/g" \
-            "/Users/csw/website/scripts/templates/$template_file" > "/Users/csw/website/$file_path"
+            "scripts/templates/$template_file" > "$file_path"
             
         echo "✅ Fixed $file_path"
     else

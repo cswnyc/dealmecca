@@ -14,7 +14,7 @@ async function updateUsersToRedditNames() {
     console.log('🚀 Starting Reddit username update process...');
 
     // Load the generated mappings
-    const mappingsPath = '/Users/csw/website/scripts/reddit-username-mappings.json';
+    const mappingsPath = './scripts/reddit-username-mappings.json';
     
     if (!fs.existsSync(mappingsPath)) {
       console.error('❌ Reddit username mappings file not found!');

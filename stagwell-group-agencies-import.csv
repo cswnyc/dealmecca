@@ -1,0 +1,124 @@
+companyName,companyType,industry,website,city,state,country,parentCompanyName
+Stagwell Global,MEDIA_HOLDING_COMPANY,Advertising & Marketing,https://www.stagwellglobal.com,New York,NY,US,
+Assembly Global,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,New York,NY,US,Stagwell Global
+Assembly Global Atlanta,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Atlanta,GA,US,Assembly Global
+Assembly Global Austin,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Austin,TX,US,Assembly Global
+Assembly Global Baltimore,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Baltimore,MD,US,Assembly Global
+Assembly Global Bangalore,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Bangalore,,India,Assembly Global
+Assembly Global Boston,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Boston,MA,US,Assembly Global
+Assembly Global Cleveland,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Cleveland,OH,US,Assembly Global
+Assembly Global Columbia,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Columbia,SC,US,Assembly Global
+Assembly Global Denver,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Denver,CO,US,Assembly Global
+Assembly Global Detroit,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Detroit,MI,US,Assembly Global
+Assembly Global Dubai,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Dubai,,UAE,Assembly Global
+Assembly Global LA,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Los Angeles,CA,US,Assembly Global
+Assembly Global London,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,London,,United Kingdom,Assembly Global
+Assembly Global Minneapolis,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Minneapolis,MN,US,Assembly Global
+Assembly Global NY,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,New York,NY,US,Assembly Global
+Assembly Global Portland,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Portland,OR,US,Assembly Global
+Assembly Global Scottsdale,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Scottsdale,AZ,US,Assembly Global
+Assembly Global Toronto,AGENCY,Media Planning & Buying,https://www.assemblyglobal.com,Toronto,,Canada,Assembly Global
+GALE,AGENCY,Advertising & Marketing,https://www.galeglobal.com,New York,NY,US,Stagwell Global
+GALE Austin,AGENCY,Advertising & Marketing,https://www.galeglobal.com,Austin,TX,US,GALE
+GALE Bengaluru,AGENCY,Advertising & Marketing,https://www.galeglobal.com,Bengaluru,,India,GALE
+GALE Denver,AGENCY,Advertising & Marketing,https://www.galeglobal.com,Denver,CO,US,GALE
+GALE LA,AGENCY,Advertising & Marketing,https://www.galeglobal.com,Los Angeles,CA,US,GALE
+GALE NY,AGENCY,Advertising & Marketing,https://www.galeglobal.com,New York,NY,US,GALE
+GALE Toronto,AGENCY,Advertising & Marketing,https://www.galeglobal.com,Toronto,,Canada,GALE
+Allegory,AGENCY,Advertising & Marketing,https://www.allegory.com,New York,NY,US,Stagwell Global
+Allegory NY,AGENCY,Advertising & Marketing,https://www.allegory.com,New York,NY,US,Allegory
+Colle McVoy,AGENCY,Advertising & Marketing,https://www.collemcvoy.com,Minneapolis,MN,US,Stagwell Global
+Anomaly,AGENCY,Advertising & Marketing,https://www.anomaly.com,New York,NY,US,Stagwell Global
+Anomaly Amsterdam,AGENCY,Advertising & Marketing,https://www.anomaly.com,Amsterdam,,Netherlands,Anomaly
+Anomaly Berlin,AGENCY,Advertising & Marketing,https://www.anomaly.com,Berlin,,Germany,Anomaly
+Anomaly LA,AGENCY,Advertising & Marketing,https://www.anomaly.com,Los Angeles,CA,US,Anomaly
+Anomaly NY,AGENCY,Advertising & Marketing,https://www.anomaly.com,New York,NY,US,Anomaly
+Anomaly Toronto,AGENCY,Advertising & Marketing,https://www.anomaly.com,Toronto,,Canada,Anomaly
+Anomaly UK,AGENCY,Advertising & Marketing,https://www.anomaly.com,London,,United Kingdom,Anomaly
+Mono,AGENCY,Advertising & Marketing,https://www.mono.com,Minneapolis,MN,US,Stagwell Global
+Mono Minneapolis,AGENCY,Advertising & Marketing,https://www.mono.com,Minneapolis,MN,US,Mono
+Mono SF,AGENCY,Advertising & Marketing,https://www.mono.com,San Francisco,CA,US,Mono
+Targeted Victory,AGENCY,Political Marketing,https://www.targetedvictory.com,Washington,DC,US,Stagwell Global
+Targeted Victory Boston,AGENCY,Political Marketing,https://www.targetedvictory.com,Boston,MA,US,Targeted Victory
+Targeted Victory DC,AGENCY,Political Marketing,https://www.targetedvictory.com,Washington,DC,US,Targeted Victory
+Doner,AGENCY,Advertising & Marketing,https://www.doner.com,Detroit,MI,US,Stagwell Global
+Doner Cleveland,AGENCY,Advertising & Marketing,https://www.doner.com,Cleveland,OH,US,Doner
+Doner CX Norwalk,AGENCY,Customer Experience,https://www.doner.com,Norwalk,CT,US,Doner
+Doner CX Pittsburgh,AGENCY,Customer Experience,https://www.doner.com,Pittsburgh,PA,US,Doner
+Doner CX Providence,AGENCY,Customer Experience,https://www.doner.com,Providence,RI,US,Doner
+Doner Detroit,AGENCY,Advertising & Marketing,https://www.doner.com,Detroit,MI,US,Doner
+Doner LA,AGENCY,Advertising & Marketing,https://www.doner.com,Los Angeles,CA,US,Doner
+Doner Norwalk,AGENCY,Advertising & Marketing,https://www.doner.com,Norwalk,CT,US,Doner
+Doner NY,AGENCY,Advertising & Marketing,https://www.doner.com,New York,NY,US,Doner
+Hunter Public Relations,AGENCY,Public Relations,https://www.hunterpr.com,New York,NY,US,Stagwell Global
+72andSunny,AGENCY,Advertising & Marketing,https://www.72andsunny.com,Los Angeles,CA,US,Stagwell Global
+72andSunny Amsterdam,AGENCY,Advertising & Marketing,https://www.72andsunny.com,Amsterdam,,Netherlands,72andSunny
+72andSunny LA,AGENCY,Advertising & Marketing,https://www.72andsunny.com,Los Angeles,CA,US,72andSunny
+72andSunny NY,AGENCY,Advertising & Marketing,https://www.72andsunny.com,New York,NY,US,72andSunny
+72andSunny Sydney,AGENCY,Advertising & Marketing,https://www.72andsunny.com,Sydney,,Australia,72andSunny
+Allison Worldwide,AGENCY,Public Relations,https://www.allisonpr.com,New York,NY,US,Stagwell Global
+Allison Worldwide Atlanta,AGENCY,Public Relations,https://www.allisonpr.com,Atlanta,GA,US,Allison Worldwide
+Allison Worldwide Boston,AGENCY,Public Relations,https://www.allisonpr.com,Boston,MA,US,Allison Worldwide
+Allison Worldwide Chicago,AGENCY,Public Relations,https://www.allisonpr.com,Chicago,IL,US,Allison Worldwide
+Allison Worldwide Dallas,AGENCY,Public Relations,https://www.allisonpr.com,Dallas,TX,US,Allison Worldwide
+Allison Worldwide DC,AGENCY,Public Relations,https://www.allisonpr.com,Washington,DC,US,Allison Worldwide
+Allison Worldwide LA,AGENCY,Public Relations,https://www.allisonpr.com,Los Angeles,CA,US,Allison Worldwide
+Allison Worldwide NY,AGENCY,Public Relations,https://www.allisonpr.com,New York,NY,US,Allison Worldwide
+Allison Worldwide Phoenix,AGENCY,Public Relations,https://www.allisonpr.com,Phoenix,AZ,US,Allison Worldwide
+Allison Worldwide Portland,AGENCY,Public Relations,https://www.allisonpr.com,Portland,OR,US,Allison Worldwide
+Allison Worldwide San Diego,AGENCY,Public Relations,https://www.allisonpr.com,San Diego,CA,US,Allison Worldwide
+Allison Worldwide San Mateo,AGENCY,Public Relations,https://www.allisonpr.com,San Mateo,CA,US,Allison Worldwide
+Allison Worldwide Seattle,AGENCY,Public Relations,https://www.allisonpr.com,Seattle,WA,US,Allison Worldwide
+Allison Worldwide SF,AGENCY,Public Relations,https://www.allisonpr.com,San Francisco,CA,US,Allison Worldwide
+Allison Worldwide UK,AGENCY,Public Relations,https://www.allisonpr.com,London,,United Kingdom,Allison Worldwide
+Crispin,AGENCY,Advertising & Marketing,https://www.crispinporter.com,Boulder,CO,US,Stagwell Global
+CP+B Brasil,AGENCY,Advertising & Marketing,https://www.crispinporter.com,Sao Paulo,,Brazil,Crispin
+Crispin Boulder,AGENCY,Advertising & Marketing,https://www.crispinporter.com,Boulder,CO,US,Crispin
+Crispin Houston,AGENCY,Advertising & Marketing,https://www.crispinporter.com,Houston,TX,US,Crispin
+Crispin London,AGENCY,Advertising & Marketing,https://www.crispinporter.com,London,,United Kingdom,Crispin
+Crispin Minneapolis,AGENCY,Advertising & Marketing,https://www.crispinporter.com,Minneapolis,MN,US,Crispin
+Crispin NY,AGENCY,Advertising & Marketing,https://www.crispinporter.com,New York,NY,US,Crispin
+Crispin San Diego,AGENCY,Advertising & Marketing,https://www.crispinporter.com,San Diego,CA,US,Crispin
+Crispin Toronto,AGENCY,Advertising & Marketing,https://www.crispinporter.com,Toronto,,Canada,Crispin
+Forsman & Bodenfors,AGENCY,Advertising & Marketing,https://www.fb.se,Gothenburg,,Sweden,Stagwell Global
+Forsman & Bodenfors Montreal,AGENCY,Advertising & Marketing,https://www.fb.se,Montreal,,Canada,Forsman & Bodenfors
+Forsman & Bodenfors NY,AGENCY,Advertising & Marketing,https://www.fb.se,New York,NY,US,Forsman & Bodenfors
+Forsman & Bodenfors Toronto,AGENCY,Advertising & Marketing,https://www.fb.se,Toronto,,Canada,Forsman & Bodenfors
+Attention,AGENCY,Advertising & Marketing,https://www.attention.com,New York,NY,US,Stagwell Global
+Attention LA,AGENCY,Advertising & Marketing,https://www.attention.com,Los Angeles,CA,US,Attention
+Attention NY,AGENCY,Advertising & Marketing,https://www.attention.com,New York,NY,US,Attention
+Attention Toronto,AGENCY,Advertising & Marketing,https://www.attention.com,Toronto,,Canada,Attention
+Attention UK,AGENCY,Advertising & Marketing,https://www.attention.com,London,,United Kingdom,Attention
+Instrument,AGENCY,Digital Creative,https://www.instrument.com,Portland,OR,US,Stagwell Global
+Scout Group,AGENCY,Healthcare Marketing,https://www.scoutagency.com,Atlanta,GA,US,Stagwell Global
+SCOUT Agency Atlanta,AGENCY,Healthcare Marketing,https://www.scoutagency.com,Atlanta,GA,US,Scout Group
+SCOUT Health Chicago,AGENCY,Healthcare Marketing,https://www.scoutagency.com,Chicago,IL,US,Scout Group
+SCOUT Health San Diego,AGENCY,Healthcare Marketing,https://www.scoutagency.com,San Diego,CA,US,Scout Group
+Wolfgang L.A.,AGENCY,Digital Marketing,https://www.wolfgangla.com,Los Angeles,CA,US,Stagwell Global
+UNION,AGENCY,Advertising & Marketing,https://www.unionagency.com,New York,NY,US,Stagwell Global
+Code and Theory,AGENCY,Digital Experience,https://www.codeandtheory.com,New York,NY,US,Stagwell Global
+Code and Theory London,AGENCY,Digital Experience,https://www.codeandtheory.com,London,,United Kingdom,Code and Theory
+Code and Theory NY,AGENCY,Digital Experience,https://www.codeandtheory.com,New York,NY,US,Code and Theory
+Code and Theory SF,AGENCY,Digital Experience,https://www.codeandtheory.com,San Francisco,CA,US,Code and Theory
+KWT Global,AGENCY,Sports Marketing,https://www.kwtglobal.com,New York,NY,US,Stagwell Global
+KWT Global LA,AGENCY,Sports Marketing,https://www.kwtglobal.com,Los Angeles,CA,US,KWT Global
+KWT Global NY,AGENCY,Sports Marketing,https://www.kwtglobal.com,New York,NY,US,KWT Global
+REDSCOUT,AGENCY,Brand Strategy,https://www.redscout.com,New York,NY,US,Stagwell Global
+Trade X Partners,AGENCY,Trade Marketing,https://www.tradexpartners.com,New York,NY,US,Stagwell Global
+TEAM Enterprises,AGENCY,Event Marketing,https://www.teamenterprises.com,Fort Lauderdale,FL,US,Stagwell Global
+TEAM Enterprises Ft. Lauderdale,AGENCY,Event Marketing,https://www.teamenterprises.com,Fort Lauderdale,FL,US,TEAM Enterprises
+Concentric Health Experience,AGENCY,Healthcare Marketing,https://www.concentrichealth.com,New York,NY,US,Stagwell Global
+Concentric Health Experience London,AGENCY,Healthcare Marketing,https://www.concentrichealth.com,London,,United Kingdom,Concentric Health Experience
+Concentric Health Experience NY,AGENCY,Healthcare Marketing,https://www.concentrichealth.com,New York,NY,US,Concentric Health Experience
+Yamamoto,AGENCY,Advertising & Marketing,https://www.yamamoto.com,Minneapolis,MN,US,Stagwell Global
+Varick,AGENCY,Digital Media,https://www.varickmedia.com,New York,NY,US,Stagwell Global
+6Degrees,AGENCY,Influencer Marketing,https://www.6degreesinfluence.com,New York,NY,US,Stagwell Global
+Hudsun Media,AGENCY,Media Planning & Buying,https://www.hudsunmedia.com,New York,NY,US,Stagwell Global
+Hudsun Media LA,AGENCY,Media Planning & Buying,https://www.hudsunmedia.com,Los Angeles,CA,US,Hudsun Media
+Hudsun Media NY,AGENCY,Media Planning & Buying,https://www.hudsunmedia.com,New York,NY,US,Hudsun Media
+Bruce Mau Design,AGENCY,Design,https://www.brucemaudesign.com,New York,NY,US,Stagwell Global
+Bruce Mau Design LA,AGENCY,Design,https://www.brucemaudesign.com,Los Angeles,CA,US,Bruce Mau Design
+Bruce Mau Design NY,AGENCY,Design,https://www.brucemaudesign.com,New York,NY,US,Bruce Mau Design
+Bruce Mau Design Toronto,AGENCY,Design,https://www.brucemaudesign.com,Toronto,,Canada,Bruce Mau Design
+Hello Design,AGENCY,Design,https://www.hellodesign.com,New York,NY,US,Stagwell Global
+Exponent PR,AGENCY,Public Relations,https://www.exponentpr.com,New York,NY,US,Stagwell Global

@@ -1,0 +1,17 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Razorfish Chicago,Agency,Contact,Managing Director,https://www.razorfish.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Chicago IL
+Amazon,Main,Contact,Media Director,https://www.amazon.com,TECHNOLOGY,MEGA_5000_PLUS,Seattle WA
+Best Buy,Main,Contact,Media Director,https://www.bestbuy.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Richfield MN
+Bread Financial,Main,Contact,Media Director,https://www.breadfinancial.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Columbus OH
+Church & Dwight,Main,Contact,Media Director,https://www.churchdwight.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Ewing NJ
+Conair,Main,Contact,Media Director,https://www.conair.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Stamford CT
+Kimberly-Clark,Main,Contact,Media Director,https://www.kimberly-clark.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Irving TX
+Mark Anthony Group,Main,Contact,Media Director,https://www.markanthony.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Vancouver
+Nature's Way,Main,Contact,Media Director,https://www.naturesway.com,HEALTHCARE_PHARMA,LARGE_201_1000,Green Bay WI
+Northrop Grumman,Main,Contact,Media Director,https://www.northropgrumman.com,TECHNOLOGY,MEGA_5000_PLUS,Falls Church VA
+NRG Energy,Main,Contact,Media Director,https://www.nrg.com,AUTOMOTIVE,ENTERPRISE_1001_5000,Houston TX
+PNC Financial Services,Main,Contact,Media Director,https://www.pnc.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Pittsburgh PA
+San Diego Zoo Wildlife Alliance,Main,Contact,Media Director,https://www.sdzwa.org,EDUCATION,ENTERPRISE_1001_5000,San Diego CA
+TIAA,Main,Contact,Media Director,https://www.tiaa.org,FINANCIAL_SERVICES,MEGA_5000_PLUS,New York NY
+USAA,Main,Contact,Media Director,https://www.usaa.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,San Antonio TX
+VillageMD,Main,Contact,Media Director,https://www.villagemd.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Chicago IL

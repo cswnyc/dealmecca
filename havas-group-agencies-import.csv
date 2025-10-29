@@ -1,0 +1,106 @@
+companyName,companyType,industry,website,city,state,country,parentCompanyName
+Havas Group,MEDIA_HOLDING_COMPANY,Advertising & Marketing,https://www.havasgroup.com,Paris,,France,
+Havas Media Group,AGENCY,Media Planning & Buying,https://www.havasmedia.com,New York,NY,US,Havas Group
+Havas Media Barcelona,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Barcelona,,Spain,Havas Media Group
+Havas Media Bogota,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Bogota,,Colombia,Havas Media Group
+Havas Media Boston,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Boston,MA,US,Havas Media Group
+Havas Media Chicago,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Chicago,IL,US,Havas Media Group
+Havas Media Dubai,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Dubai,,UAE,Havas Media Group
+Havas Media France,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Paris,,France,Havas Media Group
+Havas Media Frankfurt,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Frankfurt,,Germany,Havas Media Group
+Havas Media Madrid,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Madrid,,Spain,Havas Media Group
+Havas Media Mexico City,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Mexico City,,Mexico,Havas Media Group
+Havas Media Miami,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Miami,FL,US,Havas Media Group
+Havas Media Minneapolis,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Minneapolis,MN,US,Havas Media Group
+Havas Media Montreal,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Montreal,,Canada,Havas Media Group
+Havas Media NY,AGENCY,Media Planning & Buying,https://www.havasmedia.com,New York,NY,US,Havas Media Group
+Havas Media San Diego,AGENCY,Media Planning & Buying,https://www.havasmedia.com,San Diego,CA,US,Havas Media Group
+Havas Media SF,AGENCY,Media Planning & Buying,https://www.havasmedia.com,San Francisco,CA,US,Havas Media Group
+Havas Media Singapore,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Singapore,,Singapore,Havas Media Group
+Havas Media Sydney,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Sydney,,Australia,Havas Media Group
+Havas Media Toronto,AGENCY,Media Planning & Buying,https://www.havasmedia.com,Toronto,,Canada,Havas Media Group
+Havas Media UK,AGENCY,Media Planning & Buying,https://www.havasmedia.com,London,,United Kingdom,Havas Media Group
+Havas Creative,AGENCY,Advertising & Marketing,https://www.havas.com,New York,NY,US,Havas Group
+Field Day,AGENCY,Advertising & Marketing,https://www.fieldday.com,New York,NY,US,Havas Creative
+Havas Annex,AGENCY,Advertising & Marketing,https://www.havas.com,New York,NY,US,Havas Creative
+Havas Boston,AGENCY,Advertising & Marketing,https://www.havas.com,Boston,MA,US,Havas Creative
+Havas Chicago,AGENCY,Advertising & Marketing,https://www.havas.com,Chicago,IL,US,Havas Creative
+Havas Creative Atlanta,AGENCY,Advertising & Marketing,https://www.havas.com,Atlanta,GA,US,Havas Creative
+Havas CX NY,AGENCY,Advertising & Marketing,https://www.havas.com,New York,NY,US,Havas Creative
+Havas CX Toronto,AGENCY,Advertising & Marketing,https://www.havas.com,Toronto,,Canada,Havas Creative
+Havas Dusseldorf,AGENCY,Advertising & Marketing,https://www.havas.com,Dusseldorf,,Germany,Havas Creative
+Havas London,AGENCY,Advertising & Marketing,https://www.havas.com,London,,United Kingdom,Havas Creative
+Havas Mexico City,AGENCY,Advertising & Marketing,https://www.havas.com,Mexico City,,Mexico,Havas Creative
+Havas Montreal,AGENCY,Advertising & Marketing,https://www.havas.com,Montreal,,Canada,Havas Creative
+Havas NY,AGENCY,Advertising & Marketing,https://www.havas.com,New York,NY,US,Havas Creative
+Havas SF,AGENCY,Advertising & Marketing,https://www.havas.com,San Francisco,CA,US,Havas Creative
+Havas Toronto,AGENCY,Advertising & Marketing,https://www.havas.com,Toronto,,Canada,Havas Creative
+Strat Farm,AGENCY,Advertising & Marketing,https://www.stratfarm.com,New York,NY,US,Havas Creative
+Arnold Worldwide,AGENCY,Advertising & Marketing,https://www.arnoldworldwide.com,Boston,MA,US,Havas Group
+Arnold Boston,AGENCY,Advertising & Marketing,https://www.arnoldworldwide.com,Boston,MA,US,Arnold Worldwide
+Arnold NY,AGENCY,Advertising & Marketing,https://www.arnoldworldwide.com,New York,NY,US,Arnold Worldwide
+Arnold Toronto,AGENCY,Advertising & Marketing,https://www.arnoldworldwide.com,Toronto,,Canada,Arnold Worldwide
+Havas Edge,AGENCY,Advertising & Marketing,https://www.havasedge.com,New York,NY,US,Havas Group
+Havas Edge Boston,AGENCY,Advertising & Marketing,https://www.havasedge.com,Boston,MA,US,Havas Edge
+Havas Edge Dallas,AGENCY,Advertising & Marketing,https://www.havasedge.com,Dallas,TX,US,Havas Edge
+Havas Edge LA,AGENCY,Advertising & Marketing,https://www.havasedge.com,Los Angeles,CA,US,Havas Edge
+Havas Edge NY,AGENCY,Advertising & Marketing,https://www.havasedge.com,New York,NY,US,Havas Edge
+Havas Edge Portland,AGENCY,Advertising & Marketing,https://www.havasedge.com,Portland,OR,US,Havas Edge
+Havas Edge San Diego,AGENCY,Advertising & Marketing,https://www.havasedge.com,San Diego,CA,US,Havas Edge
+Havas Lynx,AGENCY,Advertising & Marketing,https://www.havaslynx.com,New York,NY,US,Havas Group
+Havas Lynx London,AGENCY,Advertising & Marketing,https://www.havaslynx.com,London,,United Kingdom,Havas Lynx
+Havas Lynx Manchester,AGENCY,Advertising & Marketing,https://www.havaslynx.com,Manchester,,United Kingdom,Havas Lynx
+Havas Lynx NY,AGENCY,Advertising & Marketing,https://www.havaslynx.com,New York,NY,US,Havas Lynx
+Republica HAVAS,AGENCY,Advertising & Marketing,https://www.republicahavas.com,Miami,FL,US,Havas Group
+HAVAS Play,AGENCY,Advertising & Marketing,https://www.havasplay.com,New York,NY,US,Havas Group
+HAVAS Play London,AGENCY,Advertising & Marketing,https://www.havasplay.com,London,,United Kingdom,HAVAS Play
+HAVAS Play NY,AGENCY,Advertising & Marketing,https://www.havasplay.com,New York,NY,US,HAVAS Play
+The Annex 88,AGENCY,Advertising & Marketing,https://www.theannex88.com,New York,NY,US,Havas Group
+Arena Media,AGENCY,Media Planning & Buying,https://www.arenamedia.com,New York,NY,US,Havas Group
+Arena Media Chicago,AGENCY,Media Planning & Buying,https://www.arenamedia.com,Chicago,IL,US,Arena Media
+Arena Media NY,AGENCY,Media Planning & Buying,https://www.arenamedia.com,New York,NY,US,Arena Media
+Arena Media UK,AGENCY,Media Planning & Buying,https://www.arenamedia.com,London,,United Kingdom,Arena Media
+HAVAS Formula,AGENCY,Advertising & Marketing,https://www.havasformula.com,New York,NY,US,Havas Group
+Havas Formula Chicago,AGENCY,Advertising & Marketing,https://www.havasformula.com,Chicago,IL,US,HAVAS Formula
+Havas Formula Denver,AGENCY,Advertising & Marketing,https://www.havasformula.com,Denver,CO,US,HAVAS Formula
+Havas Formula LA,AGENCY,Advertising & Marketing,https://www.havasformula.com,Los Angeles,CA,US,HAVAS Formula
+Havas Formula NY,AGENCY,Advertising & Marketing,https://www.havasformula.com,New York,NY,US,HAVAS Formula
+Havas Formula San Diego,AGENCY,Advertising & Marketing,https://www.havasformula.com,San Diego,CA,US,HAVAS Formula
+Health4Brands,AGENCY,Healthcare Marketing,https://www.health4brands.com,New York,NY,US,Havas Group
+Health4Brands Boston,AGENCY,Healthcare Marketing,https://www.health4brands.com,Boston,MA,US,Health4Brands
+Health4Brands London,AGENCY,Healthcare Marketing,https://www.health4brands.com,London,,United Kingdom,Health4Brands
+Health4Brands Manchester,AGENCY,Healthcare Marketing,https://www.health4brands.com,Manchester,,United Kingdom,Health4Brands
+Health4Brands NY,AGENCY,Healthcare Marketing,https://www.health4brands.com,New York,NY,US,Health4Brands
+Health4Brands Toronto,AGENCY,Healthcare Marketing,https://www.health4brands.com,Toronto,,Canada,Health4Brands
+Health4Brands Trenton,AGENCY,Healthcare Marketing,https://www.health4brands.com,Trenton,NJ,US,Health4Brands
+Jacques,AGENCY,Advertising & Marketing,https://www.jacques.com,New York,NY,US,Havas Group
+Havas Entertainment,AGENCY,Entertainment Marketing,https://www.havasentertainment.com,Los Angeles,CA,US,Havas Group
+Havas Entertainment London,AGENCY,Entertainment Marketing,https://www.havasentertainment.com,London,,United Kingdom,Havas Entertainment
+Red Havas,AGENCY,Public Relations,https://www.redhavas.com,New York,NY,US,Havas Group
+Red Havas NY,AGENCY,Public Relations,https://www.redhavas.com,New York,NY,US,Red Havas
+Red Havas Phoenix,AGENCY,Public Relations,https://www.redhavas.com,Phoenix,AZ,US,Red Havas
+Red Havas Pittsburgh,AGENCY,Public Relations,https://www.redhavas.com,Pittsburgh,PA,US,Red Havas
+Red Havas Providence,AGENCY,Public Relations,https://www.redhavas.com,Providence,RI,US,Red Havas
+Havas Life,AGENCY,Healthcare Marketing,https://www.havaslife.com,New York,NY,US,Havas Group
+Havas Life Chicago,AGENCY,Healthcare Marketing,https://www.havaslife.com,Chicago,IL,US,Havas Life
+Havas Life Medicom,AGENCY,Healthcare Marketing,https://www.havaslife.com,New York,NY,US,Havas Life
+Havas Life NY,AGENCY,Healthcare Marketing,https://www.havaslife.com,New York,NY,US,Havas Life
+Havas Life Rare,AGENCY,Healthcare Marketing,https://www.havaslife.com,New York,NY,US,Havas Life
+Havas Life Toronto,AGENCY,Healthcare Marketing,https://www.havaslife.com,Toronto,,Canada,Havas Life
+Camp + King,AGENCY,Advertising & Marketing,https://www.campandking.com,San Francisco,CA,US,Havas Group
+Camp + King Chicago,AGENCY,Advertising & Marketing,https://www.campandking.com,Chicago,IL,US,Camp + King
+Camp + King SF,AGENCY,Advertising & Marketing,https://www.campandking.com,San Francisco,CA,US,Camp + King
+Havas Health & You,AGENCY,Healthcare Marketing,https://www.havashealthandyou.com,New York,NY,US,Havas Group
+Havas Health Plus,AGENCY,Healthcare Marketing,https://www.havashealthplus.com,New York,NY,US,Havas Health & You
+Havas Mango,AGENCY,Healthcare Marketing,https://www.havasmango.com,New York,NY,US,Havas Health & You
+Havas CX Helia,AGENCY,Customer Experience,https://www.havascxhelia.com,New York,NY,US,Havas Group
+Havas CX Helia Baltimore,AGENCY,Customer Experience,https://www.havascxhelia.com,Baltimore,MD,US,Havas CX Helia
+Havas CX Helia Chicago,AGENCY,Customer Experience,https://www.havascxhelia.com,Chicago,IL,US,Havas CX Helia
+Havas CX Helia Cirencester,AGENCY,Customer Experience,https://www.havascxhelia.com,Cirencester,,United Kingdom,Havas CX Helia
+Havas CX Helia London,AGENCY,Customer Experience,https://www.havascxhelia.com,London,,United Kingdom,Havas CX Helia
+Havas CX Helia NY,AGENCY,Customer Experience,https://www.havascxhelia.com,New York,NY,US,Havas CX Helia
+Havas CX Helia Richmond,AGENCY,Customer Experience,https://www.havascxhelia.com,Richmond,VA,US,Havas CX Helia
+FullSix Group,AGENCY,Digital Marketing,https://www.fullsix.com,New York,NY,US,Havas Group
+FullSix Group LA,AGENCY,Digital Marketing,https://www.fullsix.com,Los Angeles,CA,US,FullSix Group
+FullSix Group London,AGENCY,Digital Marketing,https://www.fullsix.com,London,,United Kingdom,FullSix Group
+FullSix Group NY,AGENCY,Digital Marketing,https://www.fullsix.com,New York,NY,US,FullSix Group

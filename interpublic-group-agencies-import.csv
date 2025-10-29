@@ -1,0 +1,323 @@
+companyName,companyType,industry,website,city,state,country,parentCompanyName
+Interpublic Group,MEDIA_HOLDING_COMPANY,Advertising & Marketing,https://www.interpublic.com,New York,NY,US,
+Kinesso,AGENCY,Marketing Technology,https://www.kinesso.com,New York,NY,US,Interpublic Group
+Kinesso Atlanta,AGENCY,Marketing Technology,https://www.kinesso.com,Atlanta,GA,US,Interpublic Group
+Kinesso Chicago,AGENCY,Marketing Technology,https://www.kinesso.com,Chicago,IL,US,Interpublic Group
+Kinesso Detroit,AGENCY,Marketing Technology,https://www.kinesso.com,Detroit,MI,US,Interpublic Group
+Kinesso LA,AGENCY,Marketing Technology,https://www.kinesso.com,Los Angeles,CA,US,Interpublic Group
+Kinesso London,AGENCY,Marketing Technology,https://www.kinesso.com,London,,United Kingdom,Interpublic Group
+Kinesso Melbourne,AGENCY,Marketing Technology,https://www.kinesso.com,Melbourne,,Australia,Interpublic Group
+Kinesso Mexico City,AGENCY,Marketing Technology,https://www.kinesso.com,Mexico City,,Mexico,Interpublic Group
+Kinesso Montreal,AGENCY,Marketing Technology,https://www.kinesso.com,Montreal,,Canada,Interpublic Group
+Kinesso NY,AGENCY,Marketing Technology,https://www.kinesso.com,New York,NY,US,Interpublic Group
+Kinesso Sao Paulo,AGENCY,Marketing Technology,https://www.kinesso.com,Sao Paulo,,Brazil,Interpublic Group
+Kinesso SF,AGENCY,Marketing Technology,https://www.kinesso.com,San Francisco,CA,US,Interpublic Group
+Kinesso Sydney,AGENCY,Marketing Technology,https://www.kinesso.com,Sydney,,Australia,Interpublic Group
+Kinesso Toronto,AGENCY,Marketing Technology,https://www.kinesso.com,Toronto,,Canada,Interpublic Group
+Kinesso Vancouver,AGENCY,Marketing Technology,https://www.kinesso.com,Vancouver,,Canada,Interpublic Group
+Mediahub Worldwide,AGENCY,Media Planning & Buying,https://www.mediahubww.com,Boston,MA,US,Interpublic Group
+Mediahub Worldwide Boston,AGENCY,Media Planning & Buying,https://www.mediahubww.com,Boston,MA,US,Interpublic Group
+Mediahub Worldwide LA,AGENCY,Media Planning & Buying,https://www.mediahubww.com,Los Angeles,CA,US,Interpublic Group
+Mediahub Worldwide Minneapolis,AGENCY,Media Planning & Buying,https://www.mediahubww.com,Minneapolis,MN,US,Interpublic Group
+Mediahub Worldwide NY,AGENCY,Media Planning & Buying,https://www.mediahubww.com,New York,NY,US,Interpublic Group
+Mediahub Worldwide UK,AGENCY,Media Planning & Buying,https://www.mediahubww.com,London,,United Kingdom,Interpublic Group
+Mediahub Worldwide Winston-Salem,AGENCY,Media Planning & Buying,https://www.mediahubww.com,Winston-Salem,NC,US,Interpublic Group
+Initiative,AGENCY,Media Planning & Buying,https://www.initiative.com,New York,NY,US,Interpublic Group
+Initiative Atlanta,AGENCY,Media Planning & Buying,https://www.initiative.com,Atlanta,GA,US,Interpublic Group
+Initiative Chicago,AGENCY,Media Planning & Buying,https://www.initiative.com,Chicago,IL,US,Interpublic Group
+Initiative Dallas,AGENCY,Media Planning & Buying,https://www.initiative.com,Dallas,TX,US,Interpublic Group
+Initiative LA,AGENCY,Media Planning & Buying,https://www.initiative.com,Los Angeles,CA,US,Interpublic Group
+Initiative London,AGENCY,Media Planning & Buying,https://www.initiative.com,London,,United Kingdom,Interpublic Group
+Initiative Miami,AGENCY,Media Planning & Buying,https://www.initiative.com,Miami,FL,US,Interpublic Group
+Initiative Montreal,AGENCY,Media Planning & Buying,https://www.initiative.com,Montreal,,Canada,Interpublic Group
+Initiative NY,AGENCY,Media Planning & Buying,https://www.initiative.com,New York,NY,US,Interpublic Group
+Initiative Perth,AGENCY,Media Planning & Buying,https://www.initiative.com,Perth,,Australia,Interpublic Group
+Initiative Phoenix,AGENCY,Media Planning & Buying,https://www.initiative.com,Phoenix,AZ,US,Interpublic Group
+Initiative Puerto Rico,AGENCY,Media Planning & Buying,https://www.initiative.com,San Juan,,Puerto Rico,Interpublic Group
+Initiative Sao Paulo,AGENCY,Media Planning & Buying,https://www.initiative.com,Sao Paulo,,Brazil,Interpublic Group
+Initiative Sydney,AGENCY,Media Planning & Buying,https://www.initiative.com,Sydney,,Australia,Interpublic Group
+Initiative Toronto,AGENCY,Media Planning & Buying,https://www.initiative.com,Toronto,,Canada,Interpublic Group
+Universal McCann,AGENCY,Media Planning & Buying,https://www.universalmccann.com,New York,NY,US,Interpublic Group
+Universal McCann Austin,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Austin,TX,US,Interpublic Group
+Universal McCann Boston,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Boston,MA,US,Interpublic Group
+Universal McCann Chicago,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Chicago,IL,US,Interpublic Group
+Universal McCann Dallas,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Dallas,TX,US,Interpublic Group
+Universal McCann Detroit,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Detroit,MI,US,Interpublic Group
+Universal McCann Dubai,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Dubai,,United Arab Emirates,Interpublic Group
+Universal McCann Hong Kong,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Hong Kong,,Hong Kong,Interpublic Group
+Universal McCann LA,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Los Angeles,CA,US,Interpublic Group
+Universal McCann London,AGENCY,Media Planning & Buying,https://www.universalmccann.com,London,,United Kingdom,Interpublic Group
+Universal McCann Melbourne,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Melbourne,,Australia,Interpublic Group
+Universal McCann Miami,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Miami,FL,US,Interpublic Group
+Universal McCann NY,AGENCY,Media Planning & Buying,https://www.universalmccann.com,New York,NY,US,Interpublic Group
+Universal McCann Philippines,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Manila,,Philippines,Interpublic Group
+Universal McCann Qatar,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Doha,,Qatar,Interpublic Group
+Universal McCann SF,AGENCY,Media Planning & Buying,https://www.universalmccann.com,San Francisco,CA,US,Interpublic Group
+Universal McCann Singapore,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Singapore,,Singapore,Interpublic Group
+Universal McCann Sydney,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Sydney,,Australia,Interpublic Group
+Universal McCann Toronto,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Toronto,,Canada,Interpublic Group
+Universal McCann Vienna,AGENCY,Media Planning & Buying,https://www.universalmccann.com,Vienna,,Austria,Interpublic Group
+IPG Mediabrands,AGENCY,Media Services,https://www.ipgmediabrands.com,New York,NY,US,Interpublic Group
+IPG Mediabrands Detroit,AGENCY,Media Services,https://www.ipgmediabrands.com,Detroit,MI,US,Interpublic Group
+IPG Mediabrands LA,AGENCY,Media Services,https://www.ipgmediabrands.com,Los Angeles,CA,US,Interpublic Group
+IPG Mediabrands Lisbon,AGENCY,Media Services,https://www.ipgmediabrands.com,Lisbon,,Portugal,Interpublic Group
+IPG Mediabrands London,AGENCY,Media Services,https://www.ipgmediabrands.com,London,,United Kingdom,Interpublic Group
+IPG Mediabrands Miami-LATAM,AGENCY,Media Services,https://www.ipgmediabrands.com,Miami,FL,US,Interpublic Group
+IPG Mediabrands Montreal,AGENCY,Media Services,https://www.ipgmediabrands.com,Montreal,,Canada,Interpublic Group
+IPG Mediabrands Mumbai,AGENCY,Media Services,https://www.ipgmediabrands.com,Mumbai,,India,Interpublic Group
+IPG Mediabrands NY,AGENCY,Media Services,https://www.ipgmediabrands.com,New York,NY,US,Interpublic Group
+IPG Mediabrands Toronto,AGENCY,Media Services,https://www.ipgmediabrands.com,Toronto,,Canada,Interpublic Group
+Mediabrands Content Studio LA,AGENCY,Content Production,https://www.ipgmediabrands.com,Los Angeles,CA,US,Interpublic Group
+Mediabrands Content Studio London,AGENCY,Content Production,https://www.ipgmediabrands.com,London,,United Kingdom,Interpublic Group
+Mediabrands Content Studio NY,AGENCY,Content Production,https://www.ipgmediabrands.com,New York,NY,US,Interpublic Group
+FCB,AGENCY,Advertising & Marketing,https://www.fcb.com,New York,NY,US,Interpublic Group
+FCB Auckland,AGENCY,Advertising & Marketing,https://www.fcb.com,Auckland,,New Zealand,Interpublic Group
+FCB Chicago,AGENCY,Advertising & Marketing,https://www.fcb.com,Chicago,IL,US,Interpublic Group
+FCB LA,AGENCY,Advertising & Marketing,https://www.fcb.com,Los Angeles,CA,US,Interpublic Group
+FCB Montreal,AGENCY,Advertising & Marketing,https://www.fcb.com,Montreal,,Canada,Interpublic Group
+FCB NY,AGENCY,Advertising & Marketing,https://www.fcb.com,New York,NY,US,Interpublic Group
+FCB Seattle,AGENCY,Advertising & Marketing,https://www.fcb.com,Seattle,WA,US,Interpublic Group
+FCB SF,AGENCY,Advertising & Marketing,https://www.fcb.com,San Francisco,CA,US,Interpublic Group
+FCB Toronto,AGENCY,Advertising & Marketing,https://www.fcb.com,Toronto,,Canada,Interpublic Group
+FCB/RED Chicago,AGENCY,Advertising & Marketing,https://www.fcb.com,Chicago,IL,US,Interpublic Group
+Mosaic Group,AGENCY,Advertising & Marketing,https://www.mosaicgroupusa.com,New York,NY,US,Interpublic Group
+McCann,AGENCY,Advertising & Marketing,https://www.mccann.com,New York,NY,US,Interpublic Group
+Commonwealth//McCann Detroit,AGENCY,Advertising & Marketing,https://www.mccann.com,Detroit,MI,US,Interpublic Group
+McCann Calgary,AGENCY,Advertising & Marketing,https://www.mccann.com,Calgary,,Canada,Interpublic Group
+McCann Canada Vancouver,AGENCY,Advertising & Marketing,https://www.mccann.com,Vancouver,,Canada,Interpublic Group
+McCann Detroit,AGENCY,Advertising & Marketing,https://www.mccann.com,Detroit,MI,US,Interpublic Group
+McCann Hong Kong,AGENCY,Advertising & Marketing,https://www.mccann.com,Hong Kong,,Hong Kong,Interpublic Group
+McCann London,AGENCY,Advertising & Marketing,https://www.mccann.com,London,,United Kingdom,Interpublic Group
+McCann Miami,AGENCY,Advertising & Marketing,https://www.mccann.com,Miami,FL,US,Interpublic Group
+McCann Montreal,AGENCY,Advertising & Marketing,https://www.mccann.com,Montreal,,Canada,Interpublic Group
+McCann NY,AGENCY,Advertising & Marketing,https://www.mccann.com,New York,NY,US,Interpublic Group
+McCann Salt Lake City,AGENCY,Advertising & Marketing,https://www.mccann.com,Salt Lake City,UT,US,Interpublic Group
+McCann Sydney,AGENCY,Advertising & Marketing,https://www.mccann.com,Sydney,,Australia,Interpublic Group
+McCann Toronto,AGENCY,Advertising & Marketing,https://www.mccann.com,Toronto,,Canada,Interpublic Group
+McCannXBC,AGENCY,Advertising & Marketing,https://www.mccann.com,New York,NY,US,Interpublic Group
+Weber Shandwick Worldwide,AGENCY,Public Relations,https://www.webershandwick.com,New York,NY,US,Interpublic Group
+Sawmill NY,AGENCY,Content Production,https://www.webershandwick.com,New York,NY,US,Interpublic Group
+Weber Shandwick Atlanta,AGENCY,Public Relations,https://www.webershandwick.com,Atlanta,GA,US,Interpublic Group
+Weber Shandwick Baltimore,AGENCY,Public Relations,https://www.webershandwick.com,Baltimore,MD,US,Interpublic Group
+Weber Shandwick Boston,AGENCY,Public Relations,https://www.webershandwick.com,Boston,MA,US,Interpublic Group
+Weber Shandwick Chicago,AGENCY,Public Relations,https://www.webershandwick.com,Chicago,IL,US,Interpublic Group
+Weber Shandwick DC,AGENCY,Public Relations,https://www.webershandwick.com,Washington,DC,US,Interpublic Group
+Weber Shandwick Detroit,AGENCY,Public Relations,https://www.webershandwick.com,Detroit,MI,US,Interpublic Group
+Weber Shandwick LA,AGENCY,Public Relations,https://www.webershandwick.com,Los Angeles,CA,US,Interpublic Group
+Weber Shandwick Minneapolis,AGENCY,Public Relations,https://www.webershandwick.com,Minneapolis,MN,US,Interpublic Group
+Weber Shandwick NY,AGENCY,Public Relations,https://www.webershandwick.com,New York,NY,US,Interpublic Group
+Weber Shandwick Seattle,AGENCY,Public Relations,https://www.webershandwick.com,Seattle,WA,US,Interpublic Group
+Weber Shandwick SF,AGENCY,Public Relations,https://www.webershandwick.com,San Francisco,CA,US,Interpublic Group
+Weber Shandwick St. Louis,AGENCY,Public Relations,https://www.webershandwick.com,St. Louis,MO,US,Interpublic Group
+Weber Shandwick Toronto,AGENCY,Public Relations,https://www.webershandwick.com,Toronto,,Canada,Interpublic Group
+Orion Worldwide,AGENCY,Shopper Marketing,https://www.orionww.com,Norwalk,CT,US,Interpublic Group
+Orion Worldwide LA,AGENCY,Shopper Marketing,https://www.orionww.com,Los Angeles,CA,US,Interpublic Group
+Orion Worldwide NY,AGENCY,Shopper Marketing,https://www.orionww.com,New York,NY,US,Interpublic Group
+Orion Worldwide Sydney,AGENCY,Shopper Marketing,https://www.orionww.com,Sydney,,Australia,Interpublic Group
+Orion Worldwide Toronto,AGENCY,Shopper Marketing,https://www.orionww.com,Toronto,,Canada,Interpublic Group
+Orion Worldwide UK,AGENCY,Shopper Marketing,https://www.orionww.com,London,,United Kingdom,Interpublic Group
+Rapport,AGENCY,Media Planning & Buying,https://www.rapport.net,New York,NY,US,Interpublic Group
+Rapport Birmingham,AGENCY,Media Planning & Buying,https://www.rapport.net,Birmingham,AL,US,Interpublic Group
+Rapport Boston,AGENCY,Media Planning & Buying,https://www.rapport.net,Boston,MA,US,Interpublic Group
+Rapport Chicago,AGENCY,Media Planning & Buying,https://www.rapport.net,Chicago,IL,US,Interpublic Group
+Rapport Detroit,AGENCY,Media Planning & Buying,https://www.rapport.net,Detroit,MI,US,Interpublic Group
+Rapport LA,AGENCY,Media Planning & Buying,https://www.rapport.net,Los Angeles,CA,US,Interpublic Group
+Rapport London,AGENCY,Media Planning & Buying,https://www.rapport.net,London,,United Kingdom,Interpublic Group
+Rapport Manchester,AGENCY,Media Planning & Buying,https://www.rapport.net,Manchester,,United Kingdom,Interpublic Group
+Rapport NY,AGENCY,Media Planning & Buying,https://www.rapport.net,New York,NY,US,Interpublic Group
+Rapport SF,AGENCY,Media Planning & Buying,https://www.rapport.net,San Francisco,CA,US,Interpublic Group
+MRM,AGENCY,Customer Relationship Marketing,https://www.mrm.com,New York,NY,US,Interpublic Group
+MRM Detroit,AGENCY,Customer Relationship Marketing,https://www.mrm.com,Detroit,MI,US,Interpublic Group
+MRM Dubai,AGENCY,Customer Relationship Marketing,https://www.mrm.com,Dubai,,United Arab Emirates,Interpublic Group
+MRM London,AGENCY,Customer Relationship Marketing,https://www.mrm.com,London,,United Kingdom,Interpublic Group
+MRM NY,AGENCY,Customer Relationship Marketing,https://www.mrm.com,New York,NY,US,Interpublic Group
+MRM Philadelphia,AGENCY,Customer Relationship Marketing,https://www.mrm.com,Philadelphia,PA,US,Interpublic Group
+MRM Princeton,AGENCY,Customer Relationship Marketing,https://www.mrm.com,Princeton,NJ,US,Interpublic Group
+MRM Salt Lake City,AGENCY,Customer Relationship Marketing,https://www.mrm.com,Salt Lake City,UT,US,Interpublic Group
+MRM San Francisco,AGENCY,Customer Relationship Marketing,https://www.mrm.com,San Francisco,CA,US,Interpublic Group
+MRM Sydney,AGENCY,Customer Relationship Marketing,https://www.mrm.com,Sydney,,Australia,Interpublic Group
+MRM Toronto,AGENCY,Customer Relationship Marketing,https://www.mrm.com,Toronto,,Canada,Interpublic Group
+Carmichael Lynch,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,Minneapolis,MN,US,Interpublic Group
+Carmichael Lynch Chicago,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,Chicago,IL,US,Interpublic Group
+Carmichael Lynch Harrisburg,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,Harrisburg,PA,US,Interpublic Group
+Carmichael Lynch LA,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,Los Angeles,CA,US,Interpublic Group
+Carmichael Lynch Minneapolis,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,Minneapolis,MN,US,Interpublic Group
+Carmichael Lynch NY,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,New York,NY,US,Interpublic Group
+Carmichael Lynch Philadelphia,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,Philadelphia,PA,US,Interpublic Group
+Carmichael Lynch Relate MN,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,Minneapolis,MN,US,Interpublic Group
+Carmichael Lynch Relate NY,AGENCY,Advertising & Marketing,https://www.carmichaellynch.com,New York,NY,US,Interpublic Group
+Momentum Worldwide,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,New York,NY,US,Interpublic Group
+Momentum WW Atlanta,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,Atlanta,GA,US,Interpublic Group
+Momentum WW Chicago,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,Chicago,IL,US,Interpublic Group
+Momentum WW Detroit,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,Detroit,MI,US,Interpublic Group
+Momentum WW Leeds,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,Leeds,,United Kingdom,Interpublic Group
+Momentum WW London,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,London,,United Kingdom,Interpublic Group
+Momentum WW Manchester,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,Manchester,,United Kingdom,Interpublic Group
+Momentum WW NY,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,New York,NY,US,Interpublic Group
+Momentum WW SF,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,San Francisco,CA,US,Interpublic Group
+Momentum WW St. Louis,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,St. Louis,MO,US,Interpublic Group
+Momentum WW Toronto,AGENCY,Experiential Marketing,https://www.momentum-worldwide.com,Toronto,,Canada,Interpublic Group
+Deutsch,AGENCY,Advertising & Marketing,https://www.deutsch.com,Los Angeles,CA,US,Interpublic Group
+Deutsch LA,AGENCY,Advertising & Marketing,https://www.deutsch.com,Los Angeles,CA,US,Interpublic Group
+Campbell Ewald,AGENCY,Advertising & Marketing,https://www.campbellewald.com,Detroit,MI,US,Interpublic Group
+Campbell Ewald Detroit,AGENCY,Advertising & Marketing,https://www.campbellewald.com,Detroit,MI,US,Interpublic Group
+Campbell Ewald LA,AGENCY,Advertising & Marketing,https://www.campbellewald.com,Los Angeles,CA,US,Interpublic Group
+Campbell Ewald NY,AGENCY,Advertising & Marketing,https://www.campbellewald.com,New York,NY,US,Interpublic Group
+Campbell Ewald San Antonio,AGENCY,Advertising & Marketing,https://www.campbellewald.com,San Antonio,TX,US,Interpublic Group
+J3,AGENCY,Advertising & Marketing,https://www.j3.com,New York,NY,US,Interpublic Group
+J3 London,AGENCY,Advertising & Marketing,https://www.j3.com,London,,United Kingdom,Interpublic Group
+J3 NY,AGENCY,Advertising & Marketing,https://www.j3.com,New York,NY,US,Interpublic Group
+J3 Toronto,AGENCY,Advertising & Marketing,https://www.j3.com,Toronto,,Canada,Interpublic Group
+Healix,AGENCY,Healthcare Marketing,https://www.healix.com,New York,NY,US,Interpublic Group
+Healix NY,AGENCY,Healthcare Marketing,https://www.healix.com,New York,NY,US,Interpublic Group
+Healix Princeton,AGENCY,Healthcare Marketing,https://www.healix.com,Princeton,NJ,US,Interpublic Group
+Jack Morton Worldwide,AGENCY,Experiential Marketing,https://www.jackmorton.com,Boston,MA,US,Interpublic Group
+Jack Morton Worldwide Atlanta,AGENCY,Experiential Marketing,https://www.jackmorton.com,Atlanta,GA,US,Interpublic Group
+Jack Morton Worldwide Boston,AGENCY,Experiential Marketing,https://www.jackmorton.com,Boston,MA,US,Interpublic Group
+Jack Morton Worldwide Chicago,AGENCY,Experiential Marketing,https://www.jackmorton.com,Chicago,IL,US,Interpublic Group
+Jack Morton Worldwide Detroit,AGENCY,Experiential Marketing,https://www.jackmorton.com,Detroit,MI,US,Interpublic Group
+Jack Morton Worldwide LA,AGENCY,Experiential Marketing,https://www.jackmorton.com,Los Angeles,CA,US,Interpublic Group
+Jack Morton Worldwide London,AGENCY,Experiential Marketing,https://www.jackmorton.com,London,,United Kingdom,Interpublic Group
+Jack Morton Worldwide NY,AGENCY,Experiential Marketing,https://www.jackmorton.com,New York,NY,US,Interpublic Group
+Jack Morton Worldwide Princeton,AGENCY,Experiential Marketing,https://www.jackmorton.com,Princeton,NJ,US,Interpublic Group
+Jack Morton Worldwide SF,AGENCY,Experiential Marketing,https://www.jackmorton.com,San Francisco,CA,US,Interpublic Group
+Area 23,AGENCY,Healthcare Marketing,https://www.area23.com,New York,NY,US,Interpublic Group
+MullenLowe Group U.S.,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,Boston,MA,US,Interpublic Group
+frank. about women,AGENCY,Advertising & Marketing,https://www.frankaboutwomen.com,New York,NY,US,Interpublic Group
+MullenLowe Boston,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,Boston,MA,US,Interpublic Group
+MullenLowe LA,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,Los Angeles,CA,US,Interpublic Group
+MullenLowe NY,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,New York,NY,US,Interpublic Group
+MullenLowe Winston-Salem,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,Winston-Salem,NC,US,Interpublic Group
+Resolute Digital,AGENCY,Digital Marketing,https://www.resolutedigital.com,New York,NY,US,Interpublic Group
+Resolute Digital Boston,AGENCY,Digital Marketing,https://www.resolutedigital.com,Boston,MA,US,Interpublic Group
+Resolute Digital LA,AGENCY,Digital Marketing,https://www.resolutedigital.com,Los Angeles,CA,US,Interpublic Group
+Resolute Digital NY,AGENCY,Digital Marketing,https://www.resolutedigital.com,New York,NY,US,Interpublic Group
+Resolute Digital Seattle,AGENCY,Digital Marketing,https://www.resolutedigital.com,Seattle,WA,US,Interpublic Group
+Golin,AGENCY,Public Relations,https://www.golin.com,Chicago,IL,US,Interpublic Group
+Golin Atlanta,AGENCY,Public Relations,https://www.golin.com,Atlanta,GA,US,Interpublic Group
+Golin Chicago,AGENCY,Public Relations,https://www.golin.com,Chicago,IL,US,Interpublic Group
+Golin Costa Mesa,AGENCY,Public Relations,https://www.golin.com,Costa Mesa,CA,US,Interpublic Group
+Golin Dallas,AGENCY,Public Relations,https://www.golin.com,Dallas,TX,US,Interpublic Group
+Golin DC,AGENCY,Public Relations,https://www.golin.com,Washington,DC,US,Interpublic Group
+Golin LA,AGENCY,Public Relations,https://www.golin.com,Los Angeles,CA,US,Interpublic Group
+Golin London,AGENCY,Public Relations,https://www.golin.com,London,,United Kingdom,Interpublic Group
+Golin Miami,AGENCY,Public Relations,https://www.golin.com,Miami,FL,US,Interpublic Group
+Golin NY,AGENCY,Public Relations,https://www.golin.com,New York,NY,US,Interpublic Group
+Golin SF,AGENCY,Public Relations,https://www.golin.com,San Francisco,CA,US,Interpublic Group
+Golin Toronto,AGENCY,Public Relations,https://www.golin.com,Toronto,,Canada,Interpublic Group
+The Martin Agency,AGENCY,Advertising & Marketing,https://www.martinagency.com,Richmond,VA,US,Interpublic Group
+Martin Agency LA,AGENCY,Advertising & Marketing,https://www.martinagency.com,Los Angeles,CA,US,Interpublic Group
+Martin Agency London,AGENCY,Advertising & Marketing,https://www.martinagency.com,London,,United Kingdom,Interpublic Group
+Martin Agency Portland,AGENCY,Advertising & Marketing,https://www.martinagency.com,Portland,OR,US,Interpublic Group
+Martin Agency Richmond,AGENCY,Advertising & Marketing,https://www.martinagency.com,Richmond,VA,US,Interpublic Group
+Martin Agency St. Louis,AGENCY,Advertising & Marketing,https://www.martinagency.com,St. Louis,MO,US,Interpublic Group
+IPG Health,AGENCY,Healthcare Marketing,https://www.ipghealth.com,New York,NY,US,Interpublic Group
+IPG Media Lab,AGENCY,Media Innovation,https://www.ipglab.com,New York,NY,US,Interpublic Group
+Casanova//McCann,AGENCY,Hispanic Marketing,https://www.casanovamccann.com,New York,NY,US,Interpublic Group
+Casanova//McCann Detroit,AGENCY,Hispanic Marketing,https://www.casanovamccann.com,Detroit,MI,US,Interpublic Group
+Casanova//McCann LA,AGENCY,Hispanic Marketing,https://www.casanovamccann.com,Los Angeles,CA,US,Interpublic Group
+Casanova//McCann NY,AGENCY,Hispanic Marketing,https://www.casanovamccann.com,New York,NY,US,Interpublic Group
+Media Experts,AGENCY,Media Planning & Buying,https://www.mediaexperts.com,Deerfield,IL,US,Interpublic Group
+Media Experts Montreal,AGENCY,Media Planning & Buying,https://www.mediaexperts.com,Montreal,,Canada,Interpublic Group
+Media Experts Toronto,AGENCY,Media Planning & Buying,https://www.mediaexperts.com,Toronto,,Canada,Interpublic Group
+Media Experts Vancouver,AGENCY,Media Planning & Buying,https://www.mediaexperts.com,Vancouver,,Canada,Interpublic Group
+Genuine,AGENCY,Advertising & Marketing,https://www.genuineagency.com,Boston,MA,US,Interpublic Group
+Genuine Boston,AGENCY,Advertising & Marketing,https://www.genuineagency.com,Boston,MA,US,Interpublic Group
+Genuine Chicago,AGENCY,Advertising & Marketing,https://www.genuineagency.com,Chicago,IL,US,Interpublic Group
+Genuine NY,AGENCY,Advertising & Marketing,https://www.genuineagency.com,New York,NY,US,Interpublic Group
+Genuine SF,AGENCY,Advertising & Marketing,https://www.genuineagency.com,San Francisco,CA,US,Interpublic Group
+MullenLowe Group,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,London,,United Kingdom,Interpublic Group
+MullenLowe London,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,London,,United Kingdom,Interpublic Group
+Mullenlowe Singapore,AGENCY,Advertising & Marketing,https://www.mullenlowe.com,Singapore,,Singapore,Interpublic Group
+Xpeto,AGENCY,Advertising & Marketing,https://www.xpeto.com,Montreal,,Canada,Interpublic Group
+XPETO Montreal,AGENCY,Advertising & Marketing,https://www.xpeto.com,Montreal,,Canada,Interpublic Group
+EP+Co,AGENCY,Advertising & Marketing,https://www.ep.co,Greenville,SC,US,Interpublic Group
+EP+Co Boston,AGENCY,Advertising & Marketing,https://www.ep.co,Boston,MA,US,Interpublic Group
+EP+Co Greenville,AGENCY,Advertising & Marketing,https://www.ep.co,Greenville,SC,US,Interpublic Group
+EP+Co NY,AGENCY,Advertising & Marketing,https://www.ep.co,New York,NY,US,Interpublic Group
+215mccann,AGENCY,Advertising & Marketing,https://www.215mccann.com,San Francisco,CA,US,Interpublic Group
+The Axis Agency,AGENCY,Advertising & Marketing,https://www.theaxisagency.com,New York,NY,US,Interpublic Group
+The Axis Agency Chicago,AGENCY,Advertising & Marketing,https://www.theaxisagency.com,Chicago,IL,US,Interpublic Group
+The Axis Agency Dallas,AGENCY,Advertising & Marketing,https://www.theaxisagency.com,Dallas,TX,US,Interpublic Group
+The Axis Agency LA,AGENCY,Advertising & Marketing,https://www.theaxisagency.com,Los Angeles,CA,US,Interpublic Group
+The Axis Agency Miami,AGENCY,Advertising & Marketing,https://www.theaxisagency.com,Miami,FL,US,Interpublic Group
+The Axis Agency NY,AGENCY,Advertising & Marketing,https://www.theaxisagency.com,New York,NY,US,Interpublic Group
+Frukt,AGENCY,Entertainment Marketing,https://www.frukt.com,New York,NY,US,Interpublic Group
+Frukt LA,AGENCY,Entertainment Marketing,https://www.frukt.com,Los Angeles,CA,US,Interpublic Group
+Frukt London,AGENCY,Entertainment Marketing,https://www.frukt.com,London,,United Kingdom,Interpublic Group
+Frukt NY,AGENCY,Entertainment Marketing,https://www.frukt.com,New York,NY,US,Interpublic Group
+FCB Health,AGENCY,Healthcare Marketing,https://www.fcbhealth.com,New York,NY,US,Interpublic Group
+FCB Health NY,AGENCY,Healthcare Marketing,https://www.fcbhealth.com,New York,NY,US,Interpublic Group
+FCB Health Toronto,AGENCY,Healthcare Marketing,https://www.fcbhealth.com,Toronto,,Canada,Interpublic Group
+MullenLowe Profero,AGENCY,Digital Marketing,https://www.profero.com,New York,NY,US,Interpublic Group
+MullenLowe Profero NY,AGENCY,Digital Marketing,https://www.profero.com,New York,NY,US,Interpublic Group
+MullenLowe Profero SF,AGENCY,Digital Marketing,https://www.profero.com,San Francisco,CA,US,Interpublic Group
+MullenLowe Profero UK,AGENCY,Digital Marketing,https://www.profero.com,London,,United Kingdom,Interpublic Group
+Rise & Run,AGENCY,Advertising & Marketing,https://www.riseandrun.com,Boston,MA,US,Interpublic Group
+Rise & Run Boston,AGENCY,Advertising & Marketing,https://www.riseandrun.com,Boston,MA,US,Interpublic Group
+Rise & Run NY,AGENCY,Advertising & Marketing,https://www.riseandrun.com,New York,NY,US,Interpublic Group
+Rise & Run Parsippany,AGENCY,Advertising & Marketing,https://www.riseandrun.com,Parsippany,NJ,US,Interpublic Group
+McCann Health,AGENCY,Healthcare Marketing,https://www.mccannhealth.com,New York,NY,US,Interpublic Group
+McCann Health Echo,AGENCY,Healthcare Marketing,https://www.mccannhealth.com,New York,NY,US,Interpublic Group
+McCann Health NY,AGENCY,Healthcare Marketing,https://www.mccannhealth.com,New York,NY,US,Interpublic Group
+McCann Health SF,AGENCY,Healthcare Marketing,https://www.mccannhealth.com,San Francisco,CA,US,Interpublic Group
+McCann Health Toronto,AGENCY,Healthcare Marketing,https://www.mccannhealth.com,Toronto,,Canada,Interpublic Group
+IW Group,AGENCY,Public Relations,https://www.iwgroupinc.com,Los Angeles,CA,US,Interpublic Group
+IW Group LA,AGENCY,Public Relations,https://www.iwgroupinc.com,Los Angeles,CA,US,Interpublic Group
+IW Group NY,AGENCY,Public Relations,https://www.iwgroupinc.com,New York,NY,US,Interpublic Group
+IW Group SF,AGENCY,Public Relations,https://www.iwgroupinc.com,San Francisco,CA,US,Interpublic Group
+Octagon,AGENCY,Sports Marketing,https://www.octagon.com,Norwalk,CT,US,Interpublic Group
+Octagon Atlanta,AGENCY,Sports Marketing,https://www.octagon.com,Atlanta,GA,US,Interpublic Group
+Octagon Boston,AGENCY,Sports Marketing,https://www.octagon.com,Boston,MA,US,Interpublic Group
+Octagon Charlotte,AGENCY,Sports Marketing,https://www.octagon.com,Charlotte,NC,US,Interpublic Group
+Octagon Chicago,AGENCY,Sports Marketing,https://www.octagon.com,Chicago,IL,US,Interpublic Group
+Octagon LA,AGENCY,Sports Marketing,https://www.octagon.com,Los Angeles,CA,US,Interpublic Group
+Octagon Miami,AGENCY,Sports Marketing,https://www.octagon.com,Miami,FL,US,Interpublic Group
+Octagon Naples,AGENCY,Sports Marketing,https://www.octagon.com,Naples,FL,US,Interpublic Group
+Octagon Norwalk,AGENCY,Sports Marketing,https://www.octagon.com,Norwalk,CT,US,Interpublic Group
+Octagon NY,AGENCY,Sports Marketing,https://www.octagon.com,New York,NY,US,Interpublic Group
+Octagon Rogers,AGENCY,Sports Marketing,https://www.octagon.com,Rogers,AR,US,Interpublic Group
+Octagon Scottsdale,AGENCY,Sports Marketing,https://www.octagon.com,Scottsdale,AZ,US,Interpublic Group
+Octagon Sydney,AGENCY,Sports Marketing,https://www.octagon.com,Sydney,,Australia,Interpublic Group
+Magna Global,AGENCY,Media Services,https://www.magnaglobal.com,New York,NY,US,Interpublic Group
+Magna Global LA,AGENCY,Media Services,https://www.magnaglobal.com,Los Angeles,CA,US,Interpublic Group
+Magna Global London,AGENCY,Media Services,https://www.magnaglobal.com,London,,United Kingdom,Interpublic Group
+Magna Global Miami,AGENCY,Media Services,https://www.magnaglobal.com,Miami,FL,US,Interpublic Group
+Magna Global NY,AGENCY,Media Services,https://www.magnaglobal.com,New York,NY,US,Interpublic Group
+Magna Global Toronto,AGENCY,Media Services,https://www.magnaglobal.com,Toronto,,Canada,Interpublic Group
+FCBCURE,AGENCY,Healthcare Marketing,https://www.fcbcure.com,New York,NY,US,Interpublic Group
+Rogers & Cowan PMK,AGENCY,Public Relations,https://www.rogersandcowanpmk.com,Los Angeles,CA,US,Interpublic Group
+Rogers & Cowan PMK LA,AGENCY,Public Relations,https://www.rogersandcowanpmk.com,Los Angeles,CA,US,Interpublic Group
+Rogers & Cowan PMK NY,AGENCY,Public Relations,https://www.rogersandcowanpmk.com,New York,NY,US,Interpublic Group
+Performance Art,AGENCY,Advertising & Marketing,https://www.performanceart.com,New York,NY,US,Interpublic Group
+Performance Art NY,AGENCY,Advertising & Marketing,https://www.performanceart.com,New York,NY,US,Interpublic Group
+Neon NYC,AGENCY,Advertising & Marketing,https://www.neonnyc.com,New York,NY,US,Interpublic Group
+Identity Worldwide,AGENCY,Promotional Marketing,https://www.identityworldwide.com,Chicago,IL,US,Interpublic Group
+Identity Worldwide Chicago,AGENCY,Promotional Marketing,https://www.identityworldwide.com,Chicago,IL,US,Interpublic Group
+Identity Worldwide Detroit,AGENCY,Promotional Marketing,https://www.identityworldwide.com,Detroit,MI,US,Interpublic Group
+Identity Worldwide NY,AGENCY,Promotional Marketing,https://www.identityworldwide.com,New York,NY,US,Interpublic Group
+FutureBrand,AGENCY,Brand Consulting,https://www.futurebrand.com,New York,NY,US,Interpublic Group
+FutureBrand London,AGENCY,Brand Consulting,https://www.futurebrand.com,London,,United Kingdom,Interpublic Group
+FutureBrand NY,AGENCY,Brand Consulting,https://www.futurebrand.com,New York,NY,US,Interpublic Group
+FutureBrand SF,AGENCY,Brand Consulting,https://www.futurebrand.com,San Francisco,CA,US,Interpublic Group
+Elephant,AGENCY,Advertising & Marketing,https://www.elephantagency.com,Los Angeles,CA,US,Interpublic Group
+The Brooklyn Brothers,AGENCY,Advertising & Marketing,https://www.thebrooklynbrothers.com,New York,NY,US,Interpublic Group
+The Brooklyn Brothers NY,AGENCY,Advertising & Marketing,https://www.thebrooklynbrothers.com,New York,NY,US,Interpublic Group
+Current Global,AGENCY,Public Relations,https://www.currentglobal.com,New York,NY,US,Interpublic Group
+Current Global Chicago,AGENCY,Public Relations,https://www.currentglobal.com,Chicago,IL,US,Interpublic Group
+Current Global Dallas,AGENCY,Public Relations,https://www.currentglobal.com,Dallas,TX,US,Interpublic Group
+Current Global LA,AGENCY,Public Relations,https://www.currentglobal.com,Los Angeles,CA,US,Interpublic Group
+Current Global NY,AGENCY,Public Relations,https://www.currentglobal.com,New York,NY,US,Interpublic Group
+Current Global SF,AGENCY,Public Relations,https://www.currentglobal.com,San Francisco,CA,US,Interpublic Group
+Reprise Digital,AGENCY,Performance Marketing,https://www.reprisedigital.com,New York,NY,US,Interpublic Group
+FCB Inferno,AGENCY,Advertising & Marketing,https://www.fcbinferno.com,London,,United Kingdom,Interpublic Group
+FCB Inferno London,AGENCY,Advertising & Marketing,https://www.fcbinferno.com,London,,United Kingdom,Interpublic Group
+Big Family Table,AGENCY,Food Marketing,https://www.bigfamilytable.com,New York,NY,US,Interpublic Group
+New Honor Society,AGENCY,Advertising & Marketing,https://www.newhonorsociety.com,New York,NY,US,Interpublic Group
+AFG&,AGENCY,Advertising & Marketing,https://www.afg.com,New York,NY,US,Interpublic Group
+FCB/SIX,AGENCY,Advertising & Marketing,https://www.fcb.com,Toronto,,Canada,Interpublic Group
+FCB/SIX Montreal,AGENCY,Advertising & Marketing,https://www.fcb.com,Montreal,,Canada,Interpublic Group
+FCB/SIX NY,AGENCY,Advertising & Marketing,https://www.fcb.com,New York,NY,US,Interpublic Group
+FCB/SIX Toronto,AGENCY,Advertising & Marketing,https://www.fcb.com,Toronto,,Canada,Interpublic Group
+HUSTLE,AGENCY,Advertising & Marketing,https://www.hustlela.com,Los Angeles,CA,US,Interpublic Group
+HUSTLE LA,AGENCY,Advertising & Marketing,https://www.hustlela.com,Los Angeles,CA,US,Interpublic Group

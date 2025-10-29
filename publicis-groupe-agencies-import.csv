@@ -1,0 +1,303 @@
+companyName,companyType,industry,website,city,state,country,parentCompanyName
+Publicis Groupe,MEDIA_HOLDING_COMPANY,Advertising & Marketing,https://www.publicisgroupe.com,Paris,,France,
+Leo Burnett Worldwide,AGENCY,Advertising & Marketing,https://www.leoburnett.com,Chicago,IL,US,Publicis Groupe
+Leo Burnett Chicago,AGENCY,Advertising & Marketing,https://www.leoburnett.com,Chicago,IL,US,Publicis Groupe
+Leo Burnett Detroit,AGENCY,Advertising & Marketing,https://www.leoburnett.com,Detroit,MI,US,Publicis Groupe
+Leo Burnett Melbourne,AGENCY,Advertising & Marketing,https://www.leoburnett.com,Melbourne,,Australia,Publicis Groupe
+Leo Burnett Sydney,AGENCY,Advertising & Marketing,https://www.leoburnett.com,Sydney,,Australia,Publicis Groupe
+Leo Burnett Toronto,AGENCY,Advertising & Marketing,https://www.leoburnett.com,Toronto,,Canada,Publicis Groupe
+Leo Burnett UK,AGENCY,Advertising & Marketing,https://www.leoburnett.com,London,,United Kingdom,Publicis Groupe
+Bartle Bogle Hegarty,AGENCY,Advertising & Marketing,https://www.bartleboglehegarty.com,New York,NY,US,Publicis Groupe
+BBH LA,AGENCY,Advertising & Marketing,https://www.bartleboglehegarty.com,Los Angeles,CA,US,Publicis Groupe
+BBH NY,AGENCY,Advertising & Marketing,https://www.bartleboglehegarty.com,New York,NY,US,Publicis Groupe
+BBH UK,AGENCY,Advertising & Marketing,https://www.bartleboglehegarty.com,London,,United Kingdom,Publicis Groupe
+Zenith,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,New York,NY,US,Publicis Groupe
+Zenith Atlanta,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Atlanta,GA,US,Publicis Groupe
+Zenith Chicago,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Chicago,IL,US,Publicis Groupe
+Zenith Denver,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Denver,CO,US,Publicis Groupe
+Zenith Detroit,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Detroit,MI,US,Publicis Groupe
+Zenith Hong Kong,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Hong Kong,,Hong Kong,Publicis Groupe
+Zenith Houston,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Houston,TX,US,Publicis Groupe
+Zenith LA,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Los Angeles,CA,US,Publicis Groupe
+Zenith Melbourne,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Melbourne,,Australia,Publicis Groupe
+Zenith Mexico City,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Mexico City,,Mexico,Publicis Groupe
+Zenith Montreal,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Montreal,,Canada,Publicis Groupe
+Zenith NY,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,New York,NY,US,Publicis Groupe
+Zenith Portland,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Portland,OR,US,Publicis Groupe
+Zenith Seattle,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Seattle,WA,US,Publicis Groupe
+Zenith SF,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,San Francisco,CA,US,Publicis Groupe
+Zenith Singapore,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Singapore,,Singapore,Publicis Groupe
+Zenith Sydney,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Sydney,,Australia,Publicis Groupe
+Zenith Toronto,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,Toronto,,Canada,Publicis Groupe
+Zenith UK,AGENCY,Media Planning & Buying,https://www.zenithmedia.com,London,,United Kingdom,Publicis Groupe
+Publicis Collective,AGENCY,Advertising & Marketing,https://www.publiciscollective.com,New York,NY,US,Publicis Groupe
+Publicis Collective Baltimore,AGENCY,Advertising & Marketing,https://www.publiciscollective.com,Baltimore,MD,US,Publicis Groupe
+Publicis Collective Chicago,AGENCY,Advertising & Marketing,https://www.publiciscollective.com,Chicago,IL,US,Publicis Groupe
+Publicis Collective Detroit,AGENCY,Advertising & Marketing,https://www.publiciscollective.com,Detroit,MI,US,Publicis Groupe
+Publicis Collective NY,AGENCY,Advertising & Marketing,https://www.publiciscollective.com,New York,NY,US,Publicis Groupe
+Publicis Health Media,AGENCY,Healthcare Marketing,https://www.publicishealthmedia.com,New York,NY,US,Publicis Groupe
+Publicis Health Media Chicago,AGENCY,Healthcare Marketing,https://www.publicishealthmedia.com,Chicago,IL,US,Publicis Groupe
+Publicis Health Media LA,AGENCY,Healthcare Marketing,https://www.publicishealthmedia.com,Los Angeles,CA,US,Publicis Groupe
+Publicis Health Media London,AGENCY,Healthcare Marketing,https://www.publicishealthmedia.com,London,,United Kingdom,Publicis Groupe
+Publicis Health Media NY,AGENCY,Healthcare Marketing,https://www.publicishealthmedia.com,New York,NY,US,Publicis Groupe
+Publicis Health Media Philadelphia,AGENCY,Healthcare Marketing,https://www.publicishealthmedia.com,Philadelphia,PA,US,Publicis Groupe
+Spark Foundry,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,New York,NY,US,Publicis Groupe
+Spark Foundry Atlanta,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Atlanta,GA,US,Publicis Groupe
+Spark Foundry Auckland,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Auckland,,New Zealand,Publicis Groupe
+Spark Foundry Bengaluru,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Bengaluru,,India,Publicis Groupe
+Spark Foundry Bogota,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Bogota,,Colombia,Publicis Groupe
+Spark Foundry Chicago,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Chicago,IL,US,Publicis Groupe
+Spark Foundry Costa Rica,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,San Jose,,Costa Rica,Publicis Groupe
+Spark Foundry Dallas,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Dallas,TX,US,Publicis Groupe
+Spark Foundry Detroit,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Detroit,MI,US,Publicis Groupe
+Spark Foundry Dubai,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Dubai,,United Arab Emirates,Publicis Groupe
+Spark Foundry Dublin,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Dublin,,Ireland,Publicis Groupe
+Spark Foundry LA,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Los Angeles,CA,US,Publicis Groupe
+Spark Foundry Melbourne,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Melbourne,,Australia,Publicis Groupe
+Spark Foundry Montreal,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Montreal,,Canada,Publicis Groupe
+Spark Foundry NY,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,New York,NY,US,Publicis Groupe
+Spark Foundry Seattle,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Seattle,WA,US,Publicis Groupe
+Spark Foundry SF,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,San Francisco,CA,US,Publicis Groupe
+Spark Foundry Sydney,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Sydney,,Australia,Publicis Groupe
+Spark Foundry Toronto,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,Toronto,,Canada,Publicis Groupe
+Spark Foundry UK,AGENCY,Media Planning & Buying,https://www.sparkfoundryglobal.com,London,,United Kingdom,Publicis Groupe
+Digitas,AGENCY,Digital Marketing,https://www.digitas.com,Boston,MA,US,Publicis Groupe
+Digitas Atlanta,AGENCY,Digital Marketing,https://www.digitas.com,Atlanta,GA,US,Publicis Groupe
+Digitas Bogota,AGENCY,Digital Marketing,https://www.digitas.com,Bogota,,Colombia,Publicis Groupe
+Digitas Boston,AGENCY,Digital Marketing,https://www.digitas.com,Boston,MA,US,Publicis Groupe
+Digitas Chicago,AGENCY,Digital Marketing,https://www.digitas.com,Chicago,IL,US,Publicis Groupe
+Digitas Detroit,AGENCY,Digital Marketing,https://www.digitas.com,Detroit,MI,US,Publicis Groupe
+Digitas Edinburgh,AGENCY,Digital Marketing,https://www.digitas.com,Edinburgh,,United Kingdom,Publicis Groupe
+Digitas LA,AGENCY,Digital Marketing,https://www.digitas.com,Los Angeles,CA,US,Publicis Groupe
+Digitas London,AGENCY,Digital Marketing,https://www.digitas.com,London,,United Kingdom,Publicis Groupe
+Digitas NY,AGENCY,Digital Marketing,https://www.digitas.com,New York,NY,US,Publicis Groupe
+Digitas SF,AGENCY,Digital Marketing,https://www.digitas.com,San Francisco,CA,US,Publicis Groupe
+Digitas Sydney,AGENCY,Digital Marketing,https://www.digitas.com,Sydney,,Australia,Publicis Groupe
+Publicis Media,AGENCY,Media Services,https://www.publicismedia.com,New York,NY,US,Publicis Groupe
+Apex Exchange Chicago,AGENCY,Programmatic Media,https://www.apexexchange.com,Chicago,IL,US,Publicis Groupe
+Apex Exchange NY,AGENCY,Programmatic Media,https://www.apexexchange.com,New York,NY,US,Publicis Groupe
+Apex Exchange Toronto,AGENCY,Programmatic Media,https://www.apexexchange.com,Toronto,,Canada,Publicis Groupe
+Connect at Publicis Media,AGENCY,Media Services,https://www.publicismedia.com,New York,NY,US,Publicis Groupe
+Publicis Media Amsterdam,AGENCY,Media Services,https://www.publicismedia.com,Amsterdam,,Netherlands,Publicis Groupe
+Publicis Media Atlanta,AGENCY,Media Services,https://www.publicismedia.com,Atlanta,GA,US,Publicis Groupe
+Publicis Media Bengaluru,AGENCY,Media Services,https://www.publicismedia.com,Bengaluru,,India,Publicis Groupe
+Publicis Media Boston,AGENCY,Media Services,https://www.publicismedia.com,Boston,MA,US,Publicis Groupe
+Publicis Media Buenos Aires,AGENCY,Media Services,https://www.publicismedia.com,Buenos Aires,,Argentina,Publicis Groupe
+Publicis Media Chicago,AGENCY,Media Services,https://www.publicismedia.com,Chicago,IL,US,Publicis Groupe
+Publicis Media Dallas,AGENCY,Media Services,https://www.publicismedia.com,Dallas,TX,US,Publicis Groupe
+Publicis Media Detroit,AGENCY,Media Services,https://www.publicismedia.com,Detroit,MI,US,Publicis Groupe
+Publicis Media Dusseldorf,AGENCY,Media Services,https://www.publicismedia.com,Dusseldorf,,Germany,Publicis Groupe
+Publicis Media Gurugram,AGENCY,Media Services,https://www.publicismedia.com,Gurugram,,India,Publicis Groupe
+Publicis Media LA,AGENCY,Media Services,https://www.publicismedia.com,Los Angeles,CA,US,Publicis Groupe
+Publicis Media Madrid,AGENCY,Media Services,https://www.publicismedia.com,Madrid,,Spain,Publicis Groupe
+Publicis Media Miami,AGENCY,Media Services,https://www.publicismedia.com,Miami,FL,US,Publicis Groupe
+Publicis Media New Delhi,AGENCY,Media Services,https://www.publicismedia.com,New Delhi,,India,Publicis Groupe
+Publicis Media NY,AGENCY,Media Services,https://www.publicismedia.com,New York,NY,US,Publicis Groupe
+Publicis Media Paris,AGENCY,Media Services,https://www.publicismedia.com,Paris,,France,Publicis Groupe
+Publicis Media Pune,AGENCY,Media Services,https://www.publicismedia.com,Pune,,India,Publicis Groupe
+Publicis Media Seattle,AGENCY,Media Services,https://www.publicismedia.com,Seattle,WA,US,Publicis Groupe
+Publicis Media SF,AGENCY,Media Services,https://www.publicismedia.com,San Francisco,CA,US,Publicis Groupe
+Publicis Media Sydney,AGENCY,Media Services,https://www.publicismedia.com,Sydney,,Australia,Publicis Groupe
+Publicis Media Toronto,AGENCY,Media Services,https://www.publicismedia.com,Toronto,,Canada,Publicis Groupe
+Publicis Media UK,AGENCY,Media Services,https://www.publicismedia.com,London,,United Kingdom,Publicis Groupe
+Publicis Media UNIT3C,AGENCY,Media Services,https://www.publicismedia.com,New York,NY,US,Publicis Groupe
+Publicis Spine Chicago,AGENCY,Media Services,https://www.publicismedia.com,Chicago,IL,US,Publicis Groupe
+Publicis Spine NY,AGENCY,Media Services,https://www.publicismedia.com,New York,NY,US,Publicis Groupe
+Publicis Sport & Entertainment,AGENCY,Sports Marketing,https://www.publicissportentertainment.com,New York,NY,US,Publicis Groupe
+Publicis Sport & Entertainment Chicago,AGENCY,Sports Marketing,https://www.publicissportentertainment.com,Chicago,IL,US,Publicis Groupe
+Publicis Sport & Entertainment LA,AGENCY,Sports Marketing,https://www.publicissportentertainment.com,Los Angeles,CA,US,Publicis Groupe
+Publicis Sport & Entertainment London,AGENCY,Sports Marketing,https://www.publicissportentertainment.com,London,,United Kingdom,Publicis Groupe
+Publicis Sport & Entertainment NY,AGENCY,Sports Marketing,https://www.publicissportentertainment.com,New York,NY,US,Publicis Groupe
+Starcom Worldwide,AGENCY,Media Planning & Buying,https://www.starcomww.com,Chicago,IL,US,Publicis Groupe
+Starcom Adelaide,AGENCY,Media Planning & Buying,https://www.starcomww.com,Adelaide,,Australia,Publicis Groupe
+Starcom Amsterdam,AGENCY,Media Planning & Buying,https://www.starcomww.com,Amsterdam,,Netherlands,Publicis Groupe
+Starcom Atlanta,AGENCY,Media Planning & Buying,https://www.starcomww.com,Atlanta,GA,US,Publicis Groupe
+Starcom Brisbane,AGENCY,Media Planning & Buying,https://www.starcomww.com,Brisbane,,Australia,Publicis Groupe
+Starcom Chicago,AGENCY,Media Planning & Buying,https://www.starcomww.com,Chicago,IL,US,Publicis Groupe
+Starcom Dallas-Ft. Worth,AGENCY,Media Planning & Buying,https://www.starcomww.com,Dallas,TX,US,Publicis Groupe
+Starcom Denver,AGENCY,Media Planning & Buying,https://www.starcomww.com,Denver,CO,US,Publicis Groupe
+Starcom Detroit,AGENCY,Media Planning & Buying,https://www.starcomww.com,Detroit,MI,US,Publicis Groupe
+Starcom Dubai,AGENCY,Media Planning & Buying,https://www.starcomww.com,Dubai,,United Arab Emirates,Publicis Groupe
+Starcom Frankfurt,AGENCY,Media Planning & Buying,https://www.starcomww.com,Frankfurt,,Germany,Publicis Groupe
+Starcom Hong Kong,AGENCY,Media Planning & Buying,https://www.starcomww.com,Hong Kong,,Hong Kong,Publicis Groupe
+Starcom Istanbul,AGENCY,Media Planning & Buying,https://www.starcomww.com,Istanbul,,Turkey,Publicis Groupe
+Starcom LA,AGENCY,Media Planning & Buying,https://www.starcomww.com,Los Angeles,CA,US,Publicis Groupe
+Starcom Melbourne,AGENCY,Media Planning & Buying,https://www.starcomww.com,Melbourne,,Australia,Publicis Groupe
+Starcom Mexico City,AGENCY,Media Planning & Buying,https://www.starcomww.com,Mexico City,,Mexico,Publicis Groupe
+Starcom Miami,AGENCY,Media Planning & Buying,https://www.starcomww.com,Miami,FL,US,Publicis Groupe
+Starcom Milan,AGENCY,Media Planning & Buying,https://www.starcomww.com,Milan,,Italy,Publicis Groupe
+Starcom Montreal,AGENCY,Media Planning & Buying,https://www.starcomww.com,Montreal,,Canada,Publicis Groupe
+Starcom Mumbai,AGENCY,Media Planning & Buying,https://www.starcomww.com,Mumbai,,India,Publicis Groupe
+Starcom NY,AGENCY,Media Planning & Buying,https://www.starcomww.com,New York,NY,US,Publicis Groupe
+Starcom Perth,AGENCY,Media Planning & Buying,https://www.starcomww.com,Perth,,Australia,Publicis Groupe
+Starcom Seattle,AGENCY,Media Planning & Buying,https://www.starcomww.com,Seattle,WA,US,Publicis Groupe
+Starcom SF,AGENCY,Media Planning & Buying,https://www.starcomww.com,San Francisco,CA,US,Publicis Groupe
+Starcom Sydney,AGENCY,Media Planning & Buying,https://www.starcomww.com,Sydney,,Australia,Publicis Groupe
+Starcom Toronto,AGENCY,Media Planning & Buying,https://www.starcomww.com,Toronto,,Canada,Publicis Groupe
+Starcom UK,AGENCY,Media Planning & Buying,https://www.starcomww.com,London,,United Kingdom,Publicis Groupe
+Publicis North America,AGENCY,Advertising & Marketing,https://www.publicis.com,New York,NY,US,Publicis Groupe
+Publicis Boise,AGENCY,Advertising & Marketing,https://www.publicis.com,Boise,ID,US,Publicis Groupe
+Publicis Chicago,AGENCY,Advertising & Marketing,https://www.publicis.com,Chicago,IL,US,Publicis Groupe
+Publicis Indianapolis,AGENCY,Advertising & Marketing,https://www.publicis.com,Indianapolis,IN,US,Publicis Groupe
+Publicis New York,AGENCY,Advertising & Marketing,https://www.publicis.com,New York,NY,US,Publicis Groupe
+Publicis Seattle,AGENCY,Advertising & Marketing,https://www.publicis.com,Seattle,WA,US,Publicis Groupe
+Razorfish,AGENCY,Digital Marketing,https://www.razorfish.com,New York,NY,US,Publicis Groupe
+Razorfish Atlanta,AGENCY,Digital Marketing,https://www.razorfish.com,Atlanta,GA,US,Publicis Groupe
+Razorfish Austin,AGENCY,Digital Marketing,https://www.razorfish.com,Austin,TX,US,Publicis Groupe
+Razorfish Boston,AGENCY,Digital Marketing,https://www.razorfish.com,Boston,MA,US,Publicis Groupe
+Razorfish Chicago,AGENCY,Digital Marketing,https://www.razorfish.com,Chicago,IL,US,Publicis Groupe
+Razorfish Cleveland,AGENCY,Digital Marketing,https://www.razorfish.com,Cleveland,OH,US,Publicis Groupe
+Razorfish Dallas,AGENCY,Digital Marketing,https://www.razorfish.com,Dallas,TX,US,Publicis Groupe
+Razorfish Detroit,AGENCY,Digital Marketing,https://www.razorfish.com,Detroit,MI,US,Publicis Groupe
+Razorfish LA,AGENCY,Digital Marketing,https://www.razorfish.com,Los Angeles,CA,US,Publicis Groupe
+Razorfish Miami,AGENCY,Digital Marketing,https://www.razorfish.com,Miami,FL,US,Publicis Groupe
+Razorfish NY,AGENCY,Digital Marketing,https://www.razorfish.com,New York,NY,US,Publicis Groupe
+Razorfish Seattle,AGENCY,Digital Marketing,https://www.razorfish.com,Seattle,WA,US,Publicis Groupe
+Razorfish SF,AGENCY,Digital Marketing,https://www.razorfish.com,San Francisco,CA,US,Publicis Groupe
+Razorfish Toronto,AGENCY,Digital Marketing,https://www.razorfish.com,Toronto,,Canada,Publicis Groupe
+Infinite Roar,AGENCY,Advertising & Marketing,https://www.infiniteroar.com,New York,NY,US,Publicis Groupe
+PubW,AGENCY,Advertising & Marketing,https://www.pubw.com,New York,NY,US,Publicis Groupe
+Epsilon,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Chicago,IL,US,Publicis Groupe
+Epsilon Chicago,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Chicago,IL,US,Publicis Groupe
+Epsilon Dallas,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Dallas,TX,US,Publicis Groupe
+Epsilon Detroit,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Detroit,MI,US,Publicis Groupe
+Epsilon LA,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Los Angeles,CA,US,Publicis Groupe
+Epsilon Nashville,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Nashville,TN,US,Publicis Groupe
+Epsilon NY,AGENCY,Data & Marketing Technology,https://www.epsilon.com,New York,NY,US,Publicis Groupe
+Epsilon San Diego,AGENCY,Data & Marketing Technology,https://www.epsilon.com,San Diego,CA,US,Publicis Groupe
+Epsilon SF,AGENCY,Data & Marketing Technology,https://www.epsilon.com,San Francisco,CA,US,Publicis Groupe
+Epsilon Toronto,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Toronto,,Canada,Publicis Groupe
+Epsilon Wilton,AGENCY,Data & Marketing Technology,https://www.epsilon.com,Wilton,CT,US,Publicis Groupe
+Publicis Imagine,AGENCY,Advertising & Marketing,https://www.publicisimagine.com,Chicago,IL,US,Publicis Groupe
+Publicis Imagine Burbank,AGENCY,Advertising & Marketing,https://www.publicisimagine.com,Burbank,CA,US,Publicis Groupe
+Publicis Imagine Chicago,AGENCY,Advertising & Marketing,https://www.publicisimagine.com,Chicago,IL,US,Publicis Groupe
+Publicis Imagine NY,AGENCY,Advertising & Marketing,https://www.publicisimagine.com,New York,NY,US,Publicis Groupe
+Publicis Imagine Toronto,AGENCY,Advertising & Marketing,https://www.publicisimagine.com,Toronto,,Canada,Publicis Groupe
+Publicis Imagine UK,AGENCY,Advertising & Marketing,https://www.publicisimagine.com,London,,United Kingdom,Publicis Groupe
+Saatchi & Saatchi,AGENCY,Advertising & Marketing,https://www.saatchi.com,New York,NY,US,Publicis Groupe
+Saatchi & Saatchi Auckland,AGENCY,Advertising & Marketing,https://www.saatchi.com,Auckland,,New Zealand,Publicis Groupe
+Saatchi & Saatchi Budapest,AGENCY,Advertising & Marketing,https://www.saatchi.com,Budapest,,Hungary,Publicis Groupe
+Saatchi & Saatchi Chicago,AGENCY,Advertising & Marketing,https://www.saatchi.com,Chicago,IL,US,Publicis Groupe
+Saatchi & Saatchi Dallas,AGENCY,Advertising & Marketing,https://www.saatchi.com,Dallas,TX,US,Publicis Groupe
+Saatchi & Saatchi LA,AGENCY,Advertising & Marketing,https://www.saatchi.com,Los Angeles,CA,US,Publicis Groupe
+Saatchi & Saatchi London,AGENCY,Advertising & Marketing,https://www.saatchi.com,London,,United Kingdom,Publicis Groupe
+Saatchi & Saatchi NY,AGENCY,Advertising & Marketing,https://www.saatchi.com,New York,NY,US,Publicis Groupe
+Saatchi & Saatchi Toronto,AGENCY,Advertising & Marketing,https://www.saatchi.com,Toronto,,Canada,Publicis Groupe
+Team One,AGENCY,Advertising & Marketing,https://www.teamone-usa.com,Los Angeles,CA,US,Publicis Groupe
+Team One Atlanta,AGENCY,Advertising & Marketing,https://www.teamone-usa.com,Atlanta,GA,US,Publicis Groupe
+Team One Chicago,AGENCY,Advertising & Marketing,https://www.teamone-usa.com,Chicago,IL,US,Publicis Groupe
+Team One Dallas,AGENCY,Advertising & Marketing,https://www.teamone-usa.com,Dallas,TX,US,Publicis Groupe
+Team One DC,AGENCY,Advertising & Marketing,https://www.teamone-usa.com,Washington,DC,US,Publicis Groupe
+Team One LA,AGENCY,Advertising & Marketing,https://www.teamone-usa.com,Los Angeles,CA,US,Publicis Groupe
+Team One NY,AGENCY,Advertising & Marketing,https://www.teamone-usa.com,New York,NY,US,Publicis Groupe
+Heartbeat,AGENCY,Advertising & Marketing,https://www.heartbeatideas.com,Los Angeles,CA,US,Publicis Groupe
+Heartbeat LA,AGENCY,Advertising & Marketing,https://www.heartbeatideas.com,Los Angeles,CA,US,Publicis Groupe
+Heartbeat NY,AGENCY,Advertising & Marketing,https://www.heartbeatideas.com,New York,NY,US,Publicis Groupe
+Arc Worldwide,AGENCY,Promotion & Activation,https://www.arcww.com,Chicago,IL,US,Publicis Groupe
+Arc Worldwide Chicago,AGENCY,Promotion & Activation,https://www.arcww.com,Chicago,IL,US,Publicis Groupe
+Arc Worldwide Minneapolis,AGENCY,Promotion & Activation,https://www.arcww.com,Minneapolis,MN,US,Publicis Groupe
+Arc Worldwide NY,AGENCY,Promotion & Activation,https://www.arcww.com,New York,NY,US,Publicis Groupe
+Arc Worldwide Rogers,AGENCY,Promotion & Activation,https://www.arcww.com,Rogers,AR,US,Publicis Groupe
+Arc Worldwide SF,AGENCY,Promotion & Activation,https://www.arcww.com,San Francisco,CA,US,Publicis Groupe
+Performics,AGENCY,Performance Marketing,https://www.performics.com,Chicago,IL,US,Publicis Groupe
+Performics Atlanta,AGENCY,Performance Marketing,https://www.performics.com,Atlanta,GA,US,Publicis Groupe
+Performics Chicago,AGENCY,Performance Marketing,https://www.performics.com,Chicago,IL,US,Publicis Groupe
+Performics Detroit,AGENCY,Performance Marketing,https://www.performics.com,Detroit,MI,US,Publicis Groupe
+Performics LA,AGENCY,Performance Marketing,https://www.performics.com,Los Angeles,CA,US,Publicis Groupe
+Performics London,AGENCY,Performance Marketing,https://www.performics.com,London,,United Kingdom,Publicis Groupe
+Performics Melbourne,AGENCY,Performance Marketing,https://www.performics.com,Melbourne,,Australia,Publicis Groupe
+Performics Miami,AGENCY,Performance Marketing,https://www.performics.com,Miami,FL,US,Publicis Groupe
+Performics NY,AGENCY,Performance Marketing,https://www.performics.com,New York,NY,US,Publicis Groupe
+Performics Seattle,AGENCY,Performance Marketing,https://www.performics.com,Seattle,WA,US,Publicis Groupe
+Performics SF,AGENCY,Performance Marketing,https://www.performics.com,San Francisco,CA,US,Publicis Groupe
+Performics Sydney,AGENCY,Performance Marketing,https://www.performics.com,Sydney,,Australia,Publicis Groupe
+Performics Toronto,AGENCY,Performance Marketing,https://www.performics.com,Toronto,,Canada,Publicis Groupe
+Saatchi & Saatchi X,AGENCY,Shopper Marketing,https://www.saatchiandsaatchix.com,Bentonville,AR,US,Publicis Groupe
+Saatchi & Saatchi X Chicago,AGENCY,Shopper Marketing,https://www.saatchiandサatchiX.com,Chicago,IL,US,Publicis Groupe
+Saatchi & Saatchi X Cincinnati,AGENCY,Shopper Marketing,https://www.saatchiandサatchiX.com,Cincinnati,OH,US,Publicis Groupe
+Saatchi & Saatchi X London,AGENCY,Shopper Marketing,https://www.saatchiandサatchiX.com,London,,United Kingdom,Publicis Groupe
+Saatchi & Saatchi X Springdale,AGENCY,Shopper Marketing,https://www.saatchiandサatchiX.com,Springdale,AR,US,Publicis Groupe
+Fallon,AGENCY,Advertising & Marketing,https://www.fallon.com,Minneapolis,MN,US,Publicis Groupe
+Fallon London,AGENCY,Advertising & Marketing,https://www.fallon.com,London,,United Kingdom,Publicis Groupe
+Fallon Minneapolis,AGENCY,Advertising & Marketing,https://www.fallon.com,Minneapolis,MN,US,Publicis Groupe
+Fallon NY,AGENCY,Advertising & Marketing,https://www.fallon.com,New York,NY,US,Publicis Groupe
+Conill,AGENCY,Hispanic Marketing,https://www.conill.com,Miami,FL,US,Publicis Groupe
+Conill Dallas,AGENCY,Hispanic Marketing,https://www.conill.com,Dallas,TX,US,Publicis Groupe
+Conill LA,AGENCY,Hispanic Marketing,https://www.conill.com,Los Angeles,CA,US,Publicis Groupe
+Conill Miami,AGENCY,Hispanic Marketing,https://www.conill.com,Miami,FL,US,Publicis Groupe
+Publicis Luxe,AGENCY,Luxury Marketing,https://www.publicisluxe.com,New York,NY,US,Publicis Groupe
+Publicis Luxe NY,AGENCY,Luxury Marketing,https://www.publicisluxe.com,New York,NY,US,Publicis Groupe
+Publicis Luxe Paris,AGENCY,Luxury Marketing,https://www.publicisluxe.com,Paris,,France,Publicis Groupe
+Publicis Commerce,AGENCY,Commerce & Retail,https://www.publiciscommerce.com,New York,NY,US,Publicis Groupe
+Publicis Commerce NY,AGENCY,Commerce & Retail,https://www.publiciscommerce.com,New York,NY,US,Publicis Groupe
+Publicis Canada,AGENCY,Advertising & Marketing,https://www.publicis.ca,Toronto,,Canada,Publicis Groupe
+Publicis Montreal,AGENCY,Advertising & Marketing,https://www.publicis.ca,Montreal,,Canada,Publicis Groupe
+Publicis Toronto,AGENCY,Advertising & Marketing,https://www.publicis.ca,Toronto,,Canada,Publicis Groupe
+Publicis Windsor,AGENCY,Advertising & Marketing,https://www.publicis.ca,Windsor,,Canada,Publicis Groupe
+Formerly Known As,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,New York,NY,US,Publicis Groupe
+Formerly Known As Atlanta,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,Atlanta,GA,US,Publicis Groupe
+Formerly Known As Chicago,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,Chicago,IL,US,Publicis Groupe
+Formerly Known As LA,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,Los Angeles,CA,US,Publicis Groupe
+Formerly Known As NY,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,New York,NY,US,Publicis Groupe
+Formerly Known As Pittsburgh,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,Pittsburgh,PA,US,Publicis Groupe
+Formerly Known As Seattle,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,Seattle,WA,US,Publicis Groupe
+Formerly Known As SF,AGENCY,Advertising & Marketing,https://www.formerlyknownas.com,San Francisco,CA,US,Publicis Groupe
+Publicis Sapient,AGENCY,Digital Transformation,https://www.publicissapient.com,Boston,MA,US,Publicis Groupe
+Publicis Sapient Atlanta,AGENCY,Digital Transformation,https://www.publicissapient.com,Atlanta,GA,US,Publicis Groupe
+Publicis Sapient Austin,AGENCY,Digital Transformation,https://www.publicissapient.com,Austin,TX,US,Publicis Groupe
+Publicis Sapient Birmingham,AGENCY,Digital Transformation,https://www.publicissapient.com,Birmingham,AL,US,Publicis Groupe
+Publicis Sapient Boston,AGENCY,Digital Transformation,https://www.publicissapient.com,Boston,MA,US,Publicis Groupe
+Publicis Sapient Chicago,AGENCY,Digital Transformation,https://www.publicissapient.com,Chicago,IL,US,Publicis Groupe
+Publicis Sapient Cleveland,AGENCY,Digital Transformation,https://www.publicissapient.com,Cleveland,OH,US,Publicis Groupe
+Publicis Sapient Dayton,AGENCY,Digital Transformation,https://www.publicissapient.com,Dayton,OH,US,Publicis Groupe
+Publicis Sapient DC,AGENCY,Digital Transformation,https://www.publicissapient.com,Washington,DC,US,Publicis Groupe
+Publicis Sapient Detroit,AGENCY,Digital Transformation,https://www.publicissapient.com,Detroit,MI,US,Publicis Groupe
+Publicis Sapient Dubai,AGENCY,Digital Transformation,https://www.publicissapient.com,Dubai,,United Arab Emirates,Publicis Groupe
+Publicis Sapient Houston,AGENCY,Digital Transformation,https://www.publicissapient.com,Houston,TX,US,Publicis Groupe
+Publicis Sapient LA,AGENCY,Digital Transformation,https://www.publicissapient.com,Los Angeles,CA,US,Publicis Groupe
+Publicis Sapient Melbourne,AGENCY,Digital Transformation,https://www.publicissapient.com,Melbourne,,Australia,Publicis Groupe
+Publicis Sapient Miami,AGENCY,Digital Transformation,https://www.publicissapient.com,Miami,FL,US,Publicis Groupe
+Publicis Sapient Minneapolis,AGENCY,Digital Transformation,https://www.publicissapient.com,Minneapolis,MN,US,Publicis Groupe
+Publicis Sapient NY,AGENCY,Digital Transformation,https://www.publicissapient.com,New York,NY,US,Publicis Groupe
+Publicis Sapient Portland,AGENCY,Digital Transformation,https://www.publicissapient.com,Portland,OR,US,Publicis Groupe
+Publicis Sapient San Luis Obispo,AGENCY,Digital Transformation,https://www.publicissapient.com,San Luis Obispo,CA,US,Publicis Groupe
+Publicis Sapient Seattle,AGENCY,Digital Transformation,https://www.publicissapient.com,Seattle,WA,US,Publicis Groupe
+Publicis Sapient SF,AGENCY,Digital Transformation,https://www.publicissapient.com,San Francisco,CA,US,Publicis Groupe
+Publicis Sapient Sydney,AGENCY,Digital Transformation,https://www.publicissapient.com,Sydney,,Australia,Publicis Groupe
+Publicis Sapient Toronto,AGENCY,Digital Transformation,https://www.publicissapient.com,Toronto,,Canada,Publicis Groupe
+Publicis Sapient UK,AGENCY,Digital Transformation,https://www.publicissapient.com,London,,United Kingdom,Publicis Groupe
+Publicis Q,AGENCY,Advertising & Marketing,https://www.publicisq.com,New York,NY,US,Publicis Groupe
+MSLGROUP,AGENCY,Public Relations,https://www.mslgroup.com,New York,NY,US,Publicis Groupe
+MSLGROUP Atlanta,AGENCY,Public Relations,https://www.mslgroup.com,Atlanta,GA,US,Publicis Groupe
+MSLGroup Boston,AGENCY,Public Relations,https://www.mslgroup.com,Boston,MA,US,Publicis Groupe
+MSLGROUP Chicago,AGENCY,Public Relations,https://www.mslgroup.com,Chicago,IL,US,Publicis Groupe
+MSLGROUP DC,AGENCY,Public Relations,https://www.mslgroup.com,Washington,DC,US,Publicis Groupe
+MSLGROUP Detroit,AGENCY,Public Relations,https://www.mslgroup.com,Detroit,MI,US,Publicis Groupe
+MSLGROUP LA,AGENCY,Public Relations,https://www.mslgroup.com,Los Angeles,CA,US,Publicis Groupe
+MSLGROUP Montreal,AGENCY,Public Relations,https://www.mslgroup.com,Montreal,,Canada,Publicis Groupe
+MSLGROUP NY,AGENCY,Public Relations,https://www.mslgroup.com,New York,NY,US,Publicis Groupe
+MSLGROUP Seattle,AGENCY,Public Relations,https://www.mslgroup.com,Seattle,WA,US,Publicis Groupe
+MSLGROUP Toronto,AGENCY,Public Relations,https://www.mslgroup.com,Toronto,,Canada,Publicis Groupe
+Digitas Health,AGENCY,Healthcare Marketing,https://www.digitashealth.com,Philadelphia,PA,US,Publicis Groupe
+Digitas Health London,AGENCY,Healthcare Marketing,https://www.digitashealth.com,London,,United Kingdom,Publicis Groupe
+Digitas Health NY,AGENCY,Healthcare Marketing,https://www.digitashealth.com,New York,NY,US,Publicis Groupe
+Digitas Health Philadelphia,AGENCY,Healthcare Marketing,https://www.digitashealth.com,Philadelphia,PA,US,Publicis Groupe
+Digitas Health SF,AGENCY,Healthcare Marketing,https://www.digitashealth.com,San Francisco,CA,US,Publicis Groupe
+Plowshare Group,AGENCY,Advertising & Marketing,https://www.plowsharegroup.com,Bentonville,AR,US,Publicis Groupe
+Publicis LifeBrands Medicus,AGENCY,Healthcare Marketing,https://www.publicislifebrands.com,New York,NY,US,Publicis Groupe
+Publicis OneTeam,AGENCY,Advertising & Marketing,https://www.publicis.com,New York,NY,US,Publicis Groupe
+Bespoke Sports & Entertainment,AGENCY,Sports Marketing,https://www.bespokese.com,New York,NY,US,Publicis Groupe
+Publicis Pro,AGENCY,B2B Marketing,https://www.publicispro.com,New York,NY,US,Publicis Groupe
+Razorfish Health,AGENCY,Healthcare Marketing,https://www.razorfishhealth.com,Philadelphia,PA,US,Publicis Groupe
+Razorfish Health Chicago,AGENCY,Healthcare Marketing,https://www.razorfishhealth.com,Chicago,IL,US,Publicis Groupe
+Razorfish Health NY,AGENCY,Healthcare Marketing,https://www.razorfishhealth.com,New York,NY,US,Publicis Groupe
+Razorfish Health Philadelphia,AGENCY,Healthcare Marketing,https://www.razorfishhealth.com,Philadelphia,PA,US,Publicis Groupe
+PG One,AGENCY,Advertising & Marketing,https://www.pg.com,Cincinnati,OH,US,Publicis Groupe
+Starcom Ireland,AGENCY,Media Planning & Buying,https://www.starcomww.com,Dublin,,Ireland,Publicis Groupe
+Starcom Dublin,AGENCY,Media Planning & Buying,https://www.starcomww.com,Dublin,,Ireland,Publicis Groupe
+Saatchi & Saatchi Pro,AGENCY,B2B Marketing,https://www.saatchipro.com,New York,NY,US,Publicis Groupe
+Publicis Italy,AGENCY,Advertising & Marketing,https://www.publicis.it,Milan,,Italy,Publicis Groupe
+Publicis Milan,AGENCY,Advertising & Marketing,https://www.publicis.it,Milan,,Italy,Publicis Groupe
+Blue 449,AGENCY,Media Planning & Buying,https://www.blue449.com,Paris,,France,Publicis Groupe
+Blue 449 Paris,AGENCY,Media Planning & Buying,https://www.blue449.com,Paris,,France,Publicis Groupe
+Marcel Worldwide,AGENCY,Advertising & Marketing,https://www.marcel.ai,Paris,,France,Publicis Groupe

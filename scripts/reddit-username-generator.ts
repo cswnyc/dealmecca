@@ -118,7 +118,7 @@ async function generateUsernamesForUsers() {
     // Save mappings to a JSON file for reference
     const fs = require('fs');
     fs.writeFileSync(
-      '/Users/csw/website/scripts/reddit-username-mappings.json',
+      './scripts/reddit-username-mappings.json',
       JSON.stringify(usernameMappings, null, 2)
     );
 

@@ -1,0 +1,14 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Cossette Toronto,Agency,Contact,Managing Director,https://www.cossette.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,Toronto
+Aviva,Main,Contact,Media Director,https://www.aviva.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,London
+Canada Post,Main,Contact,Media Director,https://www.canadapost.ca,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Ottawa
+Canada Tourism,Main,Contact,Media Director,https://www.canada.travel,TRAVEL_HOSPITALITY,LARGE_201_1000,Ottawa
+Global X Funds,Main,Contact,Media Director,https://www.globalxetfs.com,FINANCIAL_SERVICES,LARGE_201_1000,New York NY
+i-Health,Main,Contact,Media Director,https://www.ihealthlabs.com,HEALTHCARE_PHARMA,MEDIUM_51_200,San Jose CA
+McDonald's,Main,Contact,Media Director,https://www.mcdonalds.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Chicago IL
+News Corp,Main,Contact,Media Director,https://www.newscorp.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+Novo Nordisk,Main,Contact,Media Director,https://www.novonordisk.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Bagsvaerd
+Perfetti Van Melle,Main,Contact,Media Director,https://www.perfettivanmelle.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Amsterdam
+SickKids Hospital,Main,Contact,Media Director,https://www.sickkids.ca,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Toronto
+Toyota,Main,Contact,Media Director,https://www.toyota.com,AUTOMOTIVE,MEGA_5000_PLUS,Toyota City
+York University,Main,Contact,Media Director,https://www.yorku.ca,EDUCATION,MEGA_5000_PLUS,Toronto

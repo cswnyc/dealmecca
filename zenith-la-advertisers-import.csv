@@ -1,0 +1,19 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Zenith LA,Agency,Contact,Managing Director,https://www.zenithmedia.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Burbank CA
+Arlo Technologies,Main,Contact,Media Director,https://www.arlo.com,TECHNOLOGY,LARGE_201_1000,Carlsbad CA
+ByteDance.com,Main,Contact,Media Director,https://www.bytedance.com,TECHNOLOGY,MEGA_5000_PLUS,Beijing
+CDC,Main,Contact,Media Director,https://www.cdc.gov,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Atlanta GA
+Dick's Sporting Goods,Main,Contact,Media Director,https://www.dickssportinggoods.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Coraopolis PA
+Disney,Main,Contact,Media Director,https://www.disney.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Burbank CA
+Eli Lilly,Main,Contact,Media Director,https://www.lilly.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Indianapolis IN
+Epson,Main,Contact,Media Director,https://www.epson.com,TECHNOLOGY,MEGA_5000_PLUS,Suwa
+Genuine Parts Company,Main,Contact,Media Director,https://www.genpt.com,AUTOMOTIVE,MEGA_5000_PLUS,Atlanta GA
+H&M,Main,Contact,Media Director,https://www.hm.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Stockholm
+Hulu,Main,Contact,Media Director,https://www.hulu.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,Los Angeles CA
+PENN Entertainment,Main,Contact,Media Director,https://www.pennentertainment.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Wyomissing PA
+Redfin,Main,Contact,Media Director,https://www.redfin.com,CONSTRUCTION_REAL_ESTATE,MEGA_5000_PLUS,Seattle WA
+Rocket Mortgage,Main,Contact,Media Director,https://www.rocketmortgage.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Detroit MI
+Spotify,Main,Contact,Media Director,https://www.spotify.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Stockholm
+Toyota,Main,Contact,Media Director,https://www.toyota.com,AUTOMOTIVE,MEGA_5000_PLUS,Toyota City
+Verizon Communications,Main,Contact,Media Director,https://www.verizon.com,TELECOM,MEGA_5000_PLUS,New York NY
+Zurich Insurance,Main,Contact,Media Director,https://www.zurich.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Zurich

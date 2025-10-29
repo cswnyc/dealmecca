@@ -3,7 +3,7 @@
 echo "🔧 Creating comprehensive API route stubs for Vercel deployment..."
 
 # Backup directory
-BACKUP_DIR="/Users/csw/website/backup-api-routes-$(date +%Y%m%d_%H%M%S)"
+BACKUP_DIR="backup-api-routes-$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
 # Template for stubbed API routes
@@ -41,7 +41,7 @@ EOF
 
 # Find all API routes with problematic imports
 echo "🔍 Finding problematic API routes..."
-PROBLEMATIC_ROUTES=$(grep -l "@/lib/\|@/components/" /Users/csw/website/app/api/**/*.ts /Users/csw/website/app/api/**/**/*.ts /Users/csw/website/app/api/**/**/**/*.ts 2>/dev/null | grep -v ".backup" | sort | uniq)
+PROBLEMATIC_ROUTES=$(grep -l "@/lib/\|@/components/" app/api/**/*.ts app/api/**/**/*.ts app/api/**/**/**/*.ts 2>/dev/null | grep -v ".backup" | sort | uniq)
 
 echo "📁 Found $(echo "$PROBLEMATIC_ROUTES" | wc -l) problematic API routes"
 

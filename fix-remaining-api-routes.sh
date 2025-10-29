@@ -36,7 +36,7 @@ export async function DELETE(request: NextRequest) {
 EOF
 
 # Find remaining problematic routes
-REMAINING_ROUTES=$(find /Users/csw/website/app/api -name "*.ts" | xargs grep -l "@/lib/\|@/scripts/" 2>/dev/null | sort | uniq)
+REMAINING_ROUTES=$(find app/api -name "*.ts" | xargs grep -l "@/lib/\|@/scripts/" 2>/dev/null | sort | uniq)
 
 echo "📝 Found $(echo "$REMAINING_ROUTES" | wc -l) remaining problematic routes"
 

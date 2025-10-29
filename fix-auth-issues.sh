@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Find all API routes that have userId checks but no declarations
-find /Users/csw/website/app/api -name "*.ts" -exec grep -l "if (!userId ||" {} \; | while read file; do
+find app/api -name "*.ts" -exec grep -l "if (!userId ||" {} \; | while read file; do
     echo "Fixing userId declarations in: $file"
     
     # Check if the file already has userId declaration
@@ -21,7 +21,7 @@ find /Users/csw/website/app/api -name "*.ts" -exec grep -l "if (!userId ||" {} \
 done
 
 # Find files that still have session references
-find /Users/csw/website/app/api -name "*.ts" -exec grep -l "session" {} \; | while read file; do
+find app/api -name "*.ts" -exec grep -l "session" {} \; | while read file; do
     echo "Fixing session references in: $file"
     
     # Replace session checks with userId checks

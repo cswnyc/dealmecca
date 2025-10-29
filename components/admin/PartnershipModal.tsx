@@ -54,7 +54,7 @@ export default function PartnershipModal({
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        limit: '1000', // Increased to get more companies for client-side filtering
+        limit: '10000', // Large limit to get all companies for client-side filtering
         sortBy: 'name'
       });
 

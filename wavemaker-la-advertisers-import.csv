@@ -1,0 +1,15 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Wavemaker LA,Agency,Contact,Managing Director,https://www.wmglobal.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Los Angeles CA
+Adobe Systems Inc.,Main,Contact,Media Director,https://www.adobe.com,TECHNOLOGY,MEGA_5000_PLUS,San Jose CA
+Amgen,Main,Contact,Media Director,https://www.amgen.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Thousand Oaks CA
+Audible,Main,Contact,Media Director,https://www.audible.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,Newark NJ
+Coinbase,Main,Contact,Media Director,https://www.coinbase.com,FINANCIAL_SERVICES,ENTERPRISE_1001_5000,San Francisco CA
+Colgate-Palmolive,Main,Contact,Media Director,https://www.colgatepalmolive.com,CPG_PERSONAL_CARE,MEGA_5000_PLUS,New York NY
+Danone,Main,Contact,Media Director,https://www.danone.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Paris
+DoorDash,Main,Contact,Media Director,https://www.doordash.com,TECHNOLOGY,MEGA_5000_PLUS,San Francisco CA
+Johnson & Johnson,Main,Contact,Media Director,https://www.jnj.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,New Brunswick NJ
+Merlin Entertainments,Main,Contact,Media Director,https://www.merlinentertainments.biz,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Poole
+Perfetti Van Melle,Main,Contact,Media Director,https://www.perfettivanmelle.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Amsterdam
+SeatGeek,Main,Contact,Media Director,https://www.seatgeek.com,TECHNOLOGY,LARGE_201_1000,New York NY
+Tiffany & Co.,Main,Contact,Media Director,https://www.tiffany.com,FASHION_BEAUTY,MEGA_5000_PLUS,New York NY
+US Navy,Main,Contact,Media Director,https://www.navy.mil,TECHNOLOGY,MEGA_5000_PLUS,Washington DC

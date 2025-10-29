@@ -1,0 +1,56 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Universal McCann NY,Agency,Contact,Managing Director,https://www.umww.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+7-Eleven,Main,Contact,Media Director,https://www.7-eleven.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Irving TX
+Aetna,Main,Contact,Media Director,https://www.aetna.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Hartford CT
+Alaska Airlines,Main,Contact,Media Director,https://www.alaskaair.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Seattle WA
+American Express,Main,Contact,Media Director,https://www.americanexpress.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,New York NY
+Amgen,Main,Contact,Media Director,https://www.amgen.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Thousand Oaks CA
+Aramco,Main,Contact,Media Director,https://www.aramco.com,AUTOMOTIVE,MEGA_5000_PLUS,Dhahran
+Avanade,Main,Contact,Media Director,https://www.avanade.com,TECHNOLOGY,MEGA_5000_PLUS,Seattle WA
+BetterHelp,Main,Contact,Media Director,https://www.betterhelp.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,Mountain View CA
+Boeing,Main,Contact,Media Director,https://www.boeing.com,TECHNOLOGY,MEGA_5000_PLUS,Chicago IL
+Cargill,Main,Contact,Media Director,https://www.cargill.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Wayzata MN
+Charles Schwab,Main,Contact,Media Director,https://www.schwab.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Westlake TX
+Constellation Brands,Main,Contact,Media Director,https://www.cbrands.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Victor NY
+CVS Health,Main,Contact,Media Director,https://www.cvshealth.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Woonsocket RI
+Disney,Main,Contact,Media Director,https://www.disney.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,Burbank CA
+Dyson,Main,Contact,Media Director,https://www.dyson.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Malmesbury
+E&J Gallo Winery,Main,Contact,Media Director,https://www.gallo.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Modesto CA
+Emirates,Main,Contact,Media Director,https://www.emirates.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Dubai
+Energizer Holdings,Main,Contact,Media Director,https://www.energizerholdings.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,St. Louis MO
+Enterprise Mobility,Main,Contact,Media Director,https://www.enterprise.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,St. Louis MO
+Epic Games,Main,Contact,Media Director,https://www.epicgames.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,Cary NC
+ExxonMobil,Main,Contact,Media Director,https://www.exxonmobil.com,AUTOMOTIVE,MEGA_5000_PLUS,Irving TX
+Flora Food Group,Main,Contact,Media Director,https://www.florafoodgroup.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Amsterdam
+GEICO,Main,Contact,Media Director,https://www.geico.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Chevy Chase MD
+General Mills,Main,Contact,Media Director,https://www.generalmills.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Minneapolis MN
+GrubHub,Main,Contact,Media Director,https://www.grubhub.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Chicago IL
+H&M,Main,Contact,Media Director,https://www.hm.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Stockholm
+Hain Celestial Group,Main,Contact,Media Director,https://www.hain.com,CPG_FOOD_BEVERAGE,ENTERPRISE_1001_5000,Lake Success NY
+Hawaiian Airlines,Main,Contact,Media Director,https://www.hawaiianairlines.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Honolulu HI
+HelloFresh,Main,Contact,Media Director,https://www.hellofresh.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Berlin
+Henkel,Main,Contact,Media Director,https://www.henkel.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Düsseldorf
+HRA Pharma,Main,Contact,Media Director,https://www.hra-pharma.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,Paris
+Johnson & Johnson,Main,Contact,Media Director,https://www.jnj.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,New Brunswick NJ
+Kenvue,Main,Contact,Media Director,https://www.kenvue.com,CPG_PERSONAL_CARE,MEGA_5000_PLUS,Skillman NJ
+Klaviyo,Main,Contact,Media Director,https://www.klaviyo.com,TECHNOLOGY,ENTERPRISE_1001_5000,Boston MA
+Levi Strauss,Main,Contact,Media Director,https://www.levistrauss.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,San Francisco CA
+Lindt & Sprungli,Main,Contact,Media Director,https://www.lindt.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Kilchberg
+Lucid Motors,Main,Contact,Media Director,https://www.lucidmotors.com,AUTOMOTIVE,ENTERPRISE_1001_5000,Newark CA
+Lyft,Main,Contact,Media Director,https://www.lyft.com,TECHNOLOGY,MEGA_5000_PLUS,San Francisco CA
+Masco Corp.,Main,Contact,Media Director,https://www.masco.com,CONSTRUCTION_REAL_ESTATE,MEGA_5000_PLUS,Livonia MI
+NBCUniversal,Main,Contact,Media Director,https://www.nbcuniversal.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+New York Lottery,Main,Contact,Media Director,https://www.nylottery.ny.gov,ENTERTAINMENT_MEDIA,LARGE_201_1000,Schenectady NY
+NHL,Main,Contact,Media Director,https://www.nhl.com,SPORTS_FITNESS,LARGE_201_1000,New York NY
+Perplexity,Main,Contact,Media Director,https://www.perplexity.ai,TECHNOLOGY,SMALL_11_50,San Francisco CA
+Perrigo,Main,Contact,Media Director,https://www.perrigo.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Dublin
+Prudential,Main,Contact,Media Director,https://www.prudential.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Newark NJ
+SABIC,Main,Contact,Media Director,https://www.sabic.com,TECHNOLOGY,MEGA_5000_PLUS,Riyadh
+Sixt Rent A Car,Main,Contact,Media Director,https://www.sixt.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Pullach
+Sony Corporation,Main,Contact,Media Director,https://www.sony.com,TECHNOLOGY,MEGA_5000_PLUS,Tokyo
+Speedway,Main,Contact,Media Director,https://www.speedway.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Enon OH
+Tata Consultancy Services,Main,Contact,Media Director,https://www.tcs.com,TECHNOLOGY,MEGA_5000_PLUS,Mumbai
+The Storck Group,Main,Contact,Media Director,https://www.storck.com,CPG_FOOD_BEVERAGE,ENTERPRISE_1001_5000,Berlin
+ULTA,Main,Contact,Media Director,https://www.ulta.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Bolingbrook IL
+USPS,Main,Contact,Media Director,https://www.usps.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Washington DC
+Versalie,Main,Contact,Media Director,https://www.versalie.com,CPG_PERSONAL_CARE,SMALL_11_50,New York NY

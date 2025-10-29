@@ -25,9 +25,9 @@ EOF
 
 # List of problematic API routes to fix
 API_ROUTES=(
-    "/Users/csw/website/app/api/admin/bulk-import/import/route.ts"
-    "/Users/csw/website/app/api/admin/bulk-import/upload/route.ts" 
-    "/Users/csw/website/app/api/admin/bulk-import/validate/route.ts"
+    "app/api/admin/bulk-import/import/route.ts"
+    "app/api/admin/bulk-import/upload/route.ts"
+    "app/api/admin/bulk-import/validate/route.ts"
 )
 
 # Backup and stub each route

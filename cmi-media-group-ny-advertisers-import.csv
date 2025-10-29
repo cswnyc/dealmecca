@@ -1,0 +1,24 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+CMI Media Group NY,Agency,Contact,Managing Director,https://www.cmimediagroup.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,New York NY
+AbbVie,Main,Contact,Media Director,https://www.abbvie.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,North Chicago IL
+ADC Therapeutics,Main,Contact,Media Director,https://www.adctherapeutics.com,HEALTHCARE_PHARMA,MEDIUM_51_200,Lausanne
+Allergan Aesthetics,Main,Contact,Media Director,https://www.allerganaesthetics.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Dublin
+AstraZeneca,Main,Contact,Media Director,https://www.astrazeneca.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Cambridge
+BeiGene,Main,Contact,Media Director,https://www.beigene.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Beijing
+BeOne Medicines,Main,Contact,Media Director,https://www.beonemedicines.com,HEALTHCARE_PHARMA,MEDIUM_51_200,Basel
+Bristol Myers Squibb,Main,Contact,Media Director,https://www.bms.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,New York NY
+Daiichi-Sankyo,Main,Contact,Media Director,https://www.daiichisankyo.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Tokyo
+Eli Lilly,Main,Contact,Media Director,https://www.lilly.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Indianapolis IN
+Exelixis,Main,Contact,Media Director,https://www.exelixis.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,Alameda CA
+Ferring Pharmaceuticals,Main,Contact,Media Director,https://www.ferring.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Saint-Prex
+Genentech,Main,Contact,Media Director,https://www.gene.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,South San Francisco CA
+GlaxoSmithKline,Main,Contact,Media Director,https://www.gsk.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,London
+Johnson & Johnson,Main,Contact,Media Director,https://www.jnj.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,New Brunswick NJ
+Moderna Inc.,Main,Contact,Media Director,https://www.modernatx.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Cambridge MA
+Neurocrine Biosciences,Main,Contact,Media Director,https://www.neurocrine.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,San Diego CA
+Novo Nordisk,Main,Contact,Media Director,https://www.novonordisk.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Bagsvaerd
+Otsuka Pharmaceutical,Main,Contact,Media Director,https://www.otsuka.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Tokyo
+Regeneron Pharmaceuticals,Main,Contact,Media Director,https://www.regeneron.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Tarrytown NY
+Seagen,Main,Contact,Media Director,https://www.seagen.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,Bothell WA
+UCB,Main,Contact,Media Director,https://www.ucb.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Brussels
+Vertex Pharmaceuticals,Main,Contact,Media Director,https://www.vrtx.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Boston MA

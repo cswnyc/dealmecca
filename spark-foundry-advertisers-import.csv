@@ -1,0 +1,70 @@
+companyName,firstName,lastName,title,website,industry,employeeCount,headquarters
+Spark Foundry NY,Agency,Contact,Managing Director,https://www.sparkfoundryny.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,New York NY
+Abbott Labs,Main,Contact,Media Director,https://www.abbott.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Chicago IL
+AbbVie,Main,Contact,Media Director,https://www.abbvie.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,North Chicago IL
+ACH Food Company,Main,Contact,Media Director,https://www.achfood.com,CPG_FOOD_BEVERAGE,LARGE_201_1000,Memphis TN
+Aflac,Main,Contact,Media Director,https://www.aflac.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Columbus GA
+Altice,Main,Contact,Media Director,https://www.alticeusa.com,TELECOM,MEGA_5000_PLUS,New York NY
+America's Best Contacts & Eyeglasses,Main,Contact,Media Director,https://www.americasbest.com,RETAIL_ECOMMERCE,ENTERPRISE_1001_5000,New York NY
+Art Institute of Chicago,Main,Contact,Media Director,https://www.artic.edu,EDUCATION,LARGE_201_1000,Chicago IL
+Blue Diamond Growers,Main,Contact,Media Director,https://www.bluediamond.com,CPG_FOOD_BEVERAGE,ENTERPRISE_1001_5000,Sacramento CA
+Brown-Forman,Main,Contact,Media Director,https://www.brown-forman.com,CPG_FOOD_BEVERAGE,ENTERPRISE_1001_5000,Louisville KY
+Campbell Soup,Main,Contact,Media Director,https://www.campbellsoupcompany.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Camden NJ
+Citigroup,Main,Contact,Media Director,https://www.citigroup.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,New York NY
+Comcast,Main,Contact,Media Director,https://www.comcast.com,TELECOM,MEGA_5000_PLUS,Philadelphia PA
+Dairy Queen,Main,Contact,Media Director,https://www.dairyqueen.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Minneapolis MN
+Dunkin' Brands,Main,Contact,Media Director,https://www.dunkinbrands.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Canton MA
+Ebro Foods,Main,Contact,Media Director,https://www.ebrofoods.es,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Madrid
+Facebook,Main,Contact,Media Director,https://www.facebook.com,TECHNOLOGY,MEGA_5000_PLUS,Menlo Park CA
+Froneri,Main,Contact,Media Director,https://www.froneri.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Richmond VA
+Genuine Parts Company,Main,Contact,Media Director,https://www.genpt.com,AUTOMOTIVE,MEGA_5000_PLUS,Atlanta GA
+HEB Grocery,Main,Contact,Media Director,https://www.heb.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,San Antonio TX
+Humana,Main,Contact,Media Director,https://www.humana.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Louisville KY
+James Hardie Building Products,Main,Contact,Media Director,https://www.jameshardie.com,REAL_ESTATE,ENTERPRISE_1001_5000,Chicago IL
+Kentucky Fried Chicken,Main,Contact,Media Director,https://www.kfc.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Louisville KY
+Keurig Dr Pepper Inc.,Main,Contact,Media Director,https://www.keurigdrpepper.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Burlington MA
+Lowe's,Main,Contact,Media Director,https://www.lowes.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Mooresville NC
+Macy's,Main,Contact,Media Director,https://www.macys.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,New York NY
+Marriott,Main,Contact,Media Director,https://www.marriott.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Bethesda MD
+Mattel,Main,Contact,Media Director,https://www.mattel.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,El Segundo CA
+Mattress Firm,Main,Contact,Media Director,https://www.mattressfirm.com,RETAIL_ECOMMERCE,ENTERPRISE_1001_5000,Houston TX
+Meta,Main,Contact,Media Director,https://www.meta.com,TECHNOLOGY,MEGA_5000_PLUS,Menlo Park CA
+MGM Studios,Main,Contact,Media Director,https://www.mgm.com,ENTERTAINMENT_MEDIA,ENTERPRISE_1001_5000,Beverly Hills CA
+Microsoft,Main,Contact,Media Director,https://www.microsoft.com,TECHNOLOGY,MEGA_5000_PLUS,Redmond WA
+Miele,Main,Contact,Media Director,https://www.miele.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Gütersloh
+Molson Coors Beverage Company,Main,Contact,Media Director,https://www.molsoncoors.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Chicago IL
+Mondelez,Main,Contact,Media Director,https://www.mondelezinternational.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Chicago IL
+National Vision,Main,Contact,Media Director,https://www.nationalvision.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Duluth GA
+NBCUniversal,Main,Contact,Media Director,https://www.nbcuniversal.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+New York Life,Main,Contact,Media Director,https://www.newyorklife.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,New York NY
+Novartis,Main,Contact,Media Director,https://www.novartis.com,HEALTHCARE_PHARMA,MEGA_5000_PLUS,Basel
+NRG Energy,Main,Contact,Media Director,https://www.nrg.com,AUTOMOTIVE,ENTERPRISE_1001_5000,Houston TX
+Optimum Telecom,Main,Contact,Media Director,https://www.optimum.com,TELECOM,MEGA_5000_PLUS,Bethpage NY
+Paramount,Main,Contact,Media Director,https://www.paramount.com,ENTERTAINMENT_MEDIA,MEGA_5000_PLUS,New York NY
+Perrigo,Main,Contact,Media Director,https://www.perrigo.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,Dublin
+Pierre Fabre,Main,Contact,Media Director,https://www.pierre-fabre.com,HEALTHCARE_PHARMA,ENTERPRISE_1001_5000,Castres
+Pizza Hut,Main,Contact,Media Director,https://www.pizzahut.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Plano TX
+Reliant Energy,Main,Contact,Media Director,https://www.reliant.com,AUTOMOTIVE,LARGE_201_1000,Houston TX
+Ritz-Carlton Club,Main,Contact,Media Director,https://www.ritzcarlton.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Bethesda MD
+Rocket Mortgage,Main,Contact,Media Director,https://www.rocketmortgage.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Detroit MI
+Signet Jewelers,Main,Contact,Media Director,https://www.signetjewelers.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Akron OH
+Southwest Airlines,Main,Contact,Media Director,https://www.southwest.com,TRAVEL_HOSPITALITY,MEGA_5000_PLUS,Dallas TX
+Stanley Steemer,Main,Contact,Media Director,https://www.stanleysteemer.com,CPG_HOUSEHOLD,ENTERPRISE_1001_5000,Dublin OH
+Starbucks,Main,Contact,Media Director,https://www.starbucks.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Seattle WA
+Taco Bell,Main,Contact,Media Director,https://www.tacobell.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Irvine CA
+Tate's Bake Shop,Main,Contact,Media Director,https://www.tatesbakeshop.com,CPG_FOOD_BEVERAGE,MEDIUM_51_200,Westhampton Beach NY
+TD Ameritrade,Main,Contact,Media Director,https://www.tdameritrade.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Omaha NE
+Thermacell Repellents,Main,Contact,Media Director,https://www.thermacell.com,CPG_HOUSEHOLD,MEDIUM_51_200,Bedford MA
+Tito's Vodka,Main,Contact,Media Director,https://www.titosvodka.com,CPG_FOOD_BEVERAGE,LARGE_201_1000,Austin TX
+Traveler's Insurance,Main,Contact,Media Director,https://www.travelers.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,New York NY
+TSI,Main,Contact,Media Director,https://www.tsiinc.com,TECHNOLOGY,LARGE_201_1000,Shoreview MN
+USAA,Main,Contact,Media Director,https://www.usaa.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,San Antonio TX
+Vanguard,Main,Contact,Media Director,https://www.vanguard.com,FINANCIAL_SERVICES,MEGA_5000_PLUS,Malvern PA
+Victoria's Secret & Co,Main,Contact,Media Director,https://www.victoriassecret.com,FASHION_BEAUTY,MEGA_5000_PLUS,Reynoldsburg OH
+Vivint,Main,Contact,Media Director,https://www.vivint.com,TECHNOLOGY,MEGA_5000_PLUS,Provo UT
+Walgreens,Main,Contact,Media Director,https://www.walgreens.com,RETAIL_ECOMMERCE,MEGA_5000_PLUS,Deerfield IL
+Wendy's,Main,Contact,Media Director,https://www.wendys.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Dublin OH
+Whirlpool,Main,Contact,Media Director,https://www.whirlpool.com,CPG_HOUSEHOLD,MEGA_5000_PLUS,Benton Harbor MI
+Wingstop,Main,Contact,Media Director,https://www.wingstop.com,CPG_FOOD_BEVERAGE,ENTERPRISE_1001_5000,Dallas TX
+Xumo,Main,Contact,Media Director,https://www.xumo.com,ENTERTAINMENT_MEDIA,LARGE_201_1000,Irvine CA
+Yum! Brands,Main,Contact,Media Director,https://www.yum.com,CPG_FOOD_BEVERAGE,MEGA_5000_PLUS,Louisville KY
