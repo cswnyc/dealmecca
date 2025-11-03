@@ -234,13 +234,38 @@ export default function EditCompanyPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Industry
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.industry}
                 onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                placeholder="e.g., Technology, Retail, Finance"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              >
+                <option value="">Select industry</option>
+                <option value="AUTOMOTIVE">Automotive</option>
+                <option value="CPG_FOOD_BEVERAGE">CPG - Food & Beverage</option>
+                <option value="CPG_PERSONAL_CARE">CPG - Personal Care</option>
+                <option value="CPG_HOUSEHOLD">CPG - Household</option>
+                <option value="FINANCIAL_SERVICES">Financial Services</option>
+                <option value="HEALTHCARE_PHARMA">Healthcare & Pharma</option>
+                <option value="RETAIL_ECOMMERCE">Retail & E-commerce</option>
+                <option value="TECHNOLOGY">Technology</option>
+                <option value="ENTERTAINMENT_MEDIA">Entertainment & Media</option>
+                <option value="TRAVEL_HOSPITALITY">Travel & Hospitality</option>
+                <option value="TELECOM">Telecom</option>
+                <option value="FASHION_BEAUTY">Fashion & Beauty</option>
+                <option value="SPORTS_FITNESS">Sports & Fitness</option>
+                <option value="EDUCATION">Education</option>
+                <option value="REAL_ESTATE">Real Estate</option>
+                <option value="ENERGY">Energy</option>
+                <option value="GOVERNMENT_NONPROFIT">Government & Nonprofit</option>
+                <option value="GAMING">Gaming</option>
+                <option value="CRYPTOCURRENCY">Cryptocurrency</option>
+                <option value="INSURANCE">Insurance</option>
+                <option value="B2B_SERVICES">B2B Services</option>
+                <option value="STARTUPS">Startups</option>
+                <option value="NONPROFIT">Nonprofit</option>
+                <option value="PROFESSIONAL_SERVICES">Professional Services</option>
+                <option value="LOGISTICS">Logistics</option>
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
