@@ -43,7 +43,10 @@ export async function GET(request: NextRequest) {
       where.seniority = { equals: seniority, mode: 'insensitive' };
     }
 
-    // Fetch contacts from database
+    // Get total count for pagination
+    const totalCount = await prisma.contact.count({ where });
+
+    // Fetch contacts from database (remove limit to show all)
     const contacts = await prisma.contact.findMany({
       where,
       select: {
@@ -80,8 +83,8 @@ export async function GET(request: NextRequest) {
       },
       orderBy: [
         { updatedAt: 'desc' }
-      ],
-      take: 500 // Limit to 500 contacts for performance
+      ]
+      // Removed take limit - return all contacts
     });
 
     // Transform to match expected format
@@ -136,7 +139,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       contacts: transformedContacts,
-      total: transformedContacts.length
+      total: totalCount // Return actual database count
     });
 
   } catch (error) {

@@ -1437,7 +1437,7 @@ export default function OrganizationsPage() {
                   </div>
                   <div className="p-6">
                     <div className="grid gap-4">
-                      {filteredContacts.slice(0, 100).map((contact) => (
+                      {filteredContacts.map((contact) => (
                         <div key={contact.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-4 flex-1">
@@ -1487,11 +1487,6 @@ export default function OrganizationsPage() {
                         </div>
                       ))}
                     </div>
-                    {filteredContacts.length > 100 && (
-                      <div className="mt-4 text-center text-sm text-gray-500">
-                        Showing first 100 of {filteredContacts.length} contacts. Use search to narrow results.
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
