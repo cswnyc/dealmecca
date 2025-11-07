@@ -37,7 +37,8 @@ import {
   GitFork,
   ChevronDown,
   Search,
-  Plus
+  Plus,
+  Lightbulb
 } from 'lucide-react';
 
 interface Company {
@@ -646,7 +647,7 @@ export default function CompanyDetailPage() {
                           {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
                         </button>
                         <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                          Edit Company
+                          Save
                         </button>
                       </div>
                     </div>
@@ -690,12 +691,24 @@ export default function CompanyDetailPage() {
                     <div className="border-b border-gray-200 px-6">
                       <nav className="-mb-px flex gap-8">
                         {[
-                          { id: 'overview', label: 'Overview' },
-                          { id: 'team', label: 'Teams' },
-                          { id: 'partnerships', label: 'Partnerships' },
-                          { id: 'relationships', label: 'Relationships' },
-                          ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Subsidiaries' }] : []),
-                          { id: 'activity', label: 'Activity' }
+                          { id: 'overview', label: 'Overview', count: null },
+                          {
+                            id: 'team',
+                            label: 'Teams',
+                            count: (() => {
+                              const roleGroups = company.contacts.reduce((acc, contact) => {
+                                const role = contact.title || contact.department || 'Other';
+                                if (!acc[role]) acc[role] = [];
+                                acc[role].push(contact);
+                                return acc;
+                              }, {} as Record<string, typeof company.contacts>);
+                              return Object.keys(roleGroups).length;
+                            })()
+                          },
+                          { id: 'partnerships', label: 'Partnerships', count: company._count.partnerships },
+                          { id: 'relationships', label: 'Relationships', count: company.partnerships.length },
+                          ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Subsidiaries', count: company._count.subsidiaries }] : []),
+                          { id: 'activity', label: 'Activity', count: null }
                         ].map((tab) => (
                           <button
                             key={tab.id}
@@ -706,7 +719,7 @@ export default function CompanyDetailPage() {
                                 : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                           >
-                            {tab.label}
+                            {tab.label}{tab.count !== null && ` (${tab.count})`}
                           </button>
                         ))}
                       </nav>
@@ -887,13 +900,13 @@ export default function CompanyDetailPage() {
                 {/* Right Sidebar for NON-HOLDING companies */}
                 <div className="space-y-6">
                   {/* Suggest Edit Panel */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-5">
                     <div
                       className="flex items-start gap-3 mb-4 cursor-pointer"
                       onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
                     >
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <Edit3 className="h-4 w-4 text-blue-600" />
+                      <div className="flex-shrink-0">
+                        <span className="text-2xl">💡</span>
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 mb-1">
@@ -910,33 +923,33 @@ export default function CompanyDetailPage() {
 
                     {isSuggestEditExpanded && (
                       <>
-                        <div className="space-y-3 mb-4">
-                          <label className="flex items-start gap-2 text-sm text-gray-700">
-                            <input type="checkbox" className="mt-1 rounded" />
-                            <span>Wrong info / Incorrect company</span>
+                        <div className="space-y-2 mb-4">
+                          <label className="flex items-start gap-2 text-sm">
+                            <input type="checkbox" className="mt-0.5" />
+                            <span className="text-gray-700">Should we add or remove people?</span>
                           </label>
-                          <label className="flex items-start gap-2 text-sm text-gray-700">
-                            <input type="checkbox" className="mt-1 rounded" />
-                            <span>Missing people</span>
+                          <label className="flex items-start gap-2 text-sm">
+                            <input type="checkbox" className="mt-0.5" />
+                            <span className="text-gray-700">Are any teams no longer active?</span>
                           </label>
-                          <label className="flex items-start gap-2 text-sm text-gray-700">
-                            <input type="checkbox" className="mt-1 rounded" />
-                            <span>Incorrect relationships</span>
+                          <label className="flex items-start gap-2 text-sm">
+                            <input type="checkbox" className="mt-0.5" />
+                            <span className="text-gray-700">Are there other agencies we should add?</span>
                           </label>
                         </div>
 
                         <textarea
-                          placeholder="Write your suggestions here..."
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4 resize-none"
-                          rows={4}
+                          placeholder="Write your suggestion here..."
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          rows={3}
                         />
 
-                        <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                        <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium mb-3">
                           Submit
                         </button>
 
-                        <p className="text-xs text-gray-500 text-center mt-3">
-                          Thanks for helping us improve!
+                        <p className="text-xs text-gray-600 text-center">
+                          Share information with the community and obtain rewards when you do.
                         </p>
                       </>
                     )}
