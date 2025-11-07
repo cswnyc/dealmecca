@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -35,7 +35,9 @@ import {
   UserPlus,
   Edit3,
   GitFork,
-  ChevronDown
+  ChevronDown,
+  Search,
+  Plus
 } from 'lucide-react';
 
 interface Company {
@@ -126,12 +128,22 @@ export default function CompanyDetailPage() {
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'partnerships' | 'relationships' | 'subsidiaries' | 'activity'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'partnerships' | 'relationships' | 'subsidiaries' | 'activity' | 'intel'>('overview');
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [expandedAgencies, setExpandedAgencies] = useState<Set<string>>(new Set());
   const [isSuggestEditExpanded, setIsSuggestEditExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter subsidiaries based on search query
+  const filteredSubsidiaries = useMemo(() => {
+    if (!company || !company.subsidiaries) return [];
+    if (!searchQuery.trim()) return company.subsidiaries;
+    const query = searchQuery.toLowerCase();
+    return company.subsidiaries.filter(sub =>
+      sub.name.toLowerCase().includes(query)
+    );
+  }, [company?.subsidiaries, searchQuery]);
 
   // Fetch company data
   useEffect(() => {
@@ -153,6 +165,11 @@ export default function CompanyDetailPage() {
 
         const data = await response.json();
         setCompany(data);
+
+        // Set default active tab based on company type
+        if (data.companyType === 'MEDIA_HOLDING_COMPANY' && data._count.subsidiaries > 0) {
+          setActiveTab('subsidiaries');
+        }
       } catch (err) {
         console.error('Error fetching company:', err);
         setError('Failed to load company data');
@@ -373,44 +390,75 @@ export default function CompanyDetailPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button
-                    onClick={handleToggleFollow}
-                    disabled={followLoading}
-                    className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
-                  >
-                    <Bell className="h-4 w-4" />
-                    {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
-                  </button>
-                  <button className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2">
-                    <Bookmark className="h-4 w-4" />
-                    Save
-                  </button>
+                  {company.companyType === 'MEDIA_HOLDING_COMPANY' ? (
+                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Agency
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleToggleFollow}
+                        disabled={followLoading}
+                        className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <Bell className="h-4 w-4" />
+                        {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
+                      </button>
+                      <button className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <Bookmark className="h-4 w-4" />
+                        Save
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
               {/* Tabs Navigation */}
               <div className="border-t pt-4">
                 <nav className="flex gap-1">
-                  {[
-                    { id: 'overview', label: 'Overview' },
-                    { id: 'team', label: 'Teams' },
-                    { id: 'partnerships', label: 'Partnerships' },
-                    { id: 'relationships', label: 'Relationships' },
-                    ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: company.companyType === 'MEDIA_HOLDING_COMPANY' ? 'Agencies' : 'Subsidiaries' }] : []),
-                    { id: 'activity', label: 'Activity' }
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                        activeTab === tab.id
-                          ? 'bg-white text-blue-600 border-t-2 border-blue-600'
-                          : 'text-gray-600 hover:text-gray-900'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
+                  {company.companyType === 'MEDIA_HOLDING_COMPANY' ? (
+                    // Tabs for Holding Companies
+                    [
+                      ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Agencies' }] : []),
+                      { id: 'intel', label: 'Intel' },
+                      { id: 'overview', label: 'Overview' }
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as any)}
+                        className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
+                          activeTab === tab.id
+                            ? 'bg-white text-blue-600 border-t-2 border-blue-600'
+                            : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))
+                  ) : (
+                    // Tabs for Non-Holding Companies
+                    [
+                      { id: 'overview', label: 'Overview' },
+                      { id: 'team', label: 'Teams' },
+                      { id: 'partnerships', label: 'Partnerships' },
+                      { id: 'relationships', label: 'Relationships' },
+                      ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Subsidiaries' }] : []),
+                      { id: 'activity', label: 'Activity' }
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as any)}
+                        className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
+                          activeTab === tab.id
+                            ? 'bg-white text-blue-600 border-t-2 border-blue-600'
+                            : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))
+                  )}
                 </nav>
               </div>
             </div>
@@ -698,12 +746,26 @@ export default function CompanyDetailPage() {
               {company.companyType === 'MEDIA_HOLDING_COMPANY' ? (
                 /* Expandable Agencies for Holding Companies */
                 <>
+                  {/* Search Bar */}
+                  <div className="mb-6">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search agencies, teams, or locations..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-gray-900">
-                      All Agencies ({company._count.subsidiaries})
+                      All Agencies ({filteredSubsidiaries.length})
                     </h2>
                   </div>
-                  {company.subsidiaries.map((subsidiary) => (
+                  {filteredSubsidiaries.map((subsidiary) => (
                     <div key={subsidiary.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                       {/* Agency Header - Clickable */}
                       <div
@@ -801,6 +863,16 @@ export default function CompanyDetailPage() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Intel Tab */}
+          {activeTab === 'intel' && company.companyType === 'MEDIA_HOLDING_COMPANY' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Intel</h2>
+                <p className="text-gray-600">Coming soon...</p>
+              </div>
             </div>
           )}
 
