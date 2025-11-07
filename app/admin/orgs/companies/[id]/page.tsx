@@ -101,6 +101,31 @@ export default function CompanyViewPage() {
     }
   };
 
+  const handleDeletePartnership = async (partnershipId: string) => {
+    if (!confirm('Are you sure you want to delete this partnership? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/orgs/companies/${company?.id}/partnerships/${partnershipId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete partnership');
+      }
+
+      // Refresh company data to show updated partnerships list
+      if (company?.id) {
+        await fetchCompany(company.id);
+      }
+    } catch (err: any) {
+      alert(`Error deleting partnership: ${err.message}`);
+      console.error('Error deleting partnership:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -395,12 +420,20 @@ export default function CompanyViewPage() {
                         </div>
                       </div>
                     </div>
-                    <Link
-                      href={`/admin/orgs/companies/${partnership.partner.id}`}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                    >
-                      View →
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDeletePartnership(partnership.id)}
+                        className="text-red-600 hover:text-red-700 text-sm font-medium px-3 py-1 rounded border border-red-300 hover:bg-red-50 transition-colors"
+                      >
+                        Delete
+                      </button>
+                      <Link
+                        href={`/admin/orgs/companies/${partnership.partner.id}`}
+                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      >
+                        View →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))
