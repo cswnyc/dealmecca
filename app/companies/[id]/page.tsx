@@ -34,7 +34,8 @@ import {
   Activity as ActivityIcon,
   UserPlus,
   Edit3,
-  GitFork
+  GitFork,
+  ChevronDown
 } from 'lucide-react';
 
 interface Company {
@@ -128,6 +129,7 @@ export default function CompanyDetailPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'partnerships' | 'relationships' | 'subsidiaries' | 'activity'>('overview');
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const [expandedAgencies, setExpandedAgencies] = useState<Set<string>>(new Set());
 
   // Fetch company data
   useEffect(() => {
@@ -255,6 +257,16 @@ export default function CompanyDetailPage() {
       ADTECH: 'bg-violet-100 text-violet-800'
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
+  };
+
+  const toggleAgency = (agencyId: string) => {
+    const newExpanded = new Set(expandedAgencies);
+    if (newExpanded.has(agencyId)) {
+      newExpanded.delete(agencyId);
+    } else {
+      newExpanded.add(agencyId);
+    }
+    setExpandedAgencies(newExpanded);
   };
 
   if (loading) {
@@ -752,42 +764,99 @@ export default function CompanyDetailPage() {
 
           {/* Subsidiaries Tab */}
           {activeTab === 'subsidiaries' && company._count.subsidiaries > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Subsidiaries ({company._count.subsidiaries})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              {company.companyType === 'MEDIA_HOLDING_COMPANY' ? (
+                /* Expandable Agencies for Holding Companies */
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Agencies ({company._count.subsidiaries})
+                  </h2>
                   {company.subsidiaries.map((subsidiary) => (
-                    <Link
-                      key={subsidiary.id}
-                      href={`/companies/${subsidiary.id}`}
-                      className="flex items-center space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                    >
-                      <CompanyLogo
-                        logoUrl={subsidiary.logoUrl}
-                        companyName={subsidiary.name}
-                        size="md"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
-                            {subsidiary.name}
-                          </h3>
-                          {subsidiary.verified && (
-                            <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                          )}
+                    <div key={subsidiary.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                      {/* Agency Header - Clickable */}
+                      <div
+                        className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                        onClick={() => toggleAgency(subsidiary.id)}
+                      >
+                        <div className="flex items-start gap-4">
+                          <CompanyLogo
+                            logoUrl={subsidiary.logoUrl}
+                            companyName={subsidiary.name}
+                            size="lg"
+                            className="flex-shrink-0"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="text-xl font-semibold text-gray-900">{subsidiary.name}</h3>
+                              {subsidiary.verified && (
+                                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                              )}
+                              <button className="p-1 hover:bg-gray-200 rounded transition-colors ml-auto">
+                                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${expandedAgencies.has(subsidiary.id) ? 'rotate-180' : ''}`} />
+                              </button>
+                            </div>
+                            <p className="text-sm text-gray-600">
+                              {getCompanyTypeLabel(subsidiary.companyType)}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {getCompanyTypeLabel(subsidiary.companyType)}
-                        </p>
                       </div>
-                      <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                    </Link>
+
+                      {/* Expandable Content - For now shows link to full page */}
+                      {expandedAgencies.has(subsidiary.id) && (
+                        <div className="border-t border-gray-200 bg-gray-50 p-6">
+                          <Link
+                            href={`/companies/${subsidiary.id}`}
+                            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            View {subsidiary.name} details
+                            <ExternalLink className="h-4 w-4" />
+                          </Link>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              ) : (
+                /* Standard Grid View for Non-Holding Companies */
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Subsidiaries ({company._count.subsidiaries})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {company.subsidiaries.map((subsidiary) => (
+                        <Link
+                          key={subsidiary.id}
+                          href={`/companies/${subsidiary.id}`}
+                          className="flex items-center space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                        >
+                          <CompanyLogo
+                            logoUrl={subsidiary.logoUrl}
+                            companyName={subsidiary.name}
+                            size="md"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
+                                {subsidiary.name}
+                              </h3>
+                              {subsidiary.verified && (
+                                <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {getCompanyTypeLabel(subsidiary.companyType)}
+                            </p>
+                          </div>
+                          <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           )}
 
           {/* Relationships Tab */}
