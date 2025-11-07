@@ -504,6 +504,88 @@ export default function CompanyDetailPage() {
                   </CardContent>
                 </Card>
 
+                {/* Teams Section - Grouped by Role */}
+                {company.contacts && company.contacts.length > 0 && (() => {
+                  // Group contacts by role
+                  const roleGroups = company.contacts.reduce((acc, contact) => {
+                    const role = contact.role || 'Other';
+                    if (!acc[role]) {
+                      acc[role] = [];
+                    }
+                    acc[role].push(contact);
+                    return acc;
+                  }, {} as Record<string, typeof company.contacts>);
+
+                  // Only show top 3 teams with most people
+                  const topTeams = Object.entries(roleGroups)
+                    .sort(([, a], [, b]) => b.length - a.length)
+                    .slice(0, 3);
+
+                  if (topTeams.length === 0) return null;
+
+                  return (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900">
+                          Key Teams ({topTeams.reduce((sum, [, contacts]) => sum + contacts.length, 0)} people)
+                        </h2>
+                        <button
+                          onClick={() => setActiveTab('team')}
+                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                        >
+                          View all →
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {topTeams.map(([role, contacts], index) => {
+                          // Simple color schemes for teams
+                          const colorSchemes = [
+                            'bg-blue-100 text-blue-600',
+                            'bg-purple-100 text-purple-600',
+                            'bg-green-100 text-green-600',
+                          ];
+                          const colorScheme = colorSchemes[index % colorSchemes.length];
+
+                          return (
+                            <div key={role} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                              <div className="flex items-start gap-3">
+                                <div className={`w-8 h-8 rounded flex items-center justify-center text-sm font-medium ${colorScheme}`}>
+                                  {role.charAt(0)}
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="font-semibold text-gray-900 mb-2">{role}</h3>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="flex -space-x-2">
+                                      {contacts.slice(0, 3).map((contact, idx) => (
+                                        <div
+                                          key={contact.id}
+                                          className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium text-white ${
+                                            ['bg-gradient-to-br from-purple-400 to-pink-400',
+                                             'bg-gradient-to-br from-blue-400 to-cyan-400',
+                                             'bg-gradient-to-br from-green-400 to-emerald-400'][idx % 3]
+                                          }`}
+                                          title={contact.name}
+                                        >
+                                          {contact.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <span className="text-sm text-gray-600">
+                                      {contacts.slice(0, 2).map(c => c.name.split(' ')[0]).join(', ')}
+                                      {contacts.length > 2 && ` +${contacts.length - 2} more`}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Parent Company */}
                 {company.parentCompany && (
                   <Card>
