@@ -447,34 +447,30 @@ export default function CompanyDetailPage() {
               </div>
             </div>
 
-            {/* Tabs */}
-            <div className="border-t pt-4 overflow-x-auto">
-              <div className="flex space-x-1 min-w-max">
+            {/* Tabs - SellerCrowd Style */}
+            <div className="border-b border-gray-200">
+              <nav className="-mb-px flex gap-8 px-6 overflow-x-auto">
                 {[
-                  { id: 'overview', label: 'Overview', icon: Building2 },
-                  { id: 'team', label: `Team (${company._count.contacts})`, icon: Users },
-                  { id: 'partnerships', label: `Partnerships (${company._count.partnerships})`, icon: Network },
-                  { id: 'relationships', label: 'Relationship Graph', icon: GitFork },
-                  ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: `Subsidiaries (${company._count.subsidiaries})`, icon: Briefcase }] : []),
-                  { id: 'activity', label: 'Activity', icon: ActivityIcon }
-                ].map((tab) => {
-                  const IconComponent = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                        activeTab === tab.id
-                          ? 'bg-white text-blue-600 border border-b-0 border-gray-200'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                    >
-                      <IconComponent className="h-4 w-4" />
-                      <span>{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+                  { id: 'overview', label: 'Overview' },
+                  { id: 'team', label: `Team (${company._count.contacts})` },
+                  { id: 'partnerships', label: `Partnerships (${company._count.partnerships})` },
+                  { id: 'relationships', label: 'Relationship Graph' },
+                  ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: `Subsidiaries (${company._count.subsidiaries})` }] : []),
+                  { id: 'activity', label: 'Activity' }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`pb-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                      activeTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
             </div>
           </div>
         </div>
