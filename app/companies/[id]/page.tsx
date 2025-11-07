@@ -302,24 +302,29 @@ export default function CompanyDetailPage() {
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="text-sm text-gray-500">
+              <Link href="/" className="hover:text-gray-700">Home</Link>
+              <span className="mx-2">›</span>
+              <Link href="/organizations" className="hover:text-gray-700">
+                {company.companyType === 'ADVERTISER' ? 'Advertisers' :
+                 company.companyType === 'AGENCY' || company.companyType === 'INDEPENDENT_AGENCY' ? 'Agencies' :
+                 'Companies'}
+              </Link>
+              <span className="mx-2">›</span>
+              <span className="text-gray-900">{company.name}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Header with Stats */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="py-6">
-              {/* Back Button */}
-              <div className="mb-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => router.push('/organizations')}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Organizations
-                </Button>
-              </div>
-
-              {/* Company Header */}
-              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+              {/* Company Header with Logo */}
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6">
                 <CompanyLogo
                   logoUrl={company.logoUrl}
                   companyName={company.name}
@@ -402,6 +407,30 @@ export default function CompanyDetailPage() {
                       )}
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Quick Stats Inline */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">{company._count.partnerships}</div>
+                  <div className="text-sm text-gray-500">Partnerships</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">{company._count.contacts}</div>
+                  <div className="text-sm text-gray-500">Contacts</div>
+                </div>
+                {company._count.subsidiaries > 0 && (
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">{company._count.subsidiaries}</div>
+                    <div className="text-sm text-gray-500">Subsidiaries</div>
+                  </div>
+                )}
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {company.lastVerified ? new Date(company.lastVerified).toLocaleDateString() : 'N/A'}
+                  </div>
+                  <div className="text-sm text-gray-500">Last Updated</div>
                 </div>
               </div>
             </div>
