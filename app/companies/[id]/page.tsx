@@ -130,6 +130,8 @@ export default function CompanyDetailPage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [expandedAgencies, setExpandedAgencies] = useState<Set<string>>(new Set());
+  const [isSuggestEditExpanded, setIsSuggestEditExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch company data
   useEffect(() => {
@@ -314,151 +316,136 @@ export default function CompanyDetailPage() {
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50">
-        {/* Breadcrumb Navigation */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="text-sm text-gray-500">
-              <Link href="/" className="hover:text-gray-700">Home</Link>
-              <span className="mx-2">›</span>
-              <Link href="/organizations" className="hover:text-gray-700">
-                {company.companyType === 'ADVERTISER' ? 'Advertisers' :
-                 company.companyType === 'AGENCY' || company.companyType === 'INDEPENDENT_AGENCY' ? 'Agencies' :
-                 'Companies'}
-              </Link>
-              <span className="mx-2">›</span>
-              <span className="text-gray-900">{company.name}</span>
+        {/* Header Section */}
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-6">
+              {/* Breadcrumb Navigation */}
+              <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
+                <Link href="/" className="hover:text-gray-900">Home</Link>
+                <span>›</span>
+                <Link href="/organizations" className="hover:text-gray-900">
+                  {company.companyType === 'ADVERTISER' ? 'Advertisers' :
+                   company.companyType === 'AGENCY' || company.companyType === 'INDEPENDENT_AGENCY' ? 'Agencies' :
+                   'Companies'}
+                </Link>
+                <span>›</span>
+                <span className="text-gray-900 font-medium">{company.name}</span>
+              </div>
+
+              {/* Company Header */}
+              <div className="flex items-start justify-between gap-4 mb-6">
+                <div className="flex items-start gap-4">
+                  <CompanyLogo
+                    logoUrl={company.logoUrl}
+                    companyName={company.name}
+                    size="lg"
+                    className="rounded-lg flex-shrink-0"
+                  />
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h1 className="text-3xl font-bold text-gray-900">{company.name}</h1>
+                      {company.verified && (
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                          Verified
+                        </span>
+                      )}
+                    </div>
+                    {company.description && (
+                      <p className="text-gray-600 mb-3">{company.description}</p>
+                    )}
+                    <div className="flex items-center gap-6 text-sm text-gray-600">
+                      {company._count.subsidiaries > 0 && (
+                        <div className="flex items-center gap-1">
+                          <Building2 className="h-4 w-4" />
+                          <span>{company._count.subsidiaries} {company.companyType === 'MEDIA_HOLDING_COMPANY' ? 'agencies' : 'subsidiaries'}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        <span>{company._count.contacts} people</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>{[company.city, company.state].filter(Boolean).join(', ') || 'Multiple locations'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleToggleFollow}
+                    disabled={followLoading}
+                    className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <Bell className="h-4 w-4" />
+                    {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
+                  </button>
+                  <button className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                    <Bookmark className="h-4 w-4" />
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              {/* Tabs Navigation */}
+              <div className="border-t pt-4">
+                <nav className="flex gap-1">
+                  {[
+                    { id: 'overview', label: 'Overview' },
+                    { id: 'team', label: 'Teams' },
+                    { id: 'partnerships', label: 'Partnerships' },
+                    { id: 'relationships', label: 'Relationships' },
+                    ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: company.companyType === 'MEDIA_HOLDING_COMPANY' ? 'Agencies' : 'Subsidiaries' }] : []),
+                    { id: 'activity', label: 'Activity' }
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
+                        activeTab === tab.id
+                          ? 'bg-white text-blue-600 border-t-2 border-blue-600'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </nav>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Main 3-Column Layout */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Main Content (2 columns) */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Company Header Card with Stats */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-start gap-4">
-                    <CompanyLogo
-                      logoUrl={company.logoUrl}
-                      companyName={company.name}
-                      size="lg"
-                      className="rounded-lg"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
-                        {company.verified && (
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                            Verified
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-600">
-                        {getCompanyTypeLabel(company.companyType)}
-                        {(company.city || company.state) && ` • ${[company.city, company.state].filter(Boolean).join(', ')}`}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleToggleFollow}
-                      disabled={followLoading}
-                      className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                      {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
-                    </button>
-                    <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                      Edit Company
-                    </button>
-                  </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="grid grid-cols-4 gap-4 pt-4 border-t border-gray-200">
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">{company._count.partnerships}</div>
-                    <div className="text-sm text-gray-500">Partnerships</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">{company._count.contacts}</div>
-                    <div className="text-sm text-gray-500">Contacts</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {company._count.subsidiaries > 0 ? company._count.subsidiaries : 'N/A'}
-                    </div>
-                    <div className="text-sm text-gray-500">{company._count.subsidiaries > 0 ? 'Subsidiaries' : 'Teams'}</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {company.lastVerified ? new Date(company.lastVerified).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '2 hrs'}
-                    </div>
-                    <div className="text-sm text-gray-500">Last activity</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tabs Navigation inside Card */}
-              <div className="bg-white rounded-lg border border-gray-200">
-                <div className="border-b border-gray-200 px-6">
-                  <nav className="-mb-px flex gap-8 overflow-x-auto">
-                    {[
-                      { id: 'overview', label: 'Overview' },
-                      { id: 'team', label: `Team (${company._count.contacts})` },
-                      { id: 'partnerships', label: `Partnerships (${company._count.partnerships})` },
-                      { id: 'relationships', label: 'Relationship Graph' },
-                      ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: `Subsidiaries (${company._count.subsidiaries})` }] : []),
-                      { id: 'activity', label: 'Activity' }
-                    ].map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id as any)}
-                        className={`pb-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
-                          activeTab === tab.id
-                            ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-
-                {/* Tab Content */}
-                <div className="p-6">
+        {/* Main Layout */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex gap-6">
+            {/* Main Content Area */}
+            <div className="flex-1">
+              {/* Tab Content */}
+              <div>
                   {/* Overview Tab */}
                   {activeTab === 'overview' && (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                 {/* Description */}
                 {company.description && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>About</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-700 whitespace-pre-wrap">{company.description}</p>
-                    </CardContent>
-                  </Card>
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">About</h2>
+                    <p className="text-gray-700 whitespace-pre-wrap">{company.description}</p>
+                  </div>
                 )}
 
                 {/* What We Do - Capabilities */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>What We Do</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CapabilitiesSection company={company} contacts={company.contacts} />
-                  </CardContent>
-                </Card>
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">What We Do</h2>
+                  <CapabilitiesSection company={company} contacts={company.contacts} />
+                </div>
 
                 {/* Teams Section - Grouped by Role */}
                 {company.contacts && company.contacts.length > 0 && (() => {
-                  // Group contacts by role
+                  // Group contacts by role/title
                   const roleGroups = company.contacts.reduce((acc, contact) => {
-                    const role = contact.role || 'Other';
+                    const role = contact.title || contact.department || 'Other';
                     if (!acc[role]) {
                       acc[role] = [];
                     }
@@ -507,7 +494,7 @@ export default function CompanyDetailPage() {
                                   <h3 className="font-semibold text-gray-900 mb-2">{role}</h3>
                                   <div className="flex items-center gap-2 mb-2">
                                     <div className="flex -space-x-2">
-                                      {contacts.filter(c => c.name).slice(0, 3).map((contact, idx) => (
+                                      {contacts.filter(c => c.fullName).slice(0, 3).map((contact, idx) => (
                                         <div
                                           key={contact.id}
                                           className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium text-white ${
@@ -515,15 +502,15 @@ export default function CompanyDetailPage() {
                                              'bg-gradient-to-br from-blue-400 to-cyan-400',
                                              'bg-gradient-to-br from-green-400 to-emerald-400'][idx % 3]
                                           }`}
-                                          title={contact.name}
+                                          title={contact.fullName}
                                         >
-                                          {(contact.name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                          {contact.firstName[0]}{contact.lastName[0]}
                                         </div>
                                       ))}
                                     </div>
                                     <span className="text-sm text-gray-600">
-                                      {contacts.filter(c => c.name).slice(0, 2).map(c => c.name.split(' ')[0]).join(', ')}
-                                      {contacts.filter(c => c.name).length > 2 && ` +${contacts.filter(c => c.name).length - 2} more`}
+                                      {contacts.filter(c => c.fullName).slice(0, 2).map(c => c.firstName).join(', ')}
+                                      {contacts.filter(c => c.fullName).length > 2 && ` +${contacts.filter(c => c.fullName).length - 2} more`}
                                     </span>
                                   </div>
                                 </div>
@@ -538,147 +525,132 @@ export default function CompanyDetailPage() {
 
                 {/* Parent Company */}
                 {company.parentCompany && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Part of</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Link
-                        href={`/companies/${company.parentCompany.id}`}
-                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        <CompanyLogo
-                          logoUrl={company.parentCompany.logoUrl}
-                          companyName={company.parentCompany.name}
-                          size="md"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 hover:text-blue-600">
-                            {company.parentCompany.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {getCompanyTypeLabel(company.parentCompany.companyType)}
-                          </p>
-                        </div>
-                        <ExternalLink className="h-4 w-4 text-gray-400" />
-                      </Link>
-                    </CardContent>
-                  </Card>
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Part of</h2>
+                    <Link
+                      href={`/companies/${company.parentCompany.id}`}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                    >
+                      <CompanyLogo
+                        logoUrl={company.parentCompany.logoUrl}
+                        companyName={company.parentCompany.name}
+                        size="md"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 hover:text-blue-600">
+                          {company.parentCompany.name}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {getCompanyTypeLabel(company.parentCompany.companyType)}
+                        </p>
+                      </div>
+                      <ExternalLink className="h-4 w-4 text-gray-400" />
+                    </Link>
+                  </div>
                 )}
 
                 {/* Recent Partnerships Preview */}
                 {company.partnerships.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle>Key Partnerships</CardTitle>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setActiveTab('partnerships')}
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-semibold text-gray-900">Key Partnerships</h2>
+                      <button
+                        onClick={() => setActiveTab('partnerships')}
+                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      >
+                        View All →
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      {company.partnerships.slice(0, 5).map((partnership) => (
+                        <Link
+                          key={partnership.id}
+                          href={`/companies/${partnership.partner.id}`}
+                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
                         >
-                          View All
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3">
-                        {company.partnerships.slice(0, 5).map((partnership) => (
-                          <Link
-                            key={partnership.id}
-                            href={`/companies/${partnership.partner.id}`}
-                            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                          >
-                            <CompanyLogo
-                              logoUrl={partnership.partner.logoUrl}
-                              companyName={partnership.partner.name}
-                              size="md"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
-                                {partnership.partner.name}
-                              </h3>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-sm text-gray-600">
-                                  {partnership.partnerRole === 'agency' ? 'Agency Partner' : 'Client'}
-                                </span>
-                                {partnership.isAOR && (
-                                  <Badge variant="outline" className="text-xs">AOR</Badge>
-                                )}
-                              </div>
+                          <CompanyLogo
+                            logoUrl={partnership.partner.logoUrl}
+                            companyName={partnership.partner.name}
+                            size="md"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
+                              {partnership.partner.name}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-sm text-gray-600">
+                                {partnership.partnerRole === 'agency' ? 'Agency Partner' : 'Client'}
+                              </span>
+                              {partnership.isAOR && (
+                                <Badge variant="outline" className="text-xs">AOR</Badge>
+                              )}
                             </div>
-                            <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          </Link>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                          </div>
+                          <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 )}
                     </div>
                   )}
 
                   {/* Team Tab */}
                   {activeTab === 'team' && (
-            <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Team Members ({company._count.contacts})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {company.contacts.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">No team members listed yet</p>
-                    </div>
-                  ) : (
-                    <div className="grid gap-4">
-                      {company.contacts.map((contact) => (
-                        <Link
-                          key={contact.id}
-                          href={`/people/${contact.id}`}
-                          className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                        >
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                            {contact.firstName[0]}{contact.lastName[0]}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-gray-900 hover:text-blue-600">
-                                {contact.fullName}
-                              </h3>
-                              {contact.verified && (
-                                <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                              )}
-                            </div>
-                            {contact.title && (
-                              <p className="text-sm text-gray-600 mt-1">{contact.title}</p>
-                            )}
-                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                              {contact.department && (
-                                <span>{contact.department}</span>
-                              )}
-                              {contact.seniority && (
-                                <span>{contact.seniority}</span>
-                              )}
-                            </div>
-                          </div>
-                          <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Team Members ({company._count.contacts})</h2>
+              {company.contacts.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">No team members listed yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {company.contacts.map((contact) => (
+                    <Link
+                      key={contact.id}
+                      href={`/people/${contact.id}`}
+                      className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+                        {contact.firstName[0]}{contact.lastName[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-gray-900 hover:text-blue-600">
+                            {contact.fullName}
+                          </h3>
+                          {contact.verified && (
+                            <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                          )}
+                        </div>
+                        {contact.title && (
+                          <p className="text-sm text-gray-600 mt-1">{contact.title}</p>
+                        )}
+                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                          {contact.department && (
+                            <span>{contact.department}</span>
+                          )}
+                          {contact.seniority && (
+                            <span>{contact.seniority}</span>
+                          )}
+                        </div>
+                      </div>
+                      <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {/* Partnerships Tab */}
           {activeTab === 'partnerships' && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Agencies */}
               {agencies.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
                     Agency Partners ({agencies.length})
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -695,8 +667,8 @@ export default function CompanyDetailPage() {
 
               {/* Clients */}
               {clients.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
                     Clients ({clients.length})
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -712,27 +684,25 @@ export default function CompanyDetailPage() {
               )}
 
               {agencies.length === 0 && clients.length === 0 && (
-                <Card>
-                  <CardContent className="py-12">
-                    <div className="text-center">
-                      <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">No partnerships listed yet</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+                  <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">No partnerships listed yet</p>
+                </div>
               )}
             </div>
           )}
 
           {/* Subsidiaries Tab */}
           {activeTab === 'subsidiaries' && company._count.subsidiaries > 0 && (
-            <div>
+            <div className="space-y-4">
               {company.companyType === 'MEDIA_HOLDING_COMPANY' ? (
                 /* Expandable Agencies for Holding Companies */
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    Agencies ({company._count.subsidiaries})
-                  </h2>
+                <>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      All Agencies ({company._count.subsidiaries})
+                    </h2>
+                  </div>
                   {company.subsidiaries.map((subsidiary) => (
                     <div key={subsidiary.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                       {/* Agency Header - Clickable */}
@@ -740,31 +710,48 @@ export default function CompanyDetailPage() {
                         className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
                         onClick={() => toggleAgency(subsidiary.id)}
                       >
-                        <div className="flex items-start gap-4">
-                          <CompanyLogo
-                            logoUrl={subsidiary.logoUrl}
-                            companyName={subsidiary.name}
-                            size="lg"
-                            className="flex-shrink-0"
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-xl font-semibold text-gray-900">{subsidiary.name}</h3>
-                              {subsidiary.verified && (
-                                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                              )}
-                              <button className="p-1 hover:bg-gray-200 rounded transition-colors ml-auto">
-                                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${expandedAgencies.has(subsidiary.id) ? 'rotate-180' : ''}`} />
-                              </button>
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3 flex-1">
+                            <CompanyLogo
+                              logoUrl={subsidiary.logoUrl}
+                              companyName={subsidiary.name}
+                              size="lg"
+                              className="flex-shrink-0"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h3 className="text-xl font-semibold text-gray-900">{subsidiary.name}</h3>
+                                {subsidiary.verified && (
+                                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                                )}
+                                <button
+                                  className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleAgency(subsidiary.id);
+                                  }}
+                                >
+                                  <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${expandedAgencies.has(subsidiary.id) ? 'rotate-180' : ''}`} />
+                                </button>
+                              </div>
+                              <p className="text-sm text-gray-600 mt-2">
+                                {getCompanyTypeLabel(subsidiary.companyType)}
+                              </p>
                             </div>
-                            <p className="text-sm text-gray-600">
-                              {getCompanyTypeLabel(subsidiary.companyType)}
-                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Link
+                              href={`/companies/${subsidiary.id}`}
+                              className="p-2 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Link>
                           </div>
                         </div>
                       </div>
 
-                      {/* Expandable Content - For now shows link to full page */}
+                      {/* Expandable Content - Shows link to full page */}
                       {expandedAgencies.has(subsidiary.id) && (
                         <div className="border-t border-gray-200 bg-gray-50 p-6">
                           <Link
@@ -778,321 +765,338 @@ export default function CompanyDetailPage() {
                       )}
                     </div>
                   ))}
-                </div>
+                </>
               ) : (
                 /* Standard Grid View for Non-Holding Companies */
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Subsidiaries ({company._count.subsidiaries})</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {company.subsidiaries.map((subsidiary) => (
-                        <Link
-                          key={subsidiary.id}
-                          href={`/companies/${subsidiary.id}`}
-                          className="flex items-center space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                        >
-                          <CompanyLogo
-                            logoUrl={subsidiary.logoUrl}
-                            companyName={subsidiary.name}
-                            size="md"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
-                                {subsidiary.name}
-                              </h3>
-                              {subsidiary.verified && (
-                                <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                              )}
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {getCompanyTypeLabel(subsidiary.companyType)}
-                            </p>
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Subsidiaries ({company._count.subsidiaries})</h2>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {company.subsidiaries.map((subsidiary) => (
+                      <Link
+                        key={subsidiary.id}
+                        href={`/companies/${subsidiary.id}`}
+                        className="flex items-center space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                      >
+                        <CompanyLogo
+                          logoUrl={subsidiary.logoUrl}
+                          companyName={subsidiary.name}
+                          size="md"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
+                              {subsidiary.name}
+                            </h3>
+                            {subsidiary.verified && (
+                              <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                            )}
                           </div>
-                          <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        </Link>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {getCompanyTypeLabel(subsidiary.companyType)}
+                          </p>
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           )}
 
           {/* Relationships Tab */}
           {activeTab === 'relationships' && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <GitFork className="h-5 w-5" />
-                    Relationship Graph
-                  </CardTitle>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Interactive visualization of {company.name}'s business relationships, including parent companies, subsidiaries, agency partnerships, and key contacts.
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <RelationshipGraph companyId={company.id} includeContacts={true} />
-                </CardContent>
-              </Card>
+            <div className="space-y-4">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <GitFork className="h-5 w-5" />
+                  <h2 className="text-lg font-semibold text-gray-900">Relationship Graph</h2>
+                </div>
+                <p className="text-sm text-gray-600 mb-6">
+                  Interactive visualization of {company.name}'s business relationships, including parent companies, subsidiaries, agency partnerships, and key contacts.
+                </p>
+                <RelationshipGraph companyId={company.id} includeContacts={true} />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Legend</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3 text-sm">
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 rounded bg-blue-600 ring-2 ring-blue-200"></div>
-                        <span>Central Company (this company)</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 rounded bg-purple-500"></div>
-                        <span>Agency Partners</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 rounded bg-green-500"></div>
-                        <span>Client/Advertiser</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 rounded bg-gray-400"></div>
-                        <span>Contacts/People</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-0.5 bg-purple-500"></div>
-                        <span>Agency-Client Relationship (animated)</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-1 bg-gray-600"></div>
-                        <span>Parent-Subsidiary Relationship</span>
-                      </div>
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h3 className="text-base font-semibold text-gray-900 mb-4">Legend</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded bg-blue-600 ring-2 ring-blue-200"></div>
+                      <span>Central Company (this company)</span>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded bg-purple-500"></div>
+                      <span>Agency Partners</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded bg-green-500"></div>
+                      <span>Client/Advertiser</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded bg-gray-400"></div>
+                      <span>Contacts/People</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-0.5 bg-purple-500"></div>
+                      <span>Agency-Client Relationship (animated)</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-1 bg-gray-600"></div>
+                      <span>Parent-Subsidiary Relationship</span>
+                    </div>
+                  </div>
+                </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Controls</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <p><strong>• Zoom:</strong> Use mouse wheel or pinch gesture</p>
-                      <p><strong>• Pan:</strong> Click and drag background</p>
-                      <p><strong>• Move nodes:</strong> Drag individual nodes to reposition</p>
-                      <p><strong>• Fit view:</strong> Use the "Fit View" button in bottom-left controls</p>
-                      <p><strong>• Minimap:</strong> Click on minimap to quickly navigate large graphs</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h3 className="text-base font-semibold text-gray-900 mb-4">Controls</h3>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p><strong>• Zoom:</strong> Use mouse wheel or pinch gesture</p>
+                    <p><strong>• Pan:</strong> Click and drag background</p>
+                    <p><strong>• Move nodes:</strong> Drag individual nodes to reposition</p>
+                    <p><strong>• Fit view:</strong> Use the "Fit View" button in bottom-left controls</p>
+                    <p><strong>• Minimap:</strong> Click on minimap to quickly navigate large graphs</p>
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
           {/* Activity Tab */}
           {activeTab === 'activity' && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Team additions from recent contacts */}
-                    {company.contacts.slice(0, 3).map((contact, index) => (
-                      <div key={`contact-${contact.id}`} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                          <UserPlus className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-900">
-                            <Link href={`/people/${contact.id}`} className="font-semibold hover:text-blue-600">
-                              {contact.fullName}
-                            </Link>
-                            {' '}joined the team
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {contact.title && `${contact.title} • `}
-                            {index === 0 ? '2 days ago' : index === 1 ? '1 week ago' : '2 weeks ago'}
-                          </p>
-                        </div>
+            <div className="space-y-4">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                <div className="space-y-4">
+                  {/* Team additions from recent contacts */}
+                  {company.contacts.slice(0, 3).map((contact, index) => (
+                    <div key={`contact-${contact.id}`} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <UserPlus className="h-4 w-4 text-blue-600" />
                       </div>
-                    ))}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900">
+                          <Link href={`/people/${contact.id}`} className="font-semibold hover:text-blue-600">
+                            {contact.fullName}
+                          </Link>
+                          {' '}joined the team
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {contact.title && `${contact.title} • `}
+                          {index === 0 ? '2 days ago' : index === 1 ? '1 week ago' : '2 weeks ago'}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
 
-                    {/* Partnership updates */}
-                    {company.partnerships.slice(0, 2).map((partnership, index) => (
-                      <div key={`partnership-${partnership.id}`} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
-                        <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                          <Network className="h-4 w-4 text-purple-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-900">
-                            New partnership with{' '}
-                            <Link href={`/companies/${partnership.partner.id}`} className="font-semibold hover:text-blue-600">
-                              {partnership.partner.name}
-                            </Link>
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {partnership.partnerRole === 'agency' ? 'Agency Partner' : 'Client'} •
-                            {partnership.startDate ? ` ${new Date(partnership.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ` ${index === 0 ? '3 weeks ago' : '1 month ago'}`}
-                          </p>
-                        </div>
+                  {/* Partnership updates */}
+                  {company.partnerships.slice(0, 2).map((partnership, index) => (
+                    <div key={`partnership-${partnership.id}`} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                        <Network className="h-4 w-4 text-purple-600" />
                       </div>
-                    ))}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900">
+                          New partnership with{' '}
+                          <Link href={`/companies/${partnership.partner.id}`} className="font-semibold hover:text-blue-600">
+                            {partnership.partner.name}
+                          </Link>
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {partnership.partnerRole === 'agency' ? 'Agency Partner' : 'Client'} •
+                          {partnership.startDate ? ` ${new Date(partnership.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ` ${index === 0 ? '3 weeks ago' : '1 month ago'}`}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
 
-                    {/* Profile verification */}
-                    {company.verified && company.lastVerified && (
-                      <div className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
-                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-900">
-                            Company profile <span className="font-semibold">verified</span>
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {new Date(company.lastVerified).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                          </p>
-                        </div>
+                  {/* Profile verification */}
+                  {company.verified && company.lastVerified && (
+                    <div className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
                       </div>
-                    )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900">
+                          Company profile <span className="font-semibold">verified</span>
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(company.lastVerified).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
-                    {/* Empty state if no activity */}
-                    {company.contacts.length === 0 && company.partnerships.length === 0 && !company.verified && (
-                      <div className="text-center py-8">
-                        <ActivityIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-600 text-sm">No recent activity to show</p>
-                        <p className="text-gray-500 text-xs mt-1">Activity will appear here as the team and partnerships grow</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                  {/* Empty state if no activity */}
+                  {company.contacts.length === 0 && company.partnerships.length === 0 && !company.verified && (
+                    <div className="text-center py-8">
+                      <ActivityIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-gray-600 text-sm">No recent activity to show</p>
+                      <p className="text-gray-500 text-xs mt-1">Activity will appear here as the team and partnerships grow</p>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Suggest Edit Card */}
-              <Card className="border-dashed">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Edit3 className="h-5 w-5 mr-2 text-gray-600" />
-                    Know something we don't?
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Help us keep {company.name}'s information accurate and up-to-date by suggesting edits.
-                  </p>
-                  <Button variant="outline" className="w-full">
-                    <Edit3 className="h-4 w-4 mr-2" />
-                    Suggest an Edit
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-                  )}
+              <div className="bg-white rounded-lg border border-gray-200 border-dashed p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Edit3 className="h-5 w-5 text-gray-600" />
+                  <h3 className="font-semibold text-gray-900">Know something we don't?</h3>
                 </div>
-              </div>
-
-              {/* Close Left Column */}
-            </div>
-
-            {/* Right Sidebar Column */}
-            <div className="space-y-6">
-              {/* Suggest Edits Panel */}
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-5">
-                <h3 className="font-semibold text-gray-900 mb-3">Suggest an edit for this company</h3>
-
-                <div className="space-y-2 mb-4">
-                  <label className="flex items-start gap-2 text-sm">
-                    <input type="checkbox" className="mt-0.5" />
-                    <span className="text-gray-700">Should we add or remove people?</span>
-                  </label>
-                  <label className="flex items-start gap-2 text-sm">
-                    <input type="checkbox" className="mt-0.5" />
-                    <span className="text-gray-700">Are any teams no longer active?</span>
-                  </label>
-                  <label className="flex items-start gap-2 text-sm">
-                    <input type="checkbox" className="mt-0.5" />
-                    <span className="text-gray-700">Are there other agencies we should add?</span>
-                  </label>
-                </div>
-
-                <textarea
-                  placeholder="Write your suggestion here..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
-                  rows={3}
-                />
-
-                <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium mb-3">
-                  Submit
-                </button>
-
-                <p className="text-xs text-gray-600 text-center">
-                  Share information with the community and obtain rewards when you do.
+                <p className="text-sm text-gray-600 mb-4">
+                  Help us keep {company.name}'s information accurate and up-to-date by suggesting edits.
                 </p>
+                <button className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center justify-center gap-2">
+                  <Edit3 className="h-4 w-4" />
+                  Suggest an Edit
+                </button>
               </div>
-
-              {/* Contact Info */}
-              <div className="bg-white rounded-lg border border-gray-200 p-5">
-                <h3 className="font-semibold text-gray-900 mb-4">Contact Info</h3>
-
-                <div className="space-y-3">
-                  {company.address && (
-                    <div>
-                      <div className="text-xs font-medium text-gray-500 mb-1">Address</div>
-                      <div className="text-sm text-gray-900">
-                        {company.address}
-                        {company.zipCode && <><br />{company.zipCode}</>}
-                      </div>
-                    </div>
+            </div>
                   )}
+              </div>
+            </div>
 
-                  {company.website && (
-                    <div>
-                      <div className="text-xs font-medium text-gray-500 mb-1">Website</div>
-                      <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
-                        {company.website.replace(/^https?:\/\//, '')} →
-                      </a>
-                    </div>
-                  )}
-
-                  {company.linkedinUrl && (
-                    <div>
-                      <div className="text-xs font-medium text-gray-500 mb-1">LinkedIn</div>
-                      <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
-                        View Profile →
-                      </a>
-                    </div>
-                  )}
+            {/* Right Sidebar */}
+            <div className="w-80 flex-shrink-0 space-y-6">
+              {/* Suggest Edit Panel */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <div
+                  className="flex items-start gap-3 mb-4 cursor-pointer"
+                  onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
+                >
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Edit3 className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      Suggest an edit for this company
+                    </h3>
+                    {!isSuggestEditExpanded && (
+                      <p className="text-xs text-gray-600">
+                        Click to expand
+                      </p>
+                    )}
+                  </div>
+                  <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
                 </div>
 
-                {company.lastVerified && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="text-xs text-gray-500">
-                      Contact information last updated {new Date(company.lastVerified).toLocaleDateString()}
+                {isSuggestEditExpanded && (
+                  <>
+                    <div className="space-y-3 mb-4">
+                      <label className="flex items-start gap-2 text-sm text-gray-700">
+                        <input type="checkbox" className="mt-1 rounded" />
+                        <span>Wrong info / Incorrect company</span>
+                      </label>
+                      <label className="flex items-start gap-2 text-sm text-gray-700">
+                        <input type="checkbox" className="mt-1 rounded" />
+                        <span>Missing people</span>
+                      </label>
+                      <label className="flex items-start gap-2 text-sm text-gray-700">
+                        <input type="checkbox" className="mt-1 rounded" />
+                        <span>Incorrect relationships</span>
+                      </label>
                     </div>
-                  </div>
+
+                    <textarea
+                      placeholder="Write your suggestions here..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4 resize-none"
+                      rows={4}
+                    />
+
+                    <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                      Submit
+                    </button>
+
+                    <p className="text-xs text-gray-500 text-center mt-3">
+                      Thanks for helping us improve!
+                    </p>
+                  </>
                 )}
               </div>
 
-              {/* Locations */}
-              {(company.city || company.state) && (
-                <div className="bg-white rounded-lg border border-gray-200 p-5">
-                  <h3 className="font-semibold text-gray-900 mb-4">Locations</h3>
+              {/* Quick Stats */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Quick Stats</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Partnerships</span>
+                    <span className="font-semibold text-gray-900">{company._count.partnerships}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">People</span>
+                    <span className="font-semibold text-gray-900">{company._count.contacts}</span>
+                  </div>
+                  {company._count.subsidiaries > 0 && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">{company.companyType === 'MEDIA_HOLDING_COMPANY' ? 'Agencies' : 'Subsidiaries'}</span>
+                      <span className="font-semibold text-gray-900">{company._count.subsidiaries}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm p-2 rounded hover:bg-gray-50">
-                      <span className="text-gray-900">📍 {[company.city, company.state].filter(Boolean).join(', ')}</span>
-                      <span className="text-gray-500">HQ</span>
+              {/* Contact Info */}
+              {(company.address || company.website || company.linkedinUrl) && (
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Contact Info</h3>
+                  <div className="space-y-3">
+                    {company.address && (
+                      <div>
+                        <div className="text-xs font-medium text-gray-500 mb-1">Address</div>
+                        <div className="text-sm text-gray-900">
+                          {company.address}
+                          {company.zipCode && <><br />{company.zipCode}</>}
+                        </div>
+                      </div>
+                    )}
+
+                    {company.website && (
+                      <div>
+                        <div className="text-xs font-medium text-gray-500 mb-1">Website</div>
+                        <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                          {company.website.replace(/^https?:\/\//, '')} →
+                        </a>
+                      </div>
+                    )}
+
+                    {company.linkedinUrl && (
+                      <div>
+                        <div className="text-xs font-medium text-gray-500 mb-1">LinkedIn</div>
+                        <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                          View Profile →
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {company.lastVerified && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="text-xs text-gray-500">
+                        Contact information last updated {new Date(company.lastVerified).toLocaleDateString()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Top Locations */}
+              {(company.city || company.state) && (
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Top Locations</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-gray-400" />
+                        <span className="text-gray-900">{[company.city, company.state].filter(Boolean).join(', ')}</span>
+                      </div>
+                      <span className="text-gray-600">HQ</span>
                     </div>
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Close 3-column grid */}
           </div>
         </div>
       </div>
