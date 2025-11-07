@@ -557,7 +557,7 @@ export default function CompanyDetailPage() {
                                   <h3 className="font-semibold text-gray-900 mb-2">{role}</h3>
                                   <div className="flex items-center gap-2 mb-2">
                                     <div className="flex -space-x-2">
-                                      {contacts.slice(0, 3).map((contact, idx) => (
+                                      {contacts.filter(c => c.name).slice(0, 3).map((contact, idx) => (
                                         <div
                                           key={contact.id}
                                           className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium text-white ${
@@ -567,13 +567,13 @@ export default function CompanyDetailPage() {
                                           }`}
                                           title={contact.name}
                                         >
-                                          {contact.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                          {(contact.name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2)}
                                         </div>
                                       ))}
                                     </div>
                                     <span className="text-sm text-gray-600">
-                                      {contacts.slice(0, 2).map(c => c.name.split(' ')[0]).join(', ')}
-                                      {contacts.length > 2 && ` +${contacts.length - 2} more`}
+                                      {contacts.filter(c => c.name).slice(0, 2).map(c => c.name.split(' ')[0]).join(', ')}
+                                      {contacts.filter(c => c.name).length > 2 && ` +${contacts.filter(c => c.name).length - 2} more`}
                                     </span>
                                   </div>
                                 </div>
