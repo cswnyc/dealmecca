@@ -692,21 +692,9 @@ export default function CompanyDetailPage() {
                       <nav className="-mb-px flex gap-8">
                         {[
                           { id: 'overview', label: 'Overview', count: null },
-                          {
-                            id: 'team',
-                            label: 'Teams',
-                            count: (() => {
-                              const roleGroups = company.contacts.reduce((acc, contact) => {
-                                const role = contact.title || contact.department || 'Other';
-                                if (!acc[role]) acc[role] = [];
-                                acc[role].push(contact);
-                                return acc;
-                              }, {} as Record<string, typeof company.contacts>);
-                              return Object.keys(roleGroups).length;
-                            })()
-                          },
-                          { id: 'partnerships', label: 'Partnerships', count: company._count.partnerships },
-                          { id: 'relationships', label: 'Relationships', count: company.partnerships.length },
+                          { id: 'people', label: 'People', count: company._count.contacts },
+                          { id: 'teams', label: 'Teams', count: company._count.partnerships },
+                          { id: 'partnerships', label: 'Partnerships', count: 0 },
                           ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Subsidiaries', count: company._count.subsidiaries }] : []),
                           { id: 'activity', label: 'Activity', count: null }
                         ].map((tab) => (
@@ -738,10 +726,10 @@ export default function CompanyDetailPage() {
                         </div>
                       )}
 
-                      {/* Team Tab - Reusing existing team content */}
-                      {activeTab === 'team' && (
+                      {/* People Tab */}
+                      {activeTab === 'people' && (
                         <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Team Members ({company._count.contacts})</h2>
+                          <h2 className="text-lg font-semibold text-gray-900 mb-4">People ({company._count.contacts})</h2>
                           {company.contacts.length === 0 ? (
                             <div className="text-center py-12">
                               <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -787,14 +775,14 @@ export default function CompanyDetailPage() {
                         </div>
                       )}
 
-                      {/* Partnerships Tab */}
-                      {activeTab === 'partnerships' && (
+                      {/* Teams Tab - Shows agency-client relationships */}
+                      {activeTab === 'teams' && (
                         <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Partnerships</h2>
+                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Teams</h2>
                           {company.partnerships.length === 0 ? (
                             <div className="text-center py-12">
                               <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                              <p className="text-gray-600">No partnerships listed yet</p>
+                              <p className="text-gray-600">No teams listed yet</p>
                             </div>
                           ) : (
                             <div className="space-y-4">
@@ -810,11 +798,15 @@ export default function CompanyDetailPage() {
                         </div>
                       )}
 
-                      {/* Relationships Tab */}
-                      {activeTab === 'relationships' && (
+                      {/* Partnerships Tab - Placeholder for DSP/SSP/AdTech */}
+                      {activeTab === 'partnerships' && (
                         <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Relationship Graph</h2>
-                          <RelationshipGraph companyId={company.id} includeContacts={true} />
+                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Partnerships</h2>
+                          <div className="text-center py-12">
+                            <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600">Partnerships will be available for DSP/SSP, AdTech, and Publishers</p>
+                            <p className="text-sm text-gray-500 mt-2">Coming soon</p>
+                          </div>
                         </div>
                       )}
 

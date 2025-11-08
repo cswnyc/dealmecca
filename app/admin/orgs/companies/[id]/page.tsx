@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Info } from 'lucide-react';
+import { Info, Network } from 'lucide-react';
 import PartnershipModal from '@/components/admin/PartnershipModal';
 
 interface Company {
@@ -218,26 +218,36 @@ export default function CompanyViewPage() {
             Overview
           </button>
           <button
-            onClick={() => setActiveTab('partnerships')}
+            onClick={() => setActiveTab('people')}
+            className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'people'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            People ({company._count.contacts})
+          </button>
+          <button
+            onClick={() => setActiveTab('teams')}
             className={`pb-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
+              activeTab === 'teams'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+            title="Agency-client working relationships"
+          >
+            Teams ({company._count.partnerships})
+            <Info className="w-3 h-3 opacity-50" />
+          </button>
+          <button
+            onClick={() => setActiveTab('partnerships')}
+            className={`pb-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'partnerships'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
-            title="Agency-client working relationships (not ownership)"
           >
-            Partnerships ({company._count.partnerships})
-            <Info className="w-3 h-3 opacity-50" />
-          </button>
-          <button
-            onClick={() => setActiveTab('contacts')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'contacts'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Contacts ({company._count.contacts})
+            Partnerships (0)
           </button>
           {company.subsidiaries.length > 0 && (
             <button
@@ -351,7 +361,7 @@ export default function CompanyViewPage() {
         </div>
       )}
 
-      {activeTab === 'partnerships' && (
+      {activeTab === 'teams' && (
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
@@ -364,7 +374,7 @@ export default function CompanyViewPage() {
                 onClick={() => setShowPartnershipModal(true)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
               >
-                Add Partnership
+                Add Team
               </button>
             </div>
             <p className="text-sm text-gray-600">
@@ -442,7 +452,7 @@ export default function CompanyViewPage() {
         </div>
       )}
 
-      {activeTab === 'contacts' && (
+      {activeTab === 'people' && (
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="p-6 border-b border-gray-200 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Contacts</h2>
@@ -489,6 +499,17 @@ export default function CompanyViewPage() {
                 </div>
               ))
             )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'partnerships' && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Partnerships</h2>
+          <div className="text-center py-12">
+            <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600">Partnerships will be available for DSP/SSP, AdTech, and Publishers</p>
+            <p className="text-sm text-gray-500 mt-2">Coming soon</p>
           </div>
         </div>
       )}
