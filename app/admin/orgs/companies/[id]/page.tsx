@@ -56,10 +56,42 @@ interface Company {
     };
     partnerRole: 'agency' | 'advertiser';
   }>;
+  duties: Array<{
+    id: string;
+    name: string;
+    category: string;
+    description: string | null;
+  }>;
+  teams: Array<{
+    id: string;
+    name: string;
+    type: string;
+    description: string | null;
+    isActive: boolean;
+    clientCompany?: {
+      id: string;
+      name: string;
+      logoUrl: string | null;
+      companyType: string;
+      verified: boolean;
+    } | null;
+    agencyCompany?: {
+      id: string;
+      name: string;
+      logoUrl: string | null;
+      companyType: string;
+      verified: boolean;
+    } | null;
+    _count: {
+      ContactTeam: number;
+      PartnershipTeam: number;
+    };
+  }>;
   _count: {
     contacts: number;
     subsidiaries: number;
     partnerships: number;
+    teams: number;
   };
 }
 
@@ -69,7 +101,7 @@ export default function CompanyViewPage() {
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'partnerships' | 'contacts' | 'subsidiaries'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'partnerships' | 'people' | 'teams' | 'subsidiaries' | 'duties'>('overview');
   const [showPartnershipModal, setShowPartnershipModal] = useState(false);
   const [partnershipSaving, setPartnershipSaving] = useState(false);
   const [partnershipError, setPartnershipError] = useState('');
@@ -209,7 +241,7 @@ export default function CompanyViewPage() {
         <nav className="-mb-px flex gap-8">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'overview'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -219,7 +251,7 @@ export default function CompanyViewPage() {
           </button>
           <button
             onClick={() => setActiveTab('people')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'people'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -229,30 +261,40 @@ export default function CompanyViewPage() {
           </button>
           <button
             onClick={() => setActiveTab('teams')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
+            className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
               activeTab === 'teams'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
-            title="Agency-client working relationships"
+            title="Company teams"
           >
-            Teams ({company._count.partnerships})
+            Teams ({company._count.teams})
             <Info className="w-3 h-3 opacity-50" />
           </button>
           <button
+            onClick={() => setActiveTab('duties')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'duties'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Duties ({company.duties?.length || 0})
+          </button>
+          <button
             onClick={() => setActiveTab('partnerships')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'partnerships'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Partnerships (0)
+            Partnerships ({company._count.partnerships})
           </button>
           {company.subsidiaries.length > 0 && (
             <button
               onClick={() => setActiveTab('subsidiaries')}
-              className={`pb-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
+              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
                 activeTab === 'subsidiaries'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -274,7 +316,7 @@ export default function CompanyViewPage() {
             {/* Description */}
             {company.description && (
               <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">Description</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-2">Description</h2>
                 <p className="text-gray-700 whitespace-pre-wrap">{company.description}</p>
               </div>
             )}
@@ -365,88 +407,73 @@ export default function CompanyViewPage() {
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
-                  ? 'Clients'
-                  : 'Agency Partners'}
-              </h2>
-              <button
-                onClick={() => setShowPartnershipModal(true)}
+              <h2 className="text-lg font-semibold text-gray-900">Teams</h2>
+              <Link
+                href={`/admin/orgs/companies/${company.id}/edit#teams`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
               >
-                Add Team
-              </button>
+                Manage Teams
+              </Link>
             </div>
             <p className="text-sm text-gray-600">
-              {company.companyType === 'AGENCY' || company.companyType === 'MEDIA_HOLDING_COMPANY'
-                ? 'Agency-client working relationships. Track clients this agency works with, services provided, and contract details.'
-                : 'Agency-client working relationships. Track which agencies work with this company and the services they provide.'}
+              Teams within this company. Manage team structure, members, and responsibilities.
             </p>
           </div>
           <div className="divide-y divide-gray-200">
-            {company.partnerships.length === 0 ? (
+            {company.teams.length === 0 ? (
               <div className="p-6 text-center text-gray-500">
-                No partnerships yet
+                No teams yet. <Link href={`/admin/orgs/companies/${company.id}/edit#teams`} className="text-blue-600 hover:text-blue-700">Create a team</Link> to get started.
               </div>
             ) : (
-              company.partnerships.map((partnership) => (
-                <div key={partnership.id} className="p-6 hover:bg-gray-50">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4 flex-1">
-                      {partnership.partner.logoUrl && (
-                        <img
-                          src={partnership.partner.logoUrl}
-                          alt={partnership.partner.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-gray-200"
-                        />
-                      )}
+              company.teams.map((team) => {
+                // Determine which company name to display
+                // If viewing from advertiser perspective, show agency name
+                // If viewing from agency perspective, show client name
+                const displayName = team.agencyCompany?.name || team.clientCompany?.name || team.name;
+                const relationshipLabel = team.agencyCompany ? 'Partner Agency' : team.clientCompany ? 'Agency Client' : null;
+
+                return (
+                  <div key={team.id} className="p-6 hover:bg-gray-50">
+                    <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-gray-900">{partnership.partner.name}</h3>
-                          {partnership.isAOR && (
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                              AOR
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold text-gray-900">{displayName}</h3>
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                            {team.type?.replace(/_/g, ' ')}
+                          </span>
+                          {relationshipLabel && (
+                            <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
+                              {relationshipLabel}
                             </span>
                           )}
-                          {!partnership.isActive && (
+                          {!team.isActive && (
                             <span className="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">
                               Inactive
                             </span>
                           )}
                         </div>
-                        {partnership.partner.industry && (
-                          <p className="text-sm text-gray-600 mb-2">{partnership.partner.industry}</p>
-                        )}
-                        {partnership.services && (
-                          <p className="text-sm text-gray-700 mb-2">{partnership.services}</p>
+                        {team.description && (
+                          <p className="text-sm text-gray-600 mb-2">{team.description}</p>
                         )}
                         <div className="flex gap-4 text-xs text-gray-500">
-                          {partnership.startDate && (
-                            <span>Started: {new Date(partnership.startDate).toLocaleDateString()}</span>
-                          )}
-                          {partnership.endDate && (
-                            <span>Ended: {new Date(partnership.endDate).toLocaleDateString()}</span>
+                          <span>{team._count.ContactTeam} member{team._count.ContactTeam !== 1 ? 's' : ''}</span>
+                          {team._count.PartnershipTeam > 0 && (
+                            <span>{team._count.PartnershipTeam} client{team._count.PartnershipTeam !== 1 ? 's' : ''}</span>
                           )}
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleDeletePartnership(partnership.id)}
-                        className="text-red-600 hover:text-red-700 text-sm font-medium px-3 py-1 rounded border border-red-300 hover:bg-red-50 transition-colors"
-                      >
-                        Delete
-                      </button>
-                      <Link
-                        href={`/admin/orgs/companies/${partnership.partner.id}`}
-                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                      >
-                        View →
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/admin/orgs/companies/${company.id}/edit#teams`}
+                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                        >
+                          Edit →
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -498,6 +525,55 @@ export default function CompanyViewPage() {
                   </div>
                 </div>
               ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'duties' && (
+        <div className="bg-white rounded-lg border border-gray-200">
+          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Duties</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Manage duties for this company. Duties define the services and capabilities this company provides.
+              </p>
+            </div>
+            <Link
+              href={`/admin/orgs/companies/${company.id}/edit`}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+            >
+              Manage Duties
+            </Link>
+          </div>
+          <div className="p-6">
+            {!company.duties || company.duties.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 mb-4">No duties assigned yet</p>
+                <Link
+                  href={`/admin/orgs/companies/${company.id}/edit`}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  Add duties →
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {company.duties.map((duty) => (
+                  <div
+                    key={duty.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{duty.name}</h4>
+                      <p className="text-xs text-gray-500 mt-1">{duty.category}</p>
+                      {duty.description && (
+                        <p className="text-sm text-gray-600 mt-2">{duty.description}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

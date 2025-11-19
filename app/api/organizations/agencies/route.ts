@@ -73,16 +73,22 @@ export async function GET(request: NextRequest) {
             contacts: {
               where: { isActive: true }
             },
-            CompanyPartnership_agencyIdToCompany: {
-              where: { isActive: true }
+            Team: {
+              where: {
+                isActive: true,
+                type: 'ADVERTISER_TEAM'
+              }
             }
           }
         },
-        CompanyPartnership_agencyIdToCompany: {
-          where: { isActive: true },
+        Team: {
+          where: {
+            isActive: true,
+            type: 'ADVERTISER_TEAM'
+          },
           take: 10,
           select: {
-            advertiser: {
+            clientCompany: {
               select: {
                 id: true,
                 name: true,
@@ -93,7 +99,7 @@ export async function GET(request: NextRequest) {
             }
           },
           orderBy: {
-            startDate: 'desc'
+            createdAt: 'desc'
           }
         }
       },
@@ -157,13 +163,15 @@ export async function GET(request: NextRequest) {
         logoUrl: agency.logoUrl || undefined,
         teamCount: agency._count.contacts || 0,
         lastActivity,
-        clients: agency.CompanyPartnership_agencyIdToCompany.map(partnership => ({
-          id: partnership.advertiser.id,
-          name: partnership.advertiser.name,
-          industry: partnership.advertiser.industry || '',
-          logoUrl: partnership.advertiser.logoUrl || undefined,
-          verified: partnership.advertiser.verified
-        }))
+        clients: agency.Team
+          .filter(team => team.clientCompany) // Filter out teams without clients
+          .map(team => ({
+            id: team.clientCompany!.id,
+            name: team.clientCompany!.name,
+            industry: team.clientCompany!.industry || '',
+            logoUrl: team.clientCompany!.logoUrl || undefined,
+            verified: team.clientCompany!.verified
+          }))
       };
     });
 

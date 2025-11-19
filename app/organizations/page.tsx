@@ -1180,27 +1180,35 @@ export default function OrganizationsPage() {
                                 </div>
                                 {/* Client/Advertiser Pills */}
                                 <div className="mt-2 mb-1">
-                                  <div className="flex flex-wrap gap-1">
+                                  <div className="flex flex-wrap items-center gap-2">
                                     {agency.clients?.slice(0, expandedCompanies.has(agency.id) ? undefined : 3).map((client, index) => (
-                                      <span
-                                        key={index}
-                                        className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${INDUSTRY_COLORS[client.industry] || 'bg-gray-50 text-gray-700'}`}
-                                      >
-                                        <SearchHighlight
-                                          text={client.name}
-                                          searchTerm={searchQuery}
-                                          highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-medium"
+                                      <div key={index} className="flex items-center gap-1">
+                                        <CompanyLogo
+                                          logoUrl={client.logoUrl}
+                                          companyName={client.name}
+                                          size="sm"
+                                          className="rounded-full"
                                         />
-                                      </span>
+                                        <span className="text-sm font-medium text-gray-900">
+                                          <SearchHighlight
+                                            text={client.name}
+                                            searchTerm={searchQuery}
+                                            highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-medium"
+                                          />
+                                        </span>
+                                        {index < (expandedCompanies.has(agency.id) ? agency.clients.length - 1 : Math.min(2, agency.clients.length - 1)) && (
+                                          <span className="text-gray-400">,</span>
+                                        )}
+                                      </div>
                                     ))}
                                     {agency.clients && agency.clients.length > 3 && (
                                       <button
                                         onClick={() => toggleCompanyExpansion(agency.id)}
-                                        className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                                        className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
                                       >
                                         {expandedCompanies.has(agency.id)
                                           ? 'Show less'
-                                          : `+${agency.clients.length - 3} more clients`
+                                          : `+${agency.clients.length - 3} teams`
                                         }
                                       </button>
                                     )}
@@ -1337,7 +1345,7 @@ export default function OrganizationsPage() {
                                   <div className="mt-2">
                                     <p className="text-xs font-medium text-gray-500 mb-1">Agency Partners:</p>
                                     <div className="flex flex-wrap gap-1">
-                                      {advertiser.agencies.slice(0, 3).map((agency, index) => (
+                                      {advertiser.agencies.slice(0, expandedCompanies.has(advertiser.id) ? undefined : 3).map((agency, index) => (
                                         <span
                                           key={index}
                                           className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
@@ -1347,9 +1355,15 @@ export default function OrganizationsPage() {
                                         </span>
                                       ))}
                                       {advertiser.agencies.length > 3 && (
-                                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
-                                          +{advertiser.agencies.length - 3} more
-                                        </span>
+                                        <button
+                                          onClick={() => toggleCompanyExpansion(advertiser.id)}
+                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                                        >
+                                          {expandedCompanies.has(advertiser.id)
+                                            ? 'Show less'
+                                            : `+${advertiser.agencies.length - 3} more`
+                                          }
+                                        </button>
                                       )}
                                     </div>
                                   </div>

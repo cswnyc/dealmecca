@@ -69,16 +69,22 @@ export async function GET(request: NextRequest) {
             contacts: {
               where: { isActive: true }
             },
-            CompanyPartnership_advertiserIdToCompany: {
-              where: { isActive: true }
+            clientTeams: {
+              where: {
+                isActive: true,
+                type: 'ADVERTISER_TEAM'
+              }
             }
           }
         },
-        CompanyPartnership_advertiserIdToCompany: {
-          where: { isActive: true },
+        clientTeams: {
+          where: {
+            isActive: true,
+            type: 'ADVERTISER_TEAM'
+          },
           take: 10,
           select: {
-            agency: {
+            company: {
               select: {
                 id: true,
                 name: true,
@@ -87,10 +93,10 @@ export async function GET(request: NextRequest) {
                 verified: true
               }
             },
-            isAOR: true
+            description: true
           },
           orderBy: {
-            startDate: 'desc'
+            updatedAt: 'desc'
           }
         }
       },
@@ -132,13 +138,13 @@ export async function GET(request: NextRequest) {
         logoUrl: advertiser.logoUrl || undefined,
         teamCount: advertiser._count.contacts || 0,
         lastActivity,
-        agencies: advertiser.CompanyPartnership_advertiserIdToCompany.map(partnership => ({
-          id: partnership.agency.id,
-          name: partnership.agency.name,
-          companyType: partnership.agency.companyType,
-          logoUrl: partnership.agency.logoUrl || undefined,
-          verified: partnership.agency.verified,
-          isAOR: partnership.isAOR
+        agencies: advertiser.clientTeams.map(team => ({
+          id: team.company.id,
+          name: team.company.name,
+          companyType: team.company.companyType,
+          logoUrl: team.company.logoUrl || undefined,
+          verified: team.company.verified,
+          isAOR: team.description?.includes('Agency of Record') || team.description?.includes('AOR') || false
         }))
       };
     });
