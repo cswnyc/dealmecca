@@ -244,7 +244,8 @@ export async function POST(request: NextRequest) {
       revenue,
       parentCompanyId,
       logoUrl,
-      verified
+      verified,
+      duties
     } = body;
 
     if (!name || !companyType) {
@@ -269,9 +270,11 @@ export async function POST(request: NextRequest) {
       counter++;
     }
 
+    const companyId = createId();
+
     const company = await prisma.Company.create({
       data: {
-        id: createId(),
+        id: companyId,
         name,
         slug,
         website,
@@ -312,6 +315,30 @@ export async function POST(request: NextRequest) {
         }
       }
     });
+
+    // Handle duties if provided
+    if (duties !== undefined) {
+      let dutyNames: string[] = [];
+      if (typeof duties === 'string' && duties.trim()) {
+        dutyNames = duties.split(',').map((d: string) => d.trim()).filter((d: string) => d);
+      }
+
+      if (dutyNames.length > 0) {
+        const dutiesToAdd = await prisma.duty.findMany({
+          where: { name: { in: dutyNames } },
+          select: { id: true }
+        });
+
+        if (dutiesToAdd.length > 0) {
+          await prisma.companyDuty.createMany({
+            data: dutiesToAdd.map(duty => ({
+              companyId: companyId,
+              dutyId: duty.id
+            }))
+          });
+        }
+      }
+    }
 
     return NextResponse.json(company, { status: 201 });
 

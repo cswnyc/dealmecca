@@ -118,22 +118,25 @@ model CompanyMention {
 }
 
 model CompanyPartnership {
-  id               String          @id
-  agencyId         String
-  advertiserId     String
-  relationshipType PartnershipType @default(AGENCY_CLIENT)
-  isAOR            Boolean         @default(false)
-  services         String?
-  startDate        DateTime?
-  endDate          DateTime?
-  isActive         Boolean         @default(true)
-  notes            String?
-  contractValue    Float?
-  primaryContact   String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime
-  advertiser       Company         @relation("CompanyPartnership_advertiserIdToCompany", fields: [advertiserId], references: [id], onDelete: Cascade)
-  agency           Company         @relation("CompanyPartnership_agencyIdToCompany", fields: [agencyId], references: [id], onDelete: Cascade)
+  id                  String                @id
+  agencyId            String
+  advertiserId        String
+  relationshipType    PartnershipType       @default(AGENCY_CLIENT)
+  isAOR               Boolean               @default(false)
+  services            String?
+  startDate           DateTime?
+  endDate             DateTime?
+  isActive            Boolean               @default(true)
+  notes               String?
+  contractValue       Float?
+  primaryContact      String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  advertiser          Company               @relation("CompanyPartnership_advertiserIdToCompany", fields: [advertiserId], references: [id], onDelete: Cascade)
+  agency              Company               @relation("CompanyPartnership_agencyIdToCompany", fields: [agencyId], references: [id], onDelete: Cascade)
+  PartnershipContact  PartnershipContact[]
+  PartnershipDuty     PartnershipDuty[]
+  PartnershipTeam     PartnershipTeam[]
 
   @@unique([agencyId, advertiserId])
   @@index([advertiserId])
@@ -142,6 +145,24 @@ model CompanyPartnership {
   @@index([isActive])
   @@index([relationshipType])
   @@index([startDate])
+}
+
+model PartnershipContact {
+  id              String             @id @default(cuid())
+  partnershipId   String
+  contactId       String
+  role            String?
+  responsibilities String?
+  isPrimary       Boolean            @default(false)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  partnership     CompanyPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+  contact         Contact            @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([partnershipId, contactId])
+  @@index([partnershipId])
+  @@index([contactId])
+  @@index([isPrimary])
 }
 
 model ContactInteraction {
@@ -1005,6 +1026,9 @@ model Company {
   subsidiaries                                                Company[]                @relation("CompanyHierarchy")
   contacts                                                    Contact[]
   introduction_requests                                       introduction_requests[]
+  CompanyDuty                                                 CompanyDuty[]
+  Team                                                        Team[]
+  clientTeams                                                 Team[]                   @relation("ClientTeams")
 
   @@map("companies")
   @@index([city, state])
@@ -1034,6 +1058,7 @@ model Contact {
   companyId             String
   territories           String?
   accounts              String?
+  duties                String?
   budgetRange           BudgetRange?
   name                  String?
   isDecisionMaker       Boolean                 @default(false)
@@ -1050,10 +1075,13 @@ model Contact {
   ContactNote           ContactNote[]
   ContactStatus         ContactStatus?
   EventAttendee         EventAttendee[]
+  PartnershipContact    PartnershipContact[]
   PostContactMention    PostContactMention[]
   TopicContact          TopicContact[]
   UserConnection        UserConnection[]
   ViewedContact         ViewedContact[]
+  ContactDuty           ContactDuty[]
+  ContactTeam           ContactTeam[]
   company               Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
   introduction_requests introduction_requests[]
 
@@ -1272,6 +1300,11 @@ enum Department {
   MARKETING
   PRODUCT
   DATA_SCIENCE
+  DISPLAY
+  DOOH
+  OOH
+  PR
+  INFLUENCER
 }
 
 enum EmployeeRange {
@@ -1596,4 +1629,155 @@ enum WaitlistStatus {
   INVITED
   REGISTERED
   DECLINED
+}
+
+enum DutyCategory {
+  ROLE
+  MEDIA_TYPE
+  BRAND
+  BUSINESS_LINE
+  GOAL
+  AUDIENCE
+  GEOGRAPHY
+}
+
+model Duty {
+  id              String         @id @default(cuid())
+  name            String
+  category        DutyCategory
+  description     String?
+  isGlobal        Boolean        @default(true)
+  createdById     String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  CompanyDuty     CompanyDuty[]
+  PartnershipDuty PartnershipDuty[]
+  ContactDuty     ContactDuty[]
+  TeamDuty        TeamDuty[]
+
+  @@unique([name, category])
+  @@index([category])
+  @@index([isGlobal])
+}
+
+model CompanyDuty {
+  id          String   @id @default(cuid())
+  companyId   String
+  dutyId      String
+  createdAt   DateTime @default(now())
+
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  duty        Duty     @relation(fields: [dutyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, dutyId])
+  @@index([companyId])
+  @@index([dutyId])
+}
+
+model PartnershipDuty {
+  id             String             @id @default(cuid())
+  partnershipId  String
+  dutyId         String
+  createdAt      DateTime           @default(now())
+
+  partnership    CompanyPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+  duty           Duty               @relation(fields: [dutyId], references: [id], onDelete: Cascade)
+
+  @@unique([partnershipId, dutyId])
+  @@index([partnershipId])
+  @@index([dutyId])
+}
+
+model ContactDuty {
+  id          String   @id @default(cuid())
+  contactId   String
+  dutyId      String
+  createdAt   DateTime @default(now())
+
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  duty        Duty     @relation(fields: [dutyId], references: [id], onDelete: Cascade)
+
+  @@unique([contactId, dutyId])
+  @@index([contactId])
+  @@index([dutyId])
+}
+
+enum TeamType {
+  AGENCY_TEAM
+  ADVERTISER_TEAM
+  INTERNAL_TEAM
+  PROJECT_TEAM
+}
+
+model Team {
+  id              String         @id @default(cuid())
+  name            String
+  companyId       String
+  clientCompanyId String?        // For ADVERTISER_TEAM types, reference to the client company
+  description     String?
+  type            TeamType       @default(INTERNAL_TEAM)
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  company         Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  clientCompany   Company?       @relation("ClientTeams", fields: [clientCompanyId], references: [id], onDelete: SetNull)
+  ContactTeam     ContactTeam[]
+  PartnershipTeam PartnershipTeam[]
+  TeamDuty        TeamDuty[]
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@index([clientCompanyId])
+  @@index([type])
+  @@index([isActive])
+}
+
+model ContactTeam {
+  id          String   @id @default(cuid())
+  contactId   String
+  teamId      String
+  role        String?
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([contactId, teamId])
+  @@index([contactId])
+  @@index([teamId])
+  @@index([isPrimary])
+}
+
+model PartnershipTeam {
+  id             String             @id @default(cuid())
+  partnershipId  String
+  teamId         String
+  side           String             // 'AGENCY' or 'ADVERTISER'
+  createdAt      DateTime           @default(now())
+
+  partnership    CompanyPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+  team           Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([partnershipId, teamId])
+  @@index([partnershipId])
+  @@index([teamId])
+  @@index([side])
+}
+
+model TeamDuty {
+  id          String   @id @default(cuid())
+  teamId      String
+  dutyId      String
+  createdAt   DateTime @default(now())
+
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  duty        Duty     @relation(fields: [dutyId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, dutyId])
+  @@index([teamId])
+  @@index([dutyId])
 }

@@ -16,13 +16,6 @@ import {
   Lightbulb
 } from 'lucide-react';
 
-interface Contact {
-  id: string;
-  city?: string;
-  state?: string;
-  country?: string;
-}
-
 interface Subsidiary {
   id: string;
   name: string;
@@ -36,7 +29,6 @@ interface Subsidiary {
   _count?: {
     contacts: number;
   };
-  contacts?: Contact[];
 }
 
 interface HoldingCompanyViewProps {
@@ -69,31 +61,13 @@ export function HoldingCompanyView({ company }: HoldingCompanyViewProps) {
     setExpandedAgencies(newExpanded);
   };
 
-  // Group contacts by location for an agency
+  // Get location info for an agency
+  // For now, each agency is in one location (its city/state)
+  // This function returns empty array since we don't have multi-location agencies yet
   const getAgencyLocations = (agency: Subsidiary) => {
-    if (!agency.contacts || agency.contacts.length === 0) return [];
-
-    const locationMap = new Map<string, { city: string; state: string; count: number }>();
-
-    agency.contacts.forEach(contact => {
-      if (contact.city && contact.state) {
-        const key = `${contact.city}, ${contact.state}`;
-        const existing = locationMap.get(key);
-        if (existing) {
-          existing.count++;
-        } else {
-          locationMap.set(key, {
-            city: contact.city,
-            state: contact.state,
-            count: 1
-          });
-        }
-      }
-    });
-
-    return Array.from(locationMap.entries())
-      .map(([key, value]) => ({ location: key, ...value }))
-      .sort((a, b) => b.count - a.count);
+    // Future: When agencies have multiple office locations,
+    // we can group by location and show them here
+    return [];
   };
 
   // Group subsidiaries by location and calculate stats

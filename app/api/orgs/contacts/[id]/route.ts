@@ -58,6 +58,31 @@ export async function GET(
             }
           }
         },
+        ContactDuty: {
+          include: {
+            duty: true
+          }
+        },
+        ContactTeam: {
+          include: {
+            team: {
+              include: {
+                company: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logoUrl: true,
+                    companyType: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: [
+            { isPrimary: 'desc' },
+            { createdAt: 'desc' }
+          ]
+        },
         ContactInteraction: {
           orderBy: { createdAt: 'desc' },
           take: 5, // Recent interactions
@@ -161,6 +186,16 @@ export async function GET(
         CompanyPartnership_agencyIdToCompany: undefined,
         CompanyPartnership_advertiserIdToCompany: undefined
       },
+      duties: contact.ContactDuty?.map(cd => cd.duty) || [],
+      teams: contact.ContactTeam?.map(ct => ({
+        id: ct.team.id,
+        name: ct.team.name,
+        teamType: ct.team.type,
+        description: ct.team.description,
+        isPrimary: ct.isPrimary,
+        role: ct.role,
+        company: ct.team.company
+      })) || [],
       partnerships,
       recentInteractions: contact.ContactInteraction || [],
       recentNotes: contact.ContactNote || [],
@@ -169,7 +204,8 @@ export async function GET(
         interactions: contact._count.ContactInteraction,
         notes: contact._count.ContactNote,
         connections: contact._count.UserConnection,
-        partnerships: partnerships.length
+        partnerships: partnerships.length,
+        teams: contact.ContactTeam?.length || 0
       }
     };
 
@@ -222,7 +258,8 @@ export async function PUT(
       isDecisionMaker,
       verified,
       isActive,
-      preferredContact
+      preferredContact,
+      duties
     } = body;
 
     // If names are being updated, generate new fullName
@@ -308,6 +345,49 @@ export async function PUT(
         }
       }
     });
+
+    // Handle duties update if provided
+    if (duties !== undefined) {
+      // Parse duties - it comes as comma-separated string from ContactForm
+      let dutyNames: string[] = [];
+      if (typeof duties === 'string' && duties.trim()) {
+        dutyNames = duties.split(',').map(d => d.trim()).filter(d => d);
+      }
+
+      if (dutyNames.length > 0) {
+        // Get duty IDs from names
+        const dutiesToAdd = await prisma.duty.findMany({
+          where: {
+            name: {
+              in: dutyNames
+            }
+          },
+          select: {
+            id: true
+          }
+        });
+
+        // Delete existing ContactDuty relationships
+        await prisma.contactDuty.deleteMany({
+          where: { contactId: id }
+        });
+
+        // Create new ContactDuty relationships
+        if (dutiesToAdd.length > 0) {
+          await prisma.contactDuty.createMany({
+            data: dutiesToAdd.map(duty => ({
+              contactId: id,
+              dutyId: duty.id
+            }))
+          });
+        }
+      } else {
+        // If duties is empty, delete all existing duties
+        await prisma.contactDuty.deleteMany({
+          where: { contactId: id }
+        });
+      }
+    }
 
     return NextResponse.json(updatedContact);
 

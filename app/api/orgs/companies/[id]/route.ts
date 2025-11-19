@@ -40,17 +40,6 @@ export async function GET(
                   }
                 }
               }
-            },
-            contacts: {
-              where: {
-                isActive: true
-              },
-              select: {
-                id: true,
-                city: true,
-                state: true,
-                country: true
-              }
             }
           },
           orderBy: {

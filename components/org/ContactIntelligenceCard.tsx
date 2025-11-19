@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { EmailCopy } from '@/components/ui/EmailCopy';
 
 interface ContactIntelligence {
   id: string;
@@ -229,9 +230,7 @@ export function ContactIntelligenceCard({
           {contact.email && (
             <div className="flex items-center space-x-2 text-sm">
               <Mail className="w-4 h-4 text-gray-500" />
-              <a href={`mailto:${contact.email}`} className="text-blue-600 hover:underline">
-                {contact.email}
-              </a>
+              <EmailCopy email={contact.email} variant="inline" />
             </div>
           )}
           {contact.phone && (

@@ -1,0 +1,65 @@
+COMPLETE LIST OF 56 AGENCIES NOT FOUND IN DATABASE
+(from SellerCrowd batches 1 & 2)
+
+1. 1000heads LA
+2. Aisle Rocket Chicago
+3. April Six SF
+4. ARGONAUT
+5. Arteaga & Arteaga
+6. Awin Global
+7. Bully Pulpit Interactive SF
+8. Colour Toronto
+9. Courage
+10. Crosby Marketing Annapolis
+11. Deep Focus NY
+12. DNA&STONE
+13. Duffy & Shanley
+14. Edelman LA
+15. Edelman San Diego
+16. Elite Media Team
+17. Evergreen Trading NY
+18. Four Agency Worldwide
+19. Gen3 Marketing
+20. GroupeConnect NY
+21. HAVAS Health & You NY
+22. Highdive
+23. Inspiria Outdoor Advertising
+24. Intersect Media
+25. Kvell Collective
+26. Laundry Service LA
+27. M&C Saatchi Performance LA
+28. Marina Maher Communications
+29. Mars United Commerce Minneapolis
+30. Mother LA
+31. Motive Denver
+32. Pangolin
+33. pep promotions
+34. PMG Cleveland
+35. Protiviti Digital SF
+36. Quigley Simpson NY
+37. Red
+38. Rhea + Kaiser Chicago
+39. Rise
+40. Rodgers Townsend
+41. Solve(d)
+42. SSCG Media Group
+43. Stella Rising CT
+44. SwellShark
+45. Swift Agency
+46. TBWA\Chiat\Day LA
+47. TBWA\Chiat\Day NY
+48. VaynerMedia LA
+49. VaynerMedia NY
+50. VaynerX NY
+51. VML Luxembourg
+52. Wasserman LA
+53. We Are Social NY
+54. Wilkins Media Minneapolis
+55. Zeno Group NY
+56. ​IPG Mediabrands
+
+NOTES:
+- These are mostly independent agencies, creative shops, or PR firms
+- Some are international offices (e.g., VML Luxembourg)
+- Some may be defunct or merged with other agencies
+- Many are specialized agencies (e.g., SwellShark for gaming, Inspiria Outdoor for OOH)

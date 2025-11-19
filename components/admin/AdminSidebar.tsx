@@ -20,6 +20,7 @@ import {
   Home,
   LogOut,
   BarChart3,
+  Briefcase,
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut as firebaseSignOut } from 'firebase/auth';
@@ -69,6 +70,16 @@ const navigationItems: NavItem[] = [
       {
         title: 'Create Contact',
         href: '/admin/orgs/contacts/create',
+        icon: Users,
+      },
+      {
+        title: 'Duties',
+        href: '/admin/duties',
+        icon: Briefcase,
+      },
+      {
+        title: 'Teams',
+        href: '/admin/orgs/teams',
         icon: Users,
       },
     ],
@@ -272,7 +283,7 @@ export function AdminSidebar() {
         </Link>
         <div className="px-3 py-2 bg-gray-50 rounded-lg">
           <p className="text-xs text-gray-600">
-            <span className="font-semibold">21</span> admin pages
+            <span className="font-semibold">22</span> admin pages
           </p>
           <p className="text-xs text-gray-500 mt-1">
             Phase 6 Consolidation Complete

@@ -70,7 +70,12 @@ const departments = [
   { value: 'SALES', label: 'Sales', icon: '💼' },
   { value: 'MARKETING', label: 'Marketing', icon: '📢' },
   { value: 'PRODUCT', label: 'Product', icon: '📦' },
-  { value: 'DATA_SCIENCE', label: 'Data Science', icon: '🔬' }
+  { value: 'DATA_SCIENCE', label: 'Data Science', icon: '🔬' },
+  { value: 'DISPLAY', label: 'Display', icon: '🖥️' },
+  { value: 'DOOH', label: 'DOOH', icon: '📺' },
+  { value: 'OOH', label: 'OOH', icon: '🚌' },
+  { value: 'PR', label: 'PR', icon: '📰' },
+  { value: 'INFLUENCER', label: 'Influencer', icon: '⭐' }
 ];
 
 const seniorityLevels = [
@@ -116,6 +121,7 @@ interface Contact {
   personalEmail?: string;
   department?: string;
   seniority: string;
+  duties?: string;
   isDecisionMaker: boolean;
   preferredContact?: string;
   verified: boolean;
@@ -144,6 +150,7 @@ interface FormData {
   companyId: string;
   department: string;
   seniority: string;
+  duties: string;
   isDecisionMaker: boolean;
   preferredContact: string;
   verified: boolean;
@@ -165,6 +172,12 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isDirty, setIsDirty] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(contact?.logoUrl || '');
+  const [availableDuties, setAvailableDuties] = useState<any[]>([]);
+  const [selectedDuties, setSelectedDuties] = useState<string[]>([]);
+  const [showDutyPicker, setShowDutyPicker] = useState(false);
+  const [availableTeams, setAvailableTeams] = useState<any[]>([]);
+  const [selectedTeams, setSelectedTeams] = useState<{teamId: string; role?: string; isPrimary: boolean}[]>([]);
+  const [showTeamPicker, setShowTeamPicker] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     firstName: contact?.firstName || '',
@@ -177,6 +190,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
     companyId: contact?.company?.id || '',
     department: contact?.department || '',
     seniority: contact?.seniority || '',
+    duties: contact?.duties || '',
     isDecisionMaker: contact?.isDecisionMaker || false,
     preferredContact: contact?.preferredContact || '',
     verified: contact?.verified || false,
@@ -185,7 +199,39 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
 
   useEffect(() => {
     fetchCompanies();
+    fetchDuties();
+    if (formData.companyId) {
+      fetchTeams(formData.companyId);
+    }
   }, []);
+
+  // Fetch teams when company changes
+  useEffect(() => {
+    if (formData.companyId) {
+      fetchTeams(formData.companyId);
+    } else {
+      setAvailableTeams([]);
+    }
+  }, [formData.companyId]);
+
+  // Initialize selected duties from contact's duties
+  useEffect(() => {
+    if (contact?.duties && availableDuties.length > 0) {
+      // Handle both array format (new) and string format (legacy)
+      if (Array.isArray(contact.duties)) {
+        // New format: array of Duty objects
+        const matchedIds = contact.duties.map(d => d.id);
+        setSelectedDuties(matchedIds);
+      } else if (typeof contact.duties === 'string') {
+        // Legacy format: comma-separated string
+        const dutyNames = contact.duties.split(',').map(d => d.trim());
+        const matchedIds = availableDuties
+          .filter(d => dutyNames.includes(d.name))
+          .map(d => d.id);
+        setSelectedDuties(matchedIds);
+      }
+    }
+  }, [contact?.duties, availableDuties]);
 
   useEffect(() => {
     // Filter companies based on search term
@@ -203,7 +249,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/orgs/companies?limit=1000'); // Get more companies for search
+      const response = await fetch('/api/orgs/companies?limit=10000'); // Get more companies for search
       const data = await response.json();
       setCompanies(data.companies || []);
     } catch (error) {
@@ -211,6 +257,64 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchDuties = async () => {
+    try {
+      const response = await fetch('/api/admin/duties');
+      const data = await response.json();
+      setAvailableDuties(data || []);
+    } catch (error) {
+      console.error('Failed to fetch duties:', error);
+    }
+  };
+
+  const fetchTeams = async (companyId: string) => {
+    try {
+      const response = await fetch(`/api/orgs/teams?companyId=${companyId}`);
+      const data = await response.json();
+      setAvailableTeams(data || []);
+    } catch (error) {
+      console.error('Failed to fetch teams:', error);
+    }
+  };
+
+  const handleDutyToggle = (dutyId: string) => {
+    setSelectedDuties(prev => {
+      if (prev.includes(dutyId)) {
+        return prev.filter(id => id !== dutyId);
+      } else {
+        return [...prev, dutyId];
+      }
+    });
+    setIsDirty(true);
+  };
+
+  const handleTeamToggle = (teamId: string) => {
+    setSelectedTeams(prev => {
+      const exists = prev.find(t => t.teamId === teamId);
+      if (exists) {
+        return prev.filter(t => t.teamId !== teamId);
+      } else {
+        return [...prev, { teamId, isPrimary: prev.length === 0 }];
+      }
+    });
+    setIsDirty(true);
+  };
+
+  const handleSetPrimaryTeam = (teamId: string) => {
+    setSelectedTeams(prev =>
+      prev.map(t => ({ ...t, isPrimary: t.teamId === teamId }))
+    );
+    setIsDirty(true);
+  };
+
+  // Convert selected duties to comma-separated string
+  const getSelectedDutiesString = () => {
+    return selectedDuties
+      .map(id => availableDuties.find(d => d.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
   };
 
   const validateField = useCallback((field: string, value: any): string => {
@@ -300,7 +404,8 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
       if (onSave) {
         await onSave({
           ...formData,
-          fullName: `${formData.firstName} ${formData.lastName}`.trim()
+          fullName: `${formData.firstName} ${formData.lastName}`.trim(),
+          duties: getSelectedDutiesString()
         });
       } else {
         // Default save logic
@@ -314,7 +419,9 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
           department: formData.department || null,
           preferredContact: formData.preferredContact || null,
           // Ensure seniority has a value (required field)
-          seniority: formData.seniority || 'UNKNOWN'
+          seniority: formData.seniority || 'UNKNOWN',
+          // Use selected duties instead of formData.duties
+          duties: getSelectedDutiesString()
         };
 
         console.log('Submitting contact data:', payload);
@@ -338,6 +445,35 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
             errorMessage = response.statusText || errorMessage;
           }
           throw new Error(errorMessage + errorDetails);
+        }
+
+        const savedContact = await response.json();
+        const contactId = savedContact.id || contact?.id;
+
+        // Save teams if any are selected
+        if (selectedTeams.length > 0 && contactId) {
+          // First, clear existing teams (for edit mode)
+          if (mode === 'edit') {
+            // We'll just add the new teams, the API should handle deduplication
+          }
+
+          // Add selected teams
+          for (const selectedTeam of selectedTeams) {
+            try {
+              await fetch(`/api/orgs/contacts/${contactId}/teams`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  teamId: selectedTeam.teamId,
+                  role: selectedTeam.role,
+                  isPrimary: selectedTeam.isPrimary
+                })
+              });
+            } catch (error) {
+              console.error('Error adding team:', error);
+              // Continue with other teams even if one fails
+            }
+          }
         }
 
         router.push('/admin/orgs/contacts');
@@ -805,6 +941,203 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                 )}
               </div>
             </div>
+
+            <div>
+              <Label htmlFor="duties">Duties/Handles</Label>
+              <div className="border border-gray-300 rounded-md p-3 min-h-[80px] bg-white">
+                {/* Selected duties display */}
+                {selectedDuties.length > 0 ? (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {selectedDuties.map((dutyId) => {
+                      const duty = availableDuties.find(d => d.id === dutyId);
+                      if (!duty) return null;
+                      return (
+                        <Badge
+                          key={dutyId}
+                          variant="secondary"
+                          className="flex items-center space-x-1 cursor-pointer hover:bg-gray-200"
+                          onClick={() => handleDutyToggle(dutyId)}
+                        >
+                          <span>{duty.name}</span>
+                          <X className="w-3 h-3" />
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 mb-2">No duties selected</p>
+                )}
+
+                {/* Add duty button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDutyPicker(!showDutyPicker)}
+                  className="w-full"
+                >
+                  {showDutyPicker ? 'Hide' : 'Add'} Duties
+                </Button>
+              </div>
+
+              {/* Duty picker dropdown */}
+              {showDutyPicker && (
+                <Card className="mt-2 max-h-96 overflow-y-auto">
+                  <CardContent className="p-4">
+                    {availableDuties.length === 0 ? (
+                      <p className="text-sm text-gray-500">Loading duties...</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Group duties by category */}
+                        {['ROLE', 'MEDIA_TYPE', 'BRAND', 'BUSINESS_LINE', 'GOAL', 'AUDIENCE', 'GEOGRAPHY'].map((category) => {
+                          const categoryDuties = availableDuties.filter(d => d.category === category);
+                          if (categoryDuties.length === 0) return null;
+
+                          return (
+                            <div key={category}>
+                              <h4 className="text-sm font-semibold text-gray-700 mb-2 border-b pb-1">
+                                {category.replace(/_/g, ' ')}
+                              </h4>
+                              <div className="grid grid-cols-2 gap-2">
+                                {categoryDuties.map((duty) => (
+                                  <div
+                                    key={duty.id}
+                                    onClick={() => handleDutyToggle(duty.id)}
+                                    className={`flex items-center space-x-2 p-2 rounded cursor-pointer transition-colors ${
+                                      selectedDuties.includes(duty.id)
+                                        ? 'bg-blue-100 border border-blue-300'
+                                        : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                    }`}
+                                  >
+                                    <Checkbox
+                                      checked={selectedDuties.includes(duty.id)}
+                                      readOnly
+                                    />
+                                    <div className="flex-1">
+                                      <div className="text-sm font-medium text-gray-900">{duty.name}</div>
+                                      {duty.description && (
+                                        <div className="text-xs text-gray-500">{duty.description}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              <p className="text-xs text-gray-500 mt-1">
+                Select duties and responsibilities this person handles
+              </p>
+            </div>
+
+            {/* Teams */}
+            {formData.companyId && (
+              <div>
+                <Label htmlFor="teams">Teams</Label>
+                <div className="border border-gray-300 rounded-md p-3 min-h-[80px] bg-white">
+                  {/* Selected teams display */}
+                  {selectedTeams.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {selectedTeams.map((selectedTeam) => {
+                        const team = availableTeams.find(t => t.id === selectedTeam.teamId);
+                        if (!team) return null;
+                        return (
+                          <Badge
+                            key={selectedTeam.teamId}
+                            variant="secondary"
+                            className="flex items-center space-x-1"
+                          >
+                            <span>{team.name}</span>
+                            {selectedTeam.isPrimary && (
+                              <span className="text-xs bg-blue-500 text-white px-1 rounded">Primary</span>
+                            )}
+                            <X
+                              className="w-3 h-3 cursor-pointer hover:text-red-600"
+                              onClick={() => handleTeamToggle(selectedTeam.teamId)}
+                            />
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 mb-2">No teams selected</p>
+                  )}
+
+                  {/* Add team button */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowTeamPicker(!showTeamPicker)}
+                    className="w-full"
+                  >
+                    {showTeamPicker ? 'Hide' : 'Add'} Teams
+                  </Button>
+                </div>
+
+                {/* Team picker dropdown */}
+                {showTeamPicker && (
+                  <Card className="mt-2 max-h-96 overflow-y-auto">
+                    <CardContent className="p-4">
+                      {availableTeams.length === 0 ? (
+                        <p className="text-sm text-gray-500">No teams available for this company. Create teams first.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {availableTeams.map((team) => (
+                            <div
+                              key={team.id}
+                              onClick={() => handleTeamToggle(team.id)}
+                              className={`flex items-center justify-between p-3 rounded cursor-pointer transition-colors ${
+                                selectedTeams.find(t => t.teamId === team.id)
+                                  ? 'bg-blue-100 border border-blue-300'
+                                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-3">
+                                <Checkbox
+                                  checked={!!selectedTeams.find(t => t.teamId === team.id)}
+                                  readOnly
+                                />
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{team.name}</div>
+                                  <div className="text-xs text-gray-500">
+                                    {team.type.replace(/_/g, ' ')}
+                                    {team.description && ` • ${team.description}`}
+                                  </div>
+                                </div>
+                              </div>
+                              {selectedTeams.find(t => t.teamId === team.id) && (
+                                <Button
+                                  type="button"
+                                  variant={selectedTeams.find(t => t.teamId === team.id)?.isPrimary ? 'default' : 'outline'}
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSetPrimaryTeam(team.id);
+                                  }}
+                                >
+                                  {selectedTeams.find(t => t.teamId === team.id)?.isPrimary ? 'Primary' : 'Set Primary'}
+                                </Button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                <p className="text-xs text-gray-500 mt-1">
+                  Assign this person to teams within their company
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

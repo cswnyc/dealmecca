@@ -2,53 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import ImageUpload from '@/components/admin/ImageUpload';
-
-interface CompanyFormData {
-  name: string;
-  website: string;
-  description: string;
-  logoUrl: string;
-  companyType: string;
-  industry: string;
-  city: string;
-  state: string;
-  country: string;
-  employeeCount: string;
-  revenue: string;
-  verified: boolean;
-  parentCompanyId: string;
-}
+import CompanyForm from '@/components/admin/CompanyForm';
 
 export default function EditCompanyPage() {
   const params = useParams();
   const router = useRouter();
+  const [company, setCompany] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [companies, setCompanies] = useState<Array<{ id: string; name: string }>>([]);
-
-  const [formData, setFormData] = useState<CompanyFormData>({
-    name: '',
-    website: '',
-    description: '',
-    logoUrl: '',
-    companyType: 'AGENCY',
-    industry: '',
-    city: '',
-    state: '',
-    country: 'US',
-    employeeCount: '',
-    revenue: '',
-    verified: false,
-    parentCompanyId: ''
-  });
 
   useEffect(() => {
     if (params.id) {
       fetchCompany(params.id as string);
-      fetchCompanies();
     }
   }, [params.id]);
 
@@ -62,65 +26,34 @@ export default function EditCompanyPage() {
       }
 
       const data = await response.json();
-      setFormData({
-        name: data.name || '',
-        website: data.website || '',
-        description: data.description || '',
-        logoUrl: data.logoUrl || '',
-        companyType: data.companyType || 'AGENCY',
-        industry: data.industry || '',
-        city: data.city || '',
-        state: data.state || '',
-        country: data.country || 'US',
-        employeeCount: data.employeeCount || '',
-        revenue: data.revenue || '',
-        verified: data.verified || false,
-        parentCompanyId: data.parentCompanyId || ''
-      });
+      setCompany(data);
     } catch (err: any) {
-      setError(err.message);
+      console.error('Error fetching company:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchCompanies = async () => {
-    try {
-      const response = await fetch('/api/orgs/companies?limit=10000');
-      if (response.ok) {
-        const data = await response.json();
-        setCompanies(data.companies || []);
-      }
-    } catch (err) {
-      console.error('Error fetching companies:', err);
+  const handleSave = async (companyData: any) => {
+    const response = await fetch(`/api/orgs/companies/${params.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(companyData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to update company');
     }
+
+    // Redirect back to company view page
+    router.push(`/admin/orgs/companies/${params.id}`);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setError('');
-
-    try {
-      const response = await fetch(`/api/orgs/companies/${params.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update company');
-      }
-
-      // Redirect back to company view page
-      router.push(`/admin/orgs/companies/${params.id}`);
-    } catch (err: any) {
-      setError(err.message);
-      setSaving(false);
-    }
+  const handleCancel = () => {
+    router.push(`/admin/orgs/companies/${params.id}`);
   };
 
   if (loading) {
@@ -135,277 +68,11 @@ export default function EditCompanyPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Link href={`/admin/orgs/companies/${params.id}`} className="text-blue-600 hover:text-blue-700">
-          ← Back to Company
-        </Link>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Edit Company</h1>
-
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Info */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Type <span className="text-red-500">*</span>
-              </label>
-              <select
-                required
-                value={formData.companyType}
-                onChange={(e) => setFormData({ ...formData, companyType: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="AGENCY">Agency</option>
-                <option value="MEDIA_HOLDING_COMPANY">Media Holding Company</option>
-                <option value="ADVERTISER">Advertiser</option>
-                <option value="BRAND">Brand</option>
-                <option value="VENDOR">Vendor</option>
-                <option value="PUBLISHER">Publisher</option>
-                <option value="PLATFORM">Platform</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Website
-              </label>
-              <input
-                type="url"
-                value={formData.website}
-                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                placeholder="https://example.com"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <ImageUpload
-                label="Company Logo"
-                currentImageUrl={formData.logoUrl}
-                entityType="company"
-                entityId={params.id as string}
-                onUploadSuccess={(url) => setFormData({ ...formData, logoUrl: url })}
-                onRemove={() => setFormData({ ...formData, logoUrl: '' })}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Industry & Location */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Industry & Location</h2>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Industry
-              </label>
-              <select
-                value={formData.industry}
-                onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select industry</option>
-                <option value="AUTOMOTIVE">Automotive</option>
-                <option value="CPG_FOOD_BEVERAGE">CPG - Food & Beverage</option>
-                <option value="CPG_PERSONAL_CARE">CPG - Personal Care</option>
-                <option value="CPG_HOUSEHOLD">CPG - Household</option>
-                <option value="FINANCIAL_SERVICES">Financial Services</option>
-                <option value="HEALTHCARE_PHARMA">Healthcare & Pharma</option>
-                <option value="RETAIL_ECOMMERCE">Retail & E-commerce</option>
-                <option value="TECHNOLOGY">Technology</option>
-                <option value="ENTERTAINMENT_MEDIA">Entertainment & Media</option>
-                <option value="TRAVEL_HOSPITALITY">Travel & Hospitality</option>
-                <option value="TELECOM">Telecom</option>
-                <option value="FASHION_BEAUTY">Fashion & Beauty</option>
-                <option value="SPORTS_FITNESS">Sports & Fitness</option>
-                <option value="EDUCATION">Education</option>
-                <option value="REAL_ESTATE">Real Estate</option>
-                <option value="ENERGY">Energy</option>
-                <option value="GOVERNMENT_NONPROFIT">Government & Nonprofit</option>
-                <option value="GAMING">Gaming</option>
-                <option value="CRYPTOCURRENCY">Cryptocurrency</option>
-                <option value="INSURANCE">Insurance</option>
-                <option value="B2B_SERVICES">B2B Services</option>
-                <option value="STARTUPS">Startups</option>
-                <option value="NONPROFIT">Nonprofit</option>
-                <option value="PROFESSIONAL_SERVICES">Professional Services</option>
-                <option value="LOGISTICS">Logistics</option>
-              </select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  City
-                </label>
-                <input
-                  type="text"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  State
-                </label>
-                <input
-                  type="text"
-                  value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  placeholder="e.g., NY, CA"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Country
-              </label>
-              <input
-                type="text"
-                value={formData.country}
-                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                placeholder="US"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Company Details */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Company Details</h2>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Employee Count
-                </label>
-                <select
-                  value={formData.employeeCount}
-                  onChange={(e) => setFormData({ ...formData, employeeCount: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select range</option>
-                  <option value="STARTUP_1_10">1-10 employees</option>
-                  <option value="SMALL_11_50">11-50 employees</option>
-                  <option value="MEDIUM_51_200">51-200 employees</option>
-                  <option value="LARGE_201_1000">201-1,000 employees</option>
-                  <option value="ENTERPRISE_1001_5000">1,001-5,000 employees</option>
-                  <option value="MEGA_5000_PLUS">5,000+ employees</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Revenue
-                </label>
-                <select
-                  value={formData.revenue}
-                  onChange={(e) => setFormData({ ...formData, revenue: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select range</option>
-                  <option value="UNDER_1M">Under $1M</option>
-                  <option value="RANGE_1M_5M">$1M - $5M</option>
-                  <option value="RANGE_5M_25M">$5M - $25M</option>
-                  <option value="RANGE_25M_100M">$25M - $100M</option>
-                  <option value="RANGE_100M_500M">$100M - $500M</option>
-                  <option value="RANGE_500M_1B">$500M - $1B</option>
-                  <option value="OVER_1B">Over $1B</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Parent Company
-              </label>
-              <select
-                value={formData.parentCompanyId}
-                onChange={(e) => setFormData({ ...formData, parentCompanyId: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">None</option>
-                {companies
-                  .filter(c => c.id !== params.id) // Exclude current company
-                  .map(company => (
-                    <option key={company.id} value={company.id}>
-                      {company.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="verified"
-                checked={formData.verified}
-                onChange={(e) => setFormData({ ...formData, verified: e.target.checked })}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="verified" className="ml-2 block text-sm text-gray-700">
-                Verified company
-              </label>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
-            <Link
-              href={`/admin/orgs/companies/${params.id}`}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </Link>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <CompanyForm
+      mode="edit"
+      company={company}
+      onSave={handleSave}
+      onCancel={handleCancel}
+    />
   );
 }

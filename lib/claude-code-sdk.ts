@@ -46,30 +46,125 @@ export class ClaudeCodeSDK {
   }
 
   /**
+   * Sanitize string to remove invalid UTF-16 surrogate pairs
+   * This prevents "no low surrogate in string" errors when sending to APIs
+   */
+  private sanitizeString(str: string): string {
+    if (!str || typeof str !== 'string') return str;
+    
+    // Remove invalid UTF-16 surrogate pairs
+    // High surrogates: U+D800 to U+DBFF
+    // Low surrogates: U+DC00 to U+DFFF
+    // A valid pair must have high followed by low
+    let result = '';
+    for (let i = 0; i < str.length; i++) {
+      const char = str[i];
+      const code = str.charCodeAt(i);
+      
+      // Check if it's a high surrogate
+      if (code >= 0xD800 && code <= 0xDBFF) {
+        // Check if next character is a low surrogate
+        if (i + 1 < str.length) {
+          const nextCode = str.charCodeAt(i + 1);
+          if (nextCode >= 0xDC00 && nextCode <= 0xDFFF) {
+            // Valid pair, keep both
+            result += char + str[i + 1];
+            i++; // Skip next character as we've already added it
+            continue;
+          }
+        }
+        // Invalid high surrogate without matching low, skip it
+        continue;
+      }
+      
+      // Check if it's a low surrogate without preceding high
+      if (code >= 0xDC00 && code <= 0xDFFF) {
+        // Invalid low surrogate, skip it
+        continue;
+      }
+      
+      // Regular character, keep it
+      result += char;
+    }
+    
+    return result;
+  }
+
+  /**
+   * Recursively sanitize all strings in an object/array
+   */
+  private sanitizeObject(obj: any): any {
+    if (typeof obj === 'string') {
+      return this.sanitizeString(obj);
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.sanitizeObject(item));
+    }
+    
+    if (obj && typeof obj === 'object') {
+      const sanitized: any = {};
+      for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          sanitized[key] = this.sanitizeObject(obj[key]);
+        }
+      }
+      return sanitized;
+    }
+    
+    return obj;
+  }
+
+  /**
    * Generate code based on natural language requirements
    */
   async generateCode(request: CodeGenerationRequest): Promise<CodeGenerationResponse> {
-    const systemPrompt = this.buildSystemPrompt(request);
-    const userPrompt = this.buildUserPrompt(request);
+    // Sanitize inputs to prevent UTF-16 encoding errors
+    const sanitizedRequest = {
+      ...request,
+      prompt: this.sanitizeString(request.prompt),
+      context: request.context ? this.sanitizeString(request.context) : undefined,
+    };
+    
+    const systemPrompt = this.buildSystemPrompt(sanitizedRequest);
+    const userPrompt = this.buildUserPrompt(sanitizedRequest);
 
     try {
-      const message = await this.client.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
+      // Sanitize the entire request object to prevent encoding errors
+      const requestPayload = {
+        model: 'claude-3-5-sonnet-20241022' as const,
         max_tokens: 4000,
         temperature: 0.1,
-        system: systemPrompt,
+        system: this.sanitizeString(systemPrompt),
         messages: [
           {
-            role: 'user',
-            content: userPrompt
+            role: 'user' as const,
+            content: this.sanitizeString(userPrompt)
           }
         ]
-      });
+      };
+      
+      // Test JSON serialization before sending to catch encoding errors early
+      try {
+        JSON.stringify(requestPayload);
+      } catch (jsonError: any) {
+        console.error('JSON serialization error detected before API call:', jsonError);
+        throw new Error(`Invalid characters in request: ${jsonError.message}`);
+      }
+      
+      const message = await this.client.messages.create(requestPayload);
 
       const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
       return this.parseCodeGenerationResponse(responseText, request);
-    } catch (error) {
+    } catch (error: any) {
+      // Log detailed error information
       console.error('Claude Code Generation Error:', error);
+      if (error?.message) {
+        console.error('Error message:', error.message);
+      }
+      if (error?.error) {
+        console.error('Error details:', JSON.stringify(error.error, null, 2));
+      }
       throw new Error('Failed to generate code: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   }
@@ -78,27 +173,47 @@ export class ClaudeCodeSDK {
    * Analyze existing code for quality, security, and optimization opportunities
    */
   async analyzeCode(request: CodeAnalysisRequest): Promise<CodeAnalysisResponse> {
+    // Sanitize inputs to prevent UTF-16 encoding errors
+    const sanitizedCode = this.sanitizeString(request.code);
     const systemPrompt = this.buildAnalysisSystemPrompt(request);
-    const userPrompt = `Analyze this ${request.language || 'code'}:\n\n\`\`\`${request.language || ''}\n${request.code}\n\`\`\``;
+    const userPrompt = `Analyze this ${request.language || 'code'}:\n\n\`\`\`${request.language || ''}\n${sanitizedCode}\n\`\`\``;
 
     try {
-      const message = await this.client.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
+      // Sanitize the entire request object to prevent encoding errors
+      const requestPayload = {
+        model: 'claude-3-5-sonnet-20241022' as const,
         max_tokens: 3000,
         temperature: 0.1,
-        system: systemPrompt,
+        system: this.sanitizeString(systemPrompt),
         messages: [
           {
-            role: 'user',
-            content: userPrompt
+            role: 'user' as const,
+            content: this.sanitizeString(userPrompt)
           }
         ]
-      });
+      };
+      
+      // Test JSON serialization before sending to catch encoding errors early
+      try {
+        JSON.stringify(requestPayload);
+      } catch (jsonError: any) {
+        console.error('JSON serialization error detected before API call:', jsonError);
+        throw new Error(`Invalid characters in request: ${jsonError.message}`);
+      }
+      
+      const message = await this.client.messages.create(requestPayload);
 
       const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
       return this.parseCodeAnalysisResponse(responseText);
-    } catch (error) {
+    } catch (error: any) {
+      // Log detailed error information
       console.error('Claude Code Analysis Error:', error);
+      if (error?.message) {
+        console.error('Error message:', error.message);
+      }
+      if (error?.error) {
+        console.error('Error details:', JSON.stringify(error.error, null, 2));
+      }
       throw new Error('Failed to analyze code: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   }
@@ -107,6 +222,10 @@ export class ClaudeCodeSDK {
    * Generate smart suggestions for forum posts about coding/development
    */
   async generateForumPostSuggestions(title: string, content: string) {
+    // Sanitize inputs to prevent UTF-16 encoding errors
+    const sanitizedTitle = this.sanitizeString(title);
+    const sanitizedContent = this.sanitizeString(content);
+    
     const systemPrompt = `You are an AI assistant specialized in analyzing development-focused forum posts. 
     Analyze the given title and content to extract relevant information for a media/advertising tech forum.
     
@@ -123,21 +242,32 @@ export class ClaudeCodeSDK {
       "keyTopics": ["main", "discussion", "topics"]
     }`;
 
-    const userPrompt = `Title: ${title}\n\nContent: ${content}`;
+    const userPrompt = `Title: ${sanitizedTitle}\n\nContent: ${sanitizedContent}`;
 
     try {
-      const message = await this.client.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
+      // Sanitize the entire request object to prevent encoding errors
+      const requestPayload = {
+        model: 'claude-3-5-sonnet-20241022' as const,
         max_tokens: 1000,
         temperature: 0.1,
-        system: systemPrompt,
+        system: this.sanitizeString(systemPrompt),
         messages: [
           {
-            role: 'user',
-            content: userPrompt
+            role: 'user' as const,
+            content: this.sanitizeString(userPrompt)
           }
         ]
-      });
+      };
+      
+      // Test JSON serialization before sending to catch encoding errors early
+      try {
+        JSON.stringify(requestPayload);
+      } catch (jsonError: any) {
+        console.error('JSON serialization error detected before API call:', jsonError);
+        throw new Error(`Invalid characters in request: ${jsonError.message}`);
+      }
+      
+      const message = await this.client.messages.create(requestPayload);
 
       const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
       
@@ -145,10 +275,17 @@ export class ClaudeCodeSDK {
         return JSON.parse(responseText);
       } catch (parseError) {
         // Fallback if JSON parsing fails
-        return this.extractSuggestionsFromText(responseText, title, content);
+        return this.extractSuggestionsFromText(responseText, sanitizedTitle, sanitizedContent);
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Log detailed error information
       console.error('Claude Forum Suggestions Error:', error);
+      if (error?.message) {
+        console.error('Error message:', error.message);
+      }
+      if (error?.error) {
+        console.error('Error details:', JSON.stringify(error.error, null, 2));
+      }
       // Return fallback suggestions
       return {
         tags: [],

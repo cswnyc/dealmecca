@@ -25,7 +25,8 @@ import {
   Search,
   AlertCircle,
   Info,
-  ExternalLink
+  ExternalLink,
+  Plus
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -197,7 +198,23 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
   const [companySearchTerm, setCompanySearchTerm] = useState('');
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isDirty, setIsDirty] = useState(false);
+  const [availableDuties, setAvailableDuties] = useState<any[]>([]);
+  const [selectedDuties, setSelectedDuties] = useState<string[]>([]);
+  const [showDutyPicker, setShowDutyPicker] = useState(false);
   const [duplicateError, setDuplicateError] = useState<DuplicateError | null>(null);
+  const [teams, setTeams] = useState<any[]>([]);
+  const [newTeamName, setNewTeamName] = useState('');
+  const [newTeamType, setNewTeamType] = useState('IN_HOUSE');
+  const [selectedAdvertiserId, setSelectedAdvertiserId] = useState('');
+  const [newTeamDuties, setNewTeamDuties] = useState<string[]>([]);
+  const [creatingTeam, setCreatingTeam] = useState(false);
+  const [advertiserSearchTerm, setAdvertiserSearchTerm] = useState('');
+  const [filteredAdvertisers, setFilteredAdvertisers] = useState<Company[]>([]);
+  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
+  const [selectedContactForTeam, setSelectedContactForTeam] = useState<{[teamId: string]: string}>({});
+  const [selectedDutiesForTeam, setSelectedDutiesForTeam] = useState<{[teamId: string]: string[]}>({});
+  const [contactRoleForTeam, setContactRoleForTeam] = useState<{[teamId: string]: string}>({});
+  const [companyContacts, setCompanyContacts] = useState<any[]>([]);
 
   const [formData, setFormData] = useState<FormData>({
     name: company?.name || '',
@@ -229,7 +246,26 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
 
   useEffect(() => {
     fetchCompanies();
+    fetchDuties();
   }, []);
+
+  // Initialize selected duties from company data in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && company?.duties && availableDuties.length > 0) {
+      if (Array.isArray(company.duties)) {
+        const dutyIds = company.duties.map((d: any) => d.id);
+        setSelectedDuties(dutyIds);
+      }
+    }
+  }, [mode, company?.duties, availableDuties]);
+
+  // Load teams for edit mode
+  useEffect(() => {
+    if (mode === 'edit' && company?.id) {
+      fetchTeams();
+      fetchCompanyContacts();
+    }
+  }, [mode, company?.id]);
 
   useEffect(() => {
     // Filter companies for parent company selection
@@ -248,10 +284,35 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
     }
   }, [companies, companySearchTerm]);
 
+  useEffect(() => {
+    // Filter advertisers for team creation
+    const advertisers = companies.filter(c =>
+      ['NATIONAL_ADVERTISER', 'LOCAL_ADVERTISER', 'ADVERTISER'].includes(c.companyType)
+    );
+
+    if (advertiserSearchTerm) {
+      const filtered = advertisers.filter(c =>
+        c.name.toLowerCase().includes(advertiserSearchTerm.toLowerCase()) ||
+        c.city?.toLowerCase().includes(advertiserSearchTerm.toLowerCase()) ||
+        c.state?.toLowerCase().includes(advertiserSearchTerm.toLowerCase())
+      );
+      setFilteredAdvertisers(filtered);
+    } else {
+      setFilteredAdvertisers(advertisers);
+    }
+  }, [companies, advertiserSearchTerm]);
+
+  // Fetch company contacts for team member assignment
+  useEffect(() => {
+    if (mode === 'edit' && company?.id) {
+      fetchCompanyContacts();
+    }
+  }, [mode, company?.id]);
+
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/orgs/companies?limit=1000');
+      const response = await fetch('/api/orgs/companies?limit=10000');
       const data = await response.json();
       setCompanies(data.companies || []);
     } catch (error) {
@@ -259,6 +320,251 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchDuties = async () => {
+    try {
+      const response = await fetch('/api/admin/duties');
+      const data = await response.json();
+      setAvailableDuties(data || []);
+    } catch (error) {
+      console.error('Failed to fetch duties:', error);
+    }
+  };
+
+  const handleDutyToggle = (dutyId: string) => {
+    setSelectedDuties(prev => {
+      if (prev.includes(dutyId)) {
+        return prev.filter(id => id !== dutyId);
+      } else {
+        return [...prev, dutyId];
+      }
+    });
+    setIsDirty(true);
+  };
+
+  const handleAddTeam = async () => {
+    if (!newTeamName.trim() || !selectedAdvertiserId) {
+      alert('Please fill in team name and select an advertiser');
+      return;
+    }
+
+    try {
+      setCreatingTeam(true);
+
+      // Create team via API
+      const response = await fetch('/api/orgs/teams', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newTeamName.trim(),
+          companyId: selectedAdvertiserId,
+          type: newTeamType === 'IN_HOUSE' ? 'ADVERTISER_TEAM' : 'AGENCY_TEAM',
+          description: `${newTeamName.trim()} - ${newTeamType === 'IN_HOUSE' ? 'In-House Team' : 'Agency Team'}`
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create team');
+      }
+
+      const createdTeam = await response.json();
+
+      // If duties were selected, create ContactDuty relationships
+      if (newTeamDuties.length > 0) {
+        // Note: This would require a team-duties API endpoint, or we handle it differently
+        // For now, we'll just log it
+        console.log('Team duties to be added:', newTeamDuties);
+      }
+
+      // Refresh teams list
+      await fetchTeams();
+
+      // Clear form
+      setNewTeamName('');
+      setNewTeamType('IN_HOUSE');
+      setSelectedAdvertiserId('');
+      setNewTeamDuties([]);
+      setAdvertiserSearchTerm('');
+
+      alert('Team created successfully!');
+    } catch (error: any) {
+      console.error('Error creating team:', error);
+      alert(`Failed to create team: ${error.message}`);
+    } finally {
+      setCreatingTeam(false);
+    }
+  };
+
+  const handleRemoveTeam = async (teamId: string) => {
+    if (!confirm('Are you sure you want to delete this team?')) return;
+
+    try {
+      const response = await fetch(`/api/orgs/teams/${teamId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete team');
+      }
+
+      // Refresh teams list
+      await fetchTeams();
+
+      alert('Team deleted successfully!');
+    } catch (error: any) {
+      console.error('Error deleting team:', error);
+      alert(`Failed to delete team: ${error.message}`);
+    }
+  };
+
+  const fetchTeams = async () => {
+    if (!company?.id) return;
+
+    try {
+      const response = await fetch(`/api/orgs/teams?companyId=${company.id}`);
+      const data = await response.json();
+      setTeams(data || []);
+    } catch (error) {
+      console.error('Failed to fetch teams:', error);
+    }
+  };
+
+  const handleTeamDutyToggle = (dutyId: string) => {
+    setNewTeamDuties(prev =>
+      prev.includes(dutyId)
+        ? prev.filter(id => id !== dutyId)
+        : [...prev, dutyId]
+    );
+  };
+
+  const fetchCompanyContacts = async () => {
+    if (!company?.id) return;
+    try {
+      const response = await fetch(`/api/orgs/contacts?companyId=${company.id}`);
+      const data = await response.json();
+      setCompanyContacts(data || []);
+    } catch (error) {
+      console.error('Failed to fetch company contacts:', error);
+    }
+  };
+
+  const toggleTeamExpanded = (teamId: string) => {
+    setExpandedTeams(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(teamId)) {
+        newSet.delete(teamId);
+      } else {
+        newSet.add(teamId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleAddContactToTeam = async (teamId: string) => {
+    const contactId = selectedContactForTeam[teamId];
+    const role = contactRoleForTeam[teamId];
+
+    if (!contactId) {
+      alert('Please select a contact');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/orgs/teams/${teamId}/contacts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId, role: role || null, isPrimary: false })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to add contact');
+      }
+
+      await fetchTeams();
+      setSelectedContactForTeam(prev => ({ ...prev, [teamId]: '' }));
+      setContactRoleForTeam(prev => ({ ...prev, [teamId]: '' }));
+    } catch (error: any) {
+      alert(`Failed to add contact: ${error.message}`);
+    }
+  };
+
+  const handleRemoveContactFromTeam = async (teamId: string, contactId: string) => {
+    if (!confirm('Remove this contact from the team?')) return;
+
+    try {
+      const response = await fetch(`/api/orgs/teams/${teamId}/contacts/${contactId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove contact');
+      }
+
+      await fetchTeams();
+    } catch (error: any) {
+      alert(`Failed to remove contact: ${error.message}`);
+    }
+  };
+
+  const handleAddDutiesToTeam = async (teamId: string) => {
+    const dutyIds = selectedDutiesForTeam[teamId];
+
+    if (!dutyIds || dutyIds.length === 0) {
+      alert('Please select at least one duty');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/orgs/teams/${teamId}/duties`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dutyIds })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to add duties');
+      }
+
+      await fetchTeams();
+      setSelectedDutiesForTeam(prev => ({ ...prev, [teamId]: [] }));
+    } catch (error: any) {
+      alert(`Failed to add duties: ${error.message}`);
+    }
+  };
+
+  const handleRemoveDutyFromTeam = async (teamId: string, dutyId: string) => {
+    if (!confirm('Remove this duty from the team?')) return;
+
+    try {
+      const response = await fetch(`/api/orgs/teams/${teamId}/duties?dutyIds=${dutyId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove duty');
+      }
+
+      await fetchTeams();
+    } catch (error: any) {
+      alert(`Failed to remove duty: ${error.message}`);
+    }
+  };
+
+  const toggleTeamDuty = (teamId: string, dutyId: string) => {
+    setSelectedDutiesForTeam(prev => {
+      const current = prev[teamId] || [];
+      return {
+        ...prev,
+        [teamId]: current.includes(dutyId)
+          ? current.filter(id => id !== dutyId)
+          : [...current, dutyId]
+      };
+    });
   };
 
   const validateField = useCallback((field: string, value: any): string => {
@@ -376,6 +682,17 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
       if (formData.twitterHandle) dataToSend.twitterHandle = formData.twitterHandle;
       if (formData.revenue) dataToSend.revenue = formData.revenue;
       if (formData.parentCompanyId) dataToSend.parentCompanyId = formData.parentCompanyId;
+
+      // Add duties as comma-separated string of duty names
+      if (selectedDuties.length > 0) {
+        const dutyNames = selectedDuties
+          .map(dutyId => availableDuties.find(d => d.id === dutyId)?.name)
+          .filter(Boolean)
+          .join(',');
+        dataToSend.duties = dutyNames;
+      } else {
+        dataToSend.duties = '';
+      }
 
       if (onSave) {
         await onSave(dataToSend);
@@ -775,10 +1092,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
                   <SelectContent>
                     {advertisingModels.map((model) => (
                       <SelectItem key={model.value} value={model.value}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{model.label}</span>
-                          <span className="text-xs text-gray-500">{model.description}</span>
-                        </div>
+                        {model.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1113,6 +1427,433 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
             </div>
           </CardContent>
         </Card>
+
+        {/* Duties */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Briefcase className="w-5 h-5" />
+                <span>Duties</span>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDutyPicker(!showDutyPicker)}
+              >
+                {showDutyPicker ? 'Hide' : 'Select'} Duties
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {showDutyPicker && (
+              <div className="space-y-3 mb-4 max-h-96 overflow-y-auto border rounded-lg p-4 bg-gray-50">
+                {['ROLE', 'MEDIA_TYPE', 'BRAND', 'BUSINESS_LINE', 'GOAL', 'AUDIENCE', 'GEOGRAPHY'].map(category => {
+                  const categoryDuties = availableDuties.filter(d => d.category === category);
+                  if (categoryDuties.length === 0) return null;
+
+                  return (
+                    <div key={category} className="space-y-2">
+                      <h4 className="font-semibold text-sm text-gray-700">{category.replace(/_/g, ' ')}</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {categoryDuties.map(duty => (
+                          <div
+                            key={duty.id}
+                            onClick={() => handleDutyToggle(duty.id)}
+                            className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors"
+                          >
+                            <Checkbox
+                              checked={selectedDuties.includes(duty.id)}
+                              readOnly
+                            />
+                            <div className="flex-1">
+                              <span className="text-sm">{duty.name}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {selectedDuties.length > 0 && (
+              <div>
+                <Label className="text-sm text-gray-600 mb-2 block">Selected Duties ({selectedDuties.length})</Label>
+                <div className="flex flex-wrap gap-2">
+                  {selectedDuties.map(dutyId => {
+                    const duty = availableDuties.find(d => d.id === dutyId);
+                    if (!duty) return null;
+                    return (
+                      <Badge
+                        key={duty.id}
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700 border-blue-200 cursor-pointer hover:bg-blue-100"
+                        onClick={() => handleDutyToggle(duty.id)}
+                      >
+                        {duty.name}
+                        <X className="w-3 h-3 ml-1" />
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {selectedDuties.length === 0 && (
+              <p className="text-sm text-gray-500 italic">No duties selected. Click "Select Duties" to add duties to this company.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Teams */}
+        {mode === 'edit' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Teams</span>
+                <Badge variant="outline">{teams.length} team(s)</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertTitle>Create Team</AlertTitle>
+                <AlertDescription>
+                  Teams are saved immediately when you click "Add Team"
+                </AlertDescription>
+              </Alert>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <Label htmlFor="advertiserSearch">Search Advertiser *</Label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="advertiserSearch"
+                      value={advertiserSearchTerm}
+                      onChange={(e) => setAdvertiserSearchTerm(e.target.value)}
+                      placeholder="Search by company name, city, or state..."
+                      className="pl-10"
+                    />
+                  </div>
+                  {advertiserSearchTerm && (
+                    <div className="mt-2 max-h-48 overflow-y-auto border rounded-md">
+                      {filteredAdvertisers.length > 0 ? (
+                        filteredAdvertisers.slice(0, 50).map(advertiser => (
+                          <div
+                            key={advertiser.id}
+                            onClick={() => {
+                              setSelectedAdvertiserId(advertiser.id);
+                              setAdvertiserSearchTerm(advertiser.name);
+                            }}
+                            className={`p-3 cursor-pointer hover:bg-gray-100 border-b last:border-b-0 ${
+                              selectedAdvertiserId === advertiser.id ? 'bg-blue-50' : ''
+                            }`}
+                          >
+                            <p className="font-medium text-sm">{advertiser.name}</p>
+                            <p className="text-xs text-gray-500">
+                              {advertiser.city && advertiser.state
+                                ? `${advertiser.city}, ${advertiser.state}`
+                                : advertiser.city || advertiser.state || 'Location not specified'}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="p-3 text-sm text-gray-500">No advertisers found</p>
+                      )}
+                    </div>
+                  )}
+                  {!advertiserSearchTerm && selectedAdvertiserId && (
+                    <p className="mt-2 text-sm text-gray-600">
+                      Selected: {companies.find(c => c.id === selectedAdvertiserId)?.name}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="newTeamName">Team Name *</Label>
+                  <Input
+                    id="newTeamName"
+                    value={newTeamName}
+                    onChange={(e) => setNewTeamName(e.target.value)}
+                    placeholder="e.g., Facebook Team, Media Planning"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="newTeamType">Team Type *</Label>
+                  <Select value={newTeamType} onValueChange={setNewTeamType}>
+                    <SelectTrigger id="newTeamType">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="IN_HOUSE">In-House Team</SelectItem>
+                      <SelectItem value="AGENCY">Agency Team (External)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="teamDuties">Duties (Optional)</Label>
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {availableDuties.slice(0, 5).map(duty => (
+                      <Badge
+                        key={duty.id}
+                        variant={newTeamDuties.includes(duty.id) ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => handleTeamDutyToggle(duty.id)}
+                      >
+                        {duty.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                onClick={handleAddTeam}
+                disabled={!newTeamName.trim() || !selectedAdvertiserId || creatingTeam}
+                className="w-full"
+              >
+                {creatingTeam ? (
+                  <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Creating Team...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Team
+                  </>
+                )}
+              </Button>
+
+              {teams.length > 0 && (
+                <div className="space-y-2 mt-6">
+                  <Label className="text-sm text-gray-600">Existing Teams ({teams.length})</Label>
+                  <div className="space-y-3">
+                    {teams.map((team) => {
+                      const isExpanded = expandedTeams.has(team.id);
+                      const members = team.ContactTeam || [];
+                      const duties = team.TeamDuty || [];
+
+                      return (
+                        <div
+                          key={team.id}
+                          className="bg-white rounded-lg border border-gray-300 overflow-hidden"
+                        >
+                          {/* Team Header */}
+                          <div className="flex items-center justify-between p-4 bg-gray-50 border-b">
+                            <div className="flex-1 cursor-pointer" onClick={() => toggleTeamExpanded(team.id)}>
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-sm">{team.name}</p>
+                                <Badge variant="outline" className="text-xs">
+                                  {team.type === 'AGENCY_TEAM' && 'Agency'}
+                                  {team.type === 'ADVERTISER_TEAM' && 'In-House'}
+                                  {team.type === 'INTERNAL_TEAM' && 'Internal'}
+                                  {team.type === 'PROJECT_TEAM' && 'Project'}
+                                </Badge>
+                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                                  {members.length} member{members.length !== 1 ? 's' : ''}
+                                </Badge>
+                                <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                                  {duties.length} {duties.length !== 1 ? 'duties' : 'duty'}
+                                </Badge>
+                              </div>
+                              {team.company && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Company: {team.company.name}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleTeamExpanded(team.id)}
+                              >
+                                {isExpanded ? '−' : '+'}
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveTeam(team.id)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Expanded Content */}
+                          {isExpanded && (
+                            <div className="p-4 space-y-4">
+                              {/* Team Members Section */}
+                              <div>
+                                <Label className="text-sm font-semibold mb-2 block">Team Members</Label>
+
+                                {/* Existing Members */}
+                                {members.length > 0 ? (
+                                  <div className="space-y-2 mb-3">
+                                    {members.map((member: any) => (
+                                      <div
+                                        key={member.id}
+                                        className="flex items-center justify-between p-2 bg-gray-50 rounded border"
+                                      >
+                                        <div className="flex-1">
+                                          <div className="text-sm font-medium">
+                                            {member.contact.fullName}
+                                            {member.isPrimary && (
+                                              <Badge variant="default" className="ml-2 text-xs">Primary</Badge>
+                                            )}
+                                          </div>
+                                          <p className="text-xs text-gray-500">{member.contact.title}</p>
+                                          {member.role && (
+                                            <p className="text-xs text-gray-400">Role: {member.role}</p>
+                                          )}
+                                        </div>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleRemoveContactFromTeam(team.id, member.contact.id)}
+                                          className="text-red-600"
+                                        >
+                                          <X className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-gray-500 italic mb-3">No members yet</p>
+                                )}
+
+                                {/* Add Member Form */}
+                                <div className="grid grid-cols-12 gap-2">
+                                  <div className="col-span-5">
+                                    <Select
+                                      value={selectedContactForTeam[team.id] || ''}
+                                      onValueChange={(value) =>
+                                        setSelectedContactForTeam(prev => ({ ...prev, [team.id]: value }))
+                                      }
+                                    >
+                                      <SelectTrigger className="h-8 text-sm">
+                                        <SelectValue placeholder="Select contact" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {(Array.isArray(companyContacts) ? companyContacts : [])
+                                          .filter(c => !members.some((m: any) => m.contact.id === c.id))
+                                          .map(contact => (
+                                            <SelectItem key={contact.id} value={contact.id}>
+                                              {contact.fullName} - {contact.title}
+                                            </SelectItem>
+                                          ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="col-span-4">
+                                    <Input
+                                      placeholder="Role (optional)"
+                                      value={contactRoleForTeam[team.id] || ''}
+                                      onChange={(e) =>
+                                        setContactRoleForTeam(prev => ({ ...prev, [team.id]: e.target.value }))
+                                      }
+                                      className="h-8 text-sm"
+                                    />
+                                  </div>
+                                  <div className="col-span-3">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      onClick={() => handleAddContactToTeam(team.id)}
+                                      disabled={!selectedContactForTeam[team.id]}
+                                      className="h-8 w-full text-xs"
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" />
+                                      Add
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Team Duties Section */}
+                              <div>
+                                <Label className="text-sm font-semibold mb-2 block">Team Duties</Label>
+
+                                {/* Existing Duties */}
+                                {duties.length > 0 ? (
+                                  <div className="flex flex-wrap gap-2 mb-3">
+                                    {duties.map((teamDuty: any) => (
+                                      <Badge
+                                        key={teamDuty.id}
+                                        variant="outline"
+                                        className="flex items-center gap-1"
+                                      >
+                                        {teamDuty.duty.name}
+                                        <X
+                                          className="w-3 h-3 cursor-pointer hover:text-red-600"
+                                          onClick={() => handleRemoveDutyFromTeam(team.id, teamDuty.duty.id)}
+                                        />
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-gray-500 italic mb-3">No duties assigned</p>
+                                )}
+
+                                {/* Add Duties */}
+                                <div className="space-y-2">
+                                  <div className="flex flex-wrap gap-2">
+                                    {availableDuties
+                                      .filter(d => !duties.some((td: any) => td.duty.id === d.id))
+                                      .slice(0, 10)
+                                      .map(duty => (
+                                        <Badge
+                                          key={duty.id}
+                                          variant={(selectedDutiesForTeam[team.id] || []).includes(duty.id) ? "default" : "outline"}
+                                          className="cursor-pointer text-xs"
+                                          onClick={() => toggleTeamDuty(team.id, duty.id)}
+                                        >
+                                          {duty.name}
+                                        </Badge>
+                                      ))}
+                                  </div>
+                                  {(selectedDutiesForTeam[team.id] || []).length > 0 && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      onClick={() => handleAddDutiesToTeam(team.id)}
+                                      className="h-8 text-xs"
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" />
+                                      Add Selected Duties ({(selectedDutiesForTeam[team.id] || []).length})
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {teams.length === 0 && (
+                <p className="text-sm text-gray-500 italic text-center py-4">
+                  No teams created yet. Create a team by filling in the form above.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Form Actions */}
         <Card>

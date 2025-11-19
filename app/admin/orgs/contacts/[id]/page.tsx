@@ -21,8 +21,31 @@ import {
   AlertCircle,
   ExternalLink,
   Activity,
-  FileText
+  FileText,
+  Users
 } from 'lucide-react';
+
+interface Duty {
+  id: string;
+  name: string;
+  category: string;
+  description?: string;
+}
+
+interface Team {
+  id: string;
+  name: string;
+  teamType: string;
+  description?: string;
+  isPrimary: boolean;
+  role?: string;
+  company: {
+    id: string;
+    name: string;
+    logoUrl?: string;
+    companyType: string;
+  };
+}
 
 interface Contact {
   id: string;
@@ -46,6 +69,8 @@ interface Contact {
   createdAt: string;
   updatedAt: string;
   lastVerified?: string;
+  duties?: Duty[];
+  teams?: Team[];
   company: {
     id: string;
     name: string;
@@ -62,6 +87,7 @@ interface Contact {
     interactions: number;
     notes: number;
     connections: number;
+    teams: number;
   };
 }
 
@@ -192,8 +218,8 @@ export default function ViewContact() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{contact.fullName}</h1>
               <p className="text-gray-600">{contact.title}</p>
-              <div className="flex items-center space-x-2 mt-2">
-                <Badge variant={contact.verified ? "default" : "secondary"}>
+              <div className="flex items-center flex-wrap gap-2 mt-2">
+                <Badge variant={contact.verified ? "default" : "secondary"} className={!contact.verified ? "bg-gray-200 text-gray-800" : ""}>
                   {contact.verified ? "Verified" : "Unverified"}
                 </Badge>
                 {!contact.isActive && (
@@ -201,6 +227,15 @@ export default function ViewContact() {
                 )}
                 {contact.isDecisionMaker && (
                   <Badge variant="outline">Decision Maker</Badge>
+                )}
+                {contact.duties && contact.duties.length > 0 && (
+                  <>
+                    {contact.duties.map(duty => (
+                      <Badge key={duty.id} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        {duty.name}
+                      </Badge>
+                    ))}
+                  </>
                 )}
                 <span className="text-sm text-gray-500">
                   Created {new Date(contact.createdAt).toLocaleDateString()}
@@ -389,6 +424,52 @@ export default function ViewContact() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Teams */}
+            {contact.teams && contact.teams.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Users className="w-5 h-5" />
+                    <span>Teams</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {contact.teams.map((team) => (
+                    <div key={team.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-gray-900">{team.name}</h4>
+                            {team.isPrimary && (
+                              <Badge variant="default" className="text-xs">Primary</Badge>
+                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {team.teamType?.replace(/_/g, ' ') || 'Team'}
+                            </Badge>
+                          </div>
+                          {team.role && (
+                            <p className="text-sm text-gray-600 mt-1">{team.role}</p>
+                          )}
+                          {team.description && (
+                            <p className="text-sm text-gray-500 mt-1">{team.description}</p>
+                          )}
+                          <div className="flex items-center gap-1 mt-2">
+                            <Building2 className="w-3 h-3 text-gray-500" />
+                            <Link
+                              href={`/admin/orgs/companies/${team.company.id}`}
+                              className="text-xs text-blue-600 hover:text-blue-800"
+                            >
+                              {team.company.name}
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -402,6 +483,10 @@ export default function ViewContact() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Teams</span>
+                  <Badge variant="outline">{contact._count.teams}</Badge>
+                </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Interactions</span>
                   <Badge variant="outline">{contact._count.interactions}</Badge>
