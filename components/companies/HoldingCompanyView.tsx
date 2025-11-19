@@ -16,12 +16,11 @@ import {
   Lightbulb
 } from 'lucide-react';
 
-interface SubsidiaryLocation {
+interface Contact {
   id: string;
   city?: string;
   state?: string;
   country?: string;
-  peopleCount: number;
 }
 
 interface Subsidiary {
@@ -37,7 +36,7 @@ interface Subsidiary {
   _count?: {
     contacts: number;
   };
-  locations?: SubsidiaryLocation[];
+  contacts?: Contact[];
 }
 
 interface HoldingCompanyViewProps {
@@ -68,6 +67,33 @@ export function HoldingCompanyView({ company }: HoldingCompanyViewProps) {
       newExpanded.add(agencyId);
     }
     setExpandedAgencies(newExpanded);
+  };
+
+  // Group contacts by location for an agency
+  const getAgencyLocations = (agency: Subsidiary) => {
+    if (!agency.contacts || agency.contacts.length === 0) return [];
+
+    const locationMap = new Map<string, { city: string; state: string; count: number }>();
+
+    agency.contacts.forEach(contact => {
+      if (contact.city && contact.state) {
+        const key = `${contact.city}, ${contact.state}`;
+        const existing = locationMap.get(key);
+        if (existing) {
+          existing.count++;
+        } else {
+          locationMap.set(key, {
+            city: contact.city,
+            state: contact.state,
+            count: 1
+          });
+        }
+      }
+    });
+
+    return Array.from(locationMap.entries())
+      .map(([key, value]) => ({ location: key, ...value }))
+      .sort((a, b) => b.count - a.count);
   };
 
   // Group subsidiaries by location and calculate stats
@@ -216,65 +242,110 @@ export function HoldingCompanyView({ company }: HoldingCompanyViewProps) {
                     </h2>
                   </div>
 
-                  {filteredAgencies.map((agency) => (
-                    <div key={agency.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                      {/* Agency Header */}
-                      <div className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-3 flex-1">
-                            <CompanyLogo
-                              logoUrl={agency.logoUrl}
-                              companyName={agency.name}
-                              size="md"
-                              className="flex-shrink-0"
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <Link
-                                  href={`/companies/${agency.id}`}
-                                  className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors"
-                                >
-                                  {agency.name}
-                                </Link>
-                                {agency.verified && (
-                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                    Verified
-                                  </Badge>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                                {agency.city && agency.state && (
-                                  <div className="flex items-center gap-1">
-                                    <MapPin className="h-4 w-4" />
-                                    <span>{agency.city}, {agency.state}</span>
-                                  </div>
-                                )}
-                                {agency._count && (
-                                  <div className="flex items-center gap-1">
-                                    <Users className="h-4 w-4" />
-                                    <span>{agency._count.contacts} {agency._count.contacts === 1 ? 'person' : 'people'}</span>
-                                  </div>
-                                )}
-                                {agency.agencyType && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {agency.agencyType.replace(/_/g, ' ')}
-                                  </Badge>
-                                )}
+                  {filteredAgencies.map((agency) => {
+                    const locations = getAgencyLocations(agency);
+                    const isExpanded = expandedAgencies.has(agency.id);
+                    const hasMultipleLocations = locations.length > 1;
+
+                    return (
+                      <div key={agency.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        {/* Agency Header */}
+                        <div
+                          className={`p-6 ${hasMultipleLocations ? 'cursor-pointer' : ''}`}
+                          onClick={() => hasMultipleLocations && toggleAgency(agency.id)}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3 flex-1">
+                              <CompanyLogo
+                                logoUrl={agency.logoUrl}
+                                companyName={agency.name}
+                                size="md"
+                                className="flex-shrink-0"
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="text-xl font-semibold text-gray-900">
+                                    {agency.name}
+                                  </h3>
+                                  {agency.verified && (
+                                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                      Verified
+                                    </Badge>
+                                  )}
+                                  {hasMultipleLocations && (
+                                    <ChevronDown
+                                      className={`h-5 w-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    />
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                                  {hasMultipleLocations ? (
+                                    <div className="flex items-center gap-1">
+                                      <MapPin className="h-4 w-4" />
+                                      <span>{locations.length} locations</span>
+                                    </div>
+                                  ) : agency.city && agency.state && (
+                                    <div className="flex items-center gap-1">
+                                      <MapPin className="h-4 w-4" />
+                                      <span>{agency.city}, {agency.state}</span>
+                                    </div>
+                                  )}
+                                  {agency._count && (
+                                    <div className="flex items-center gap-1">
+                                      <Users className="h-4 w-4" />
+                                      <span>{agency._count.contacts} {agency._count.contacts === 1 ? 'person' : 'people'}</span>
+                                    </div>
+                                  )}
+                                  {agency.agencyType && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {agency.agencyType.replace(/_/g, ' ')}
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Link
-                              href={`/companies/${agency.id}`}
-                              className="p-2 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </Link>
+                            <div className="flex items-center gap-2">
+                              <Link
+                                href={`/companies/${agency.id}`}
+                                className="p-2 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Link>
+                            </div>
                           </div>
                         </div>
+
+                        {/* Locations Section (Expandable) */}
+                        {isExpanded && hasMultipleLocations && (
+                          <div className="px-6 pb-6 pt-0">
+                            <h4 className="font-semibold text-gray-900 mb-4">Locations</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {locations.map((loc) => (
+                                <div
+                                  key={loc.location}
+                                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <MapPin className="h-4 w-4 text-blue-600" />
+                                      <span className="font-medium text-gray-900">{loc.location}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm text-gray-600">
+                                        {loc.count} {loc.count === 1 ? 'person' : 'people'}
+                                      </span>
+                                      <ExternalLink className="h-4 w-4 text-gray-400" />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {filteredAgencies.length === 0 && (
                     <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
