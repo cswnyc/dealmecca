@@ -10,7 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CapabilitiesSection } from '@/components/companies/CapabilitiesSection';
 import { PartnershipCard } from '@/components/companies/PartnershipCard';
+import { TeamCard } from '@/components/companies/TeamCard';
 import { RelationshipGraph } from '@/components/companies/RelationshipGraph';
+import { HoldingCompanyView } from '@/components/companies/HoldingCompanyView';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import {
   Building2,
@@ -112,11 +114,49 @@ interface Company {
       verified: boolean;
     };
     partnerRole: 'agency' | 'advertiser';
+    agency?: {
+      id: string;
+      name: string;
+      logoUrl?: string;
+      companyType: string;
+      verified: boolean;
+    };
+    advertiser?: {
+      id: string;
+      name: string;
+      logoUrl?: string;
+      companyType: string;
+      verified: boolean;
+    };
+    contacts?: Array<{
+      id: string;
+      firstName: string;
+      lastName: string;
+      fullName: string;
+      title?: string;
+      email?: string;
+      phone?: string;
+      verified: boolean;
+      seniority?: string;
+      department?: string;
+    }>;
+  }>;
+  teams: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    type: string;
+    isActive: boolean;
+    _count: {
+      ContactTeam: number;
+      PartnershipTeam: number;
+    };
   }>;
   _count: {
     contacts: number;
     subsidiaries: number;
     partnerships: number;
+    teams: number;
   };
 }
 
@@ -129,12 +169,18 @@ export default function CompanyDetailPage() {
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'partnerships' | 'relationships' | 'subsidiaries' | 'activity' | 'intel'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'people' | 'teams' | 'duties' | 'relationships' | 'subsidiaries' | 'activity' | 'intel'>('overview');
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [expandedAgencies, setExpandedAgencies] = useState<Set<string>>(new Set());
   const [isSuggestEditExpanded, setIsSuggestEditExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+
+  // Duties state
+  const [duties, setDuties] = useState<any[]>([]);
+  const [dutiesLoading, setDutiesLoading] = useState(false);
+  const [selectedDutyCategory, setSelectedDutyCategory] = useState<string>('ALL');
 
   // Filter subsidiaries based on search query
   const filteredSubsidiaries = useMemo(() => {
@@ -213,6 +259,37 @@ export default function CompanyDetailPage() {
     }
   }, [companyId, firebaseUser, idToken, authLoading]);
 
+  // Fetch duties when duties tab is active
+  useEffect(() => {
+    const fetchDuties = async () => {
+      if (activeTab !== 'duties' || !companyId) return;
+
+      try {
+        setDutiesLoading(true);
+        const params = new URLSearchParams();
+        if (selectedDutyCategory !== 'ALL') {
+          params.append('category', selectedDutyCategory);
+        }
+
+        const response = await fetch(`/api/orgs/companies/${companyId}/duties?${params.toString()}`, {
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setDuties(data.duties || []);
+        }
+      } catch (err) {
+        console.error('Error fetching duties:', err);
+      } finally {
+        setDutiesLoading(false);
+      }
+    };
+
+    fetchDuties();
+  }, [companyId, activeTab, selectedDutyCategory]);
+
+
   // Toggle follow
   const handleToggleFollow = async () => {
     if (!firebaseUser || !idToken) {
@@ -289,6 +366,36 @@ export default function CompanyDetailPage() {
     setExpandedAgencies(newExpanded);
   };
 
+  const copyEmail = async (email: string) => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopiedEmail(email);
+      setTimeout(() => setCopiedEmail(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+    }
+  };
+
+  // Calculate total contacts across all teams (in-house + partnership contacts)
+  const totalContacts = useMemo(() => {
+    if (!company) return 0;
+    const inHouseContacts = company.contacts?.length || 0;
+    const partnershipContacts = company.partnerships?.reduce((sum, p) => sum + (p.contacts?.length || 0), 0) || 0;
+    return inHouseContacts + partnershipContacts;
+  }, [company?.contacts, company?.partnerships]);
+
+  // Calculate total teams (in-house + agency partnerships)
+  const totalTeams = useMemo(() => {
+    if (!company) return 0;
+    // Only count Team model teams (partnerships are no longer shown)
+    return company.teams?.length || 0;
+  }, [company?.teams]);
+
+  // Calculate total partnerships (disabled for now - will be added later)
+  const totalPartnerships = useMemo(() => {
+    return 0; // Partnerships functionality disabled
+  }, []);
+
   if (loading) {
     return (
       <MainLayout>
@@ -330,6 +437,11 @@ export default function CompanyDetailPage() {
 
   const agencies = company.partnerships.filter(p => p.partnerRole === 'agency');
   const clients = company.partnerships.filter(p => p.partnerRole === 'advertiser');
+
+  // Show holding company view for holding companies with subsidiaries
+  if (company.companyType === 'MEDIA_HOLDING_COMPANY' && company._count?.subsidiaries > 0) {
+    return <HoldingCompanyView company={company} />;
+  }
 
   return (
     <MainLayout>
@@ -585,7 +697,7 @@ export default function CompanyDetailPage() {
                   )}
                 </div>
               </div>
-        </div>
+            </div>
           </>
         ) : (
           /* NON-HOLDING COMPANY LAYOUT - Compact card design */
@@ -655,28 +767,15 @@ export default function CompanyDetailPage() {
                     {/* Stats Row */}
                     <div className="grid grid-cols-4 gap-4 pt-4 border-t border-gray-200">
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">{company._count.partnerships}</div>
+                        <div className="text-2xl font-bold text-gray-900">{totalPartnerships}</div>
                         <div className="text-sm text-gray-500">Partnerships</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">{company._count.contacts}</div>
+                        <div className="text-2xl font-bold text-gray-900">{totalContacts}</div>
                         <div className="text-sm text-gray-500">Contacts</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">
-                          {(() => {
-                            // Group contacts by role/title
-                            const roleGroups = company.contacts.reduce((acc, contact) => {
-                              const role = contact.title || contact.department || 'Other';
-                              if (!acc[role]) {
-                                acc[role] = [];
-                              }
-                              acc[role].push(contact);
-                              return acc;
-                            }, {} as Record<string, typeof company.contacts>);
-                            return Object.keys(roleGroups).length;
-                          })()}
-                        </div>
+                        <div className="text-2xl font-bold text-gray-900">{totalTeams}</div>
                         <div className="text-sm text-gray-500">Teams</div>
                       </div>
                       <div>
@@ -686,22 +785,23 @@ export default function CompanyDetailPage() {
                     </div>
                   </div>
 
-                  {/* Tabs Card */}
+                  {/* Tabs Navigation + Content Card */}
                   <div className="bg-white rounded-lg border border-gray-200">
                     <div className="border-b border-gray-200 px-6">
                       <nav className="-mb-px flex gap-8">
                         {[
                           { id: 'overview', label: 'Overview', count: null },
-                          { id: 'people', label: 'People', count: company._count.contacts },
-                          { id: 'teams', label: 'Teams', count: company._count.partnerships },
-                          { id: 'partnerships', label: 'Partnerships', count: 0 },
+                          { id: 'people', label: 'People', count: totalContacts },
+                          { id: 'teams', label: 'Teams', count: totalTeams },
+                          { id: 'duties', label: 'Duties', count: duties.length > 0 ? duties.length : null },
+                          { id: 'partnerships', label: 'Partnerships', count: totalPartnerships },
                           ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Subsidiaries', count: company._count.subsidiaries }] : []),
                           { id: 'activity', label: 'Activity', count: null }
                         ].map((tab) => (
                           <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`pb-4 px-1 border-b-2 transition-colors text-sm font-medium ${
+                            className={`py-4 px-1 border-b-2 transition-colors text-sm font-medium ${
                               activeTab === tab.id
                                 ? 'border-blue-500 text-blue-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -713,180 +813,623 @@ export default function CompanyDetailPage() {
                       </nav>
                     </div>
 
-                    <div className="p-6">
-                      {/* Overview Tab */}
-                      {activeTab === 'overview' && (
-                        <div>
-                          {company.description && (
-                            <div className="mb-4">
-                              <h2 className="text-lg font-semibold text-gray-900 mb-2">Company Overview</h2>
-                              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.description}</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                    {/* Overview Tab Content */}
+                    {activeTab === 'overview' && (
+                      <div className="p-6">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Company Overview</h2>
+                        {company.description ? (
+                          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.description}</p>
+                        ) : (
+                          <p className="text-gray-500 italic">
+                            No company overview available yet. {company.name} is a {company.companyType === 'ADVERTISER' ? 'advertiser' : company.companyType === 'AGENCY' || company.companyType === 'INDEPENDENT_AGENCY' ? 'agency' : 'company'}{company.city && company.state ? ` based in ${company.city}, ${company.state}` : ''}.
+                          </p>
+                        )}
+                      </div>
+                    )}
 
-                      {/* People Tab */}
-                      {activeTab === 'people' && (
-                        <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">People ({company._count.contacts})</h2>
-                          {company.contacts.length === 0 ? (
-                            <div className="text-center py-12">
-                              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                              <p className="text-gray-600">No team members listed yet</p>
-                            </div>
-                          ) : (
-                            <div className="space-y-4">
-                              {company.contacts.map((contact) => (
-                                <Link
-                                  key={contact.id}
-                                  href={`/people/${contact.id}`}
-                                  className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                                >
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                                    {contact.firstName[0]}{contact.lastName[0]}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                      <h3 className="font-semibold text-gray-900 hover:text-blue-600">
-                                        {contact.fullName}
-                                      </h3>
-                                      {contact.verified && (
-                                        <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                      )}
-                                    </div>
-                                    {contact.title && (
-                                      <p className="text-sm text-gray-600 mt-1">{contact.title}</p>
-                                    )}
-                                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                                      {contact.department && (
-                                        <span>{contact.department}</span>
-                                      )}
-                                      {contact.seniority && (
-                                        <span>{contact.seniority}</span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
-                                </Link>
-                              ))}
-                            </div>
-                          )}
+                    {/* People Tab */}
+                    {activeTab === 'people' && (
+                      <div className="p-6">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">People ({company._count.contacts})</h2>
+                      {company.contacts.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-600">No team members listed yet</p>
                         </div>
-                      )}
-
-                      {/* Teams Tab - Shows agency-client relationships */}
-                      {activeTab === 'teams' && (
-                        <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Teams</h2>
-                          {company.partnerships.length === 0 ? (
-                            <div className="text-center py-12">
-                              <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                              <p className="text-gray-600">No teams listed yet</p>
-                            </div>
-                          ) : (
-                            <div className="space-y-4">
-                              {company.partnerships.map((partnership) => (
-                                <PartnershipCard
-                                  key={partnership.id}
-                                  partnership={partnership}
-                                  companyName={company.name}
-                                />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Partnerships Tab - Placeholder for DSP/SSP/AdTech */}
-                      {activeTab === 'partnerships' && (
-                        <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Partnerships</h2>
-                          <div className="text-center py-12">
-                            <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600">Partnerships will be available for DSP/SSP, AdTech, and Publishers</p>
-                            <p className="text-sm text-gray-500 mt-2">Coming soon</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Subsidiaries Tab */}
-                      {activeTab === 'subsidiaries' && company._count.subsidiaries > 0 && (
-                        <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Subsidiaries ({company._count.subsidiaries})</h2>
-                          <div className="grid gap-4 md:grid-cols-2">
-                            {company.subsidiaries.map((subsidiary) => (
-                              <Link
-                                key={subsidiary.id}
-                                href={`/companies/${subsidiary.id}`}
-                                className="flex items-center space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                              >
-                                <CompanyLogo
-                                  logoUrl={subsidiary.logoUrl}
-                                  companyName={subsidiary.name}
-                                  size="md"
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
-                                      {subsidiary.name}
-                                    </h3>
-                                    {subsidiary.verified && (
-                                      <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                    )}
-                                  </div>
-                                  <p className="text-sm text-gray-600 mt-1">
-                                    {getCompanyTypeLabel(subsidiary.companyType)}
-                                  </p>
+                      ) : (
+                        <div className="space-y-4">
+                          {company.contacts.map((contact) => (
+                            <Link
+                              key={contact.id}
+                              href={`/people/${contact.id}`}
+                              className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                            >
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+                                {contact.firstName[0]}{contact.lastName[0]}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-semibold text-gray-900 hover:text-blue-600">
+                                    {contact.fullName}
+                                  </h3>
+                                  {contact.verified && (
+                                    <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                  )}
                                 </div>
-                                <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Activity Tab */}
-                      {activeTab === 'activity' && (
-                        <div>
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-                          <div className="space-y-4">
-                            {/* Team additions from recent contacts */}
-                            {company.contacts.slice(0, 3).map((contact, index) => (
-                              <div key={`contact-${contact.id}`} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
-                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                  <UserPlus className="h-4 w-4 text-blue-600" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-gray-900">
-                                    <Link href={`/people/${contact.id}`} className="font-semibold hover:text-blue-600">
-                                      {contact.fullName}
-                                    </Link>
-                                    {' '}joined the team
-                                  </p>
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    {contact.title && `${contact.title} • `}
-                                    {index === 0 ? '2 days ago' : index === 1 ? '1 week ago' : '2 weeks ago'}
-                                  </p>
+                                {contact.title && (
+                                  <p className="text-sm text-gray-600 mt-1">{contact.title}</p>
+                                )}
+                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                                  {contact.department && (
+                                    <span>{contact.department}</span>
+                                  )}
+                                  {contact.seniority && (
+                                    <span>{contact.seniority}</span>
+                                  )}
                                 </div>
                               </div>
-                            ))}
-
-                            {/* Empty state if no activity */}
-                            {company.contacts.length === 0 && company.partnerships.length === 0 && !company.verified && (
-                              <div className="text-center py-8">
-                                <ActivityIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                                <p className="text-gray-600 text-sm">No recent activity to show</p>
-                                <p className="text-gray-500 text-xs mt-1">Activity will appear here as the team and partnerships grow</p>
-                              </div>
-                            )}
-                          </div>
+                              <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
+                            </Link>
+                          ))}
                         </div>
                       )}
                     </div>
+                  )}
+
+                  {/* Teams Tab - Shows company teams */}
+                  {activeTab === 'teams' && (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      {/* Group teams by type */}
+                      {(() => {
+                        const inHouseTeams = company.teams.filter(t => t.type !== 'ADVERTISER_TEAM');
+                        const clientTeams = company.teams.filter(t => t.type === 'ADVERTISER_TEAM');
+
+                        return (
+                          <>
+                            {/* In-House Teams */}
+                            {inHouseTeams.length > 0 && (
+                              <div className="mb-8">
+                                <h3 className="text-base font-semibold text-gray-800 mb-4">In-House Teams</h3>
+                                <div className="space-y-4">
+                                  {inHouseTeams.map((team) => (
+                                    <TeamCard key={team.id} team={team} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Agency Client Teams */}
+                            {clientTeams.length > 0 && (
+                              <div>
+                                <h3 className="text-base font-semibold text-gray-800 mb-4">Agency Client Teams</h3>
+                                <div className="space-y-4">
+                                  {clientTeams.map((team) => (
+                                    <TeamCard key={team.id} team={team} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Empty state */}
+                            {company.teams.length === 0 && (
+                              <div className="text-center py-12">
+                                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <p className="text-gray-600">No teams listed yet</p>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Duties Tab */}
+                  {activeTab === 'duties' && (
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900">Duties</h2>
+                      </div>
+
+                      {/* Filter Pills */}
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {[
+                          { value: 'ALL', label: 'All', count: duties.length },
+                          { value: 'ROLE', label: 'Roles', count: duties.filter(d => d.category === 'ROLE').length },
+                          { value: 'MEDIA_TYPE', label: 'Media Types', count: duties.filter(d => d.category === 'MEDIA_TYPE').length },
+                          { value: 'BRAND', label: 'Brands', count: duties.filter(d => d.category === 'BRAND').length },
+                          { value: 'BUSINESS_LINE', label: 'Business Lines', count: duties.filter(d => d.category === 'BUSINESS_LINE').length },
+                          { value: 'GOAL', label: 'Goals', count: duties.filter(d => d.category === 'GOAL').length },
+                          { value: 'AUDIENCE', label: 'Audiences', count: duties.filter(d => d.category === 'AUDIENCE').length },
+                          { value: 'GEOGRAPHY', label: 'Geographies', count: duties.filter(d => d.category === 'GEOGRAPHY').length }
+                        ].map((filter) => (
+                          <button
+                            key={filter.value}
+                            onClick={() => setSelectedDutyCategory(filter.value)}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                              selectedDutyCategory === filter.value
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            {filter.label} ({filter.count})
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Duties List */}
+                      {dutiesLoading ? (
+                        <div className="text-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                          <p className="text-gray-600 mt-4">Loading duties...</p>
+                        </div>
+                      ) : duties.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-600">No duties assigned yet</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {duties.map((duty) => (
+                            <div
+                              key={duty.id}
+                              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                            >
+                              <div>
+                                <h4 className="font-semibold text-gray-900">{duty.name}</h4>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {duty.category.replace(/_/g, ' ')}
+                                </p>
+                                {duty.description && (
+                                  <p className="text-sm text-gray-600 mt-2">{duty.description}</p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Partnerships Tab - Placeholder for DSP/SSP/AdTech */}
+                  {/* Subsidiaries Tab */}
+                  {activeTab === 'subsidiaries' && company._count.subsidiaries > 0 && (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Subsidiaries ({company._count.subsidiaries})</h2>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {company.subsidiaries.map((subsidiary) => (
+                          <Link
+                            key={subsidiary.id}
+                            href={`/companies/${subsidiary.id}`}
+                            className="flex items-center space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                          >
+                            <CompanyLogo
+                              logoUrl={subsidiary.logoUrl}
+                              companyName={subsidiary.name}
+                              size="md"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
+                                  {subsidiary.name}
+                                </h3>
+                                {subsidiary.verified && (
+                                  <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {getCompanyTypeLabel(subsidiary.companyType)}
+                              </p>
+                            </div>
+                            <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Activity Tab */}
+                  {activeTab === 'activity' && (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                      <div className="space-y-4">
+                        {/* Team additions from recent contacts */}
+                        {company.contacts.slice(0, 3).map((contact, index) => (
+                          <div key={`contact-${contact.id}`} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                              <UserPlus className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-gray-900">
+                                <Link href={`/people/${contact.id}`} className="font-semibold hover:text-blue-600">
+                                  {contact.fullName}
+                                </Link>
+                                {' '}joined the team
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {contact.title && `${contact.title} • `}
+                                {index === 0 ? '2 days ago' : index === 1 ? '1 week ago' : '2 weeks ago'}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* Empty state if no activity */}
+                        {company.contacts.length === 0 && company.partnerships.length === 0 && !company.verified && (
+                          <div className="text-center py-8">
+                            <ActivityIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                            <p className="text-gray-600 text-sm">No recent activity to show</p>
+                            <p className="text-gray-500 text-xs mt-1">Activity will appear here as the team and partnerships grow</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   </div>
 
-                  {/* Content outside tabs */}
+                  {/* Teams Card - Separate card for Overview tab */}
+                  {activeTab === 'overview' && totalTeams > 0 && (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold text-gray-900">
+                          What does {company.name} do? ({totalTeams} {totalTeams === 1 ? 'team' : 'teams'})
+                        </h2>
+                        <button
+                          onClick={() => setActiveTab('teams')}
+                          className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+                        >
+                          View all →
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {/* Display Organization Teams */}
+                        {company.teams.slice(0, 3).map((team) => (
+                          <div key={`org-team-${team.id}`} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors bg-white">
+                            <div className="flex items-start gap-4">
+                              {/* Company Logo */}
+                              <CompanyLogo
+                                logoUrl={company.logoUrl}
+                                companyName={team.name}
+                                size="lg"
+                                className="rounded-lg flex-shrink-0"
+                              />
+
+                              <div className="flex-1 min-w-0">
+                                {/* Team Name with Badge */}
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h3 className="text-xl font-bold text-gray-900">{team.name}</h3>
+                                  <Badge variant="outline" className="text-xs">
+                                    {team.type.replace(/_/g, ' ')}
+                                  </Badge>
+                                  {company.verified && (
+                                    <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                                  )}
+                                </div>
+
+                                {/* Team Description */}
+                                {team.description && (
+                                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                    {team.description}
+                                  </p>
+                                )}
+
+                                {/* Team Stats */}
+                                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                                  <div className="flex items-center gap-1">
+                                    <Users className="h-4 w-4" />
+                                    <span>{team._count.ContactTeam} members</span>
+                                  </div>
+                                  {team._count.PartnershipTeam > 0 && (
+                                    <div className="flex items-center gap-1">
+                                      <Briefcase className="h-4 w-4" />
+                                      <span>{team._count.PartnershipTeam} partnerships</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Status */}
+                                <div className="text-sm text-gray-500">
+                                  {team.isActive ? (
+                                    <span className="text-green-600">● Active</span>
+                                  ) : (
+                                    <span className="text-gray-400">● Inactive</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* Display Partnership Teams - show remaining slots up to 3 total */}
+                        {company.partnerships.slice(0, Math.max(0, 3 - company.teams.length)).map((partnership) => (
+                          <PartnershipCard
+                            key={`partnership-${partnership.id}`}
+                            partnership={partnership}
+                            companyName={company.name}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* People Card - Separate card for Overview tab */}
+                  {activeTab === 'overview' && company.contacts.length > 0 && (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-gray-900">
+                          People ({company._count.contacts})
+                        </h2>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="text"
+                            placeholder="Search people..."
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
+                            Add Contact
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        {company.contacts.slice(0, 2).map((contact) => {
+                          // Generate consistent color from contact name
+                          const colors = ['bg-purple-500', 'bg-pink-500', 'bg-blue-500', 'bg-green-500', 'bg-orange-500'];
+                          const colorIndex = contact.fullName.charCodeAt(0) % colors.length;
+
+                          return (
+                            <div key={contact.id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors">
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-start gap-4">
+                                  {/* Avatar */}
+                                  <div className={`w-16 h-16 rounded-full ${colors[colorIndex]} flex items-center justify-center text-white font-bold text-xl flex-shrink-0`}>
+                                    {contact.firstName[0]}{contact.lastName[0]}
+                                  </div>
+
+                                  <div className="flex-1 min-w-0">
+                                    {/* Name and Verified Badge */}
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <h3 className="text-2xl font-bold text-gray-900">{contact.fullName}</h3>
+                                      {contact.verified && (
+                                        <span className="inline-flex items-center gap-1 text-sm text-green-700 bg-green-50 px-2 py-1 rounded">
+                                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                          </svg>
+                                          Verified
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Title */}
+                                    {contact.title && (
+                                      <p className="text-lg text-gray-600 mb-3">{contact.title}</p>
+                                    )}
+
+                                    {/* Tags for Department, Seniority, and Primary Role */}
+                                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                      {contact.department && (
+                                        <span className="inline-flex items-center gap-1 text-sm text-blue-700 bg-blue-50 px-3 py-1 rounded">
+                                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                                          </svg>
+                                          {contact.department}
+                                        </span>
+                                      )}
+                                      {contact.seniority && (
+                                        <span className="inline-flex items-center text-sm text-purple-700 bg-purple-50 px-3 py-1 rounded">
+                                          {contact.seniority}
+                                        </span>
+                                      )}
+                                      {contact.primaryRole && (
+                                        <span className="inline-flex items-center gap-1 text-sm text-orange-700 bg-orange-50 px-3 py-1 rounded">
+                                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
+                                            <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                                          </svg>
+                                          {contact.primaryRole.replace(/_/g, ' ')}
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Duties/Handles */}
+                                    {contact.duties && (
+                                      <div className="mb-2">
+                                        <span className="font-medium text-gray-700">Handles: </span>
+                                        <span className="text-gray-600">
+                                          {contact.duties}
+                                        </span>
+                                      </div>
+                                    )}
+
+                                    {/* Email */}
+                                    {contact.email && (
+                                      <div className="relative group">
+                                        <button
+                                          onClick={() => copyEmail(contact.email!)}
+                                          className="flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-2 transition-colors cursor-pointer"
+                                        >
+                                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                          </svg>
+                                          <span className="text-sm">{contact.email}</span>
+                                        </button>
+                                        {/* Tooltip */}
+                                        <div className="absolute left-0 -top-8 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
+                                          {copiedEmail === contact.email ? 'Copied!' : 'Click to copy'}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Territories */}
+                                    {contact.territories && contact.territories.length > 0 && (
+                                      <div className="flex items-start gap-2 text-gray-600 mb-2">
+                                        <svg className="w-4 h-4 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span className="text-sm">
+                                          Territories: {contact.territories.join(', ')}
+                                        </span>
+                                      </div>
+                                    )}
+
+                                    {/* Accounts */}
+                                    {contact.accounts && contact.accounts.length > 0 && (
+                                      <div className="flex items-start gap-2 text-gray-600 mb-2">
+                                        <svg className="w-4 h-4 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                        <span className="text-sm">
+                                          Accounts: {contact.accounts.join(', ')}
+                                        </span>
+                                      </div>
+                                    )}
+
+                                    {/* Last Activity - calculate from updatedAt */}
+                                    <p className="text-sm text-gray-500">
+                                      Last activity: {(() => {
+                                        const now = new Date();
+                                        const updated = new Date(contact.updatedAt);
+                                        const diffMs = now.getTime() - updated.getTime();
+                                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                                        const diffDays = Math.floor(diffHours / 24);
+                                        const diffMonths = Math.floor(diffDays / 30);
+
+                                        if (diffHours < 1) return 'Just now';
+                                        if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+                                        if (diffDays < 30) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+                                        return `${diffMonths} ${diffMonths === 1 ? 'month' : 'months'} ago`;
+                                      })()}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex items-center gap-2">
+                                  <button className="p-2 text-gray-400 hover:text-gray-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  </button>
+                                  <button className="p-2 text-gray-400 hover:text-gray-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                  </button>
+                                  <button className="p-2 text-gray-400 hover:text-gray-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* View All Link */}
+                      <div className="mt-6 text-center">
+                        <button
+                          onClick={() => setActiveTab('people')}
+                          className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                        >
+                          View all {company._count.contacts} contacts →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Latest Activity Card - Separate card for Overview tab */}
+                  {activeTab === 'overview' && (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      <h2 className="text-xl font-bold text-gray-900 mb-6">
+                        Latest Activity (23 items)
+                      </h2>
+
+                      <div className="space-y-4">
+                        {/* Activity Item 1: Person joined team */}
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                              <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-900">
+                              <span className="font-semibold">Sarah Lee</span> joined the Marketing team
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">2 hours ago</p>
+                          </div>
+                        </div>
+
+                        {/* Activity Item 2: Person left company */}
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                              <svg className="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-900">
+                              <span className="font-semibold">John Smith</span> left this company to join{' '}
+                              <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+                                WPP Media LA
+                              </a>
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">1 day ago</p>
+                          </div>
+                        </div>
+
+                        {/* Activity Item 3: Contact updated */}
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                              <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-900">
+                              Contact updated: <span className="font-semibold">Mike Johnson</span>
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">by Admin • 3 days ago</p>
+                          </div>
+                        </div>
+
+                        {/* Activity Item 4: New partnership */}
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                              <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-900">
+                              New partnership: Added agency <span className="font-semibold">New Engen NY</span>
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">by Chris Wong • 5 days ago</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* View All Activity Link */}
+                      <div className="mt-6 text-center">
+                        <button
+                          onClick={() => setActiveTab('activity')}
+                          className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                        >
+                          View all activity →
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right Sidebar for NON-HOLDING companies */}

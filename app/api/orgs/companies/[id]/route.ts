@@ -27,10 +27,28 @@ export async function GET(
             name: true,
             logoUrl: true,
             companyType: true,
-            verified: true
+            agencyType: true,
+            city: true,
+            state: true,
+            country: true,
+            verified: true,
+            _count: {
+              select: {
+                contacts: {
+                  where: {
+                    isActive: true
+                  }
+                }
+              }
+            }
           },
           orderBy: {
             name: 'asc'
+          }
+        },
+        CompanyDuty: {
+          include: {
+            duty: true
           }
         },
         contacts: {
@@ -47,7 +65,11 @@ export async function GET(
             phone: true,
             verified: true,
             seniority: true,
-            department: true
+            department: true,
+            primaryRole: true,
+            territories: true,
+            accounts: true,
+            updatedAt: true
           },
           orderBy: {
             lastName: 'asc'
@@ -66,6 +88,29 @@ export async function GET(
                 companyType: true,
                 industry: true,
                 verified: true
+              }
+            },
+            PartnershipContact: {
+              include: {
+                contact: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    fullName: true,
+                    title: true,
+                    email: true,
+                    phone: true,
+                    verified: true,
+                    seniority: true,
+                    department: true,
+                    primaryRole: true,
+                    updatedAt: true
+                  }
+                }
+              },
+              orderBy: {
+                isPrimary: 'desc'
               }
             }
           },
@@ -87,10 +132,133 @@ export async function GET(
                 agencyType: true,
                 verified: true
               }
+            },
+            PartnershipContact: {
+              include: {
+                contact: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    fullName: true,
+                    title: true,
+                    email: true,
+                    phone: true,
+                    verified: true,
+                    seniority: true,
+                    department: true,
+                    primaryRole: true,
+                    updatedAt: true
+                  }
+                }
+              },
+              orderBy: {
+                isPrimary: 'desc'
+              }
             }
           },
           orderBy: {
             startDate: 'desc'
+          }
+        },
+        Team: {
+          where: {
+            isActive: true
+          },
+          include: {
+            clientCompany: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                companyType: true,
+                industry: true,
+                verified: true
+              }
+            },
+            ContactTeam: {
+              include: {
+                contact: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    fullName: true,
+                    title: true,
+                    email: true,
+                    phone: true,
+                    verified: true,
+                    seniority: true,
+                    department: true,
+                    primaryRole: true,
+                    updatedAt: true
+                  }
+                }
+              },
+              orderBy: {
+                isPrimary: 'desc'
+              }
+            },
+            _count: {
+              select: {
+                ContactTeam: true,
+                PartnershipTeam: true,
+                TeamDuty: true
+              }
+            }
+          },
+          orderBy: {
+            name: 'asc'
+          }
+        },
+        clientTeams: {
+          where: {
+            isActive: true
+          },
+          include: {
+            company: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                companyType: true,
+                agencyType: true,
+                verified: true
+              }
+            },
+            ContactTeam: {
+              include: {
+                contact: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    fullName: true,
+                    title: true,
+                    email: true,
+                    phone: true,
+                    verified: true,
+                    seniority: true,
+                    department: true,
+                    primaryRole: true,
+                    updatedAt: true
+                  }
+                }
+              },
+              orderBy: {
+                isPrimary: 'desc'
+              }
+            },
+            _count: {
+              select: {
+                ContactTeam: true,
+                PartnershipTeam: true,
+                TeamDuty: true
+              }
+            }
+          },
+          orderBy: {
+            name: 'asc'
           }
         },
         _count: {
@@ -102,6 +270,11 @@ export async function GET(
             },
             User: true,
             subsidiaries: true,
+            Team: {
+              where: {
+                isActive: true
+              }
+            },
             CompanyPartnership_agencyIdToCompany: {
               where: {
                 isActive: true
@@ -127,6 +300,7 @@ export async function GET(
     }
 
     // Format partnerships for frontend
+    // For each partnership, include the actual linked contacts from PartnershipContact
     const partnerships = [
       ...company.CompanyPartnership_agencyIdToCompany.map(p => ({
         id: p.id,
@@ -139,7 +313,22 @@ export async function GET(
         contractValue: p.contractValue,
         notes: p.notes,
         partner: p.advertiser,
-        partnerRole: 'advertiser' as const
+        partnerRole: 'advertiser' as const,
+        agency: {
+          id: company.id,
+          name: company.name,
+          logoUrl: company.logoUrl,
+          companyType: company.companyType,
+          verified: company.verified
+        },
+        advertiser: p.advertiser,
+        contacts: p.PartnershipContact.map(pc => pc.contact),
+        contactRoles: p.PartnershipContact.map(pc => ({
+          contactId: pc.contactId,
+          role: pc.role,
+          responsibilities: pc.responsibilities,
+          isPrimary: pc.isPrimary
+        }))
       })),
       ...company.CompanyPartnership_advertiserIdToCompany.map(p => ({
         id: p.id,
@@ -152,7 +341,22 @@ export async function GET(
         contractValue: p.contractValue,
         notes: p.notes,
         partner: p.agency,
-        partnerRole: 'agency' as const
+        partnerRole: 'agency' as const,
+        agency: p.agency,
+        advertiser: {
+          id: company.id,
+          name: company.name,
+          logoUrl: company.logoUrl,
+          companyType: company.companyType,
+          verified: company.verified
+        },
+        contacts: p.PartnershipContact.map(pc => pc.contact),
+        contactRoles: p.PartnershipContact.map(pc => ({
+          contactId: pc.contactId,
+          role: pc.role,
+          responsibilities: pc.responsibilities,
+          isPrimary: pc.isPrimary
+        }))
       }))
     ];
 
@@ -160,19 +364,67 @@ export async function GET(
     const partnershipCount = company.CompanyPartnership_agencyIdToCompany.length +
                             company.CompanyPartnership_advertiserIdToCompany.length;
 
+    // Format teams for frontend
+    // Include both teams owned by this company AND teams where this company is the client
+    const ownedTeams = company.Team.map(team => ({
+      id: team.id,
+      name: team.name,
+      type: team.type,
+      description: team.description,
+      isActive: team.isActive,
+      createdAt: team.createdAt?.toISOString() || null,
+      updatedAt: team.updatedAt?.toISOString() || null,
+      clientCompany: team.clientCompany,
+      agencyCompany: null, // This company owns the team
+      members: team.ContactTeam.map(ct => ({
+        ...ct.contact,
+        role: ct.role,
+        isPrimary: ct.isPrimary
+      })),
+      _count: team._count
+    }));
+
+    // Teams where this company is the client (for advertisers viewing their agencies)
+    const clientTeams = company.clientTeams.map(team => ({
+      id: team.id,
+      name: team.name,
+      type: team.type,
+      description: team.description,
+      isActive: team.isActive,
+      createdAt: team.createdAt?.toISOString() || null,
+      updatedAt: team.updatedAt?.toISOString() || null,
+      clientCompany: null, // This company is the client
+      agencyCompany: team.company, // The agency that owns this team
+      members: team.ContactTeam.map(ct => ({
+        ...ct.contact,
+        role: ct.role,
+        isPrimary: ct.isPrimary
+      })),
+      _count: team._count
+    }));
+
+    // Combine both arrays
+    const teams = [...ownedTeams, ...clientTeams];
+
     // Format response
     const formattedCompany = {
       ...company,
       partnerships,
+      duties: company.CompanyDuty?.map(cd => cd.duty) || [],
+      teams,
       _count: {
         ...company._count,
-        partnerships: partnershipCount
+        partnerships: partnershipCount,
+        teams: teams.length
       }
     };
 
-    // Remove the raw partnership arrays
+    // Remove the raw partnership and team arrays
     delete (formattedCompany as any).CompanyPartnership_agencyIdToCompany;
     delete (formattedCompany as any).CompanyPartnership_advertiserIdToCompany;
+    delete (formattedCompany as any).CompanyDuty;
+    delete (formattedCompany as any).Team;
+    delete (formattedCompany as any).clientTeams;
 
     return NextResponse.json(formattedCompany);
 
@@ -238,7 +490,8 @@ export async function PUT(
       foundedYear,
       stockSymbol,
       verified,
-      parentCompanyId
+      parentCompanyId,
+      duties
     } = body;
 
     // If parent company is being changed, verify it exists
@@ -318,6 +571,40 @@ export async function PUT(
         }
       }
     });
+
+    // Handle duties update if provided
+    if (duties !== undefined) {
+      let dutyNames: string[] = [];
+      if (typeof duties === 'string' && duties.trim()) {
+        dutyNames = duties.split(',').map((d: string) => d.trim()).filter((d: string) => d);
+      }
+
+      if (dutyNames.length > 0) {
+        const dutiesToAdd = await prisma.duty.findMany({
+          where: { name: { in: dutyNames } },
+          select: { id: true }
+        });
+
+        // Delete existing duties and add new ones
+        await prisma.companyDuty.deleteMany({
+          where: { companyId: id }
+        });
+
+        if (dutiesToAdd.length > 0) {
+          await prisma.companyDuty.createMany({
+            data: dutiesToAdd.map(duty => ({
+              companyId: id,
+              dutyId: duty.id
+            }))
+          });
+        }
+      } else {
+        // If duties is empty string, remove all duties
+        await prisma.companyDuty.deleteMany({
+          where: { companyId: id }
+        });
+      }
+    }
 
     return NextResponse.json(updatedCompany);
 
