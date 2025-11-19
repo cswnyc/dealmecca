@@ -7,6 +7,7 @@ import AuthHeader from '@/components/navigation/AuthHeader';
 import ConditionalUserProvider from '@/components/providers/conditional-user-provider';
 import { ThemeProvider } from '@/lib/theme-context';
 import ConditionalSidebar from '@/components/layout/ConditionalSidebar';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -133,6 +134,7 @@ export default function RootLayout({
             </ConditionalUserProvider>
           </FirebaseProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
