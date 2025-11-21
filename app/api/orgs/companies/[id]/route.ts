@@ -38,7 +38,83 @@ export async function GET(
                   where: {
                     isActive: true
                   }
+                },
+                subsidiaries: true
+              }
+            },
+            Team: {
+              where: {
+                isActive: true,
+                type: 'ADVERTISER_TEAM'
+              },
+              take: 100,
+              select: {
+                id: true,
+                clientCompany: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logoUrl: true,
+                    verified: true
+                  }
                 }
+              },
+              orderBy: {
+                createdAt: 'desc'
+              }
+            },
+            CompanyDuty: {
+              include: {
+                duty: true
+              }
+            },
+            subsidiaries: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                city: true,
+                state: true,
+                country: true,
+                verified: true,
+                _count: {
+                  select: {
+                    contacts: {
+                      where: {
+                        isActive: true
+                      }
+                    }
+                  }
+                },
+                Team: {
+                  where: {
+                    isActive: true,
+                    type: 'ADVERTISER_TEAM'
+                  },
+                  take: 100,
+                  select: {
+                    id: true,
+                    clientCompany: {
+                      select: {
+                        id: true,
+                        name: true,
+                        logoUrl: true,
+                        verified: true
+                      }
+                    }
+                  },
+                  orderBy: {
+                    createdAt: 'desc'
+                  }
+                },
+                CompanyDuty: {
+                  include: {
+                    duty: true
+                  }
+                }
+              },
+              orderBy: {
+                name: 'asc'
               }
             }
           },

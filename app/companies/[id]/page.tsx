@@ -12,7 +12,8 @@ import { CapabilitiesSection } from '@/components/companies/CapabilitiesSection'
 import { PartnershipCard } from '@/components/companies/PartnershipCard';
 import { TeamCard } from '@/components/companies/TeamCard';
 import { RelationshipGraph } from '@/components/companies/RelationshipGraph';
-import { HoldingCompanyView } from '@/components/companies/HoldingCompanyView';
+import { BasicHoldingCompanyView } from '@/components/companies/BasicHoldingCompanyView';
+import { MediaHoldingCompanyView } from '@/components/companies/MediaHoldingCompanyView';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import {
   Building2,
@@ -438,9 +439,13 @@ export default function CompanyDetailPage() {
   const agencies = company.partnerships.filter(p => p.partnerRole === 'agency');
   const clients = company.partnerships.filter(p => p.partnerRole === 'advertiser');
 
-  // Show holding company view for holding companies with subsidiaries
+  // Show appropriate holding company view based on type
   if (company.companyType === 'MEDIA_HOLDING_COMPANY' && company._count?.subsidiaries > 0) {
-    return <HoldingCompanyView company={company} />;
+    return <MediaHoldingCompanyView company={company} />;
+  }
+
+  if ((company.companyType === 'HOLDING_COMPANY' || company.companyType === 'HOLDING_COMPANY_AGENCY') && company._count?.subsidiaries > 0) {
+    return <BasicHoldingCompanyView company={company} />;
   }
 
   return (
@@ -501,10 +506,14 @@ export default function CompanyDetailPage() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        Add Agency
-                      </button>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -649,6 +658,63 @@ export default function CompanyDetailPage() {
 
                 {/* Right Sidebar for HOLDING COMPANIES */}
                 <div className="w-80 flex-shrink-0 space-y-6">
+                  {/* Suggest Edit Panel */}
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg overflow-hidden">
+                    <div
+                      className="flex items-center justify-between p-5 cursor-pointer hover:bg-white/50 transition-colors"
+                      onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex-shrink-0">
+                          <Lightbulb className="h-6 w-6 text-yellow-500" />
+                        </div>
+                        <h3 className="font-bold text-gray-900 text-lg">
+                          Suggest an edit for this company
+                        </h3>
+                      </div>
+                      <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform flex-shrink-0 ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
+                    </div>
+
+                    {!isSuggestEditExpanded && (
+                      <p className="px-5 pb-5 text-sm text-gray-600">
+                        Click to expand
+                      </p>
+                    )}
+
+                    {isSuggestEditExpanded && (
+                      <div className="px-5 pb-5">
+                        <div className="space-y-2 mb-4">
+                          <label className="flex items-start gap-2 text-sm">
+                            <input type="checkbox" className="mt-0.5" />
+                            <span className="text-gray-700">Should we add or remove people?</span>
+                          </label>
+                          <label className="flex items-start gap-2 text-sm">
+                            <input type="checkbox" className="mt-0.5" />
+                            <span className="text-gray-700">Are any teams no longer active?</span>
+                          </label>
+                          <label className="flex items-start gap-2 text-sm">
+                            <input type="checkbox" className="mt-0.5" />
+                            <span className="text-gray-700">Are there other agencies we should add?</span>
+                          </label>
+                        </div>
+
+                        <textarea
+                          placeholder="Write your suggestion here..."
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          rows={3}
+                        />
+
+                        <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium mb-3">
+                          Submit
+                        </button>
+
+                        <p className="text-xs text-gray-600 text-center">
+                          Share information with the community and obtain rewards when you do.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Quick Stats */}
                   <div className="bg-white border border-gray-200 rounded-lg p-6">
                     <h3 className="font-semibold text-gray-900 mb-4">Quick Stats</h3>
@@ -993,37 +1059,126 @@ export default function CompanyDetailPage() {
                   {/* Partnerships Tab - Placeholder for DSP/SSP/AdTech */}
                   {/* Subsidiaries Tab */}
                   {activeTab === 'subsidiaries' && company._count.subsidiaries > 0 && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="space-y-4">
                       <h2 className="text-lg font-semibold text-gray-900 mb-4">Subsidiaries ({company._count.subsidiaries})</h2>
-                      <div className="grid gap-4 md:grid-cols-2">
-                        {company.subsidiaries.map((subsidiary) => (
-                          <Link
-                            key={subsidiary.id}
-                            href={`/companies/${subsidiary.id}`}
-                            className="flex items-center space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                          >
-                            <CompanyLogo
-                              logoUrl={subsidiary.logoUrl}
-                              companyName={subsidiary.name}
-                              size="md"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-gray-900 hover:text-blue-600 truncate">
-                                  {subsidiary.name}
-                                </h3>
-                                {subsidiary.verified && (
-                                  <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      {company.subsidiaries.map((subsidiary) => {
+                        const clients = subsidiary.Team?.map(t => t.clientCompany).filter(Boolean) || [];
+                        const visibleClients = clients.slice(0, 3);
+                        const hiddenClientsCount = clients.length - visibleClients.length;
+                        const duties = subsidiary.CompanyDuty?.map(cd => cd.duty.name) || [];
+                        const visibleDuties = duties.slice(0, 3);
+                        const hiddenDutiesCount = duties.length - visibleDuties.length;
+                        const contactCount = subsidiary._count?.contacts || 0;
+                        const locationString = subsidiary.city && subsidiary.state
+                          ? `${subsidiary.city}, ${subsidiary.state}`
+                          : subsidiary.city || subsidiary.state || '';
+
+                        return (
+                          <div key={subsidiary.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                            <div className="flex items-start gap-3">
+                              {/* Logo */}
+                              <CompanyLogo
+                                logoUrl={subsidiary.logoUrl}
+                                companyName={subsidiary.name}
+                                size="sm"
+                                className="flex-shrink-0 mt-0.5"
+                              />
+
+                              {/* Content */}
+                              <div className="flex-1 min-w-0">
+                                {/* Title with badges */}
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Link
+                                    href={`/companies/${subsidiary.id}`}
+                                    className="font-semibold text-gray-900 hover:text-blue-600"
+                                  >
+                                    {subsidiary.name}
+                                  </Link>
+                                </div>
+
+                                {/* Clients */}
+                                {clients.length > 0 && (
+                                  <div className="text-sm text-gray-600 mb-2 flex flex-wrap items-center gap-1">
+                                    {visibleClients.map((client, index) => (
+                                      <span key={client.id}>
+                                        <CompanyLogo
+                                          logoUrl={client.logoUrl}
+                                          companyName={client.name}
+                                          size="xs"
+                                          className="inline-block align-middle mr-1"
+                                        />
+                                        <Link
+                                          href={`/companies/${client.id}`}
+                                          className="hover:text-blue-600 hover:underline align-middle"
+                                        >
+                                          {client.name}
+                                        </Link>
+                                        {index < visibleClients.length - 1 && ', '}
+                                      </span>
+                                    ))}
+                                    {hiddenClientsCount > 0 && (
+                                      <Link
+                                        href={`/companies/${subsidiary.id}`}
+                                        className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                                      >
+                                        +{hiddenClientsCount} teams
+                                      </Link>
+                                    )}
+                                  </div>
                                 )}
+
+                                {/* Duties */}
+                                {duties.length > 0 && (
+                                  <div className="text-sm text-gray-600 mb-2">
+                                    <span className="font-medium">Handles:</span> {visibleDuties.join(', ')}
+                                    {hiddenDutiesCount > 0 && (
+                                      <Link
+                                        href={`/companies/${subsidiary.id}`}
+                                        className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                                      >
+                                        +{hiddenDutiesCount} duties
+                                      </Link>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Location */}
+                                {locationString && (
+                                  <div className="text-sm text-gray-500 mb-1">
+                                    {locationString}
+                                  </div>
+                                )}
+
+                                {/* Last Activity */}
+                                <div className="text-xs text-gray-400">
+                                  Last activity: 23 hrs
+                                </div>
                               </div>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {getCompanyTypeLabel(subsidiary.companyType)}
-                              </p>
+
+                              {/* Right side: People count and action icons */}
+                              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                                {contactCount > 0 && (
+                                  <div className="text-sm text-gray-500 flex items-center gap-1">
+                                    <Users className="h-4 w-4" />
+                                    <span>{contactCount} {contactCount === 1 ? 'person' : 'people'}</span>
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-2">
+                                  <Link
+                                    href={`/admin/orgs/companies/${subsidiary.id}/edit`}
+                                    className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-50"
+                                  >
+                                    <Edit3 className="h-4 w-4" />
+                                  </Link>
+                                  <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-50">
+                                    <Bookmark className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                            <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          </Link>
-                        ))}
-                      </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
