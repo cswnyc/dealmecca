@@ -1,6 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Helper function to fetch the full parent chain (ancestors)
+async function getParentChain(companyId: string | null): Promise<Array<{ id: string; name: string; logoUrl: string | null; companyType: string }>> {
+  const chain: Array<{ id: string; name: string; logoUrl: string | null; companyType: string }> = [];
+  let currentParentId = companyId;
+
+  // Limit to 10 levels to prevent infinite loops
+  let depth = 0;
+  while (currentParentId && depth < 10) {
+    const parent = await prisma.company.findUnique({
+      where: { id: currentParentId },
+      select: {
+        id: true,
+        name: true,
+        logoUrl: true,
+        companyType: true,
+        parentCompanyId: true
+      }
+    });
+
+    if (parent) {
+      chain.unshift({ id: parent.id, name: parent.name, logoUrl: parent.logoUrl, companyType: parent.companyType });
+      currentParentId = parent.parentCompanyId;
+    } else {
+      break;
+    }
+    depth++;
+  }
+
+  return chain;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -482,12 +513,16 @@ export async function GET(
     // Combine both arrays
     const teams = [...ownedTeams, ...clientTeams];
 
+    // Get the full parent chain for breadcrumb navigation
+    const parentChain = await getParentChain(company.parentCompanyId);
+
     // Format response
     const formattedCompany = {
       ...company,
       partnerships,
       duties: company.CompanyDuty?.map(cd => cd.duty) || [],
       teams,
+      parentChain,
       _count: {
         ...company._count,
         partnerships: partnershipCount,

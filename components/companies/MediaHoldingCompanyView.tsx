@@ -60,6 +60,18 @@ interface HoldingCompanyViewProps {
     description?: string;
     companyType: string;
     subsidiaries: Subsidiary[];
+    parentCompany?: {
+      id: string;
+      name: string;
+      logoUrl?: string;
+      companyType: string;
+    };
+    parentChain?: Array<{
+      id: string;
+      name: string;
+      logoUrl?: string;
+      companyType: string;
+    }>;
     _count?: {
       contacts: number;
       subsidiaries: number;
@@ -234,8 +246,20 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
             {/* Back Button & Breadcrumb */}
             <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
               <Link href="/organizations" className="hover:text-gray-900">
-                Organizations
+                Agencies
               </Link>
+              {company.parentChain && company.parentChain.length > 0 && (
+                <>
+                  {company.parentChain.map((parent) => (
+                    <span key={parent.id} className="flex items-center gap-2">
+                      <span>›</span>
+                      <Link href={`/companies/${parent.id}`} className="hover:text-gray-900">
+                        {parent.name}
+                      </Link>
+                    </span>
+                  ))}
+                </>
+              )}
               <span>›</span>
               <span className="text-gray-900 font-medium">{company.name}</span>
             </div>

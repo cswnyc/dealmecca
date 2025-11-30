@@ -76,6 +76,12 @@ interface Company {
     logoUrl?: string;
     companyType: string;
   };
+  parentChain?: Array<{
+    id: string;
+    name: string;
+    logoUrl?: string;
+    companyType: string;
+  }>;
   subsidiaries: Array<{
     id: string;
     name: string;
@@ -459,9 +465,19 @@ export default function CompanyDetailPage() {
                 <div className="py-6">
                   {/* Breadcrumb Navigation */}
                   <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-                    <Link href="/" className="hover:text-gray-900">Home</Link>
-                    <span>›</span>
-                    <Link href="/organizations" className="hover:text-gray-900">Companies</Link>
+                    <Link href="/organizations" className="hover:text-gray-900">Agencies</Link>
+                    {company.parentChain && company.parentChain.length > 0 && (
+                      <>
+                        {company.parentChain.map((parent) => (
+                          <span key={parent.id} className="flex items-center gap-2">
+                            <span>›</span>
+                            <Link href={`/companies/${parent.id}`} className="hover:text-gray-900">
+                              {parent.name}
+                            </Link>
+                          </span>
+                        ))}
+                      </>
+                    )}
                     <span>›</span>
                     <span className="text-gray-900 font-medium">{company.name}</span>
                   </div>
@@ -771,15 +787,23 @@ export default function CompanyDetailPage() {
             {/* Breadcrumb outside card */}
             <div className="bg-white border-b border-gray-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                <div className="text-sm text-gray-500">
-                  <Link href="/" className="hover:text-gray-700">Home</Link>
-                  <span className="mx-2">›</span>
+                <div className="text-sm text-gray-500 flex items-center gap-2">
                   <Link href="/organizations" className="hover:text-gray-700">
-                    {company.companyType === 'ADVERTISER' ? 'Advertisers' :
-                     company.companyType === 'AGENCY' || company.companyType === 'INDEPENDENT_AGENCY' ? 'Agencies' :
-                     'Companies'}
+                    {company.companyType === 'ADVERTISER' ? 'Advertisers' : 'Agencies'}
                   </Link>
-                  <span className="mx-2">›</span>
+                  {company.parentChain && company.parentChain.length > 0 && (
+                    <>
+                      {company.parentChain.map((parent) => (
+                        <span key={parent.id} className="flex items-center gap-2">
+                          <span>›</span>
+                          <Link href={`/companies/${parent.id}`} className="hover:text-gray-700">
+                            {parent.name}
+                          </Link>
+                        </span>
+                      ))}
+                    </>
+                  )}
+                  <span>›</span>
                   <span className="text-gray-900">{company.name}</span>
                 </div>
               </div>
