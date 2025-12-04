@@ -26,7 +26,9 @@ export async function GET(
       }
     });
 
-    return NextResponse.json(teamDuties);
+    // Flatten the nested duty objects for the component
+    const duties = teamDuties.map(td => td.duty);
+    return NextResponse.json(duties);
   } catch (error: any) {
     console.error('[TEAM DUTIES GET ERROR]', error);
     return NextResponse.json(

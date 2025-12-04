@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CapabilitiesSection } from '@/components/companies/CapabilitiesSection';
 import { PartnershipCard } from '@/components/companies/PartnershipCard';
 import { TeamCard } from '@/components/companies/TeamCard';
+import { ContactCard } from '@/components/companies/ContactCard';
 import { RelationshipGraph } from '@/components/companies/RelationshipGraph';
 import { BasicHoldingCompanyView } from '@/components/companies/BasicHoldingCompanyView';
 import { MediaHoldingCompanyView } from '@/components/companies/MediaHoldingCompanyView';
@@ -929,37 +930,7 @@ export default function CompanyDetailPage() {
                       ) : (
                         <div className="space-y-4">
                           {company.contacts.map((contact) => (
-                            <Link
-                              key={contact.id}
-                              href={`/people/${contact.id}`}
-                              className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                            >
-                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                                {contact.firstName[0]}{contact.lastName[0]}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <h3 className="font-semibold text-gray-900 hover:text-blue-600">
-                                    {contact.fullName}
-                                  </h3>
-                                  {contact.verified && (
-                                    <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                  )}
-                                </div>
-                                {contact.title && (
-                                  <p className="text-sm text-gray-600 mt-1">{contact.title}</p>
-                                )}
-                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                                  {contact.department && (
-                                    <span>{contact.department}</span>
-                                  )}
-                                  {contact.seniority && (
-                                    <span>{contact.seniority}</span>
-                                  )}
-                                </div>
-                              </div>
-                              <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
-                            </Link>
+                            <ContactCard key={contact.id} contact={contact} />
                           ))}
                         </div>
                       )}
@@ -1263,60 +1234,7 @@ export default function CompanyDetailPage() {
                       <div className="space-y-4">
                         {/* Display Organization Teams */}
                         {company.teams.slice(0, 3).map((team) => (
-                          <div key={`org-team-${team.id}`} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors bg-white">
-                            <div className="flex items-start gap-4">
-                              {/* Company Logo */}
-                              <CompanyLogo
-                                logoUrl={company.logoUrl}
-                                companyName={team.name}
-                                size="lg"
-                                className="rounded-lg flex-shrink-0"
-                              />
-
-                              <div className="flex-1 min-w-0">
-                                {/* Team Name with Badge */}
-                                <div className="flex items-center gap-2 mb-2">
-                                  <h3 className="text-xl font-bold text-gray-900">{team.name}</h3>
-                                  <Badge variant="outline" className="text-xs">
-                                    {team.type.replace(/_/g, ' ')}
-                                  </Badge>
-                                  {company.verified && (
-                                    <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                                  )}
-                                </div>
-
-                                {/* Team Description */}
-                                {team.description && (
-                                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                                    {team.description}
-                                  </p>
-                                )}
-
-                                {/* Team Stats */}
-                                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                                  <div className="flex items-center gap-1">
-                                    <Users className="h-4 w-4" />
-                                    <span>{team._count.ContactTeam} members</span>
-                                  </div>
-                                  {team._count.PartnershipTeam > 0 && (
-                                    <div className="flex items-center gap-1">
-                                      <Briefcase className="h-4 w-4" />
-                                      <span>{team._count.PartnershipTeam} partnerships</span>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Status */}
-                                <div className="text-sm text-gray-500">
-                                  {team.isActive ? (
-                                    <span className="text-green-600">● Active</span>
-                                  ) : (
-                                    <span className="text-gray-400">● Inactive</span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          <TeamCard key={`org-team-${team.id}`} team={team} />
                         ))}
 
                         {/* Display Partnership Teams - show remaining slots up to 3 total */}
@@ -1334,186 +1252,22 @@ export default function CompanyDetailPage() {
                   {/* People Card - Separate card for Overview tab */}
                   {activeTab === 'overview' && company.contacts.length > 0 && (
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
-                      <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-gray-900">
                           People ({company._count.contacts})
                         </h2>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="text"
-                            placeholder="Search people..."
-                            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
-                            Add Contact
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => setActiveTab('people')}
+                          className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+                        >
+                          View all →
+                        </button>
                       </div>
 
                       <div className="space-y-4">
-                        {company.contacts.slice(0, 2).map((contact) => {
-                          // Generate consistent color from contact name
-                          const colors = ['bg-purple-500', 'bg-pink-500', 'bg-blue-500', 'bg-green-500', 'bg-orange-500'];
-                          const colorIndex = contact.fullName.charCodeAt(0) % colors.length;
-
-                          return (
-                            <div key={contact.id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors">
-                              <div className="flex items-start justify-between">
-                                <div className="flex items-start gap-4">
-                                  {/* Avatar */}
-                                  <div className={`w-16 h-16 rounded-full ${colors[colorIndex]} flex items-center justify-center text-white font-bold text-xl flex-shrink-0`}>
-                                    {contact.firstName[0]}{contact.lastName[0]}
-                                  </div>
-
-                                  <div className="flex-1 min-w-0">
-                                    {/* Name and Verified Badge */}
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <h3 className="text-2xl font-bold text-gray-900">{contact.fullName}</h3>
-                                      {contact.verified && (
-                                        <span className="inline-flex items-center gap-1 text-sm text-green-700 bg-green-50 px-2 py-1 rounded">
-                                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                          </svg>
-                                          Verified
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    {/* Title */}
-                                    {contact.title && (
-                                      <p className="text-lg text-gray-600 mb-3">{contact.title}</p>
-                                    )}
-
-                                    {/* Tags for Department, Seniority, and Primary Role */}
-                                    <div className="flex items-center gap-2 mb-3 flex-wrap">
-                                      {contact.department && (
-                                        <span className="inline-flex items-center gap-1 text-sm text-blue-700 bg-blue-50 px-3 py-1 rounded">
-                                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                                          </svg>
-                                          {contact.department}
-                                        </span>
-                                      )}
-                                      {contact.seniority && (
-                                        <span className="inline-flex items-center text-sm text-purple-700 bg-purple-50 px-3 py-1 rounded">
-                                          {contact.seniority}
-                                        </span>
-                                      )}
-                                      {contact.primaryRole && (
-                                        <span className="inline-flex items-center gap-1 text-sm text-orange-700 bg-orange-50 px-3 py-1 rounded">
-                                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
-                                            <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
-                                          </svg>
-                                          {contact.primaryRole.replace(/_/g, ' ')}
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    {/* Duties/Handles */}
-                                    {contact.duties && (
-                                      <div className="mb-2">
-                                        <span className="font-medium text-gray-700">Handles: </span>
-                                        <span className="text-gray-600">
-                                          {contact.duties}
-                                        </span>
-                                      </div>
-                                    )}
-
-                                    {/* Email */}
-                                    {contact.email && (
-                                      <div className="relative group">
-                                        <button
-                                          onClick={() => copyEmail(contact.email!)}
-                                          className="flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-2 transition-colors cursor-pointer"
-                                        >
-                                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                          </svg>
-                                          <span className="text-sm">{contact.email}</span>
-                                        </button>
-                                        {/* Tooltip */}
-                                        <div className="absolute left-0 -top-8 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
-                                          {copiedEmail === contact.email ? 'Copied!' : 'Click to copy'}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {/* Territories */}
-                                    {contact.territories && contact.territories.length > 0 && (
-                                      <div className="flex items-start gap-2 text-gray-600 mb-2">
-                                        <svg className="w-4 h-4 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <span className="text-sm">
-                                          Territories: {contact.territories.join(', ')}
-                                        </span>
-                                      </div>
-                                    )}
-
-                                    {/* Accounts */}
-                                    {contact.accounts && contact.accounts.length > 0 && (
-                                      <div className="flex items-start gap-2 text-gray-600 mb-2">
-                                        <svg className="w-4 h-4 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                        </svg>
-                                        <span className="text-sm">
-                                          Accounts: {contact.accounts.join(', ')}
-                                        </span>
-                                      </div>
-                                    )}
-
-                                    {/* Last Activity - calculate from updatedAt */}
-                                    <p className="text-sm text-gray-500">
-                                      Last activity: {(() => {
-                                        const now = new Date();
-                                        const updated = new Date(contact.updatedAt);
-                                        const diffMs = now.getTime() - updated.getTime();
-                                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                                        const diffDays = Math.floor(diffHours / 24);
-                                        const diffMonths = Math.floor(diffDays / 30);
-
-                                        if (diffHours < 1) return 'Just now';
-                                        if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-                                        if (diffDays < 30) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
-                                        return `${diffMonths} ${diffMonths === 1 ? 'month' : 'months'} ago`;
-                                      })()}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex items-center gap-2">
-                                  <button className="p-2 text-gray-400 hover:text-gray-600">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                  </button>
-                                  <button className="p-2 text-gray-400 hover:text-gray-600">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                    </svg>
-                                  </button>
-                                  <button className="p-2 text-gray-400 hover:text-gray-600">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* View All Link */}
-                      <div className="mt-6 text-center">
-                        <button
-                          onClick={() => setActiveTab('people')}
-                          className="text-blue-600 hover:text-blue-700 font-medium text-sm"
-                        >
-                          View all {company._count.contacts} contacts →
-                        </button>
+                        {company.contacts.slice(0, 3).map((contact) => (
+                          <ContactCard key={contact.id} contact={contact} />
+                        ))}
                       </div>
                     </div>
                   )}

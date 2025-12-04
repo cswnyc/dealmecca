@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Info, Network } from 'lucide-react';
+import { Info, Network, Plus } from 'lucide-react';
 import PartnershipModal from '@/components/admin/PartnershipModal';
 
 interface Company {
@@ -226,6 +226,16 @@ export default function CompanyViewPage() {
           </div>
 
           <div className="flex gap-2">
+            {(company.companyType === 'HOLDING_COMPANY_AGENCY' ||
+              company.companyType === 'MEDIA_HOLDING_COMPANY') && (
+              <Link
+                href={`/admin/orgs/companies/create?parentCompanyId=${company.id}&parentName=${encodeURIComponent(company.name)}`}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Subsidiary
+              </Link>
+            )}
             <Link
               href={`/admin/orgs/companies/${company.id}/edit`}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -291,7 +301,9 @@ export default function CompanyViewPage() {
           >
             Partnerships ({company._count.partnerships})
           </button>
-          {company.subsidiaries.length > 0 && (
+          {(company.companyType === 'HOLDING_COMPANY_AGENCY' ||
+            company.companyType === 'MEDIA_HOLDING_COMPANY' ||
+            company.subsidiaries.length > 0) && (
             <button
               onClick={() => setActiveTab('subsidiaries')}
               className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
@@ -592,39 +604,65 @@ export default function CompanyViewPage() {
 
       {activeTab === 'subsidiaries' && (
         <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Subsidiaries</h2>
-            <p className="text-sm text-gray-600">
-              Companies owned by this organization in the corporate hierarchy. For example, WPP owns GroupM, which owns Mindshare.
-            </p>
+          <div className="p-6 border-b border-gray-200 flex items-start justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Subsidiaries</h2>
+              <p className="text-sm text-gray-600">
+                Companies owned by this organization in the corporate hierarchy. For example, WPP owns GroupM, which owns Mindshare.
+              </p>
+            </div>
+            <Link
+              href={`/admin/orgs/companies/create?parentCompanyId=${company.id}&parentName=${encodeURIComponent(company.name)}`}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 text-sm whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              Add Subsidiary
+            </Link>
           </div>
-          <div className="divide-y divide-gray-200">
-            {company.subsidiaries.map((subsidiary) => (
-              <div key={subsidiary.id} className="p-6 hover:bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    {subsidiary.logoUrl && (
-                      <img
-                        src={subsidiary.logoUrl}
-                        alt={subsidiary.name}
-                        className="w-12 h-12 rounded-lg object-cover border border-gray-200"
-                      />
-                    )}
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{subsidiary.name}</h3>
-                      <p className="text-sm text-gray-600">{subsidiary.companyType.replace(/_/g, ' ')}</p>
+          {company.subsidiaries.length === 0 ? (
+            <div className="p-12 text-center">
+              <Network className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No subsidiaries yet</h3>
+              <p className="text-gray-600 mb-6">
+                Add regional offices, agency brands, or other subsidiary companies to build out your corporate hierarchy.
+              </p>
+              <Link
+                href={`/admin/orgs/companies/create?parentCompanyId=${company.id}&parentName=${encodeURIComponent(company.name)}`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                <Plus className="w-4 h-4" />
+                Add First Subsidiary
+              </Link>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {company.subsidiaries.map((subsidiary) => (
+                <div key={subsidiary.id} className="p-6 hover:bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {subsidiary.logoUrl && (
+                        <img
+                          src={subsidiary.logoUrl}
+                          alt={subsidiary.name}
+                          className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{subsidiary.name}</h3>
+                        <p className="text-sm text-gray-600">{subsidiary.companyType.replace(/_/g, ' ')}</p>
+                      </div>
                     </div>
+                    <Link
+                      href={`/admin/orgs/companies/${subsidiary.id}`}
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
+                      View →
+                    </Link>
                   </div>
-                  <Link
-                    href={`/admin/orgs/companies/${subsidiary.id}`}
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                  >
-                    View →
-                  </Link>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

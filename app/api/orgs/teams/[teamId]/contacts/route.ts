@@ -34,7 +34,9 @@ export async function GET(
       ]
     });
 
-    return NextResponse.json(teamContacts);
+    // Flatten the nested contact objects for the component
+    const contacts = teamContacts.map(tc => tc.contact);
+    return NextResponse.json(contacts);
   } catch (error: any) {
     console.error('[TEAM CONTACTS GET ERROR]', error);
     return NextResponse.json(

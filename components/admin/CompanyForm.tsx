@@ -143,6 +143,8 @@ interface CompanyFormProps {
   onSave?: (companyData: any) => Promise<void>;
   onDelete?: () => Promise<void>;
   onCancel?: () => void;
+  initialParentCompanyId?: string;
+  initialParentName?: string;
 }
 
 interface FormData {
@@ -188,7 +190,7 @@ interface DuplicateError {
   };
 }
 
-export default function CompanyForm({ mode, company, onSave, onDelete, onCancel }: CompanyFormProps) {
+export default function CompanyForm({ mode, company, onSave, onDelete, onCancel, initialParentCompanyId, initialParentName }: CompanyFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -240,7 +242,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
     linkedinUrl: company?.linkedinUrl || '',
     twitterHandle: company?.twitterHandle || '',
     revenue: company?.revenue || '',
-    parentCompanyId: company?.parentCompany?.id || '',
+    parentCompanyId: company?.parentCompany?.id || initialParentCompanyId || '',
     verified: company?.verified || false
   });
 
@@ -859,6 +861,18 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
         </div>
       </div>
 
+      {/* Subsidiary Creation Banner */}
+      {mode === 'create' && initialParentName && (
+        <Alert className="bg-green-50 border-green-200">
+          <Building2 className="h-4 w-4 text-green-600" />
+          <AlertTitle className="text-green-800">Creating Subsidiary Company</AlertTitle>
+          <AlertDescription className="text-green-700">
+            This company will be created as a subsidiary of <strong>{initialParentName}</strong>.
+            The parent company relationship will be automatically set.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Duplicate Company Alert */}
       {duplicateError && (
         <Alert variant="destructive">
@@ -1365,39 +1379,58 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel 
               <div>
                 <Label>Parent Company</Label>
                 <div className="space-y-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      placeholder="Search parent companies..."
-                      value={companySearchTerm}
-                      onChange={(e) => setCompanySearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <Select
-                    value={formData.parentCompanyId}
-                    onValueChange={(value) => updateFormData('parentCompanyId', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select parent company (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">No parent company</SelectItem>
-                      {filteredCompanies.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {c.name} ({c.companyType.replace(/_/g, ' ')})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {getSelectedParentCompany() && (
-                    <div className="p-2 bg-blue-50 rounded border border-blue-200">
-                      <div className="flex items-center space-x-2">
-                        <Building2 className="w-4 h-4 text-blue-600" />
-                        <span className="font-medium text-blue-900">{getSelectedParentCompany()?.name}</span>
-                        <Badge variant="outline">{getSelectedParentCompany()?.companyType.replace(/_/g, ' ')}</Badge>
+                  {/* If creating a subsidiary with pre-filled parent, show locked display */}
+                  {mode === 'create' && initialParentCompanyId && initialParentName ? (
+                    <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Building2 className="w-4 h-4 text-green-600" />
+                          <span className="font-medium text-green-900">{initialParentName}</span>
+                          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Parent Company</Badge>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">Locked</Badge>
                       </div>
+                      <p className="text-xs text-green-700 mt-1">
+                        This subsidiary will be created under the parent company above.
+                      </p>
                     </div>
+                  ) : (
+                    <>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Search parent companies..."
+                          value={companySearchTerm}
+                          onChange={(e) => setCompanySearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                      <Select
+                        value={formData.parentCompanyId}
+                        onValueChange={(value) => updateFormData('parentCompanyId', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select parent company (optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">No parent company</SelectItem>
+                          {filteredCompanies.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.name} ({c.companyType.replace(/_/g, ' ')})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {getSelectedParentCompany() && (
+                        <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                          <div className="flex items-center space-x-2">
+                            <Building2 className="w-4 h-4 text-blue-600" />
+                            <span className="font-medium text-blue-900">{getSelectedParentCompany()?.name}</span>
+                            <Badge variant="outline">{getSelectedParentCompany()?.companyType.replace(/_/g, ' ')}</Badge>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
