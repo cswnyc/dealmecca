@@ -1168,10 +1168,6 @@ export default function EditForumPost() {
               <p className="text-gray-600">{post._count.comments}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-700">Votes:</span>
-              <p className="text-gray-600">{post.upvotes - post.downvotes}</p>
-            </div>
-            <div>
               <span className="font-medium text-gray-700">Created:</span>
               <p className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</p>
             </div>

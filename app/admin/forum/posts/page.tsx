@@ -14,7 +14,6 @@ import {
   ExternalLink,
   Building2,
   User,
-  ThumbsUp,
   MessageCircle,
   Flag,
   CheckSquare,
@@ -519,10 +518,6 @@ export default function ForumPostsAdmin() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex items-center space-x-3">
-                          <div className="flex items-center">
-                            <ThumbsUp className="w-4 h-4 mr-1" />
-                            {post.upvotes}
-                          </div>
                           <div className="flex items-center">
                             <MessageCircle className="w-4 h-4 mr-1" />
                             {post._count?.comments || 0}
