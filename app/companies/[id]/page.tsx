@@ -190,6 +190,20 @@ export default function CompanyDetailPage() {
   const [dutiesLoading, setDutiesLoading] = useState(false);
   const [selectedDutyCategory, setSelectedDutyCategory] = useState<string>('ALL');
 
+  // Activity state
+  const [activities, setActivities] = useState<Array<{
+    id: string;
+    type: 'CONTACT_JOINED' | 'CONTACT_UPDATED' | 'TEAM_ASSIGNED';
+    title: string;
+    description?: string;
+    contactId: string;
+    contactName: string;
+    createdAt: string;
+  }>>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(false);
+  const [activitiesTotal, setActivitiesTotal] = useState(0);
+  const [activitiesOffset, setActivitiesOffset] = useState(0);
+
   // Filter subsidiaries based on search query
   const filteredSubsidiaries = useMemo(() => {
     if (!company || !company.subsidiaries) return [];
@@ -297,6 +311,39 @@ export default function CompanyDetailPage() {
     fetchDuties();
   }, [companyId, activeTab, selectedDutyCategory]);
 
+  // Fetch activity when activity tab is active or for overview preview
+  useEffect(() => {
+    const fetchActivity = async () => {
+      if (!companyId) return;
+      // Fetch activity for overview (preview) or activity tab
+      if (activeTab !== 'activity' && activeTab !== 'overview') return;
+
+      try {
+        setActivitiesLoading(true);
+        const limit = activeTab === 'overview' ? 4 : 20;
+        const response = await fetch(
+          `/api/orgs/companies/${companyId}/activity?limit=${limit}&offset=${activitiesOffset}`,
+          { credentials: 'include' }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (activitiesOffset === 0) {
+            setActivities(data.activities || []);
+          } else {
+            setActivities(prev => [...prev, ...(data.activities || [])]);
+          }
+          setActivitiesTotal(data.total || 0);
+        }
+      } catch (err) {
+        console.error('Error fetching activity:', err);
+      } finally {
+        setActivitiesLoading(false);
+      }
+    };
+
+    fetchActivity();
+  }, [companyId, activeTab, activitiesOffset]);
 
   // Toggle follow
   const handleToggleFollow = async () => {
@@ -372,6 +419,39 @@ export default function CompanyDetailPage() {
       newExpanded.add(agencyId);
     }
     setExpandedAgencies(newExpanded);
+  };
+
+  // Format relative time
+  const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffWeeks = Math.floor(diffDays / 7);
+    const diffMonths = Math.floor(diffDays / 30);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins} min${diffMins === 1 ? '' : 's'} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    if (diffWeeks < 4) return `${diffWeeks} week${diffWeeks === 1 ? '' : 's'} ago`;
+    return `${diffMonths} month${diffMonths === 1 ? '' : 's'} ago`;
+  };
+
+  // Get activity icon and color based on type
+  const getActivityStyle = (type: string) => {
+    switch (type) {
+      case 'CONTACT_JOINED':
+        return { bgColor: 'bg-blue-100', iconColor: 'text-blue-600', Icon: UserPlus };
+      case 'CONTACT_UPDATED':
+        return { bgColor: 'bg-green-100', iconColor: 'text-green-600', Icon: Edit3 };
+      case 'TEAM_ASSIGNED':
+        return { bgColor: 'bg-purple-100', iconColor: 'text-purple-600', Icon: Users };
+      default:
+        return { bgColor: 'bg-gray-100', iconColor: 'text-gray-600', Icon: ActivityIcon };
+    }
   };
 
   const copyEmail = async (email: string) => {
@@ -1180,35 +1260,61 @@ export default function CompanyDetailPage() {
                   {/* Activity Tab */}
                   {activeTab === 'activity' && (
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                        Recent Activity {activitiesTotal > 0 && `(${activitiesTotal})`}
+                      </h2>
                       <div className="space-y-4">
-                        {/* Team additions from recent contacts */}
-                        {company.contacts.slice(0, 3).map((contact, index) => (
-                          <div key={`contact-${contact.id}`} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                              <UserPlus className="h-4 w-4 text-blue-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm text-gray-900">
-                                <Link href={`/people/${contact.id}`} className="font-semibold hover:text-blue-600">
-                                  {contact.fullName}
-                                </Link>
-                                {' '}joined the team
-                              </p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                {contact.title && `${contact.title} • `}
-                                {index === 0 ? '2 days ago' : index === 1 ? '1 week ago' : '2 weeks ago'}
-                              </p>
-                            </div>
+                        {/* Loading state */}
+                        {activitiesLoading && activities.length === 0 && (
+                          <div className="text-center py-8">
+                            <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+                            <p className="text-gray-500 text-sm">Loading activity...</p>
                           </div>
-                        ))}
+                        )}
+
+                        {/* Activity items */}
+                        {activities.map((activity) => {
+                          const { bgColor, iconColor, Icon } = getActivityStyle(activity.type);
+                          return (
+                            <div key={activity.id} className="flex items-start space-x-3 pb-4 border-b last:border-0 last:pb-0">
+                              <div className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}>
+                                <Icon className={`h-4 w-4 ${iconColor}`} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-gray-900">
+                                  <Link href={`/people/${activity.contactId}`} className="font-semibold hover:text-blue-600">
+                                    {activity.contactName}
+                                  </Link>
+                                  {' '}{activity.type === 'CONTACT_JOINED' ? 'joined' : activity.type === 'CONTACT_UPDATED' ? 'profile updated' : activity.title.replace(activity.contactName, '').trim()}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {activity.description && `${activity.description} • `}
+                                  {formatRelativeTime(activity.createdAt)}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* Load more button */}
+                        {activities.length < activitiesTotal && (
+                          <div className="text-center pt-4">
+                            <button
+                              onClick={() => setActivitiesOffset(prev => prev + 20)}
+                              disabled={activitiesLoading}
+                              className="text-blue-600 hover:text-blue-700 font-medium text-sm disabled:opacity-50"
+                            >
+                              {activitiesLoading ? 'Loading...' : 'Load more'}
+                            </button>
+                          </div>
+                        )}
 
                         {/* Empty state if no activity */}
-                        {company.contacts.length === 0 && company.partnerships.length === 0 && !company.verified && (
+                        {!activitiesLoading && activities.length === 0 && (
                           <div className="text-center py-8">
                             <ActivityIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
                             <p className="text-gray-600 text-sm">No recent activity to show</p>
-                            <p className="text-gray-500 text-xs mt-1">Activity will appear here as the team and partnerships grow</p>
+                            <p className="text-gray-500 text-xs mt-1">Activity will appear here as the team grows</p>
                           </div>
                         )}
                       </div>
@@ -1276,91 +1382,63 @@ export default function CompanyDetailPage() {
                   {activeTab === 'overview' && (
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
                       <h2 className="text-xl font-bold text-gray-900 mb-6">
-                        Latest Activity (23 items)
+                        Latest Activity {activitiesTotal > 0 && `(${activitiesTotal} items)`}
                       </h2>
 
                       <div className="space-y-4">
-                        {/* Activity Item 1: Person joined team */}
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                              <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-                              </svg>
-                            </div>
+                        {/* Loading state */}
+                        {activitiesLoading && activities.length === 0 && (
+                          <div className="text-center py-4">
+                            <div className="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-gray-900">
-                              <span className="font-semibold">Sarah Lee</span> joined the Marketing team
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">2 hours ago</p>
-                          </div>
-                        </div>
+                        )}
 
-                        {/* Activity Item 2: Person left company */}
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                              <svg className="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                              </svg>
+                        {/* Activity items */}
+                        {activities.slice(0, 4).map((activity) => {
+                          const { bgColor, iconColor, Icon } = getActivityStyle(activity.type);
+                          return (
+                            <div key={activity.id} className="flex items-start gap-4">
+                              <div className="flex-shrink-0">
+                                <div className={`w-12 h-12 rounded-full ${bgColor} flex items-center justify-center`}>
+                                  <Icon className={`w-6 h-6 ${iconColor}`} />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-gray-900">
+                                  <Link href={`/people/${activity.contactId}`} className="font-semibold hover:text-blue-600">
+                                    {activity.contactName}
+                                  </Link>
+                                  {' '}{activity.type === 'CONTACT_JOINED' ? 'joined' : activity.type === 'CONTACT_UPDATED' ? 'profile updated' : activity.title.replace(activity.contactName, '').trim()}
+                                </p>
+                                <p className="text-sm text-gray-500 mt-1">
+                                  {activity.description && `${activity.description} • `}
+                                  {formatRelativeTime(activity.createdAt)}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-gray-900">
-                              <span className="font-semibold">John Smith</span> left this company to join{' '}
-                              <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
-                                WPP Media LA
-                              </a>
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">1 day ago</p>
-                          </div>
-                        </div>
+                          );
+                        })}
 
-                        {/* Activity Item 3: Contact updated */}
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                              <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                              </svg>
-                            </div>
+                        {/* Empty state */}
+                        {!activitiesLoading && activities.length === 0 && (
+                          <div className="text-center py-4">
+                            <ActivityIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                            <p className="text-gray-500 text-sm">No recent activity</p>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-gray-900">
-                              Contact updated: <span className="font-semibold">Mike Johnson</span>
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">by Admin • 3 days ago</p>
-                          </div>
-                        </div>
-
-                        {/* Activity Item 4: New partnership */}
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                              <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-gray-900">
-                              New partnership: Added agency <span className="font-semibold">New Engen NY</span>
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">by Chris Wong • 5 days ago</p>
-                          </div>
-                        </div>
+                        )}
                       </div>
 
                       {/* View All Activity Link */}
-                      <div className="mt-6 text-center">
-                        <button
-                          onClick={() => setActiveTab('activity')}
-                          className="text-blue-600 hover:text-blue-700 font-medium text-sm"
-                        >
-                          View all activity →
-                        </button>
-                      </div>
+                      {activitiesTotal > 4 && (
+                        <div className="mt-6 text-center">
+                          <button
+                            onClick={() => setActiveTab('activity')}
+                            className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                          >
+                            View all activity →
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

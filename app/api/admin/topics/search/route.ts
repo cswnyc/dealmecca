@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const suggestions: EntitySuggestion[] = [];
 
     // Search Companies - simplified query first
-    const companies = await prisma.companies.findMany({
+    const companies = await prisma.company.findMany({
       where: {
         name: { contains: searchTerm, mode: 'insensitive' }
       },
@@ -77,9 +77,12 @@ export async function POST(request: NextRequest) {
     });
 
     // Search Contacts
-    const contacts = await prisma.contacts.findMany({
+    const contacts = await prisma.contact.findMany({
       where: {
-        firstName: { contains: searchTerm, mode: 'insensitive' }
+        OR: [
+          { firstName: { contains: searchTerm, mode: 'insensitive' } },
+          { lastName: { contains: searchTerm, mode: 'insensitive' } }
+        ]
       },
       select: {
         id: true,
@@ -116,7 +119,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Search Existing Topics
-    const topics = await prisma.Topic.findMany({
+    const topics = await prisma.topic.findMany({
       where: {
         name: { contains: searchTerm, mode: 'insensitive' },
         isActive: true
@@ -150,7 +153,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Search Categories
-    const categories = await prisma.ForumCategory.findMany({
+    const categories = await prisma.forumCategory.findMany({
       where: {
         name: { contains: searchTerm, mode: 'insensitive' }
       },

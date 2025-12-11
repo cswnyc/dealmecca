@@ -22,6 +22,14 @@ export async function GET(
                 logoUrl: true,
                 companyType: true
               }
+            },
+            clientCompany: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                companyType: true
+              }
             }
           }
         }
@@ -99,6 +107,14 @@ export async function POST(
         team: {
           include: {
             company: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                companyType: true
+              }
+            },
+            clientCompany: {
               select: {
                 id: true,
                 name: true,

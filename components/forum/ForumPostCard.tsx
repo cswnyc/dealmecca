@@ -736,35 +736,40 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               {post.postType === 'poll' ? (
                 /* For polls, always show "Polls" as the main topic */
                 <span className="font-semibold text-gray-900 dark:text-white text-lg">Polls</span>
+              ) : post.primaryTopic ? (
+                // Display primary topic prominently - works for both anonymous and non-anonymous posts
+                <div className="flex items-center space-x-1">
+                  <Link
+                    href={
+                      post.primaryTopicType === 'company' ? `/orgs/companies/${post.primaryTopicId}` :
+                      post.primaryTopicType === 'agency' ? `/orgs/companies/${post.primaryTopicId}` :
+                      post.primaryTopicType === 'advertiser' ? `/orgs/companies/${post.primaryTopicId}` :
+                      post.primaryTopicType === 'publisher' ? `/orgs/companies/${post.primaryTopicId}` :
+                      post.primaryTopicType === 'dsp_ssp' ? `/orgs/companies/${post.primaryTopicId}` :
+                      post.primaryTopicType === 'adtech' ? `/orgs/companies/${post.primaryTopicId}` :
+                      post.primaryTopicType === 'industry' ? `/orgs/companies/${post.primaryTopicId}` :
+                      post.primaryTopicType === 'contact' ? `/people/${post.primaryTopicId}` :
+                      `/topics/${post.primaryTopicId}`
+                    }
+                    className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center space-x-1"
+                  >
+                    <span>{post.primaryTopic.name}</span>
+                    {post.primaryTopic.verified && (
+                      <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                    )}
+                  </Link>
+                  {/* Show expandable additional topics if there are company/contact mentions */}
+                  {((post.companyMentions && post.companyMentions.length > 0) || (post.contactMentions && post.contactMentions.length > 0)) && (
+                    <AdditionalMentionsDisplay
+                      companyMentions={post.companyMentions || []}
+                      contactMentions={post.contactMentions || []}
+                    />
+                  )}
+                </div>
               ) : !post.isAnonymous ? (
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  {/* Primary Display - Prioritize Primary Topic, then Topics, then Company */}
-                  {post.primaryTopic ? (
-                    // Display primary topic prominently with count if there are additional mentions
-                    <div className="flex items-center space-x-1">
-                      <Link
-                        href={
-                          post.primaryTopicType === 'company' ? `/orgs/companies/${post.primaryTopicId}` :
-                          post.primaryTopicType === 'agency' ? `/orgs/agencies/${post.primaryTopicId}` :
-                          post.primaryTopicType === 'contact' ? `/contacts/${post.primaryTopicId}` :
-                          `/topics/${post.primaryTopicId}`
-                        }
-                        className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center space-x-1"
-                      >
-                        <span>{post.primaryTopic.name}</span>
-                        {post.primaryTopic.verified && (
-                          <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
-                        )}
-                      </Link>
-                      {/* Show expandable additional topics if there are company/contact mentions */}
-                      {((post.companyMentions && post.companyMentions.length > 0) || (post.contactMentions && post.contactMentions.length > 0)) && (
-                        <AdditionalMentionsDisplay
-                          companyMentions={post.companyMentions || []}
-                          contactMentions={post.contactMentions || []}
-                        />
-                      )}
-                    </div>
-                  ) : post.topicMentions && post.topicMentions.length > 0 ? (
+                  {/* Secondary Display - Topics, then Company (only for non-anonymous) */}
+                  {post.topicMentions && post.topicMentions.length > 0 ? (
                     // Display expandable topics
                     <div className="w-full">
                       <MultiTopicDisplay
@@ -811,6 +816,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                   )}
                 </div>
               ) : (
+                // Anonymous posts without primary topic - show category
                 <Link
                   href={`/forum?category=${post.category.slug}`}
                   className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors no-underline"

@@ -161,7 +161,10 @@ export async function GET(request: NextRequest) {
       category: post.ForumCategory,
       companyMentions: post.CompanyMention,
       contactMentions: post.ContactMention,
-      _count: post._count
+      _count: {
+        comments: post._count.ForumComment,
+        views: post.views || 0
+      }
     }));
 
     return NextResponse.json({

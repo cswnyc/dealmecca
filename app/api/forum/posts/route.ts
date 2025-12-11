@@ -250,31 +250,26 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
       if (!primaryTopicType || !primaryTopicId) return null;
 
       try {
-        switch (primaryTopicType) {
-          case 'company':
-            const company = await prisma.Company.findUnique({
-              where: { id: primaryTopicId },
-              select: { id: true, name: true, logoUrl: true, verified: true }
-            });
-            return company ? { ...company, type: 'company' } : null;
+        // Company types are: company, agency, advertiser, publisher, dsp_ssp, adtech, industry
+        const companyTypes = ['company', 'agency', 'advertiser', 'publisher', 'dsp_ssp', 'adtech', 'industry'];
 
-          case 'agency':
-            const agency = await prisma.Company.findUnique({
-              where: { id: primaryTopicId },
-              select: { id: true, name: true, logoUrl: true, verified: true }
-            });
-            return agency ? { ...agency, type: 'agency' } : null;
-
-          case 'contact':
-            const contact = await prisma.Contact.findUnique({
-              where: { id: primaryTopicId },
-              select: { id: true, firstName: true, lastName: true, title: true }
-            });
-            return contact ? { id: contact.id, name: `${contact.firstName} ${contact.lastName}`, type: 'contact', description: contact.title } : null;
-
-          default:
-            return null;
+        if (companyTypes.includes(primaryTopicType)) {
+          const companyEntity = await prisma.company.findUnique({
+            where: { id: primaryTopicId },
+            select: { id: true, name: true, logoUrl: true, verified: true }
+          });
+          return companyEntity ? { ...companyEntity, type: primaryTopicType } : null;
         }
+
+        if (primaryTopicType === 'contact') {
+          const contact = await prisma.contact.findUnique({
+            where: { id: primaryTopicId },
+            select: { id: true, firstName: true, lastName: true, title: true }
+          });
+          return contact ? { id: contact.id, name: `${contact.firstName} ${contact.lastName}`, type: 'contact', description: contact.title } : null;
+        }
+
+        return null;
       } catch (error) {
         console.error('Error fetching primary topic:', error);
         return null;
@@ -592,7 +587,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
           if (topicGroup.companies.length > 0) {
             const validCompanies = [];
             for (const company of topicGroup.companies) {
-              const exists = await prisma.Company.findUnique({ where: { id: company.id } });
+              const exists = await prisma.company.findUnique({ where: { id: company.id } });
               if (exists) {
                 validCompanies.push(company);
               } else {
@@ -618,7 +613,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
           if (topicGroup.contacts.length > 0) {
             const validContacts = [];
             for (const contact of topicGroup.contacts) {
-              const exists = await prisma.Contact.findUnique({ where: { id: contact.id } });
+              const exists = await prisma.contact.findUnique({ where: { id: contact.id } });
               if (exists) {
                 validContacts.push(contact);
               } else {
@@ -666,7 +661,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
         // Validate company IDs before creating mentions
         const validCompanyMentions = [];
         for (const mention of companyMentions) {
-          const exists = await prisma.Company.findUnique({ where: { id: mention.id } });
+          const exists = await prisma.company.findUnique({ where: { id: mention.id } });
           if (exists) {
             validCompanyMentions.push(mention);
           } else {
@@ -690,7 +685,7 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
         // Validate contact IDs before creating mentions
         const validContactMentions = [];
         for (const mention of contactMentions) {
-          const exists = await prisma.Contact.findUnique({ where: { id: mention.id } });
+          const exists = await prisma.contact.findUnique({ where: { id: mention.id } });
           if (exists) {
             validContactMentions.push(mention);
           } else {

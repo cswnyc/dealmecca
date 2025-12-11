@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const post = await prisma.forumPost.findUnique({
       where: { id },
@@ -30,18 +30,19 @@ export async function GET(
         },
         CompanyMention: {
           include: {
-            companies: {
+            company: {
               select: {
                 id: true,
                 name: true,
-                slug: true
+                slug: true,
+                companyType: true
               }
             }
           }
         },
         ContactMention: {
           include: {
-            contacts: {
+            contact: {
               select: {
                 id: true,
                 firstName: true,
@@ -71,7 +72,7 @@ export async function GET(
     if (post.primaryTopicId && post.primaryTopicType) {
       try {
         if (post.primaryTopicType === 'contact') {
-          const contact = await prisma.contacts.findUnique({
+          const contact = await prisma.contact.findUnique({
             where: { id: post.primaryTopicId },
             select: {
               id: true,
@@ -90,7 +91,7 @@ export async function GET(
           }
         } else {
           // For companies (agency, advertiser, industry, publisher, dsp_ssp, adtech, company)
-          const company = await prisma.companies.findUnique({
+          const company = await prisma.company.findUnique({
             where: { id: post.primaryTopicId },
             select: {
               id: true,
@@ -163,10 +164,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const {
       content,
@@ -188,13 +189,26 @@ export async function PUT(
     const contactIds: string[] = [];
     const regularTopicIds: string[] = [];
 
+    // Company-type entity prefixes (all stored in Company table)
+    const companyTypePrefixes = [
+      'entity-company-',
+      'entity-agency-',
+      'entity-advertiser-',
+      'entity-industry-',
+      'entity-publisher-',
+      'entity-dsp_ssp-',
+      'entity-adtech-'
+    ];
+
     if (topicIds && Array.isArray(topicIds)) {
       topicIds.forEach((topicId: string) => {
-        if (topicId.startsWith('entity-company-')) {
-          companyIds.push(topicId.replace('entity-company-', ''));
+        // Check if it's a company-type entity
+        const companyPrefix = companyTypePrefixes.find(prefix => topicId.startsWith(prefix));
+        if (companyPrefix) {
+          companyIds.push(topicId.replace(companyPrefix, ''));
         } else if (topicId.startsWith('entity-contact-')) {
           contactIds.push(topicId.replace('entity-contact-', ''));
-        } else if (!topicId.startsWith('manual-')) {
+        } else if (!topicId.startsWith('manual-') && !topicId.startsWith('entity-')) {
           regularTopicIds.push(topicId);
         }
       });
@@ -292,18 +306,19 @@ export async function PUT(
         },
         CompanyMention: {
           include: {
-            companies: {
+            company: {
               select: {
                 id: true,
                 name: true,
-                slug: true
+                slug: true,
+                companyType: true
               }
             }
           }
         },
         ContactMention: {
           include: {
-            contacts: {
+            contact: {
               select: {
                 id: true,
                 firstName: true,
@@ -335,10 +350,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     await prisma.forumPost.delete({
       where: { id }

@@ -355,14 +355,18 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
       setCreatingTeam(true);
 
       // Create team via API
+      // For agency teams: companyId = agency (current company), clientCompanyId = advertiser
+      // For in-house teams: companyId = advertiser
+      const isAgencyTeam = newTeamType === 'AGENCY';
       const response = await fetch('/api/orgs/teams', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: newTeamName.trim(),
-          companyId: selectedAdvertiserId,
-          type: newTeamType === 'IN_HOUSE' ? 'ADVERTISER_TEAM' : 'AGENCY_TEAM',
-          description: `${newTeamName.trim()} - ${newTeamType === 'IN_HOUSE' ? 'In-House Team' : 'Agency Team'}`
+          companyId: isAgencyTeam ? company?.id : selectedAdvertiserId,
+          clientCompanyId: isAgencyTeam ? selectedAdvertiserId : undefined,
+          type: isAgencyTeam ? 'AGENCY_TEAM' : 'ADVERTISER_TEAM',
+          description: `${newTeamName.trim()} - ${isAgencyTeam ? 'Agency Team' : 'In-House Team'}`
         })
       });
 
@@ -1561,14 +1565,14 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <Label htmlFor="advertiserSearch">Search Advertiser *</Label>
+                  <Label htmlFor="advertiserSearch">Search Client/Advertiser *</Label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="advertiserSearch"
                       value={advertiserSearchTerm}
                       onChange={(e) => setAdvertiserSearchTerm(e.target.value)}
-                      placeholder="Search by company name, city, or state..."
+                      placeholder="Search by advertiser name, city, or state..."
                       className="pl-10"
                     />
                   </div>
@@ -1697,9 +1701,9 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                   {duties.length} {duties.length !== 1 ? 'duties' : 'duty'}
                                 </Badge>
                               </div>
-                              {team.company && (
+                              {team.clientCompany && (
                                 <p className="text-xs text-gray-500 mt-1">
-                                  Company: {team.company.name}
+                                  Client: {team.clientCompany.name}
                                 </p>
                               )}
                             </div>

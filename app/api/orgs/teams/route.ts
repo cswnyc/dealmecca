@@ -30,6 +30,14 @@ export async function GET(request: NextRequest) {
             companyType: true
           }
         },
+        clientCompany: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+            companyType: true
+          }
+        },
         ContactTeam: {
           include: {
             contact: {
@@ -91,7 +99,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, companyId, description, type } = body;
+    const { name, companyId, clientCompanyId, description, type } = body;
 
     if (!name || !companyId) {
       return NextResponse.json(
@@ -121,11 +129,20 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         companyId,
+        clientCompanyId: clientCompanyId || null,
         description: description || null,
         type: type || 'INTERNAL_TEAM'
       },
       include: {
         company: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+            companyType: true
+          }
+        },
+        clientCompany: {
           select: {
             id: true,
             name: true,

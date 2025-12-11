@@ -54,39 +54,21 @@ interface ContactCardProps {
 
 export function ContactCard({ contact }: ContactCardProps) {
   const [teams, setTeams] = useState<ContactTeam[]>([]);
-  const [duties, setDuties] = useState<string[]>([]);
+  const [duties, setDuties] = useState<Duty[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(false);
+  const [loadingDuties, setLoadingDuties] = useState(false);
   const [showAllTeams, setShowAllTeams] = useState(false);
+  const [showAllDuties, setShowAllDuties] = useState(false);
 
   // Fetch contact's teams on mount
   useEffect(() => {
-    const fetchContactData = async () => {
+    const fetchTeams = async () => {
       setLoadingTeams(true);
       try {
         const response = await fetch(`/api/orgs/contacts/${contact.id}/teams`);
         if (response.ok) {
           const data = await response.json();
           setTeams(data || []);
-
-          // Extract unique duties from teams (if available in data)
-          // For now, we'll gather duties from team duties API
-          const allDuties: string[] = [];
-          for (const ct of data) {
-            try {
-              const dutiesRes = await fetch(`/api/orgs/teams/${ct.team.id}/duties`);
-              if (dutiesRes.ok) {
-                const dutiesData = await dutiesRes.json();
-                dutiesData.forEach((d: Duty) => {
-                  if (!allDuties.includes(d.name)) {
-                    allDuties.push(d.name);
-                  }
-                });
-              }
-            } catch (e) {
-              // Ignore individual duty fetch errors
-            }
-          }
-          setDuties(allDuties);
         }
       } catch (error) {
         console.error('Error fetching contact teams:', error);
@@ -95,7 +77,27 @@ export function ContactCard({ contact }: ContactCardProps) {
       }
     };
 
-    fetchContactData();
+    fetchTeams();
+  }, [contact.id]);
+
+  // Fetch contact's duties directly
+  useEffect(() => {
+    const fetchDuties = async () => {
+      setLoadingDuties(true);
+      try {
+        const response = await fetch(`/api/orgs/contacts/${contact.id}/duties`);
+        if (response.ok) {
+          const data = await response.json();
+          setDuties(data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching contact duties:', error);
+      } finally {
+        setLoadingDuties(false);
+      }
+    };
+
+    fetchDuties();
   }, [contact.id]);
 
   const getInitials = () => {
@@ -140,7 +142,7 @@ export function ContactCard({ contact }: ContactCardProps) {
 
   // Duties display
   const visibleDutyCount = 4;
-  const visibleDuties = duties.slice(0, visibleDutyCount);
+  const visibleDuties = showAllDuties ? duties : duties.slice(0, visibleDutyCount);
   const hiddenDutyCount = duties.length - visibleDutyCount;
 
   const CompanyLogo = ({ logoUrl, name, size = 'sm' }: { logoUrl?: string | null; name: string; size?: 'sm' | 'md' }) => {
@@ -269,19 +271,38 @@ export function ContactCard({ contact }: ContactCardProps) {
             )}
 
             {/* Handles/Duties */}
-            {duties.length > 0 && (
+            {loadingDuties ? (
+              <p className="text-sm text-gray-500 mb-2">Loading duties...</p>
+            ) : duties.length > 0 && (
               <div className="text-sm text-gray-600 mb-2">
                 <span className="font-medium">Handles:</span>{' '}
                 {visibleDuties.map((duty, index) => (
-                  <span key={duty}>
-                    {duty}
+                  <span key={duty.id}>
+                    {duty.name}
                     {index < visibleDuties.length - 1 && ', '}
                   </span>
                 ))}
-                {hiddenDutyCount > 0 && (
-                  <span className="text-blue-600 font-medium ml-1">
+                {hiddenDutyCount > 0 && !showAllDuties && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAllDuties(true);
+                    }}
+                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                  >
                     +{hiddenDutyCount} {hiddenDutyCount === 1 ? 'duty' : 'duties'}
-                  </span>
+                  </button>
+                )}
+                {showAllDuties && hiddenDutyCount > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAllDuties(false);
+                    }}
+                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                  >
+                    Show less
+                  </button>
                 )}
               </div>
             )}

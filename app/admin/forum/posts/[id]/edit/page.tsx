@@ -154,8 +154,25 @@ export default function EditForumPost() {
         // Populate form with existing data - load company and contact mentions as topics
         const existingTopicIds = postData.topicMentions?.map((tm: any) => tm.topic.id) || [];
 
-        // Add company mentions as entity-company-{id} topics
-        const companyTopicIds = postData.companyMentions?.map((cm: any) => `entity-company-${cm.companyId}`) || [];
+        // Helper to map companyType to entity type
+        const getEntityType = (companyType: string | null): string => {
+          if (!companyType) return 'company';
+          const typeMap: { [key: string]: string } = {
+            'AGENCY': 'agency',
+            'ADVERTISER': 'advertiser',
+            'INDUSTRY': 'industry',
+            'PUBLISHER': 'publisher',
+            'DSP_SSP': 'dsp_ssp',
+            'ADTECH': 'adtech'
+          };
+          return typeMap[companyType] || 'company';
+        };
+
+        // Add company mentions as entity-{type}-{id} topics (using actual company type)
+        const companyTopicIds = postData.companyMentions?.map((cm: any) => {
+          const entityType = getEntityType(cm.company?.companyType);
+          return `entity-${entityType}-${cm.companyId}`;
+        }) || [];
 
         // Add contact mentions as entity-contact-{id} topics
         const contactTopicIds = postData.contactMentions?.map((cm: any) => `entity-contact-${cm.contactId}`) || [];
@@ -169,11 +186,12 @@ export default function EditForumPost() {
 
         if (postData.companyMentions) {
           postData.companyMentions.forEach((cm: any) => {
-            if (cm.companies) {
+            if (cm.company) {
+              const entityType = getEntityType(cm.company.companyType);
               loadedSuggestions.push({
-                id: `entity-company-${cm.companyId}`,
-                name: cm.companies.name,
-                type: 'company',
+                id: `entity-${entityType}-${cm.companyId}`,
+                name: cm.company.name,
+                type: entityType as any,
                 confidence: 1.0,
                 isExisting: true
               });
@@ -183,10 +201,10 @@ export default function EditForumPost() {
 
         if (postData.contactMentions) {
           postData.contactMentions.forEach((cm: any) => {
-            if (cm.contacts) {
+            if (cm.contact) {
               loadedSuggestions.push({
                 id: `entity-contact-${cm.contactId}`,
-                name: `${cm.contacts.firstName} ${cm.contacts.lastName}`,
+                name: `${cm.contact.firstName} ${cm.contact.lastName}`,
                 type: 'contact',
                 confidence: 1.0,
                 isExisting: true
