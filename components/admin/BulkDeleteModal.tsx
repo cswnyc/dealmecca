@@ -79,16 +79,16 @@ export default function BulkDeleteModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <Card className="border-0 shadow-none">
           <CardHeader className="border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
+                <div className="w-10 h-10 bg-destructive/10 rounded-full flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-destructive" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-red-900">
+                  <CardTitle className="text-xl text-destructive">
                     {confirmed ? 'Deleting Contacts' : 'Confirm Deletion'}
                   </CardTitle>
                   <CardDescription>
@@ -107,25 +107,25 @@ export default function BulkDeleteModal({
 
           <CardContent className="pt-6">
             {loading && (
-              <div className="mb-6 p-4 bg-red-50 rounded-lg">
+              <div className="mb-6 p-4 bg-destructive/10 rounded-lg">
                 <div className="flex items-center space-x-3 mb-2">
-                  <Loader2 className="w-5 h-5 animate-spin text-red-600" />
-                  <span className="font-medium text-red-900">Deleting contacts...</span>
+                  <Loader2 className="w-5 h-5 animate-spin text-destructive" />
+                  <span className="font-medium text-destructive">Deleting contacts...</span>
                 </div>
                 <Progress value={progress} className="w-full" />
-                <p className="text-sm text-red-700 mt-1">
+                <p className="text-sm text-destructive/80 mt-1">
                   Processing {selectedContacts.length} contacts
                 </p>
               </div>
             )}
 
             {!confirmed && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                 <div className="flex items-start space-x-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
                   <div>
-                    <h3 className="font-medium text-red-900">Warning: This action cannot be undone</h3>
-                    <p className="text-sm text-red-700 mt-1">
+                    <h3 className="font-medium text-destructive">Warning: This action cannot be undone</h3>
+                    <p className="text-sm text-destructive/80 mt-1">
                       Deleting these contacts will permanently remove all their information from the system. 
                       This includes their contact details, company associations, and any related data.
                     </p>
@@ -137,21 +137,21 @@ export default function BulkDeleteModal({
             {/* Selected Contacts List */}
             <div className="mb-6">
               <div className="flex items-center space-x-2 mb-3">
-                <UserX className="w-4 h-4 text-gray-600" />
-                <span className="font-medium text-gray-900">
+                <UserX className="w-4 h-4 text-muted-foreground" />
+                <span className="font-medium text-foreground">
                   Contacts to be deleted ({selectedContacts.length})
                 </span>
               </div>
-              <div className="max-h-64 overflow-y-auto border rounded-lg p-4 bg-gray-50">
+              <div className="max-h-64 overflow-y-auto border rounded-lg p-4 bg-muted">
                 <div className="space-y-2">
                   {selectedContacts.map((contact) => (
-                    <div 
-                      key={contact.id} 
-                      className="flex items-center justify-between p-2 bg-white rounded border"
+                    <div
+                      key={contact.id}
+                      className="flex items-center justify-between p-2 bg-card rounded border"
                     >
                       <div>
-                        <div className="font-medium text-gray-900">{contact.fullName}</div>
-                        <div className="text-sm text-gray-600">{contact.title}</div>
+                        <div className="font-medium text-foreground">{contact.fullName}</div>
+                        <div className="text-sm text-muted-foreground">{contact.title}</div>
                       </div>
                       <Badge variant="outline" className="text-xs">
                         {contact.company.name}
@@ -164,9 +164,9 @@ export default function BulkDeleteModal({
 
             {/* Confirmation Steps */}
             {!confirmed && (
-              <div className="mb-6 p-4 border border-gray-200 rounded-lg">
-                <h4 className="font-medium text-gray-900 mb-2">Before proceeding, please note:</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
+              <div className="mb-6 p-4 border border-border rounded-lg">
+                <h4 className="font-medium text-foreground mb-2">Before proceeding, please note:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• All contact information will be permanently lost</li>
                   <li>• Company associations will be removed</li>
                   <li>• This action cannot be reversed</li>

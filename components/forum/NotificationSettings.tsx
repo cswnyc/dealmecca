@@ -19,27 +19,27 @@ export function NotificationSettings() {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+    <div className="bg-card rounded-lg border border-border p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           {permission === 'granted' ? (
             <BellIcon className="w-5 h-5 text-green-500" />
           ) : (
-            <BellSlashIcon className="w-5 h-5 text-gray-400" />
+            <BellSlashIcon className="w-5 h-5 text-muted-foreground" />
           )}
           <div>
-            <h4 className="font-medium text-gray-900">Live Notifications</h4>
-            <p className="text-sm text-gray-500">
+            <h4 className="font-medium text-foreground">Live Notifications</h4>
+            <p className="text-sm text-muted-foreground">
               Get instant alerts for urgent opportunities
             </p>
           </div>
         </div>
-        
+
         {permission !== 'granted' && (
           <button
             onClick={handleEnableNotifications}
             disabled={loading}
-            className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 disabled:opacity-50"
+            className="px-3 py-1 bg-primary text-primary-foreground text-sm rounded hover:bg-primary/90 disabled:opacity-50"
           >
             {loading ? 'Enabling...' : 'Enable'}
           </button>

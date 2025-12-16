@@ -165,11 +165,11 @@ export function RewardsSystem() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="bg-white rounded-lg p-4 animate-pulse">
-          <div className="h-20 bg-gray-200 rounded"></div>
+        <div className="bg-card rounded-lg p-4 animate-pulse">
+          <div className="h-20 bg-muted rounded"></div>
         </div>
-        <div className="bg-white rounded-lg p-4 animate-pulse">
-          <div className="h-64 bg-gray-200 rounded"></div>
+        <div className="bg-card rounded-lg p-4 animate-pulse">
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -179,7 +179,7 @@ export function RewardsSystem() {
     <div className="space-y-6">
       {/* User Progress Card */}
       {userStats && (
-        <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <Card className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
@@ -256,14 +256,14 @@ export function RewardsSystem() {
           </CardHeader>
           <CardContent className="space-y-3">
             {CONTRIBUTION_BONUSES.slice(0, showBonuses ? undefined : 4).map((bonus, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className="text-blue-600">
+                  <div className="text-primary">
                     {bonus.icon}
                   </div>
                   <div>
                     <div className="font-medium text-sm">{bonus.action}</div>
-                    <div className="text-xs text-gray-600">{bonus.description}</div>
+                    <div className="text-xs text-muted-foreground">{bonus.description}</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1">
@@ -301,15 +301,15 @@ export function RewardsSystem() {
                     index === 0 ? 'bg-yellow-500 text-white' :
                     index === 1 ? 'bg-gray-400 text-white' :
                     index === 2 ? 'bg-orange-600 text-white' :
-                    'bg-gray-100 text-gray-600'
+                    'bg-muted text-muted-foreground'
                   }`}>
                     {user.rank}
                   </div>
-                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt={user.name} className="w-8 h-8 rounded-full" />
                     ) : (
-                      <Users className="w-4 h-4 text-gray-600" />
+                      <Users className="w-4 h-4 text-muted-foreground" />
                     )}
                   </div>
                   <div>
@@ -318,7 +318,7 @@ export function RewardsSystem() {
                       {user.isVIP && <Crown className="w-3 h-3 text-yellow-500" />}
                       {getTierIcon(user.tier)}
                     </div>
-                    <div className="text-xs text-gray-600">
+                    <div className="text-xs text-muted-foreground">
                       {user.contributions} contributions • {user.streak} day streak
                     </div>
                   </div>

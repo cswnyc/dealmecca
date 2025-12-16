@@ -115,7 +115,7 @@ export function NotificationBell() {
       {/* Bell Button */}
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+        className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
@@ -135,12 +135,12 @@ export function NotificationBell() {
           />
 
           {/* Notification Panel */}
-          <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+          <div className="absolute right-0 mt-2 w-96 bg-card rounded-lg shadow-xl border border-border z-50">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <Bell className="h-5 w-5 mr-2 text-blue-600" />
+                <h3 className="text-lg font-semibold text-foreground flex items-center">
+                  <Bell className="h-5 w-5 mr-2 text-primary" />
                   Notifications
                   {unreadCount > 0 && (
                     <Badge variant="destructive" className="ml-2">
@@ -150,7 +150,7 @@ export function NotificationBell() {
                 </h3>
                 <button
                   onClick={() => setShowDropdown(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -160,7 +160,7 @@ export function NotificationBell() {
                 <button
                   onClick={markAllAsRead}
                   disabled={loading}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center"
+                  className="text-sm text-primary hover:text-primary/80 font-medium flex items-center"
                 >
                   <CheckCheck className="h-4 w-4 mr-1" />
                   Mark all as read
@@ -171,18 +171,18 @@ export function NotificationBell() {
             {/* Notifications List */}
             <div className="max-h-96 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
-                  <Bell className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <div className="p-8 text-center text-muted-foreground">
+                  <Bell className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                   <p className="text-sm">No notifications</p>
                   <p className="text-xs mt-1">You're all caught up!</p>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-border">
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-4 hover:bg-gray-50 transition-colors ${
-                        !notification.read ? 'bg-blue-50' : ''
+                      className={`p-4 hover:bg-muted transition-colors ${
+                        !notification.read ? 'bg-primary/5' : ''
                       }`}
                     >
                       <div className="flex items-start space-x-3">
@@ -192,13 +192,13 @@ export function NotificationBell() {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between mb-1">
-                            <p className="text-sm font-semibold text-gray-900">
+                            <p className="text-sm font-semibold text-foreground">
                               {notification.title}
                             </p>
                             {!notification.read && (
                               <button
                                 onClick={() => markAsRead(notification.id)}
-                                className="text-blue-600 hover:text-blue-700 ml-2"
+                                className="text-primary hover:text-primary/80 ml-2"
                                 title="Mark as read"
                               >
                                 <Check className="h-4 w-4" />
@@ -206,12 +206,12 @@ export function NotificationBell() {
                             )}
                           </div>
 
-                          <p className="text-sm text-gray-600 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             {notification.message}
                           </p>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-muted-foreground">
                               {formatTimeAgo(notification.createdAt)}
                             </span>
 
@@ -223,7 +223,7 @@ export function NotificationBell() {
                                     markAsRead(notification.id);
                                     setShowDropdown(false);
                                   }}
-                                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                                  className="text-xs text-primary hover:text-primary/80 font-medium"
                                 >
                                   View
                                 </Link>
@@ -247,11 +247,11 @@ export function NotificationBell() {
 
             {/* Footer */}
             {notifications.length > 0 && (
-              <div className="p-3 border-t border-gray-200 bg-gray-50">
+              <div className="p-3 border-t border-border bg-muted">
                 <Link
                   href="/notifications"
                   onClick={() => setShowDropdown(false)}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium text-center block"
+                  className="text-sm text-primary hover:text-primary/80 font-medium text-center block"
                 >
                   View All Notifications
                 </Link>

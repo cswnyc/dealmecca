@@ -216,8 +216,8 @@ export function CodeGenerationInterface({
     }
 
     return (
-      <div className="p-4 bg-gray-50 rounded-lg">
-        <p className="text-gray-600 text-sm">
+      <div className="p-4 bg-muted rounded-lg">
+        <p className="text-muted-foreground text-sm">
           Live preview not available for this code type. Use the code tab to view the generated code.
         </p>
       </div>
@@ -225,17 +225,17 @@ export function CodeGenerationInterface({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg border border-border overflow-hidden">
       {/* Header */}
-      <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+      <div className="bg-muted px-6 py-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Code2 className="w-5 h-5 text-blue-600" />
-            <h3 className="font-semibold text-gray-900">Code Generation</h3>
+            <h3 className="font-semibold text-foreground">Code Generation</h3>
           </div>
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors"
+            className="flex items-center space-x-1 text-muted-foreground hover:text-muted-foreground transition-colors"
           >
             <Settings className="w-4 h-4" />
             <span className="text-sm">Settings</span>
@@ -246,14 +246,14 @@ export function CodeGenerationInterface({
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <div className="px-6 py-4 bg-muted border-b border-border">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-2">Language</label>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {SUPPORTED_LANGUAGES.map(lang => (
                   <option key={lang.value} value={lang.value}>
@@ -264,11 +264,11 @@ export function CodeGenerationInterface({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Framework</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-2">Framework</label>
               <select
                 value={framework}
                 onChange={(e) => setFramework(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={availableFrameworks.length === 0}
               >
                 <option value="">None</option>
@@ -281,11 +281,11 @@ export function CodeGenerationInterface({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Code Type</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-2">Code Type</label>
               <select
                 value={codeType}
                 onChange={(e) => setCodeType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {CODE_TYPES.map(type => (
                   <option key={type.value} value={type.value}>
@@ -296,11 +296,11 @@ export function CodeGenerationInterface({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Complexity</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-2">Complexity</label>
               <select
                 value={complexity}
                 onChange={(e) => setComplexity(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {COMPLEXITY_LEVELS.map(level => (
                   <option key={level.value} value={level.value}>
@@ -313,14 +313,14 @@ export function CodeGenerationInterface({
 
           {/* Context/Additional Info */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Additional Context (Optional)
             </label>
             <textarea
               value={context}
               onChange={(e) => setContext(e.target.value)}
               placeholder="Provide any additional context, constraints, or specific requirements..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
             />
           </div>
@@ -331,14 +331,14 @@ export function CodeGenerationInterface({
       <div className="p-6">
         {/* Prompt Input */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-muted-foreground mb-2">
             Describe what you want to build
           </label>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="E.g., Create a React component for displaying user profiles with avatar, name, and bio. Include hover effects and responsive design."
-            className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-3 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={4}
           />
         </div>
@@ -372,16 +372,16 @@ export function CodeGenerationInterface({
 
         {/* Generated Code Display */}
         {generatedCode && (
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             {/* Tab Navigation */}
-            <div className="flex items-center justify-between bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <div className="flex items-center justify-between bg-muted px-4 py-2 border-b border-border">
               <div className="flex space-x-1">
                 <button
                   onClick={() => setActiveTab('code')}
                   className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                     activeTab === 'code' 
                       ? 'bg-white text-blue-600 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Code
@@ -391,7 +391,7 @@ export function CodeGenerationInterface({
                   className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                     activeTab === 'explanation' 
                       ? 'bg-white text-blue-600 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Explanation
@@ -402,7 +402,7 @@ export function CodeGenerationInterface({
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                       activeTab === 'tests' 
                         ? 'bg-white text-blue-600 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900'
+                        : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     Tests
@@ -414,7 +414,7 @@ export function CodeGenerationInterface({
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                       activeTab === 'preview' 
                         ? 'bg-white text-blue-600 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900'
+                        : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     Preview
@@ -426,14 +426,14 @@ export function CodeGenerationInterface({
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={handleCopyCode}
-                    className="flex items-center space-x-1 px-3 py-1 text-gray-600 hover:text-gray-900 transition-colors"
+                    className="flex items-center space-x-1 px-3 py-1 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <Copy className="w-4 h-4" />
                     <span className="text-sm">Copy</span>
                   </button>
                   <button
                     onClick={handleDownloadCode}
-                    className="flex items-center space-x-1 px-3 py-1 text-gray-600 hover:text-gray-900 transition-colors"
+                    className="flex items-center space-x-1 px-3 py-1 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <Download className="w-4 h-4" />
                     <span className="text-sm">Download</span>
@@ -465,13 +465,13 @@ export function CodeGenerationInterface({
               {activeTab === 'explanation' && (
                 <div className="p-4">
                   <div className="prose max-w-none">
-                    <p className="text-gray-700 whitespace-pre-wrap">{generatedCode.explanation}</p>
+                    <p className="text-muted-foreground whitespace-pre-wrap">{generatedCode.explanation}</p>
                   </div>
 
                   {/* Dependencies */}
                   {generatedCode.dependencies.length > 0 && (
                     <div className="mt-6">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Dependencies</h4>
+                      <h4 className="text-sm font-semibold text-foreground mb-2">Dependencies</h4>
                       <div className="flex flex-wrap gap-2">
                         {generatedCode.dependencies.map((dep, index) => (
                           <span
@@ -488,13 +488,13 @@ export function CodeGenerationInterface({
                   {/* Suggestions */}
                   {generatedCode.suggestions.length > 0 && (
                     <div className="mt-6">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center">
                         <Lightbulb className="w-4 h-4 text-yellow-500 mr-1" />
                         Suggestions
                       </h4>
                       <ul className="list-disc list-inside space-y-1">
                         {generatedCode.suggestions.map((suggestion, index) => (
-                          <li key={index} className="text-sm text-gray-600">
+                          <li key={index} className="text-sm text-muted-foreground">
                             {suggestion}
                           </li>
                         ))}

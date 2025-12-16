@@ -78,15 +78,15 @@ export function ForumLayout({
             <LiveActivityFeed />
 
             {/* Categories */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Categories</h3>
+            <div className="bg-card rounded-lg border border-border p-4">
+              <h3 className="font-semibold text-foreground mb-3">Categories</h3>
               <nav className="space-y-1">
-                <Link 
+                <Link
                   href="/forum"
                   className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    !currentCategory 
-                      ? 'bg-primary text-white' 
-                      : 'text-gray-700 hover:bg-gray-100'
+                    !currentCategory
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
                   }`}
                 >
                   All Posts
@@ -97,8 +97,8 @@ export function ForumLayout({
                     href={`/forum/category/${category.slug}`}
                     className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       currentCategory === category.slug
-                        ? 'bg-primary text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground hover:bg-muted'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -106,7 +106,7 @@ export function ForumLayout({
                         {category.icon && <span className="text-base">{category.icon}</span>}
                         <span>{category.name}</span>
                       </div>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">
                         {category._count.posts}
                       </span>
                     </div>
@@ -116,8 +116,8 @@ export function ForumLayout({
             </div>
 
             {/* Sort Options */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Sort By</h3>
+            <div className="bg-card rounded-lg border border-border p-4">
+              <h3 className="font-semibold text-foreground mb-3">Sort By</h3>
               <div className="space-y-1">
                 {sortOptions.map((option) => {
                   const Icon = option.icon;
@@ -127,8 +127,8 @@ export function ForumLayout({
                       onClick={() => handleSortChange(option.value)}
                       className={`w-full flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         sortBy === option.value
-                          ? 'bg-secondary text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'bg-secondary text-secondary-foreground'
+                          : 'text-foreground hover:bg-muted'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -153,7 +153,7 @@ export function ForumLayout({
           <div className="space-y-6">
             {/* Smart Search */}
             {showSearch && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="bg-card rounded-lg border border-border p-6">
                 <SmartSearch
                   placeholder="Search discussions, opportunities, and insights..."
                   showFilters={true}

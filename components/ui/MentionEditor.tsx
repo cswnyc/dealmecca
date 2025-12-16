@@ -184,7 +184,7 @@ export default function MentionEditor({
     return text.replace(/@\[([^\]]+)\]\([^)]+\)/g, '@$1');
   };
 
-  const baseInputClasses = `w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder:text-gray-400 ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`;
+  const baseInputClasses = `w-full border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary bg-card text-foreground placeholder:text-muted-foreground ${disabled ? 'bg-muted cursor-not-allowed' : ''} ${className}`;
 
   return (
     <div className="relative">
@@ -217,18 +217,18 @@ export default function MentionEditor({
       {showMentions && (
         <div
           ref={mentionsRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-50 w-full mt-1 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-auto"
         >
           {loading ? (
-            <div className="px-3 py-2 text-sm text-gray-500">
+            <div className="px-3 py-2 text-sm text-muted-foreground">
               Searching...
             </div>
           ) : mentionResults.length > 0 ? (
             mentionResults.map((mention, index) => (
               <button
                 key={`${mention.type}-${mention.id}`}
-                className={`w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
-                  index === selectedMentionIndex ? 'bg-blue-50 border-l-2 border-blue-500' : ''
+                className={`w-full px-3 py-2 text-left hover:bg-muted focus:bg-muted focus:outline-none ${
+                  index === selectedMentionIndex ? 'bg-primary/10 border-l-2 border-primary' : ''
                 }`}
                 onClick={() => insertMention(mention)}
                 onMouseEnter={() => setSelectedMentionIndex(index)}
@@ -246,7 +246,7 @@ export default function MentionEditor({
                         mention.type === 'company' ? 'bg-blue-100 text-blue-600' :
                         mention.type === 'contact' ? 'bg-green-100 text-green-600' :
                         mention.type === 'category' ? 'bg-purple-100 text-purple-600' :
-                        'bg-gray-100 text-gray-600'
+                        'bg-muted text-muted-foreground'
                       }`}>
                         {getMentionIcon(mention.type)}
                       </div>
@@ -254,20 +254,20 @@ export default function MentionEditor({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-foreground truncate">
                         {mention.name}
                       </p>
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                         mention.type === 'company' ? 'bg-blue-100 text-blue-800' :
                         mention.type === 'contact' ? 'bg-green-100 text-green-800' :
                         mention.type === 'category' ? 'bg-purple-100 text-purple-800' :
-                        'bg-gray-100 text-gray-800'
+                        'bg-muted text-foreground'
                       }`}>
                         {mention.type}
                       </span>
                     </div>
                     {mention.subtitle && (
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-muted-foreground truncate">
                         {mention.subtitle}
                       </p>
                     )}
@@ -276,14 +276,14 @@ export default function MentionEditor({
               </button>
             ))
           ) : mentionQuery.length > 0 ? (
-            <div className="px-3 py-2 text-sm text-gray-500">
+            <div className="px-3 py-2 text-sm text-muted-foreground">
               No matches found for "{mentionQuery}"
             </div>
           ) : (
-            <div className="px-3 py-8 text-center text-gray-500">
-              <AtSign className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+            <div className="px-3 py-8 text-center text-muted-foreground">
+              <AtSign className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
               <p className="text-sm">Type to search for mentions</p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground/70 mt-1">
                 Companies, contacts, categories, and users
               </p>
             </div>
@@ -293,7 +293,7 @@ export default function MentionEditor({
 
       {/* Character count */}
       {maxLength && (
-        <div className="mt-1 text-xs text-gray-500 text-right">
+        <div className="mt-1 text-xs text-muted-foreground text-right">
           {value.length}/{maxLength}
         </div>
       )}

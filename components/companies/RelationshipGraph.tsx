@@ -30,9 +30,9 @@ const CompanyNode = ({ data }: any) => {
 
   return (
     <div
-      className={`px-4 py-3 rounded-lg border-2 shadow-md bg-white ${
+      className={`px-4 py-3 rounded-lg border-2 shadow-md bg-card ${
         isCentral
-          ? 'border-blue-600 ring-2 ring-blue-200'
+          ? 'border-primary ring-2 ring-primary/30'
           : companyType === 'AGENCY'
           ? 'border-purple-500'
           : 'border-green-500'
@@ -49,7 +49,7 @@ const CompanyNode = ({ data }: any) => {
         )}
         <div>
           <div className="font-semibold text-sm">{name}</div>
-          <div className="text-xs text-gray-500">{companyType}</div>
+          <div className="text-xs text-muted-foreground">{companyType}</div>
         </div>
       </div>
     </div>
@@ -62,7 +62,7 @@ const ContactNode = ({ data }: any) => {
 
   return (
     <div
-      className="px-3 py-2 rounded-md border border-gray-300 shadow-sm bg-gray-50"
+      className="px-3 py-2 rounded-md border border-border shadow-sm bg-muted"
       style={{ minWidth: 150 }}
     >
       <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ const ContactNode = ({ data }: any) => {
         )}
         <div>
           <div className="font-medium text-xs">{fullName}</div>
-          <div className="text-xs text-gray-500 truncate">{title}</div>
+          <div className="text-xs text-muted-foreground truncate">{title}</div>
         </div>
       </div>
     </div>
@@ -168,10 +168,10 @@ export function RelationshipGraph({ companyId, includeContacts = true }: Relatio
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96 bg-gray-50 rounded-lg">
+      <div className="flex items-center justify-center h-96 bg-muted rounded-lg">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading relationship graph...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading relationship graph...</p>
         </div>
       </div>
     );
@@ -188,7 +188,7 @@ export function RelationshipGraph({ companyId, includeContacts = true }: Relatio
   }
 
   return (
-    <div className="h-[600px] w-full border rounded-lg overflow-hidden bg-gray-50">
+    <div className="h-[600px] w-full border rounded-lg overflow-hidden bg-muted">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -210,9 +210,9 @@ export function RelationshipGraph({ companyId, includeContacts = true }: Relatio
       </ReactFlow>
 
       {stats && (
-        <div className="absolute top-4 right-4 bg-white rounded-lg shadow-md p-3 text-sm">
+        <div className="absolute top-4 right-4 bg-card rounded-lg shadow-md p-3 text-sm">
           <div className="font-semibold mb-2">Graph Stats</div>
-          <div className="space-y-1 text-xs">
+          <div className="space-y-1 text-xs text-muted-foreground">
             <div>Total Nodes: {stats.totalNodes}</div>
             <div>Companies: {stats.companies}</div>
             <div>Contacts: {stats.contacts}</div>

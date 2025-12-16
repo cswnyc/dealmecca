@@ -39,10 +39,10 @@ export default function DashboardBypassPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Checking session...</p>
+          <p className="mt-2 text-muted-foreground">Checking session...</p>
         </div>
       </div>
     )
@@ -50,11 +50,11 @@ export default function DashboardBypassPage() {
 
   if (error || !sessionData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm w-full max-w-md">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg border border-border shadow-sm w-full max-w-md">
           <div className="p-6 text-center">
             <h2 className="text-lg font-semibold text-red-600 mb-2">Access Denied</h2>
-            <p className="text-sm text-gray-600 mb-4">{error}</p>
+            <p className="text-sm text-muted-foreground mb-4">{error}</p>
           </div>
           <div className="px-6 pb-6 text-center">
             <button 
@@ -70,15 +70,15 @@ export default function DashboardBypassPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <User className="h-8 w-8 text-sky-600" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard (Bypass)</h1>
-                <p className="text-sm text-gray-500">Welcome to DealMecca</p>
+                <h1 className="text-2xl font-bold text-foreground">Dashboard (Bypass)</h1>
+                <p className="text-sm text-muted-foreground">Welcome to DealMecca</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -87,12 +87,12 @@ export default function DashboardBypassPage() {
                 {sessionData.role}
               </span>
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{sessionData.name}</p>
-                <p className="text-xs text-gray-500">{sessionData.email}</p>
+                <p className="text-sm font-medium text-foreground">{sessionData.name}</p>
+                <p className="text-xs text-muted-foreground">{sessionData.email}</p>
               </div>
               <button 
                 onClick={handleLogout}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-3 py-1.5 text-sm border border-input rounded-md text-muted-foreground hover:bg-muted transition-colors"
               >
                 Logout
               </button>
@@ -119,50 +119,50 @@ export default function DashboardBypassPage() {
 
         {/* Welcome Message */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          <h2 className="text-3xl font-bold text-foreground mb-2">
             Welcome back, {sessionData.name}!
           </h2>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Here's your dashboard overview. You can browse companies, contacts, and explore the platform.
           </p>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-lg border border-border shadow-sm">
             <div className="p-6">
               <div className="flex items-center">
                 <Building2 className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Companies</p>
-                  <p className="text-2xl font-bold text-gray-900">12</p>
-                  <p className="text-xs text-gray-500">Available to browse</p>
+                  <p className="text-sm font-medium text-muted-foreground">Companies</p>
+                  <p className="text-2xl font-bold text-foreground">12</p>
+                  <p className="text-xs text-muted-foreground">Available to browse</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-lg border border-border shadow-sm">
             <div className="p-6">
               <div className="flex items-center">
                 <Users className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Contacts</p>
-                  <p className="text-2xl font-bold text-gray-900">8</p>
-                  <p className="text-xs text-gray-500">Professional contacts</p>
+                  <p className="text-sm font-medium text-muted-foreground">Contacts</p>
+                  <p className="text-2xl font-bold text-foreground">8</p>
+                  <p className="text-xs text-muted-foreground">Professional contacts</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-lg border border-border shadow-sm">
             <div className="p-6">
               <div className="flex items-center">
                 <Calendar className="h-8 w-8 text-orange-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Events</p>
-                  <p className="text-2xl font-bold text-gray-900">0</p>
-                  <p className="text-xs text-gray-500">Upcoming events</p>
+                  <p className="text-sm font-medium text-muted-foreground">Events</p>
+                  <p className="text-2xl font-bold text-foreground">0</p>
+                  <p className="text-xs text-muted-foreground">Upcoming events</p>
                 </div>
               </div>
             </div>
@@ -171,14 +171,14 @@ export default function DashboardBypassPage() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-lg border border-border shadow-sm">
             <div className="p-6">
               <div className="mb-4">
-                <h3 className="flex items-center text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
                   <Building2 className="h-5 w-5 mr-2 text-blue-600" />
                   Browse Companies
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   Explore the company database with search and filtering
                 </p>
               </div>
@@ -191,20 +191,20 @@ export default function DashboardBypassPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-lg border border-border shadow-sm">
             <div className="p-6">
               <div className="mb-4">
-                <h3 className="flex items-center text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
                   <Search className="h-5 w-5 mr-2 text-green-600" />
                   Enhanced Search
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   Use advanced search to find specific companies and contacts
                 </p>
               </div>
               <button 
                 onClick={() => router.push('/search')} 
-                className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
+                className="w-full border border-input text-muted-foreground px-4 py-2 rounded-md hover:bg-muted transition-colors"
               >
                 Advanced Search
               </button>

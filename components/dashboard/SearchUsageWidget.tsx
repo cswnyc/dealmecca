@@ -85,14 +85,14 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
 
   const getUsageColor = () => {
     const percentage = getUsagePercentage()
-    if (percentage >= 90) return 'bg-red-500'
+    if (percentage >= 90) return 'bg-destructive'
     if (percentage >= 75) return 'bg-yellow-500'
     return 'bg-green-500'
   }
 
   const getStatusColor = () => {
     const percentage = getUsagePercentage()
-    if (percentage >= 90) return 'text-red-700 font-semibold'
+    if (percentage >= 90) return 'text-destructive font-semibold'
     if (percentage >= 75) return 'text-yellow-600'
     return 'text-green-600'
   }
@@ -153,7 +153,7 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
     return (
       <Card className="animate-pulse">
         <CardContent className="p-6">
-          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-muted rounded"></div>
         </CardContent>
       </Card>
     )
@@ -163,7 +163,7 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <p className="text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">Error loading search usage: {error}</p>
+          <p className="text-destructive bg-destructive/10 p-3 rounded-lg border border-destructive/20">Error loading search usage: {error}</p>
           <Button onClick={fetchSearchUsage} className="mt-2" variant="outline">
             <RefreshCcw className="w-4 h-4 mr-2" />
             Retry
@@ -213,12 +213,12 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
             <Search className="w-5 h-5" />
             Search Usage
             {data.subscriptionTier === 'FREE' && (
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+              <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
                 Free Plan
               </span>
             )}
             {data.subscriptionTier === 'PRO' && (
-              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+              <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
                 Pro Plan
               </span>
             )}
@@ -231,10 +231,10 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
           {/* Usage Overview */}
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-3xl font-bold text-foreground">
                 {data.searchesUsed}
                 {data.searchLimit !== -1 && (
-                  <span className="text-xl text-gray-500">/{data.searchLimit}</span>
+                  <span className="text-xl text-muted-foreground">/{data.searchLimit}</span>
                 )}
               </p>
               <p className={`text-sm font-medium ${getStatusColor()}`}>
@@ -244,7 +244,7 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
               </p>
             </div>
             <div className="text-right">
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="w-4 h-4" />
                 <div>
                   <p className="text-sm">Resets in</p>
@@ -259,13 +259,13 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
           {/* Progress Bar */}
           {data.searchLimit !== -1 && (
             <div className="space-y-2">
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
+              <div className="w-full bg-muted rounded-full h-3">
+                <div
                   className={`h-3 rounded-full transition-all duration-300 ${getUsageColor()}`}
                   style={{ width: `${usagePercentage}%` }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-gray-500">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>0</span>
                 <span>{Math.round(usagePercentage)}% used</span>
                 <span>{data.searchLimit}</span>
@@ -276,26 +276,26 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
           {/* Statistics Grid */}
           <div className="grid grid-cols-3 gap-4 pt-4 border-t">
             <div className="text-center">
-              <p className="text-sm text-gray-600">This Month</p>
-              <p className="text-xl font-semibold text-gray-900">
+              <p className="text-sm text-muted-foreground">This Month</p>
+              <p className="text-xl font-semibold text-foreground">
                 {data.searchStats.thisMonth}
               </p>
               {data.searchStats.lastMonth > 0 && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {data.searchStats.thisMonth > data.searchStats.lastMonth ? '+' : ''}
                   {data.searchStats.thisMonth - data.searchStats.lastMonth} vs last month
                 </p>
               )}
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">All Time</p>
-              <p className="text-xl font-semibold text-gray-900">
+              <p className="text-sm text-muted-foreground">All Time</p>
+              <p className="text-xl font-semibold text-foreground">
                 {data.searchStats.totalAllTime}
               </p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Avg Results</p>
-              <p className="text-xl font-semibold text-gray-900">
+              <p className="text-sm text-muted-foreground">Avg Results</p>
+              <p className="text-xl font-semibold text-foreground">
                 {Math.round(data.searchStats.avgResultsPerSearch)}
               </p>
             </div>
@@ -304,33 +304,33 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
           {/* Recent Searches */}
           {data.recentSearches.length > 0 && (
             <div className="space-y-3">
-              <h4 className="font-medium text-gray-900 flex items-center gap-2">
+              <h4 className="font-medium text-foreground flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
                 Recent Searches
               </h4>
               <div className="space-y-2">
                 {data.recentSearches.slice(0, 3).map((search) => (
-                  <div 
-                    key={search.id} 
-                    className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  <div
+                    key={search.id}
+                    className="flex justify-between items-center p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors cursor-pointer"
                     onClick={() => router.push(`/search?q=${encodeURIComponent(search.query)}`)}
                   >
                     <div className="flex items-center gap-3">
                       {search.searchType === 'company' ? (
-                        <Building className="w-4 h-4 text-blue-600" />
+                        <Building className="w-4 h-4 text-primary" />
                       ) : (
                         <Users className="w-4 h-4 text-green-600" />
                       )}
                       <div>
-                        <p className="font-medium text-gray-900 text-sm">
+                        <p className="font-medium text-foreground text-sm">
                           {search.query}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           {search.resultsCount} results
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
                       {new Date(search.createdAt).toLocaleDateString()}
                     </div>
@@ -355,10 +355,10 @@ export default function SearchUsageWidget({ userId, onUpgradeClick }: SearchUsag
             </Button>
             
             {data.subscriptionTier === 'FREE' && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleUpgradeClick}
-                className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                className="border-primary/20 text-primary hover:bg-primary/10"
               >
                 <Zap className="w-4 h-4 mr-2" />
                 Upgrade

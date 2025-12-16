@@ -157,13 +157,13 @@ export default function AdminEventsPage() {
     return (
       <div className="container mx-auto py-6 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white rounded-lg border border-border p-6">
             <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+              <div className="h-8 bg-muted rounded w-1/3"></div>
               <div className="space-y-3">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                <div className="h-4 bg-muted rounded"></div>
+                <div className="h-4 bg-muted rounded w-5/6"></div>
+                <div className="h-4 bg-muted rounded w-4/6"></div>
               </div>
             </div>
           </div>
@@ -179,11 +179,11 @@ export default function AdminEventsPage() {
         <div className="mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 flex items-center">
+              <h1 className="text-2xl font-semibold text-foreground flex items-center">
                 <Calendar className="w-6 h-6 mr-2" />
                 Events Management
               </h1>
-              <p className="text-gray-600 mt-1">Manage events, registrations, and community gatherings</p>
+              <p className="text-muted-foreground mt-1">Manage events, registrations, and community gatherings</p>
             </div>
             <div className="flex space-x-3">
               <Link
@@ -206,82 +206,82 @@ export default function AdminEventsPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-white rounded-lg border border-border p-4">
             <div className="flex items-center">
               <Calendar className="w-8 h-8 text-blue-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Total Events</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Events</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.total}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-white rounded-lg border border-border p-4">
             <div className="flex items-center">
               <CheckSquare className="w-8 h-8 text-green-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Published</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.published}</p>
+                <p className="text-sm font-medium text-muted-foreground">Published</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.published}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-white rounded-lg border border-border p-4">
             <div className="flex items-center">
-              <Edit className="w-8 h-8 text-gray-600" />
+              <Edit className="w-8 h-8 text-muted-foreground" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Drafts</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.draft}</p>
+                <p className="text-sm font-medium text-muted-foreground">Drafts</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.draft}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-white rounded-lg border border-border p-4">
             <div className="flex items-center">
               <Clock className="w-8 h-8 text-purple-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Upcoming</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.upcoming}</p>
+                <p className="text-sm font-medium text-muted-foreground">Upcoming</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.upcoming}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-white rounded-lg border border-border p-4">
             <div className="flex items-center">
-              <AlertCircle className="w-8 h-8 text-gray-600" />
+              <AlertCircle className="w-8 h-8 text-muted-foreground" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Past</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.past}</p>
+                <p className="text-sm font-medium text-muted-foreground">Past</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.past}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-lg border border-border p-6 mb-6">
           <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-4">
             <div className="flex-1 min-w-0">
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="search" className="block text-sm font-medium text-foreground mb-1">
                 Search Events
               </label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <input
                   type="text"
                   id="search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by title, description, or location..."
-                  className="pl-9 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="pl-9 w-full border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-1">
                 Status
               </label>
               <select
                 id="status"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Status</option>
                 <option value="PUBLISHED">Published</option>
@@ -292,14 +292,14 @@ export default function AdminEventsPage() {
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground mb-1">
                 Category
               </label>
               <select
                 id="category"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
                 <option value="conference">Conference</option>
@@ -311,14 +311,14 @@ export default function AdminEventsPage() {
             </div>
 
             <div>
-              <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="sort" className="block text-sm font-medium text-foreground mb-1">
                 Sort By
               </label>
               <select
                 id="sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="startDate">Start Date</option>
                 <option value="created">Created</option>
@@ -374,12 +374,12 @@ export default function AdminEventsPage() {
         )}
 
         {/* Events Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-12">
                     <input
                       type="checkbox"
                       checked={selectedEvents.length === events.length && events.length > 0}
@@ -393,31 +393,31 @@ export default function AdminEventsPage() {
                       className="rounded"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Event
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Date & Location
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Attendees
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Organizer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-border">
                 {events.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                      <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
+                      <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                       <p className="text-lg font-medium">No events found</p>
                       <p className="mt-1">Events management has been restored.</p>
                       <Link
@@ -431,7 +431,7 @@ export default function AdminEventsPage() {
                   </tr>
                 ) : (
                   events.map((event) => (
-                    <tr key={event.id} className="hover:bg-gray-50">
+                    <tr key={event.id} className="hover:bg-muted">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
@@ -450,13 +450,13 @@ export default function AdminEventsPage() {
                         <div className="max-w-xs">
                           <div className="flex items-start space-x-3">
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">
+                              <p className="text-sm font-medium text-foreground truncate">
                                 {event.name}
                                 {event.avgOverallRating && (
                                   <Star className="inline w-4 h-4 ml-1 text-yellow-500" />
                                 )}
                               </p>
-                              <p className="text-sm text-gray-500 truncate">
+                              <p className="text-sm text-muted-foreground truncate">
                                 {event.description?.substring(0, 100)}...
                               </p>
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
@@ -467,7 +467,7 @@ export default function AdminEventsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-foreground">
                           <div className="flex items-center mb-1">
                             <Calendar className="w-4 h-4 mr-1" />
                             {new Date(event.startDate).toLocaleDateString()}
@@ -478,7 +478,7 @@ export default function AdminEventsPage() {
                             ) : (
                               <MapPin className="w-4 h-4 mr-1" />
                             )}
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-muted-foreground">
                               {event.isVirtual ? 'Virtual' : event.location || 'TBD'}
                             </span>
                           </div>
@@ -492,21 +492,21 @@ export default function AdminEventsPage() {
                           <span className="block mt-1 text-xs text-purple-600">Upcoming</span>
                         )}
                         {isPast(event.endDate) && (
-                          <span className="block mt-1 text-xs text-gray-500">Past</span>
+                          <span className="block mt-1 text-xs text-muted-foreground">Past</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         <div className="flex items-center">
                           <Users className="w-4 h-4 mr-1" />
                           {event._count?.attendees || 0}
                           {event.capacity && (
-                            <span className="text-gray-400">/{event.capacity}</span>
+                            <span className="text-muted-foreground">/{event.capacity}</span>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{event.creator?.name || event.organizerName || 'N/A'}</div>
-                        <div className="text-sm text-gray-500">{event.creator?.email || event.organizerUrl || 'N/A'}</div>
+                        <div className="text-sm text-foreground">{event.creator?.name || event.organizerName || 'N/A'}</div>
+                        <div className="text-sm text-muted-foreground">{event.creator?.email || event.organizerUrl || 'N/A'}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center space-x-2">
@@ -550,7 +550,7 @@ export default function AdminEventsPage() {
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
-                          <button className="text-gray-600 hover:text-gray-900">
+                          <button className="text-muted-foreground hover:text-foreground">
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
                         </div>
@@ -566,21 +566,21 @@ export default function AdminEventsPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+            <div className="text-sm text-foreground">
               Showing page {currentPage} of {totalPages}
             </div>
             <div className="flex space-x-2">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-2 border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
               >
                 Previous
               </button>
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-2 border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
               >
                 Next
               </button>

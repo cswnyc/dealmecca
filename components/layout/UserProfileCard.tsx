@@ -59,11 +59,11 @@ export function UserProfileCard() {
     return (
       <div className="animate-pulse">
         <div className="flex items-center space-x-3 p-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+          <div className="w-10 h-10 bg-muted rounded-full"></div>
           <div className="flex-1">
-            <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+            <div className="h-4 bg-muted rounded w-24 mb-1"></div>
           </div>
-          <div className="w-6 h-4 bg-gray-200 rounded"></div>
+          <div className="w-6 h-4 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -253,7 +253,7 @@ function UserProfileContent() {
       case 'FREE':
         return {
           label: 'Free',
-          color: 'bg-gray-100 text-gray-800',
+          color: 'bg-muted text-muted-foreground',
           icon: null
         };
       case 'PRO':
@@ -277,7 +277,7 @@ function UserProfileContent() {
       default:
         return {
           label: 'Free',
-          color: 'bg-gray-100 text-gray-800',
+          color: 'bg-muted text-muted-foreground',
           icon: null
         };
     }
@@ -296,7 +296,7 @@ function UserProfileContent() {
       case 'DIAMOND':
         return 'text-purple-500';
       default:
-        return 'text-gray-400';
+        return 'text-muted-foreground';
     }
   };
 
@@ -333,11 +333,11 @@ function UserProfileContent() {
     return (
       <div className="animate-pulse">
         <div className="flex items-center space-x-3 p-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+          <div className="w-10 h-10 bg-muted rounded-full"></div>
           <div className="flex-1">
-            <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+            <div className="h-4 bg-muted rounded w-24 mb-1"></div>
           </div>
-          <div className="w-6 h-4 bg-gray-200 rounded"></div>
+          <div className="w-6 h-4 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -348,7 +348,7 @@ function UserProfileContent() {
       <div className="p-3">
         <Button
           onClick={() => router.push('/auth/signup')}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           Sign In
         </Button>
@@ -366,7 +366,7 @@ function UserProfileContent() {
       {/* SellerCrowd-Style Profile Widget */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all duration-200 group"
+        className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-all duration-200 group"
       >
         {/* Avatar */}
         <div className="relative">
@@ -424,18 +424,18 @@ function UserProfileContent() {
             // Priority 4: Initials fallback (last resort)
             console.log('[UserProfileCard] Rendering initials fallback for:', displayName);
             return (
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-semibold text-sm">
                 {displayName.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase() || 'U'}
               </div>
             );
           })()}
           {/* Online indicator - small dot */}
-          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-card rounded-full"></div>
         </div>
 
         {/* User Name - Clean and prominent */}
         <div className="flex-1 text-left">
-          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+          <p className="text-sm font-medium text-foreground truncate">
             {getDisplayName()}
           </p>
         </div>
@@ -443,33 +443,33 @@ function UserProfileContent() {
         {/* Gems with Icon - SellerCrowd style */}
         <div className="flex items-center space-x-1">
           <Gem className={`w-4 h-4 ${getTierColor(tier)}`} />
-          <span className="text-sm font-medium text-gray-700 dark:text-slate-200">{gems}</span>
+          <span className="text-sm font-medium text-muted-foreground">{gems}</span>
         </div>
 
         {/* Dropdown Arrow */}
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-gray-400 dark:text-slate-500 group-hover:text-gray-600 dark:group-hover:text-slate-200 transition-colors" />
+          <ChevronUp className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-400 dark:text-slate-500 group-hover:text-gray-600 dark:group-hover:text-slate-200 transition-colors" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
         )}
       </button>
 
       {/* Expanded Menu - Compact and Modern */}
       {isExpanded && (
-        <div className="mt-2 py-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg">
+        <div className="mt-2 py-1 bg-card border border-border rounded-lg shadow-lg">
           {/* Compact Stats Header - Single Row */}
           {userStats && (
-            <div className="px-3 py-2 border-b border-gray-100 dark:border-slate-700">
-              <div className="flex items-center justify-center gap-2 text-xs text-gray-600 dark:text-slate-400">
+            <div className="px-3 py-2 border-b border-border">
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <span className="font-semibold text-gray-900 dark:text-white">#{userStats.rank}</span>
+                  <span className="font-semibold text-foreground">#{userStats.rank}</span>
                 </span>
-                <span className="text-gray-300 dark:text-slate-600">•</span>
+                <span className="text-border">•</span>
                 <span className="flex items-center gap-1">
                   <Gem className={`w-3 h-3 ${getTierColor(tier)}`} />
-                  <span className="font-semibold text-gray-900 dark:text-white">{gems}</span>
+                  <span className="font-semibold text-foreground">{gems}</span>
                 </span>
-                <span className="text-gray-300 dark:text-slate-600">•</span>
+                <span className="text-border">•</span>
                 <span className={`${getTierColor(tier)} font-semibold uppercase`}>
                   {tier}
                 </span>
@@ -481,17 +481,17 @@ function UserProfileContent() {
           <div className="py-1">
             <button
               onClick={() => handleNavigation('/settings')}
-              className="w-full flex items-center px-3 py-1.5 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+              className="w-full flex items-center px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
             >
-              <Settings className="w-4 h-4 mr-2.5 text-gray-500 dark:text-slate-400" />
+              <Settings className="w-4 h-4 mr-2.5 text-muted-foreground" />
               Settings
             </button>
 
             <button
               onClick={() => handleNavigation('/billing')}
-              className="w-full flex items-center px-3 py-1.5 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+              className="w-full flex items-center px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
             >
-              <Receipt className="w-4 h-4 mr-2.5 text-gray-500 dark:text-slate-400" />
+              <Receipt className="w-4 h-4 mr-2.5 text-muted-foreground" />
               Billing
             </button>
 
@@ -499,27 +499,27 @@ function UserProfileContent() {
             <div>
               <button
                 onClick={() => setIsMoreExpanded(!isMoreExpanded)}
-                className="w-full flex items-center justify-between px-3 py-1.5 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
               >
                 <span className="flex items-center">
-                  <ChevronDown className={`w-4 h-4 mr-2.5 text-gray-500 dark:text-slate-400 transition-transform ${isMoreExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 mr-2.5 text-muted-foreground transition-transform ${isMoreExpanded ? 'rotate-180' : ''}`} />
                   More
                 </span>
               </button>
 
               {isMoreExpanded && (
-                <div className="bg-gray-50 dark:bg-slate-800">
+                <div className="bg-muted">
                   <button
                     onClick={() => handleNavigation('/help')}
-                    className="w-full flex items-center px-3 py-1.5 pl-9 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    className="w-full flex items-center px-3 py-1.5 pl-9 text-sm text-muted-foreground hover:bg-muted transition-colors"
                   >
-                    <HelpCircle className="w-3.5 h-3.5 mr-2.5 text-gray-400 dark:text-slate-500" />
+                    <HelpCircle className="w-3.5 h-3.5 mr-2.5 text-muted-foreground" />
                     Get Support
                   </button>
 
                   <button
                     onClick={() => handleNavigation('/terms')}
-                    className="w-full flex items-center px-3 py-1.5 pl-9 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    className="w-full flex items-center px-3 py-1.5 pl-9 text-sm text-muted-foreground hover:bg-muted transition-colors"
                   >
                     <span className="text-xs">Terms & Privacy</span>
                   </button>
@@ -529,10 +529,10 @@ function UserProfileContent() {
           </div>
 
           {/* Sign Out */}
-          <div className="border-t border-gray-100 dark:border-slate-700 pt-1">
+          <div className="border-t border-border pt-1">
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              className="w-full flex items-center px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"
             >
               <LogOut className="w-4 h-4 mr-2.5" />
               Sign Out

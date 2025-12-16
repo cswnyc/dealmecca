@@ -158,18 +158,18 @@ export function SavedSearchesDropdown({
 
       {/* Dropdown Menu */}
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <BookmarkCheck className="h-5 w-5 mr-2 text-blue-600" />
+        <div className="absolute right-0 mt-2 w-96 bg-card rounded-lg shadow-xl border border-border z-50">
+          <div className="p-4 border-b border-border">
+            <h3 className="text-lg font-semibold text-foreground flex items-center">
+              <BookmarkCheck className="h-5 w-5 mr-2 text-primary" />
               Saved Searches
             </h3>
           </div>
 
           <div className="max-h-96 overflow-y-auto p-2">
             {savedSearches.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <Bookmark className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+              <div className="p-8 text-center text-muted-foreground">
+                <Bookmark className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                 <p className="text-sm">No saved searches yet</p>
                 <p className="text-xs mt-1">Save your frequently used searches for quick access</p>
               </div>
@@ -178,26 +178,26 @@ export function SavedSearchesDropdown({
                 {savedSearches.map((search) => (
                   <div
                     key={search.id}
-                    className="p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                    className="p-3 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 truncate">{search.name}</h4>
+                        <h4 className="font-semibold text-foreground truncate">{search.name}</h4>
                         {search.description && (
-                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{search.description}</p>
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{search.description}</p>
                         )}
                       </div>
                       <div className="flex items-center space-x-1 ml-2">
                         <button
                           onClick={() => handleRunSearch(search)}
-                          className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-md transition-colors"
+                          className="p-1.5 text-primary hover:bg-primary/10 rounded-md transition-colors"
                           title="Run search"
                         >
                           <Play className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteSearch(search.id)}
-                          className="p-1.5 text-red-600 hover:bg-red-100 rounded-md transition-colors"
+                          className="p-1.5 text-destructive hover:bg-destructive/10 rounded-md transition-colors"
                           title="Delete search"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -205,9 +205,9 @@ export function SavedSearchesDropdown({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
                       <span className="flex items-center">
-                        <span className="font-medium text-gray-700 mr-1">{search.query}</span>
+                        <span className="font-medium text-foreground mr-1">{search.query}</span>
                       </span>
                       <span>
                         {search.resultCount !== undefined && search.resultCount !== null ? (
@@ -230,13 +230,13 @@ export function SavedSearchesDropdown({
             )}
           </div>
 
-          <div className="p-3 border-t border-gray-200 bg-gray-50">
+          <div className="p-3 border-t border-border bg-muted">
             <button
               onClick={() => {
                 setShowDropdown(false);
                 setShowSaveDialog(true);
               }}
-              className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="w-full text-sm text-primary hover:text-primary/80 font-medium"
             >
               + Save New Search
             </button>
@@ -253,7 +253,7 @@ export function SavedSearchesDropdown({
 
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+              <label className="text-sm font-medium text-foreground mb-1 block">
                 Search Name *
               </label>
               <Input
@@ -265,7 +265,7 @@ export function SavedSearchesDropdown({
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+              <label className="text-sm font-medium text-foreground mb-1 block">
                 Description (Optional)
               </label>
               <Textarea
@@ -277,11 +277,11 @@ export function SavedSearchesDropdown({
               />
             </div>
 
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <p className="text-xs font-medium text-gray-700 mb-1">Current Search:</p>
-              <p className="text-sm text-gray-900">"{currentQuery}"</p>
+            <div className="bg-muted p-3 rounded-lg">
+              <p className="text-xs font-medium text-foreground mb-1">Current Search:</p>
+              <p className="text-sm text-foreground">"{currentQuery}"</p>
               {Object.keys(currentFilters).length > 0 && (
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   + {Object.keys(currentFilters).length} active filter(s)
                 </p>
               )}

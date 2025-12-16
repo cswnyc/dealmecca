@@ -199,11 +199,11 @@ export function PartnershipManagement({
         <img 
           src={company.logoUrl} 
           alt={`${company.name} logo`}
-          className="w-8 h-8 rounded object-cover border border-gray-200"
+          className="w-8 h-8 rounded object-cover border border-border"
         />
       );
     }
-    return <Building2 className="w-8 h-8 text-blue-600" />;
+    return <Building2 className="w-8 h-8 text-primary" />;
   };
 
   if (loading) {
@@ -211,7 +211,7 @@ export function PartnershipManagement({
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -224,7 +224,7 @@ export function PartnershipManagement({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium">Partnership Management</h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Manage {companyName}'s business partnerships and relationships
           </p>
         </div>
@@ -245,7 +245,7 @@ export function PartnershipManagement({
               <div>
                 <Label>Search for Partner Company</Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     placeholder="Search companies..."
                     value={searchQuery}
@@ -259,11 +259,11 @@ export function PartnershipManagement({
                 
                 {/* Search results */}
                 {searchResults.length > 0 && (
-                  <div className="mt-2 max-h-40 overflow-y-auto border rounded-lg bg-white">
+                  <div className="mt-2 max-h-40 overflow-y-auto border rounded-lg bg-card">
                     {searchResults.map((company) => (
                       <div
                         key={company.id}
-                        className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0 flex items-center space-x-3"
+                        className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0 flex items-center space-x-3"
                         onClick={() => {
                           setNewPartnership({ ...newPartnership, partnerId: company.id });
                           setSearchQuery(company.name);
@@ -273,7 +273,7 @@ export function PartnershipManagement({
                         <CompanyLogo company={company} />
                         <div className="flex-1">
                           <div className="font-medium">{company.name}</div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-muted-foreground">
                             {company.companyType.replace(/_/g, ' ')}
                             {company.city && company.state && ` • ${company.city}, ${company.state}`}
                           </div>
@@ -344,9 +344,9 @@ export function PartnershipManagement({
         {partnerships.length === 0 ? (
           <Card>
             <CardContent className="p-8 text-center">
-              <Users className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No partnerships yet</h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-2 text-sm font-medium text-foreground">No partnerships yet</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Get started by adding a partnership with another company.
               </p>
             </CardContent>
@@ -368,14 +368,14 @@ export function PartnershipManagement({
                           {partnership.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </div>
-                      <div className="text-sm text-gray-500 mt-1">
+                      <div className="text-sm text-muted-foreground mt-1">
                         {partnership.partner.companyType.replace(/_/g, ' ')}
-                        {partnership.partner.city && partnership.partner.state && 
+                        {partnership.partner.city && partnership.partner.state &&
                           ` • ${partnership.partner.city}, ${partnership.partner.state}`
                         }
                       </div>
-                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                      <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+                        <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
                           {partnership.relationshipType.replace(/_/g, ' ')}
                         </span>
                         {partnership.contractValue && (
@@ -392,7 +392,7 @@ export function PartnershipManagement({
                         )}
                       </div>
                       {partnership.notes && (
-                        <p className="text-sm text-gray-600 mt-2">{partnership.notes}</p>
+                        <p className="text-sm text-muted-foreground mt-2">{partnership.notes}</p>
                       )}
                     </div>
                   </div>
@@ -400,7 +400,7 @@ export function PartnershipManagement({
                     variant="ghost"
                     size="sm"
                     onClick={() => deletePartnership(partnership.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

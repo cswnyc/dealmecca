@@ -145,8 +145,8 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
           <div className="flex items-center space-x-3">
             <Building className="w-8 h-8 text-blue-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{counts.totalCompanies}</p>
-              <p className="text-sm text-gray-500">Companies</p>
+              <p className="text-2xl font-bold text-foreground">{counts.totalCompanies}</p>
+              <p className="text-sm text-muted-foreground">Companies</p>
             </div>
           </div>
         </div>
@@ -155,8 +155,8 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
           <div className="flex items-center space-x-3">
             <Users className="w-8 h-8 text-green-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{counts.totalContacts}</p>
-              <p className="text-sm text-gray-500">Contacts</p>
+              <p className="text-2xl font-bold text-foreground">{counts.totalContacts}</p>
+              <p className="text-sm text-muted-foreground">Contacts</p>
             </div>
           </div>
         </div>
@@ -165,8 +165,8 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
           <div className="flex items-center space-x-3">
             <Target className="w-8 h-8 text-purple-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{mediaSellerStats.highValueContacts}</p>
-              <p className="text-sm text-gray-500">High-Value Targets</p>
+              <p className="text-2xl font-bold text-foreground">{mediaSellerStats.highValueContacts}</p>
+              <p className="text-sm text-muted-foreground">High-Value Targets</p>
             </div>
           </div>
         </div>
@@ -179,8 +179,8 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
               <CheckCircle className="w-8 h-8 text-green-500" />
             )}
             <div>
-              <p className="text-2xl font-bold text-gray-900">{counts.totalErrors}</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-2xl font-bold text-foreground">{counts.totalErrors}</p>
+              <p className="text-sm text-muted-foreground">
                 {hasErrors ? 'Issues Found' : 'All Good'}
               </p>
             </div>
@@ -190,7 +190,7 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
 
       {/* Quality Assessment */}
       <div className="bg-white border rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Data Quality Assessment</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">📊 Data Quality Assessment</h3>
         
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {Object.entries({
@@ -204,7 +204,7 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
               <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full text-2xl font-bold ${getQualityColor(score)}`}>
                 {score}
               </div>
-              <p className="text-sm text-gray-600 mt-2">{label}</p>
+              <p className="text-sm text-muted-foreground mt-2">{label}</p>
             </div>
           ))}
         </div>
@@ -214,9 +214,9 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
       <div className="bg-white border rounded-lg">
         <button
           onClick={() => setShowMediaStats(!showMediaStats)}
-          className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between p-6 text-left hover:bg-muted transition-colors"
         >
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+          <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
             <Target className="w-5 h-5 text-purple-500" />
             <span>🎯 Media Seller Analysis</span>
           </h3>
@@ -259,14 +259,14 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-muted rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Contact Completeness</span>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm font-medium text-muted-foreground">Contact Completeness</span>
+                <span className="text-sm text-muted-foreground">
                   {Math.round((mediaSellerStats.contactsWithEmail + mediaSellerStats.contactsWithPhone + mediaSellerStats.contactsWithLinkedIn) / (mediaSellerStats.totalContacts * 3) * 100)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                   style={{ 
@@ -283,9 +283,9 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
       <div className="bg-white border rounded-lg">
         <button
           onClick={() => setShowPreview(!showPreview)}
-          className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between p-6 text-left hover:bg-muted transition-colors"
         >
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+          <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
             {showPreview ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
             <span>📋 Data Preview ({preview.length} sample rows)</span>
           </h3>
@@ -297,9 +297,9 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-200">
+                  <tr className="border-b border-border">
                     {Object.keys(preview[0]).slice(0, 8).map((key) => (
-                      <th key={key} className="text-left py-2 px-3 font-medium text-gray-700 bg-gray-50">
+                      <th key={key} className="text-left py-2 px-3 font-medium text-muted-foreground bg-muted">
                         {key}
                       </th>
                     ))}
@@ -307,9 +307,9 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
                 </thead>
                 <tbody>
                   {preview.slice(0, 5).map((row, index) => (
-                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={index} className="border-b border-border hover:bg-muted">
                       {Object.values(row).slice(0, 8).map((value: any, cellIndex) => (
-                        <td key={cellIndex} className="py-2 px-3 text-gray-900">
+                        <td key={cellIndex} className="py-2 px-3 text-foreground">
                           {String(value).length > 30 
                             ? String(value).substring(0, 30) + '...' 
                             : String(value) || '-'
@@ -322,7 +322,7 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
               </table>
             </div>
             {preview.length > 5 && (
-              <p className="text-xs text-gray-500 mt-2 text-center">
+              <p className="text-xs text-muted-foreground mt-2 text-center">
                 ... and {preview.length - 5} more rows
               </p>
             )}
@@ -335,9 +335,9 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
         <div className="bg-white border rounded-lg">
           <button
             onClick={() => setShowErrors(!showErrors)}
-            className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between p-6 text-left hover:bg-muted transition-colors"
           >
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+            <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
               <AlertTriangle className="w-5 h-5 text-orange-500" />
               <span>⚠️ Validation Issues ({counts.totalErrors})</span>
             </h3>
@@ -364,7 +364,7 @@ export default function DataPreview({ data, onConfirmImport, isImporting = false
                 </div>
               ))}
               {summary.validationErrors.length > 20 && (
-                <p className="text-sm text-gray-500 text-center">
+                <p className="text-sm text-muted-foreground text-center">
                   ... and {summary.validationErrors.length - 20} more issues
                 </p>
               )}

@@ -108,7 +108,7 @@ function MentionLink({ mention }: MentionLinkProps) {
       case 'user':
         return 'text-orange-600 hover:text-orange-800 bg-orange-50 hover:bg-orange-100 border-orange-200';
       default:
-        return 'text-gray-600 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 border-gray-200';
+        return 'text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 border-border';
     }
   };
 

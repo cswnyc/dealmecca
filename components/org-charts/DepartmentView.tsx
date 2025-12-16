@@ -148,9 +148,9 @@ export function DepartmentView({ positions, companyName, onPositionClick }: Depa
       <Card>
         <CardContent className="pt-6">
           <div className="text-center py-12">
-            <Users className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No departments found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-2 text-sm font-medium text-foreground">No departments found</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               No organizational data is available for this company.
             </p>
           </div>
@@ -164,11 +164,11 @@ export function DepartmentView({ positions, companyName, onPositionClick }: Depa
       {/* Department Overview Header */}
       <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-0">
         <CardHeader>
-          <CardTitle className="flex items-center text-gray-900">
+          <CardTitle className="flex items-center text-foreground">
             <Users className="w-6 h-6 mr-3 text-blue-600" />
             {companyName} - Department View
           </CardTitle>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             {departmentGroups.length} departments • {positions.length} total positions • {positions.filter(p => p.contact).length} filled roles
           </p>
         </CardHeader>
@@ -210,7 +210,7 @@ export function DepartmentView({ positions, companyName, onPositionClick }: Depa
                   {dept.positions.map((position) => (
                     <div 
                       key={position.id} 
-                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group/item"
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer group/item"
                       onClick={() => onPositionClick?.(position)}
                     >
                       {position.contact ? (
@@ -222,10 +222,10 @@ export function DepartmentView({ positions, companyName, onPositionClick }: Depa
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-sm font-medium text-foreground truncate">
                               {position.contact.fullName}
                             </p>
-                            <p className="text-xs text-gray-600 truncate">
+                            <p className="text-xs text-muted-foreground truncate">
                               {position.title}
                             </p>
                             <div className="flex items-center mt-1 space-x-1">
@@ -269,18 +269,18 @@ export function DepartmentView({ positions, companyName, onPositionClick }: Depa
                             )}
                           </div>
                           
-                          <ChevronRight className="w-4 h-4 text-gray-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                          <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover/item:opacity-100 transition-opacity" />
                         </>
                       ) : (
                         <>
-                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center border-2 border-dashed border-gray-300">
-                            <Users className="w-5 h-5 text-gray-400" />
+                          <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center border-2 border-dashed border-input">
+                            <Users className="w-5 h-5 text-muted-foreground" />
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-500 italic">
+                            <p className="text-sm font-medium text-muted-foreground italic">
                               {position.title}
                             </p>
-                            <p className="text-xs text-gray-400">Open Position</p>
+                            <p className="text-xs text-muted-foreground">Open Position</p>
                             <Badge className={`text-xs mt-1 ${getLevelBadgeColor(position.level)}`}>
                               L{position.level}
                             </Badge>
@@ -304,12 +304,12 @@ export function DepartmentView({ positions, companyName, onPositionClick }: Depa
                 
                 {/* Department Summary */}
                 {dept.positions.length > 5 && (
-                  <div className="mt-4 pt-3 border-t border-gray-100">
-                    <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="mt-4 pt-3 border-t border-border">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>Team Completion</span>
                       <span>{Math.round((filledPositions.length / dept.positions.length) * 100)}%</span>
                     </div>
-                    <div className="mt-1 w-full bg-gray-200 rounded-full h-1.5">
+                    <div className="mt-1 w-full bg-muted rounded-full h-1.5">
                       <div 
                         className={`h-1.5 bg-gradient-to-r ${dept.color} rounded-full transition-all duration-500`}
                         style={{ width: `${(filledPositions.length / dept.positions.length) * 100}%` }}
@@ -332,21 +332,21 @@ export function DepartmentView({ positions, companyName, onPositionClick }: Depa
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">{departmentGroups.length}</div>
-              <div className="text-sm text-gray-600">Departments</div>
+              <div className="text-sm text-muted-foreground">Departments</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <div className="text-2xl font-bold text-green-600">{positions.filter(p => p.contact).length}</div>
-              <div className="text-sm text-gray-600">Filled Positions</div>
+              <div className="text-sm text-muted-foreground">Filled Positions</div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl font-bold text-orange-600">{positions.filter(p => !p.contact).length}</div>
-              <div className="text-sm text-gray-600">Open Positions</div>
+              <div className="text-sm text-muted-foreground">Open Positions</div>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
               <div className="text-2xl font-bold text-purple-600">
                 {Math.round((positions.filter(p => p.contact).length / positions.length) * 100)}%
               </div>
-              <div className="text-sm text-gray-600">Team Complete</div>
+              <div className="text-sm text-muted-foreground">Team Complete</div>
             </div>
           </div>
         </CardContent>

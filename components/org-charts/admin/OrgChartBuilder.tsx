@@ -310,22 +310,22 @@ export function OrgChartBuilder({
               ) : (
                 <div className="space-y-2">
                   <div>
-                    <Label className="text-xs text-gray-500">Title</Label>
+                    <Label className="text-xs text-muted-foreground">Title</Label>
                     <p className="font-medium">{selectedPos.title}</p>
                   </div>
                   <div>
-                    <Label className="text-xs text-gray-500">Department</Label>
+                    <Label className="text-xs text-muted-foreground">Department</Label>
                     <p>{selectedPos.department}</p>
                   </div>
                   <div>
-                    <Label className="text-xs text-gray-500">Level</Label>
+                    <Label className="text-xs text-muted-foreground">Level</Label>
                     <Badge className={`bg-gradient-to-r ${levels[selectedPos.level - 1]?.color} text-white`}>
                       Level {selectedPos.level}
                     </Badge>
                   </div>
                   {selectedPos.contact && (
                     <div>
-                      <Label className="text-xs text-gray-500">Assigned To</Label>
+                      <Label className="text-xs text-muted-foreground">Assigned To</Label>
                       <div className="flex items-center space-x-2 mt-1">
                         <Avatar className="w-6 h-6">
                           <AvatarImage src={selectedPos.contact.profileImage} />
@@ -347,7 +347,7 @@ export function OrgChartBuilder({
             <div className="border-t pt-4 space-y-3">
               <Label>Assign Contact</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="Search contacts..."
                   value={searchContacts}
@@ -359,7 +359,7 @@ export function OrgChartBuilder({
                 {filteredContacts.map(contact => (
                   <div 
                     key={contact.id}
-                    className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                    className="flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer"
                     onClick={() => assignContact(selectedPos.id, contact)}
                   >
                     <Avatar className="w-8 h-8">
@@ -370,7 +370,7 @@ export function OrgChartBuilder({
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{contact.fullName}</p>
-                      <p className="text-xs text-gray-500 truncate">{contact.email}</p>
+                      <p className="text-xs text-muted-foreground truncate">{contact.email}</p>
                     </div>
                   </div>
                 ))}
@@ -414,13 +414,13 @@ export function OrgChartBuilder({
               </Button>
             </div>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {positions.length} positions • {positions.filter(p => p.contact).length} assigned
           </p>
         </CardHeader>
         <CardContent className="flex-1 overflow-y-auto">
           {positions.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-gray-500">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
                 <Building2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Start building your org chart by adding positions</p>
@@ -493,7 +493,7 @@ function PositionCard({
         <CardContent className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h4 className="font-medium text-gray-900">{position.title}</h4>
+              <h4 className="font-medium text-foreground">{position.title}</h4>
               <div className="flex items-center space-x-2 mt-1">
                 <Badge variant="outline" className="text-xs">
                   {position.department}
@@ -510,7 +510,7 @@ function PositionCard({
                       {position.contact.fullName.split(' ').map(n => n.charAt(0)).join('')}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-gray-600">{position.contact.fullName}</span>
+                  <span className="text-xs text-muted-foreground">{position.contact.fullName}</span>
                 </div>
               )}
             </div>

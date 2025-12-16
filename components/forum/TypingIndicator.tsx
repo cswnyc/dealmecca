@@ -77,14 +77,14 @@ export function TypingIndicator({ postId }: TypingIndicatorProps) {
   ).filter(Boolean);
 
   return (
-    <div className="flex items-center space-x-2 text-sm text-gray-500 py-2">
+    <div className="flex items-center space-x-2 text-sm text-muted-foreground py-2">
       <div className="flex space-x-1">
-        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
+        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
       </div>
       <span>
-        {displayNames.length === 1 
+        {displayNames.length === 1
           ? `${displayNames[0]} is typing...`
           : displayNames.length === 2
           ? `${displayNames[0]} and ${displayNames[1]} are typing...`

@@ -167,7 +167,7 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
                 
                 {/* Position Info */}
                 <div>
-                  <CardTitle className="text-base font-semibold text-gray-900">
+                  <CardTitle className="text-base font-semibold text-foreground">
                     {position.title}
                   </CardTitle>
                   <div className="flex items-center space-x-2 mt-1">
@@ -185,7 +185,7 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
 
               {/* Hierarchy Level Indicator */}
               <div className="text-right">
-                <div className="text-xs text-gray-500">Level {position.level}</div>
+                <div className="text-xs text-muted-foreground">Level {position.level}</div>
                 {hasChildren && (
                   <div className="text-xs text-blue-600">
                     {position.children.length} {position.children.length === 1 ? 'report' : 'reports'}
@@ -207,8 +207,8 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{position.contact.fullName}</p>
-                    <p className="text-sm text-gray-600 truncate">{position.contact.email}</p>
+                    <p className="font-medium text-foreground truncate">{position.contact.fullName}</p>
+                    <p className="text-sm text-muted-foreground truncate">{position.contact.email}</p>
                   </div>
                 </div>
 
@@ -263,8 +263,8 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
           {/* Empty Position Indicator */}
           {!position.contact && (
             <CardContent className="pt-0">
-              <div className="text-center py-3 border-2 border-dashed border-gray-200 rounded-lg">
-                <div className="text-sm text-gray-500 italic mb-2">Position Available</div>
+              <div className="text-center py-3 border-2 border-dashed border-border rounded-lg">
+                <div className="text-sm text-muted-foreground italic mb-2">Position Available</div>
                 <Button size="sm" variant="ghost" className="text-xs text-blue-600 hover:bg-blue-50">
                   Suggest Contact
                 </Button>
@@ -309,8 +309,8 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
         <Card>
           <CardHeader>
             <div className="animate-pulse">
-              <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-6 bg-muted rounded w-1/3 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
             </div>
           </CardHeader>
         </Card>
@@ -319,12 +319,12 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="h-1 bg-gray-200 rounded w-full mb-4"></div>
+                  <div className="h-1 bg-muted rounded w-full mb-4"></div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                    <div className="w-10 h-10 bg-muted rounded-full"></div>
                     <div>
-                      <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-16"></div>
+                      <div className="h-4 bg-muted rounded w-24 mb-2"></div>
+                      <div className="h-3 bg-muted rounded w-16"></div>
                     </div>
                   </div>
                 </div>
@@ -341,9 +341,9 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
       <Card>
         <CardContent className="pt-6">
           <div className="text-center py-12">
-            <Building2 className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No org chart available</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <Building2 className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-2 text-sm font-medium text-foreground">No org chart available</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               This company doesn't have an organizational chart yet.
             </p>
             <div className="mt-6">
@@ -404,7 +404,7 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
                 >
                   <ZoomOut className="w-4 h-4" />
                 </Button>
-                <span className="text-sm text-gray-600 min-w-[60px] text-center">
+                <span className="text-sm text-muted-foreground min-w-[60px] text-center">
                   {Math.round(zoomLevel * 100)}%
                 </span>
                 <Button
@@ -442,7 +442,7 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
               </Button>
             </div>
 
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <div className="flex items-center">
                 <Users className="w-4 h-4 mr-1 text-blue-500" />
                 <span>{chartData.length} positions</span>
@@ -459,7 +459,7 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
       {/* Org Chart Visualization */}
       <Card>
         <CardContent className="pt-6">
-          <div className="overflow-auto max-h-[800px] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <div className="overflow-auto max-h-[800px] scrollbar-thin scrollbar-thumb-muted-foreground scrollbar-track-muted">
             <div className="min-w-full pb-4">
               {chartData
                 .filter(position => !position.parentId) // Show only top-level positions
@@ -473,11 +473,11 @@ export function OrgChartViewer({ companyId, chartData, companyName, loading = fa
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-wrap gap-4">
-            <div className="text-sm font-medium text-gray-700 mr-4">Hierarchy Levels:</div>
+            <div className="text-sm font-medium text-muted-foreground mr-4">Hierarchy Levels:</div>
             {[1, 2, 3, 4, 5].map(level => (
               <div key={level} className="flex items-center space-x-2">
                 <div className={`w-4 h-2 rounded bg-gradient-to-r ${getLevelColor(level)}`}></div>
-                <span className="text-xs text-gray-600">{getLevelTitle(level)}</span>
+                <span className="text-xs text-muted-foreground">{getLevelTitle(level)}</span>
               </div>
             ))}
           </div>

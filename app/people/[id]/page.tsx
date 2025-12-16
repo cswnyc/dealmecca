@@ -249,10 +249,10 @@ export default function ContactDetailPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-muted flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading contact details...</p>
+            <p className="text-muted-foreground text-lg">Loading contact details...</p>
           </div>
         </div>
       </MainLayout>
@@ -262,15 +262,15 @@ export default function ContactDetailPage() {
   if (error || !contact) {
     return (
       <MainLayout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
           <Card className="max-w-md">
             <CardContent className="pt-6">
               <div className="text-center">
-                <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-foreground mb-2">
                   {error || 'Contact Not Found'}
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-muted-foreground mb-6">
                   The person you're looking for doesn't exist or has been removed.
                 </p>
                 <Button onClick={() => router.push('/organizations')} className="w-full">
@@ -287,9 +287,9 @@ export default function ContactDetailPage() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         {/* Compact Header */}
-        <div className="bg-white border-b border-gray-200">
+        <div className="bg-white border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Back Button */}
             <div className="py-3">
@@ -297,7 +297,7 @@ export default function ContactDetailPage() {
                 variant="ghost"
                 onClick={() => router.back()}
                 size="sm"
-                className="text-gray-600 hover:text-gray-900 -ml-2"
+                className="text-muted-foreground hover:text-foreground -ml-2"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Back
@@ -315,7 +315,7 @@ export default function ContactDetailPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h1 className="text-2xl font-bold text-gray-900 truncate">
+                    <h1 className="text-2xl font-bold text-foreground truncate">
                       {contact.fullName}
                     </h1>
                     {contact.verified && (
@@ -324,12 +324,12 @@ export default function ContactDetailPage() {
                   </div>
 
                   {contact.title && (
-                    <p className="text-base text-gray-700 mb-2">{contact.title}</p>
+                    <p className="text-base text-muted-foreground mb-2">{contact.title}</p>
                   )}
 
                   <Link
                     href={`/companies/${contact.company.id}`}
-                    className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 group mb-3"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-blue-600 group mb-3"
                   >
                     <CompanyLogo
                       logoUrl={contact.company.logoUrl}
@@ -340,7 +340,7 @@ export default function ContactDetailPage() {
                   </Link>
 
                   {contact.email && (
-                    <div className="text-sm text-gray-600 mb-3">
+                    <div className="text-sm text-muted-foreground mb-3">
                       <EmailCopy email={contact.email} variant="compact" />
                     </div>
                   )}
@@ -361,13 +361,13 @@ export default function ContactDetailPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-6 border-t border-gray-100 -mb-px">
+            <div className="flex items-center gap-6 border-t border-border -mb-px">
               <button
                 onClick={() => setActiveTab('overview')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === 'overview'
                     ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-input'
                 }`}
               >
                 Overview
@@ -378,7 +378,7 @@ export default function ContactDetailPage() {
                   className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === 'teams'
                       ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-input'
                   }`}
                 >
                   Teams ({(contact.ContactTeam?.length || 0) + (contact.partnerships?.length || 0)})
@@ -390,7 +390,7 @@ export default function ContactDetailPage() {
                   className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === 'duties'
                       ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-input'
                   }`}
                 >
                   Duties ({contact.duties.length})
@@ -401,7 +401,7 @@ export default function ContactDetailPage() {
                 className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === 'activity'
                     ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-input'
                 }`}
               >
                 Activity
@@ -411,7 +411,7 @@ export default function ContactDetailPage() {
                 className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === 'contact'
                     ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-input'
                 }`}
               >
                 Contact Info
@@ -444,7 +444,7 @@ export default function ContactDetailPage() {
                           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                           .slice(0, 5)
                           .map((item, index) => (
-                            <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0 last:pb-0">
+                            <div key={index} className="flex gap-3 pb-3 border-b border-border last:border-0 last:pb-0">
                               <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
                                 {'type' in item ? (
                                   <MessageSquare className="w-4 h-4 text-blue-600" />
@@ -453,14 +453,14 @@ export default function ContactDetailPage() {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm text-gray-900">
+                                <p className="text-sm text-foreground">
                                   {'type' in item ? (
                                     <span><span className="font-medium">{item.type}</span> {item.notes && `- ${item.notes}`}</span>
                                   ) : (
                                     <span>{item.content}</span>
                                   )}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-0.5">
+                                <p className="text-xs text-muted-foreground mt-0.5">
                                   {getRelativeTime(item.createdAt)}
                                   {item.User && ` • by ${item.User.name}`}
                                 </p>
@@ -477,14 +477,14 @@ export default function ContactDetailPage() {
                     {(contact.seniority || contact.department || contact.primaryRole) && (
                       <Card>
                         <CardContent className="pt-6">
-                          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <Briefcase className="h-4 w-4 text-gray-400" />
+                          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                            <Briefcase className="h-4 w-4 text-muted-foreground" />
                             Professional Details
                           </h3>
                           <div className="space-y-2 text-sm">
                             {contact.seniority && (
                               <div>
-                                <span className="text-gray-600">Level:</span>
+                                <span className="text-muted-foreground">Level:</span>
                                 <Badge className={`ml-2 ${getSeniorityBadgeColor(contact.seniority)}`}>
                                   {formatSeniority(contact.seniority)}
                                 </Badge>
@@ -492,20 +492,20 @@ export default function ContactDetailPage() {
                             )}
                             {contact.department && (
                               <div>
-                                <span className="text-gray-600">Department:</span>
-                                <span className="ml-2 text-gray-900">{contact.department}</span>
+                                <span className="text-muted-foreground">Department:</span>
+                                <span className="ml-2 text-foreground">{contact.department}</span>
                               </div>
                             )}
                             {contact.primaryRole && (
                               <div>
-                                <span className="text-gray-600">Role:</span>
-                                <span className="ml-2 text-gray-900">{contact.primaryRole}</span>
+                                <span className="text-muted-foreground">Role:</span>
+                                <span className="ml-2 text-foreground">{contact.primaryRole}</span>
                               </div>
                             )}
                             {contact.budgetRange && (
                               <div>
-                                <span className="text-gray-600">Budget:</span>
-                                <span className="ml-2 text-gray-900">{contact.budgetRange}</span>
+                                <span className="text-muted-foreground">Budget:</span>
+                                <span className="ml-2 text-foreground">{contact.budgetRange}</span>
                               </div>
                             )}
                           </div>
@@ -517,8 +517,8 @@ export default function ContactDetailPage() {
                     {contact.accounts && contact.accounts.length > 0 && (
                       <Card>
                         <CardContent className="pt-6">
-                          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <Target className="h-4 w-4 text-gray-400" />
+                          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                            <Target className="h-4 w-4 text-muted-foreground" />
                             Key Accounts
                           </h3>
                           <div className="flex flex-wrap gap-2">
@@ -541,8 +541,8 @@ export default function ContactDetailPage() {
                     {contact.territories && contact.territories.length > 0 && (
                       <Card>
                         <CardContent className="pt-6">
-                          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-gray-400" />
+                          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground" />
                             Territories
                           </h3>
                           <div className="flex flex-wrap gap-2">
@@ -565,7 +565,7 @@ export default function ContactDetailPage() {
                     <CardContent>
                       <Link
                         href={`/companies/${contact.company.id}`}
-                        className="flex items-center gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200 group"
+                        className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted transition-colors border border-border group"
                       >
                         <CompanyLogo
                           logoUrl={contact.company.logoUrl}
@@ -574,25 +574,25 @@ export default function ContactDetailPage() {
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 truncate">
+                            <h3 className="font-semibold text-foreground group-hover:text-blue-600 truncate">
                               {contact.company.name}
                             </h3>
                             {contact.company.verified && (
                               <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                             )}
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-muted-foreground">
                             {contact.company.companyType.replace(/_/g, ' ')}
                             {contact.company.industry && ` • ${contact.company.industry.replace(/_/g, ' ')}`}
                           </div>
                           {(contact.company.city || contact.company.state) && (
-                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                            <div className="flex items-center text-sm text-muted-foreground mt-1">
                               <MapPin className="h-3 w-3 mr-1" />
                               {[contact.company.city, contact.company.state].filter(Boolean).join(', ')}
                             </div>
                           )}
                         </div>
-                        <ExternalLink className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                        <ExternalLink className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                       </Link>
                     </CardContent>
                   </Card>
@@ -607,7 +607,7 @@ export default function ContactDetailPage() {
                     <Card>
                       <CardHeader>
                         <CardTitle>Teams</CardTitle>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                           Internal teams and groups this person is part of
                         </p>
                       </CardHeader>
@@ -615,7 +615,7 @@ export default function ContactDetailPage() {
                         {contact.ContactTeam.map((contactTeam) => (
                           <div
                             key={contactTeam.id}
-                            className="p-4 rounded-lg border border-gray-200 hover:border-blue-200 hover:bg-blue-50/50 transition-all"
+                            className="p-4 rounded-lg border border-border hover:border-blue-200 hover:bg-blue-50/50 transition-all"
                           >
                             <div className="flex items-start gap-4">
                               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold flex-shrink-0">
@@ -623,7 +623,7 @@ export default function ContactDetailPage() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-2">
-                                  <h3 className="font-semibold text-gray-900">{contactTeam.team.name}</h3>
+                                  <h3 className="font-semibold text-foreground">{contactTeam.team.name}</h3>
                                   {contactTeam.isPrimary && (
                                     <Badge className="bg-blue-100 text-blue-800 text-xs">Primary</Badge>
                                   )}
@@ -633,18 +633,18 @@ export default function ContactDetailPage() {
                                 </div>
 
                                 {contactTeam.role && (
-                                  <div className="text-sm text-gray-600 mb-2">
+                                  <div className="text-sm text-muted-foreground mb-2">
                                     Role: <span className="font-medium">{contactTeam.role}</span>
                                   </div>
                                 )}
 
                                 {contactTeam.team.description && (
-                                  <p className="text-sm text-gray-600 mb-2">{contactTeam.team.description}</p>
+                                  <p className="text-sm text-muted-foreground mb-2">{contactTeam.team.description}</p>
                                 )}
 
                                 <Link
                                   href={`/companies/${contactTeam.team.company.id}`}
-                                  className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600"
+                                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-blue-600"
                                 >
                                   <CompanyLogo
                                     logoUrl={contactTeam.team.company.logoUrl}
@@ -666,7 +666,7 @@ export default function ContactDetailPage() {
                     <Card>
                       <CardHeader>
                         <CardTitle>Client Partnerships</CardTitle>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                           Agency-client relationships this person is involved with
                         </p>
                       </CardHeader>
@@ -674,7 +674,7 @@ export default function ContactDetailPage() {
                         {contact.partnerships.map((partnership) => (
                       <div
                         key={partnership.id}
-                        className="p-4 rounded-lg border border-gray-200 hover:border-blue-200 hover:bg-blue-50/50 transition-all"
+                        className="p-4 rounded-lg border border-border hover:border-blue-200 hover:bg-blue-50/50 transition-all"
                       >
                         <div className="flex items-start gap-4">
                           <CompanyLogo
@@ -686,7 +686,7 @@ export default function ContactDetailPage() {
                             <div className="flex items-center gap-2 mb-2">
                               <Link
                                 href={`/companies/${partnership.partner.id}`}
-                                className="font-semibold text-gray-900 hover:text-blue-600 truncate"
+                                className="font-semibold text-foreground hover:text-blue-600 truncate"
                               >
                                 {partnership.partner.name}
                               </Link>
@@ -703,12 +703,12 @@ export default function ContactDetailPage() {
                                 {partnership.partnerRole === 'agency' ? 'Agency Partner' : 'Client'}
                               </Badge>
                               {partnership.services && (
-                                <span className="text-gray-600">{partnership.services}</span>
+                                <span className="text-muted-foreground">{partnership.services}</span>
                               )}
                             </div>
 
                             {partnership.startDate && (
-                              <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                              <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                                 <Calendar className="h-3 w-3" />
                                 <span>Since {formatDate(partnership.startDate)}</span>
                                 {partnership.endDate && !partnership.isActive && (
@@ -734,23 +734,23 @@ export default function ContactDetailPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle>What does {contact.firstName} do?</CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       Roles and responsibilities across different areas
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {Object.entries(dutiesByCategory).map(([category, duties]) => (
                       <div key={category}>
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                           <div className="w-2 h-2 rounded-full bg-blue-600"></div>
                           {category}
                         </h3>
                         <div className="ml-4 space-y-3">
                           {duties.map((duty) => (
-                            <div key={duty.id} className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                              <div className="font-medium text-gray-900 mb-1">{duty.name}</div>
+                            <div key={duty.id} className="p-3 rounded-lg bg-muted border border-border">
+                              <div className="font-medium text-foreground mb-1">{duty.name}</div>
                               {duty.description && (
-                                <p className="text-sm text-gray-600">{duty.description}</p>
+                                <p className="text-sm text-muted-foreground">{duty.description}</p>
                               )}
                               {/* Show related partnerships for this duty if available */}
                               {contact.partnerships && contact.partnerships.length > 0 && (
@@ -792,22 +792,22 @@ export default function ContactDetailPage() {
                                 )}
                               </div>
                               {index < contact.recentInteractions.length + contact.recentNotes.length - 1 && (
-                                <div className="w-px h-full bg-gray-200 mt-2"></div>
+                                <div className="w-px h-full bg-muted mt-2"></div>
                               )}
                             </div>
                             <div className="flex-1 pb-6">
                               <div className="flex items-start justify-between mb-1">
-                                <h4 className="font-medium text-gray-900">
+                                <h4 className="font-medium text-foreground">
                                   {'type' in item ? item.type : 'Note Added'}
                                 </h4>
-                                <span className="text-xs text-gray-500">{getRelativeTime(item.createdAt)}</span>
+                                <span className="text-xs text-muted-foreground">{getRelativeTime(item.createdAt)}</span>
                               </div>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-muted-foreground">
                                 {'notes' in item && item.notes ? item.notes : ''}
                                 {'content' in item ? item.content : ''}
                               </p>
                               {item.User && (
-                                <p className="text-xs text-gray-500 mt-1">by {item.User.name}</p>
+                                <p className="text-xs text-muted-foreground mt-1">by {item.User.name}</p>
                               )}
                               {'outcome' in item && item.outcome && (
                                 <Badge variant="outline" className="mt-2 text-xs">
@@ -820,8 +820,8 @@ export default function ContactDetailPage() {
 
                       {contact.recentInteractions.length === 0 && contact.recentNotes.length === 0 && (
                         <div className="text-center py-12">
-                          <Activity className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                          <p className="text-gray-500">No activity yet</p>
+                          <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                          <p className="text-muted-foreground">No activity yet</p>
                         </div>
                       )}
                     </div>
@@ -839,13 +839,13 @@ export default function ContactDetailPage() {
                     <div className="grid gap-4">
                       {contact.title && (
                         <div>
-                          <div className="text-sm font-medium text-gray-600 mb-1">Title</div>
-                          <div className="text-gray-900">{contact.title}</div>
+                          <div className="text-sm font-medium text-muted-foreground mb-1">Title</div>
+                          <div className="text-foreground">{contact.title}</div>
                         </div>
                       )}
 
                       <div>
-                        <div className="text-sm font-medium text-gray-600 mb-1">Company</div>
+                        <div className="text-sm font-medium text-muted-foreground mb-1">Company</div>
                         <Link
                           href={`/companies/${contact.company.id}`}
                           className="text-blue-600 hover:text-blue-700 hover:underline"
@@ -856,22 +856,22 @@ export default function ContactDetailPage() {
 
                       {contact.email && (
                         <div>
-                          <div className="text-sm font-medium text-gray-600 mb-1">Email</div>
+                          <div className="text-sm font-medium text-muted-foreground mb-1">Email</div>
                           <EmailCopy email={contact.email} variant="inline" />
                         </div>
                       )}
 
                       {contact.phone && (
                         <div>
-                          <div className="text-sm font-medium text-gray-600 mb-1">Phone</div>
+                          <div className="text-sm font-medium text-muted-foreground mb-1">Phone</div>
                           {isPro ? (
                             <a href={`tel:${contact.phone}`} className="text-blue-600 hover:underline">
                               {contact.phone}
                             </a>
                           ) : (
                             <div className="flex items-center gap-2">
-                              <Lock className="h-4 w-4 text-gray-400" />
-                              <span className="text-gray-400">Premium only</span>
+                              <Lock className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-muted-foreground">Premium only</span>
                             </div>
                           )}
                         </div>
@@ -879,7 +879,7 @@ export default function ContactDetailPage() {
 
                       {contact.linkedinUrl && (
                         <div>
-                          <div className="text-sm font-medium text-gray-600 mb-1">LinkedIn</div>
+                          <div className="text-sm font-medium text-muted-foreground mb-1">LinkedIn</div>
                           {isPro ? (
                             <a
                               href={contact.linkedinUrl}
@@ -892,8 +892,8 @@ export default function ContactDetailPage() {
                             </a>
                           ) : (
                             <div className="flex items-center gap-2">
-                              <Lock className="h-4 w-4 text-gray-400" />
-                              <span className="text-gray-400">Premium only</span>
+                              <Lock className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-muted-foreground">Premium only</span>
                             </div>
                           )}
                         </div>
@@ -901,8 +901,8 @@ export default function ContactDetailPage() {
 
                       {(contact.company.city || contact.company.state) && (
                         <div>
-                          <div className="text-sm font-medium text-gray-600 mb-1">Location</div>
-                          <div className="text-gray-900">
+                          <div className="text-sm font-medium text-muted-foreground mb-1">Location</div>
+                          <div className="text-foreground">
                             {[contact.company.city, contact.company.state].filter(Boolean).join(', ')}
                           </div>
                         </div>
@@ -910,7 +910,7 @@ export default function ContactDetailPage() {
                     </div>
 
                     {contact.lastVerified && (
-                      <div className="pt-4 border-t border-gray-200 text-xs text-gray-500">
+                      <div className="pt-4 border-t border-border text-xs text-muted-foreground">
                         Contact information last updated {formatDate(contact.lastVerified)}
                       </div>
                     )}
@@ -924,7 +924,7 @@ export default function ContactDetailPage() {
               {/* Quick Actions */}
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-600">Quick Actions</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button variant="outline" size="sm" className="w-full justify-start">
@@ -945,37 +945,37 @@ export default function ContactDetailPage() {
               {/* Stats */}
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-600">Activity Stats</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Activity Stats</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Users className="h-4 w-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Users className="h-4 w-4 mr-2 text-muted-foreground" />
                       <span>Teams</span>
                     </div>
-                    <span className="font-semibold text-gray-900">{(contact.ContactTeam?.length || 0) + (contact._count.partnerships || 0)}</span>
+                    <span className="font-semibold text-foreground">{(contact.ContactTeam?.length || 0) + (contact._count.partnerships || 0)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MessageSquare className="h-4 w-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MessageSquare className="h-4 w-4 mr-2 text-muted-foreground" />
                       <span>Interactions</span>
                     </div>
-                    <span className="font-semibold text-gray-900">{contact._count.interactions}</span>
+                    <span className="font-semibold text-foreground">{contact._count.interactions}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Activity className="h-4 w-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Activity className="h-4 w-4 mr-2 text-muted-foreground" />
                       <span>Notes</span>
                     </div>
-                    <span className="font-semibold text-gray-900">{contact._count.notes}</span>
+                    <span className="font-semibold text-foreground">{contact._count.notes}</span>
                   </div>
                   {contact.duties && (
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Award className="h-4 w-4 mr-2 text-gray-400" />
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Award className="h-4 w-4 mr-2 text-muted-foreground" />
                         <span>Duties</span>
                       </div>
-                      <span className="font-semibold text-gray-900">{contact.duties.length}</span>
+                      <span className="font-semibold text-foreground">{contact.duties.length}</span>
                     </div>
                   )}
                 </CardContent>
@@ -985,15 +985,15 @@ export default function ContactDetailPage() {
               {contact.dataQuality !== undefined && (
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-gray-600">Data Quality</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Data Quality</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Quality Score</span>
-                        <span className="font-semibold text-gray-900">{contact.dataQuality}/100</span>
+                        <span className="text-sm text-muted-foreground">Quality Score</span>
+                        <span className="font-semibold text-foreground">{contact.dataQuality}/100</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-muted rounded-full h-2">
                         <div
                           className={`h-2 rounded-full transition-all ${
                             contact.dataQuality >= 80 ? 'bg-green-500' :
@@ -1004,7 +1004,7 @@ export default function ContactDetailPage() {
                         />
                       </div>
                       {contact.lastVerified && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           <span>Verified {formatDate(contact.lastVerified)}</span>
                         </div>
@@ -1018,19 +1018,19 @@ export default function ContactDetailPage() {
               {(contact.verified || contact.isDecisionMaker) && (
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-gray-600">Badges</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Badges</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {contact.verified && (
                       <div className="flex items-center gap-2 text-sm">
                         <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-gray-900">Verified Contact</span>
+                        <span className="text-foreground">Verified Contact</span>
                       </div>
                     )}
                     {contact.isDecisionMaker && (
                       <div className="flex items-center gap-2 text-sm">
                         <Award className="h-4 w-4 text-purple-600" />
-                        <span className="text-gray-900">Decision Maker</span>
+                        <span className="text-foreground">Decision Maker</span>
                       </div>
                     )}
                   </CardContent>

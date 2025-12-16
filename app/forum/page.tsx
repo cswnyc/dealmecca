@@ -369,44 +369,44 @@ export default function ForumPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-muted">
         <div className="container mx-auto px-4 py-8">
           {/* Skeleton for header */}
           <div className="mb-8">
-            <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-48 mb-4 animate-pulse"></div>
-            <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-96 animate-pulse"></div>
+            <div className="h-8 bg-muted-foreground/20 rounded w-48 mb-4 animate-pulse"></div>
+            <div className="h-4 bg-muted-foreground/20 rounded w-96 animate-pulse"></div>
           </div>
 
           {/* Skeleton for tabs */}
           <div className="flex space-x-4 mb-6">
-            <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded-lg w-24 animate-pulse"></div>
-            <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded-lg w-24 animate-pulse"></div>
+            <div className="h-10 bg-muted-foreground/20 rounded-lg w-24 animate-pulse"></div>
+            <div className="h-10 bg-muted-foreground/20 rounded-lg w-24 animate-pulse"></div>
           </div>
 
           {/* Skeleton for category pills */}
           <div className="flex space-x-2 mb-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-8 bg-gray-200 dark:bg-slate-700 rounded-full w-20 animate-pulse" style={{ animationDelay: `${i * 100}ms` }}></div>
+              <div key={i} className="h-8 bg-muted-foreground/20 rounded-full w-20 animate-pulse" style={{ animationDelay: `${i * 100}ms` }}></div>
             ))}
           </div>
 
           {/* Skeleton for search bar */}
-          <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded-lg mb-6 animate-pulse"></div>
+          <div className="h-12 bg-muted-foreground/20 rounded-lg mb-6 animate-pulse"></div>
 
           {/* Skeleton for posts */}
           <div className="space-y-6">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-6 animate-pulse" style={{ animationDelay: `${i * 200}ms` }}>
+              <div key={i} className="bg-card rounded-lg border border-border p-6 animate-pulse" style={{ animationDelay: `${i * 200}ms` }}>
                 <div className="flex items-start space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+                  <div className="w-12 h-12 bg-muted-foreground/20 rounded-lg"></div>
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-32 mb-2"></div>
-                    <div className="h-3 bg-gray-200 dark:bg-slate-700 rounded w-48"></div>
+                    <div className="h-4 bg-muted-foreground/20 rounded w-32 mb-2"></div>
+                    <div className="h-3 bg-muted-foreground/20 rounded w-48"></div>
                   </div>
                 </div>
-                <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-3/4 mb-3"></div>
-                <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-full mb-2"></div>
-                <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-2/3"></div>
+                <div className="h-6 bg-muted-foreground/20 rounded w-3/4 mb-3"></div>
+                <div className="h-4 bg-muted-foreground/20 rounded w-full mb-2"></div>
+                <div className="h-4 bg-muted-foreground/20 rounded w-2/3"></div>
               </div>
             ))}
           </div>
@@ -418,11 +418,11 @@ export default function ForumPage() {
   return (
     <AuthGuard>
       <ForumLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/20 dark:bg-slate-950">
+      <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header with Search */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Community Forum</h1>
+          <h1 className="text-2xl font-bold text-foreground">Community Forum</h1>
           <div className="relative">
             <GlobalSearchInput
               className="w-full lg:w-96"
@@ -432,13 +432,13 @@ export default function ForumPage() {
           </div>
         </div>
         {/* Tab Navigation */}
-        <div className="flex items-center space-x-8 border-b border-gray-200 dark:border-slate-700 mb-6">
+        <div className="flex items-center space-x-8 border-b border-border mb-6">
           <button
             onClick={() => handleTabChange('all')}
             className={`flex items-center space-x-2 pb-4 border-b-2 font-medium transition-colors ${
               activeTab === 'all'
-                ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             <Globe className="w-5 h-5" />
@@ -448,8 +448,8 @@ export default function ForumPage() {
             onClick={() => handleTabChange('my')}
             className={`flex items-center space-x-2 pb-4 border-b-2 font-medium transition-colors ${
               activeTab === 'my'
-                ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             <User className="w-5 h-5" />
@@ -463,11 +463,11 @@ export default function ForumPage() {
             onClick={() => handleCategoryChange('')}
             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               selectedCategory === ''
-                ? 'bg-gray-900 text-white dark:bg-slate-700 dark:text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
+                ? 'bg-foreground text-background'
+                : 'bg-muted text-foreground hover:bg-muted/80'
             }`}
           >
-            All <span className="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+            All <span className="ml-1 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs rounded-full">
               {pagination?.total || 0}
             </span>
           </button>
@@ -479,11 +479,11 @@ export default function ForumPage() {
               onClick={() => handleCategoryChange(category.id)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 selectedCategory === category.id
-                  ? 'bg-gray-900 text-white dark:bg-slate-700 dark:text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
+                  ? 'bg-foreground text-background'
+                  : 'bg-muted text-foreground hover:bg-muted/80'
               }`}
             >
-              {category.name} <span className="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+              {category.name} <span className="ml-1 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs rounded-full">
                 {category._count.posts}
               </span>
             </button>
@@ -492,7 +492,7 @@ export default function ForumPage() {
           {(categories || []).length > 6 && (
             <button
               onClick={() => setShowAllCategories(!showAllCategories)}
-              className="px-3 py-1 bg-gray-100 text-blue-600 rounded-full text-xs font-medium hover:bg-gray-200 dark:bg-slate-800 dark:text-blue-400 dark:hover:bg-slate-700 transition-colors"
+              className="px-3 py-1 bg-muted text-primary rounded-full text-xs font-medium hover:bg-muted/80 transition-colors"
             >
               {showAllCategories ? 'Show less' : `+${(categories || []).length - 6} more`}
             </button>
@@ -503,21 +503,21 @@ export default function ForumPage() {
         {/* Create Post Section */}
         <div className="mb-6">
           {!showCreateForm ? (
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-4">
+            <div className="bg-card rounded-lg border border-border p-4">
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="w-full text-left p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                className="w-full text-left p-4 bg-muted border border-border rounded-lg text-muted-foreground hover:bg-muted/80 transition-colors"
               >
                 Ask a question...
               </button>
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-6">
+            <div className="bg-card rounded-lg border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">What are you creating?</h3>
+                <h3 className="text-lg font-medium text-foreground">What are you creating?</h3>
                 <button
                   onClick={() => setShowCreateForm(false)}
-                  className="text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-200"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   ✕
                 </button>
@@ -529,8 +529,8 @@ export default function ForumPage() {
                   onClick={() => setPostType('post')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     postType === 'post'
-                      ? 'bg-gray-900 text-white dark:bg-slate-700 dark:text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
+                      ? 'bg-foreground text-background'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
                   }`}
                 >
                   <MessageSquare className="w-4 h-4" />
@@ -540,8 +540,8 @@ export default function ForumPage() {
                   onClick={() => setPostType('poll')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     postType === 'poll'
-                      ? 'bg-gray-900 text-white dark:bg-slate-700 dark:text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
+                      ? 'bg-foreground text-background'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
                   }`}
                 >
                   <BarChart3 className="w-4 h-4" />
@@ -570,19 +570,19 @@ export default function ForumPage() {
             {loading ? (
               <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-6 animate-pulse">
-                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-100 dark:bg-slate-800 rounded w-full mb-1"></div>
-                    <div className="h-3 bg-gray-100 dark:bg-slate-800 rounded w-2/3"></div>
+                  <div key={i} className="bg-card rounded-lg border border-border p-6 animate-pulse">
+                    <div className="h-4 bg-muted-foreground/20 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-full mb-1"></div>
+                    <div className="h-3 bg-muted rounded w-2/3"></div>
                   </div>
                 ))}
               </div>
             ) : posts.length === 0 ? (
-              <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
-                <p className="text-gray-500 dark:text-slate-400 text-lg">No posts yet. Be the first to start a discussion!</p>
+              <div className="text-center py-12 bg-card rounded-lg border border-border">
+                <p className="text-muted-foreground text-lg">No posts yet. Be the first to start a discussion!</p>
                 <button
                   onClick={() => setShowCreateForm(true)}
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   Create First Post
                 </button>
@@ -603,9 +603,9 @@ export default function ForumPage() {
             {/* Load More */}
             {pagination && pagination.pages > 1 && page < pagination.pages && (
               <div className="flex justify-center mt-8">
-                <button 
+                <button
                   onClick={handleLoadMore}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   Load More Posts
                 </button>

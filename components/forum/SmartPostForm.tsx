@@ -333,11 +333,11 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
-      case 'URGENT': return 'text-white bg-red-600';
-      case 'HIGH': return 'text-orange-600 bg-orange-50';
-      case 'MEDIUM': return 'text-yellow-600 bg-yellow-50';
-      case 'LOW': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'URGENT': return 'text-destructive-foreground bg-destructive';
+      case 'HIGH': return 'text-orange-600 bg-orange-100';
+      case 'MEDIUM': return 'text-yellow-600 bg-yellow-100';
+      case 'LOW': return 'text-green-600 bg-green-100';
+      default: return 'text-muted-foreground bg-muted';
     }
   };
 
@@ -346,17 +346,17 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Event Context */}
         {eventInfo && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
             <div className="flex items-start space-x-3">
-              <CalendarIcon className="w-5 h-5 text-blue-600 mt-0.5" />
+              <CalendarIcon className="w-5 h-5 text-primary mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-sm font-medium text-blue-900">
+                <h3 className="text-sm font-medium text-foreground">
                   Creating discussion for event
                 </h3>
-                <p className="text-sm text-blue-700 font-medium mt-1">
+                <p className="text-sm text-primary font-medium mt-1">
                   {eventInfo.name}
                 </p>
-                <div className="flex items-center space-x-4 mt-2 text-xs text-blue-600">
+                <div className="flex items-center space-x-4 mt-2 text-xs text-primary">
                   <span>{new Date(eventInfo.startDate).toLocaleDateString()}</span>
                   {eventInfo.location && <span>{eventInfo.location}</span>}
                 </div>
@@ -371,7 +371,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
             {/* Post Content */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="content" className="block text-sm font-medium text-foreground mb-2">
                 Content *
               </label>
               <EnhancedMentionTextarea
@@ -388,7 +388,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           <>
 
             {/* List Items */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+            <div className="bg-muted rounded-lg p-4 space-y-3">
               {formData.listItems.map((item, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <input
@@ -396,13 +396,13 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                     value={item}
                     onChange={(e) => updateListItem(index, e.target.value)}
                     placeholder="Add an item"
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-border rounded bg-card text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                   {formData.listItems.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeListItem(index)}
-                      className="text-red-500 hover:text-red-700 p-1"
+                      className="text-destructive hover:text-destructive/80 p-1"
                     >
                       ✕
                     </button>
@@ -412,7 +412,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               <button
                 type="button"
                 onClick={addListItem}
-                className="w-full text-left px-3 py-2 border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors"
+                className="w-full text-left px-3 py-2 border border-border rounded bg-card text-muted-foreground hover:bg-muted transition-colors"
               >
                 Add an item
               </button>
@@ -425,7 +425,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
             {/* Code Generation Interface */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Code Generation
               </label>
               <CodeGenerationInterface
@@ -445,7 +445,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
             {/* Optional additional context */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="content" className="block text-sm font-medium text-foreground mb-2">
                 Additional Context (Optional)
               </label>
               <EnhancedMentionTextarea
@@ -462,7 +462,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           <>
             {/* Poll Question */}
             <div>
-              <label htmlFor="pollQuestion" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="pollQuestion" className="block text-sm font-medium text-foreground mb-2">
                 Your question *
               </label>
               <textarea
@@ -476,10 +476,10 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 placeholder="E.g., How do you commute to work?"
                 rows={3}
                 maxLength={140}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
-              <div className="text-right text-sm text-gray-500 mt-1">
+              <div className="text-right text-sm text-muted-foreground mt-1">
                 {formData.pollQuestion.length}/140
               </div>
             </div>
@@ -488,7 +488,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             <div className="space-y-4">
               {formData.pollChoices.map((choice, index) => (
                 <div key={index}>
-                  <label htmlFor={`option-${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor={`option-${index}`} className="block text-sm font-medium text-foreground mb-2">
                     Option {index + 1} *
                   </label>
                   <div className="flex items-start space-x-2">
@@ -504,10 +504,10 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                         }}
                         placeholder={index === 0 ? "E.g., Public transportation" : index === 1 ? "E.g., Drive myself" : `Option ${index + 1}`}
                         maxLength={30}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                         required
                       />
-                      <div className="text-right text-sm text-gray-500 mt-1">
+                      <div className="text-right text-sm text-muted-foreground mt-1">
                         {choice.length}/30
                       </div>
                     </div>
@@ -515,7 +515,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                       <button
                         type="button"
                         onClick={() => removePollChoice(index)}
-                        className="mt-3 text-red-500 hover:text-red-700 p-1"
+                        className="mt-3 text-destructive hover:text-destructive/80 p-1"
                       >
                         ✕
                       </button>
@@ -527,7 +527,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               <button
                 type="button"
                 onClick={addPollChoice}
-                className="flex items-center space-x-2 px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-full font-medium hover:bg-blue-50 transition-colors"
+                className="flex items-center space-x-2 px-6 py-3 border-2 border-primary text-primary rounded-full font-medium hover:bg-primary/10 transition-colors"
               >
                 <span className="text-xl font-bold">+</span>
                 <span>Add option</span>
@@ -536,14 +536,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
             {/* Poll Duration */}
             <div>
-              <label htmlFor="pollDuration" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="pollDuration" className="block text-sm font-medium text-foreground mb-2">
                 Poll duration
               </label>
               <select
                 id="pollDuration"
                 value={formData.pollDuration}
                 onChange={(e) => setFormData(prev => ({ ...prev, pollDuration: parseInt(e.target.value) }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                className="w-full px-4 py-3 border border-border rounded-lg text-foreground focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-card"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -560,14 +560,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
             {/* Category for Poll */}
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
                 Category *
               </label>
               <select
                 id="category"
                 value={formData.categoryId}
                 onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-border rounded-lg text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               >
                 <option value="">Select category</option>
@@ -583,23 +583,23 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
         {/* AI Suggestions */}
         {showAiSuggestions && postType !== 'poll' && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-blue-900 mb-3 flex items-center">
+          <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+            <h3 className="text-sm font-medium text-foreground mb-3 flex items-center">
               <TagIcon className="w-4 h-4 mr-2" />
               AI Smart Suggestions
             </h3>
-            
+
             {/* Suggested Tags */}
             {aiSuggestions.tags.length > 0 && (
               <div className="mb-3">
-                <p className="text-xs text-blue-700 mb-2">Suggested tags:</p>
+                <p className="text-xs text-primary mb-2">Suggested tags:</p>
                 <div className="flex flex-wrap gap-2">
                   {aiSuggestions.tags.map(tag => (
                     <button
                       key={tag}
                       type="button"
                       onClick={() => addTag(tag)}
-                      className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded hover:bg-blue-200 transition-colors"
+                      className="px-2 py-1 bg-primary/20 text-primary text-xs rounded hover:bg-primary/30 transition-colors"
                     >
                       #{tag}
                     </button>
@@ -611,7 +611,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             {/* Detected Companies */}
             {aiSuggestions.companies.length > 0 && (
               <div className="mb-3">
-                <p className="text-xs text-blue-700 mb-2 flex items-center">
+                <p className="text-xs text-primary mb-2 flex items-center">
                   <BuildingOfficeIcon className="w-3 h-3 mr-1" />
                   Detected companies:
                 </p>
@@ -631,14 +631,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             {/* Detected Media Types */}
             {aiSuggestions.mediaTypes.length > 0 && (
               <div className="mb-3">
-                <p className="text-xs text-blue-700 mb-2">Suggested media types:</p>
+                <p className="text-xs text-primary mb-2">Suggested media types:</p>
                 <div className="flex flex-wrap gap-2">
                   {aiSuggestions.mediaTypes.map(mediaType => (
                     <button
                       key={mediaType}
                       type="button"
                       onClick={() => addMediaType(mediaType)}
-                      className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded hover:bg-purple-200 transition-colors"
+                      className="px-2 py-1 bg-accent/20 text-accent-foreground text-xs rounded hover:bg-accent/30 transition-colors"
                     >
                       {mediaType}
                     </button>
@@ -650,7 +650,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             {/* Detected Location */}
             {aiSuggestions.location && (
               <div className="mb-3">
-                <p className="text-xs text-blue-700 mb-2 flex items-center">
+                <p className="text-xs text-primary mb-2 flex items-center">
                   <MapPinIcon className="w-3 h-3 mr-1" />
                   Detected location: <span className="font-medium ml-1">{aiSuggestions.location}</span>
                 </p>
@@ -667,14 +667,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Category */}
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
                   Category *
                 </label>
                 <select
                   id="category"
                   value={formData.categoryId}
                   onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                   required
                 >
                   <option value="">Select category</option>
@@ -690,7 +690,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
             {/* Location */}
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="location" className="block text-sm font-medium text-foreground mb-2">
                 Location (Optional)
               </label>
               <input
@@ -699,26 +699,26 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 value={formData.location}
                 onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                 placeholder="City, state, or region"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
             {/* Media Types */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Media Types
               </label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.mediaType.map(media => (
                   <span
                     key={media}
-                    className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 text-sm rounded"
+                    className="inline-flex items-center px-2 py-1 bg-accent/20 text-accent-foreground text-sm rounded"
                   >
                     {media}
                     <button
                       type="button"
                       onClick={() => removeMediaType(media)}
-                      className="ml-1 text-purple-600 hover:text-purple-800"
+                      className="ml-1 text-accent-foreground/80 hover:text-accent-foreground"
                     >
                       ×
                     </button>
@@ -733,8 +733,8 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                     onClick={() => addMediaType(media)}
                     className={`px-3 py-2 text-sm rounded border transition-colors ${
                       formData.mediaType.includes(media)
-                        ? 'bg-purple-100 border-purple-300 text-purple-800'
-                        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                        ? 'bg-accent/20 border-accent/50 text-accent-foreground'
+                        : 'bg-card border-border text-foreground hover:bg-muted'
                     }`}
                   >
                     {media}
@@ -745,20 +745,20 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Tags
               </label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.tags.map(tag => (
                   <span
                     key={tag}
-                    className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded"
+                    className="inline-flex items-center px-2 py-1 bg-primary/20 text-primary text-sm rounded"
                   >
                     #{tag}
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="ml-1 text-blue-600 hover:text-blue-800"
+                      className="ml-1 text-primary/80 hover:text-primary"
                     >
                       ×
                     </button>
@@ -775,7 +775,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                     e.currentTarget.value = '';
                   }
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
@@ -787,24 +787,24 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                   id="anonymous"
                   checked={formData.isAnonymous}
                   onChange={(e) => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 text-primary border-border rounded focus:ring-2 focus:ring-ring"
                 />
-                <label htmlFor="anonymous" className="ml-2 text-sm text-gray-700">
+                <label htmlFor="anonymous" className="ml-2 text-sm text-foreground">
                   Post anonymously
                 </label>
               </div>
 
               {formData.isAnonymous && (
-                <div className="ml-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="ml-6 p-3 bg-primary/10 border border-primary/30 rounded-lg">
                   <div className="flex items-center space-x-2 text-sm">
-                    <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-gray-600">?</span>
+                    <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
+                      <span className="text-xs font-medium text-muted-foreground">?</span>
                     </div>
-                    <span className="text-gray-600">Will be posted as:</span>
-                    <span className="font-medium text-gray-900">Anonymous User</span>
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Anonymous</span>
+                    <span className="text-muted-foreground">Will be posted as:</span>
+                    <span className="font-medium text-foreground">Anonymous User</span>
+                    <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">Anonymous</span>
                   </div>
-                  <div className="text-xs text-blue-700 mt-2">
+                  <div className="text-xs text-primary mt-2">
                     💡 Set an anonymous handle in your profile to maintain consistency across anonymous posts
                   </div>
                 </div>
@@ -818,7 +818,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
           >
             Cancel
           </button>
@@ -830,7 +830,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               (postType === 'poll' && (!formData.pollQuestion.trim() || formData.pollChoices.filter(choice => choice.trim()).length < 2 || !formData.categoryId)) ||
               (postType === 'code' && !formData.generatedCode && !formData.content) ||
               (postType !== 'poll' && !formData.categoryId)}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Creating...' : `Create ${postType.charAt(0).toUpperCase() + postType.slice(1)}`}
           </button>

@@ -245,13 +245,13 @@ export default function AdvancedSearch({
         <div className="relative">
           <form onSubmit={handleSearch} className="flex gap-2">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search companies, contacts, or try 'companies with new CMOs'..."
-                className="w-full pl-10 pr-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onFocus={() => setShowSuggestions(true)}
               />
             </div>
@@ -280,9 +280,9 @@ export default function AdvancedSearch({
 
           {/* Search Suggestions */}
           {showSuggestions && (query.length > 2 || suggestions.length > 0) && (
-            <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-              <div className="p-2 border-b border-gray-100">
-                <div className="text-sm font-medium text-gray-600">Suggestions</div>
+            <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-border rounded-lg shadow-lg">
+              <div className="p-2 border-b border-border">
+                <div className="text-sm font-medium text-muted-foreground">Suggestions</div>
               </div>
               {suggestions.map((suggestion) => (
                 <button
@@ -291,7 +291,7 @@ export default function AdvancedSearch({
                     setQuery(suggestion.query)
                     setShowSuggestions(false)
                   }}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center gap-3"
+                  className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-3"
                 >
                   <div className="flex-shrink-0">
                     {suggestion.type === 'company' && <Building2 className="w-4 h-4 text-blue-500" />}
@@ -301,9 +301,9 @@ export default function AdvancedSearch({
                   </div>
                   <div className="flex-1">
                     <div className="font-medium">{suggestion.query}</div>
-                    <div className="text-sm text-gray-500">{suggestion.description}</div>
+                    <div className="text-sm text-muted-foreground">{suggestion.description}</div>
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-muted-foreground">
                     {suggestion.popularity}% match
                   </div>
                 </button>
@@ -314,12 +314,12 @@ export default function AdvancedSearch({
 
         {/* Quick Filters */}
         <div className="flex flex-wrap gap-2">
-          <span className="text-sm font-medium text-gray-600">Quick filters:</span>
+          <span className="text-sm font-medium text-muted-foreground">Quick filters:</span>
           {quickFilters.map((filter) => (
             <button
               key={filter.name}
               onClick={() => handleQuickFilter(filter)}
-              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+              className="px-3 py-1 text-sm bg-muted hover:bg-muted rounded-full transition-colors"
             >
               {filter.name}
             </button>
@@ -332,15 +332,15 @@ export default function AdvancedSearch({
           {recentSearches.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-600">Recent searches</span>
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground">Recent searches</span>
               </div>
               <div className="space-y-1">
                 {recentSearches.slice(0, 3).map((search, index) => (
                   <button
                     key={index}
                     onClick={() => setQuery(search)}
-                    className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="w-full text-left px-3 py-2 text-sm bg-muted hover:bg-muted rounded-lg transition-colors"
                   >
                     {search}
                   </button>
@@ -353,18 +353,18 @@ export default function AdvancedSearch({
           {savedSearches.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Star className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-600">Saved searches</span>
+                <Star className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground">Saved searches</span>
               </div>
               <div className="space-y-1">
                 {savedSearches.slice(0, 3).map((search) => (
                   <button
                     key={search.id}
                     onClick={() => onLoadSavedSearch(search)}
-                    className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="w-full text-left px-3 py-2 text-sm bg-muted hover:bg-muted rounded-lg transition-colors"
                   >
                     <div className="font-medium">{search.name}</div>
-                    <div className="text-gray-500 text-xs">
+                    <div className="text-muted-foreground text-xs">
                       {search.resultCount} results • {search.lastRun}
                     </div>
                   </button>
@@ -410,7 +410,7 @@ export default function AdvancedSearch({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Company Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Company Type
                 </label>
                 <div className="space-y-2">
@@ -430,7 +430,7 @@ export default function AdvancedSearch({
 
               {/* Industry */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Industry
                 </label>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -450,7 +450,7 @@ export default function AdvancedSearch({
 
               {/* Employee Count */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Employee Count
                 </label>
                 <div className="space-y-2">
@@ -471,7 +471,7 @@ export default function AdvancedSearch({
 
               {/* Revenue Range */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Revenue Range
                 </label>
                 <div className="space-y-2">
@@ -492,7 +492,7 @@ export default function AdvancedSearch({
 
               {/* Media Spend */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Media Spend Level
                 </label>
                 <div className="space-y-2">
@@ -513,7 +513,7 @@ export default function AdvancedSearch({
 
               {/* Special Filters */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Special Filters
                 </label>
                 <div className="space-y-2">
@@ -548,7 +548,7 @@ export default function AdvancedSearch({
               <h3 className="text-lg font-medium mb-4">Save Search</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Search Name
                   </label>
                   <input
@@ -556,14 +556,14 @@ export default function AdvancedSearch({
                     value={saveSearchName}
                     onChange={(e) => setSaveSearchName(e.target.value)}
                     placeholder="Enter a name for this search..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Search Query
                   </label>
-                  <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                  <div className="text-sm text-muted-foreground bg-muted p-2 rounded">
                     {query}
                   </div>
                 </div>

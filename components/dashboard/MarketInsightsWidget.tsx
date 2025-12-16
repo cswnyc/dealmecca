@@ -263,17 +263,17 @@ export default function MarketInsightsWidget({
     if (trend === 'up' || change > 0) {
       return <ArrowUpRight className="w-4 h-4 text-green-600" />
     } else if (trend === 'down' || change < 0) {
-      return <ArrowDownRight className="w-4 h-4 text-red-700" />
+      return <ArrowDownRight className="w-4 h-4 text-destructive" />
     }
-    return <TrendingUp className="w-4 h-4 text-gray-600" />
+    return <TrendingUp className="w-4 h-4 text-muted-foreground" />
   }
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'positive': return 'bg-green-50 text-green-700 border-green-200'
-      case 'negative': return 'bg-red-50 text-red-700 border-red-200'
-      case 'neutral': return 'bg-gray-50 text-gray-700 border-gray-200'
-      default: return 'bg-gray-50 text-gray-700 border-gray-200'
+      case 'negative': return 'bg-destructive/10 text-destructive border-destructive/20'
+      case 'neutral': return 'bg-muted text-foreground border-border'
+      default: return 'bg-muted text-foreground border-border'
     }
   }
 
@@ -282,7 +282,7 @@ export default function MarketInsightsWidget({
       case 'high': return 'bg-red-100 text-red-800'
       case 'medium': return 'bg-yellow-100 text-yellow-800'
       case 'low': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+      default: return 'bg-muted text-foreground'
     }
   }
 
@@ -292,7 +292,7 @@ export default function MarketInsightsWidget({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-blue-600" />
+              <BarChart3 className="w-5 h-5 text-primary" />
               Market Intelligence
             </CardTitle>
             <CardDescription>
@@ -319,13 +319,13 @@ export default function MarketInsightsWidget({
       </CardHeader>
       <CardContent>
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-200 mb-6">
+        <div className="flex border-b border-border mb-6">
           <button
             onClick={() => setActiveTab('trends')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'trends'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Market Trends
@@ -334,8 +334,8 @@ export default function MarketInsightsWidget({
             onClick={() => setActiveTab('insights')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'insights'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Industry Insights
@@ -344,8 +344,8 @@ export default function MarketInsightsWidget({
             onClick={() => setActiveTab('competitors')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'competitors'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Competitor Activity
@@ -367,8 +367,8 @@ export default function MarketInsightsWidget({
                       <div className="flex items-center gap-2">
                         {getTrendIcon(trend.trend, trend.change)}
                         <div>
-                          <div className="font-medium text-gray-900">{trend.metric}</div>
-                          <div className="text-sm text-gray-600">{trend.category}</div>
+                          <div className="font-medium text-foreground">{trend.metric}</div>
+                          <div className="text-sm text-muted-foreground">{trend.category}</div>
                         </div>
                       </div>
                     </div>
@@ -378,14 +378,14 @@ export default function MarketInsightsWidget({
                          trend.metric.includes('%') ? `${trend.value}%` : trend.value}
                       </div>
                       <div className={`text-sm font-medium ${
-                        trend.change > 0 ? 'text-green-600' : 'text-red-700'
+                        trend.change > 0 ? 'text-green-600' : 'text-destructive'
                       }`}>
                         {formatPercentage(trend.change)} {trend.period}
                       </div>
                     </div>
                   </div>
                   <div className="mt-3">
-                    <p className="text-sm text-gray-600 mb-2">{trend.description}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{trend.description}</p>
                     <div className="flex items-center justify-between">
                       <Badge
                         variant={trend.significance === 'high' ? 'destructive' : 'secondary'}
@@ -393,7 +393,7 @@ export default function MarketInsightsWidget({
                       >
                         {trend.significance} significance
                       </Badge>
-                      <span className="text-xs text-gray-500">{trend.impact}</span>
+                      <span className="text-xs text-muted-foreground">{trend.impact}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -414,8 +414,8 @@ export default function MarketInsightsWidget({
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900 mb-1">{insight.title}</h4>
-                      <p className="text-sm text-gray-600 mb-2">{insight.summary}</p>
+                      <h4 className="font-medium text-foreground mb-1">{insight.title}</h4>
+                      <p className="text-sm text-muted-foreground mb-2">{insight.summary}</p>
                       <div className="flex items-center gap-2 mb-3">
                         <Badge className={getImpactColor(insight.impact)}>
                           {insight.impact} impact
@@ -428,26 +428,26 @@ export default function MarketInsightsWidget({
                         </Badge>
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted-foreground">
                       {insight.publishedAt}
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h5 className="font-medium text-gray-900 mb-2 text-sm">Key Data Points</h5>
-                      <ul className="text-xs text-gray-600 space-y-1">
+                      <h5 className="font-medium text-foreground mb-2 text-sm">Key Data Points</h5>
+                      <ul className="text-xs text-muted-foreground space-y-1">
                         {insight.dataPoints.slice(0, 3).map((point, index) => (
                           <li key={index} className="flex items-center gap-1">
-                            <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+                            <div className="w-1 h-1 bg-primary rounded-full"></div>
                             {point}
                           </li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <h5 className="font-medium text-gray-900 mb-2 text-sm">Recommendations</h5>
-                      <ul className="text-xs text-gray-600 space-y-1">
+                      <h5 className="font-medium text-foreground mb-2 text-sm">Recommendations</h5>
+                      <ul className="text-xs text-muted-foreground space-y-1">
                         {insight.recommendations.slice(0, 3).map((rec, index) => (
                           <li key={index} className="flex items-center gap-1">
                             <div className="w-1 h-1 bg-green-600 rounded-full"></div>
@@ -476,21 +476,21 @@ export default function MarketInsightsWidget({
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-gray-900">{activity.company}</h4>
+                        <h4 className="font-medium text-foreground">{activity.company}</h4>
                         <Badge variant="outline" className="text-xs">
                           {activity.type}
                         </Badge>
                         <Badge className={`text-xs ${
-                          activity.impact === 'high' ? 'bg-red-100 text-red-800' :
+                          activity.impact === 'high' ? 'bg-destructive/20 text-destructive' :
                           activity.impact === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-green-100 text-green-800'
                         }`}>
                           {activity.impact} impact
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-900 mb-2">{activity.activity}</p>
-                      <p className="text-xs text-gray-600 mb-2">{activity.details}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <p className="text-sm text-foreground mb-2">{activity.activity}</p>
+                      <p className="text-xs text-muted-foreground mb-2">{activity.details}</p>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <DollarSign className="w-3 h-3" />
                           {formatCurrency(activity.spend)}
@@ -504,7 +504,7 @@ export default function MarketInsightsWidget({
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">Channels:</span>
+                    <span className="text-xs text-muted-foreground">Channels:</span>
                     {activity.channels.map((channel) => (
                       <Badge key={channel} variant="secondary" className="text-xs">
                         {channel}
@@ -520,7 +520,7 @@ export default function MarketInsightsWidget({
         {/* Summary Footer */}
         <div className="border-t pt-4 mt-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 text-sm text-gray-600">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Eye className="w-4 h-4" />
                 <span>Last updated: 2 hours ago</span>

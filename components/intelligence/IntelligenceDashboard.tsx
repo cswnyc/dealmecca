@@ -201,7 +201,7 @@ export function IntelligenceDashboard({
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
       case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -210,7 +210,7 @@ export function IntelligenceDashboard({
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
       case 'medium': return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'low': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -306,7 +306,7 @@ export function IntelligenceDashboard({
               <Target className="w-5 h-5 mr-2 text-red-600" />
               Competitive Intelligence
             </CardTitle>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Market moves, wins/losses, and competitive threats
             </p>
           </CardHeader>
@@ -321,7 +321,7 @@ export function IntelligenceDashboard({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-gray-900 truncate">
+                          <h4 className="font-medium text-foreground truncate">
                             {intel.title}
                           </h4>
                           <Badge className={`text-xs ${getImpactColor(intel.impact)}`}>
@@ -329,21 +329,21 @@ export function IntelligenceDashboard({
                           </Badge>
                         </div>
                         
-                        <p className="text-sm text-gray-600 mb-3">
+                        <p className="text-sm text-muted-foreground mb-3">
                           {intel.description}
                         </p>
                         
                         {intel.company && (
                           <div className="flex items-center space-x-2 mb-2">
-                            <Building2 className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-500">
+                            <Building2 className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
                               {intel.company.name}
                             </span>
                           </div>
                         )}
                         
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2 text-xs text-gray-500">
+                          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                             <Clock className="w-3 h-3" />
                             <span>{formatTimeAgo(intel.timestamp)}</span>
                             {intel.source && (
@@ -367,8 +367,8 @@ export function IntelligenceDashboard({
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <AlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                <div className="text-center py-8 text-muted-foreground">
+                  <AlertCircle className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
                   <p className="text-sm">No intelligence data matches your current filter</p>
                 </div>
               )}
@@ -383,7 +383,7 @@ export function IntelligenceDashboard({
               <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
               Market Insights
             </CardTitle>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Opportunities and strategic recommendations
             </p>
           </CardHeader>
@@ -397,7 +397,7 @@ export function IntelligenceDashboard({
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-gray-900">{insight.title}</h4>
+                        <h4 className="font-medium text-foreground">{insight.title}</h4>
                         <div className="flex items-center space-x-2">
                           {insight.actionable && (
                             <Badge className="bg-green-100 text-green-800 text-xs">
@@ -410,18 +410,18 @@ export function IntelligenceDashboard({
                         </div>
                       </div>
                       
-                      <p className="text-sm text-gray-600 mb-3">
+                      <p className="text-sm text-muted-foreground mb-3">
                         {insight.description}
                       </p>
                       
                       {insight.metric && (
-                        <div className="bg-gray-50 rounded-lg p-3">
+                        <div className="bg-muted rounded-lg p-3">
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="text-2xl font-bold text-gray-900">
+                              <div className="text-2xl font-bold text-foreground">
                                 {insight.metric.value}
                               </div>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-muted-foreground">
                                 {insight.metric.timeframe}
                               </div>
                             </div>

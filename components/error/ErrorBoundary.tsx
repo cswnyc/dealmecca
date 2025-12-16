@@ -138,19 +138,19 @@ export class ErrorBoundary extends Component<Props, State> {
       // Different UI based on error level
       if (level === 'critical') {
         return (
-          <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center">
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="max-w-md w-full bg-card shadow-lg rounded-lg p-8 text-center">
               <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
                 <AlertTriangle className="w-8 h-8 text-red-600" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-foreground mb-2">
                 System Error
               </h1>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 We're experiencing technical difficulties. Our team has been notified.
               </p>
               {eventId && (
-                <p className="text-xs text-gray-400 mb-4">
+                <p className="text-xs text-muted-foreground mb-4">
                   Error ID: {eventId}
                 </p>
               )}
@@ -179,21 +179,21 @@ export class ErrorBoundary extends Component<Props, State> {
 
       if (level === 'page') {
         return (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-            <div className="max-w-lg w-full bg-white rounded-lg shadow-sm p-8">
+          <div className="min-h-screen bg-background flex items-center justify-center px-4">
+            <div className="max-w-lg w-full bg-card rounded-lg shadow-sm p-8">
               <div className="text-center">
                 <div className="w-12 h-12 mx-auto bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                   <Bug className="w-6 h-6 text-yellow-600" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                <h2 className="text-xl font-semibold text-foreground mb-2">
                   Something went wrong
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-muted-foreground mb-6">
                   We encountered an error loading this page. Please try again.
                 </p>
-                
+
                 {eventId && (
-                  <p className="text-xs text-gray-400 mb-4">
+                  <p className="text-xs text-muted-foreground mb-4">
                     Reference: {eventId}
                   </p>
                 )}
@@ -221,20 +221,20 @@ export class ErrorBoundary extends Component<Props, State> {
 
                 {showDetails && error && (
                   <details className="mt-6 text-left">
-                    <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+                    <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
                       Technical Details
                     </summary>
-                    <div className="mt-2 p-3 bg-gray-50 rounded text-xs font-mono">
+                    <div className="mt-2 p-3 bg-muted rounded text-xs font-mono">
                       <p className="font-bold">{error.name}: {error.message}</p>
                       {error.stack && (
-                        <pre className="mt-2 whitespace-pre-wrap text-gray-600">
+                        <pre className="mt-2 whitespace-pre-wrap text-muted-foreground">
                           {error.stack}
                         </pre>
                       )}
                       {errorInfo && (
                         <details className="mt-2">
-                          <summary className="text-gray-500">Component Stack</summary>
-                          <pre className="mt-1 text-gray-600">
+                          <summary className="text-muted-foreground">Component Stack</summary>
+                          <pre className="mt-1 text-muted-foreground">
                             {errorInfo.componentStack}
                           </pre>
                         </details>

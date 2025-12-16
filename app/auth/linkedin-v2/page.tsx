@@ -103,20 +103,20 @@ export default function LinkedInAuthV2() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-muted py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             LinkedIn OAuth V2 Testing
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground">
             Testing improved OAuth flow per Microsoft documentation
           </p>
         </div>
 
         <div className="bg-white shadow rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Configuration Test</h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Test the OpenID Connect configuration and endpoints
           </p>
           <button
@@ -130,7 +130,7 @@ export default function LinkedInAuthV2() {
           {testResult && (
             <div className="mt-4">
               <h3 className="text-lg font-medium mb-2">Test Results:</h3>
-              <pre className="bg-gray-100 p-4 rounded text-xs overflow-auto max-h-96">
+              <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
                 {JSON.stringify(testResult, null, 2)}
               </pre>
             </div>
@@ -139,7 +139,7 @@ export default function LinkedInAuthV2() {
 
         <div className="bg-white shadow rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">OAuth Flow Testing</h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Test the actual OAuth authentication flows using the V2 callback endpoint
           </p>
 
@@ -151,7 +151,7 @@ export default function LinkedInAuthV2() {
               >
                 🔐 Start OAuth with PKCE (V2)
               </button>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Uses PKCE for enhanced security (recommended)
               </p>
             </div>
@@ -163,7 +163,7 @@ export default function LinkedInAuthV2() {
               >
                 🔓 Start OAuth without PKCE (V2)
               </button>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Traditional OAuth flow without PKCE
               </p>
             </div>

@@ -373,14 +373,14 @@ export function ContactCSVImport() {
             </div>
 
             {isUploading && (
-              <div className="flex items-center gap-2 text-blue-600">
+              <div className="flex items-center gap-2 text-primary">
                 <RefreshCw className="h-4 w-4 animate-spin" />
                 <span>Uploading file...</span>
               </div>
             )}
 
             {isParsing && (
-              <div className="flex items-center gap-2 text-blue-600">
+              <div className="flex items-center gap-2 text-primary">
                 <RefreshCw className="h-4 w-4 animate-spin" />
                 <span>Processing CSV data...</span>
               </div>
@@ -414,12 +414,12 @@ export function ContactCSVImport() {
           <CardContent>
             {/* Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-primary/10 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-blue-600" />
+                  <Users className="h-5 w-5 text-primary" />
                   <div>
-                    <div className="text-2xl font-bold text-blue-900">{parsedData.summary.total}</div>
-                    <div className="text-sm text-blue-600">Total Contacts</div>
+                    <div className="text-2xl font-bold text-primary">{parsedData.summary.total}</div>
+                    <div className="text-sm text-primary">Total Contacts</div>
                   </div>
                 </div>
               </div>
@@ -456,7 +456,7 @@ export function ContactCSVImport() {
             <div className="border rounded-lg overflow-hidden">
               <div className="max-h-96 overflow-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 sticky top-0">
+                  <thead className="bg-muted sticky top-0">
                     <tr>
                       <th className="text-left p-3 font-medium">Status</th>
                       <th className="text-left p-3 font-medium">Name</th>
@@ -468,7 +468,7 @@ export function ContactCSVImport() {
                   </thead>
                   <tbody>
                     {parsedData.contacts.slice(0, 50).map((contact, index) => (
-                      <tr key={contact.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                      <tr key={contact.id} className={index % 2 === 0 ? 'bg-muted' : 'bg-card'}>
                         <td className="p-3">
                           {contact.isValid ? (
                             <Badge className="bg-green-100 text-green-800">
@@ -484,7 +484,7 @@ export function ContactCSVImport() {
                         </td>
                         <td className="p-3">
                           <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-gray-400" />
+                            <User className="h-4 w-4 text-muted-foreground" />
                             <span>{contact.firstName} {contact.lastName}</span>
                           </div>
                         </td>
@@ -492,7 +492,7 @@ export function ContactCSVImport() {
                         <td className="p-3">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <Building2 className="h-4 w-4 text-gray-400" />
+                              <Building2 className="h-4 w-4 text-muted-foreground" />
                               <span>{contact.company}</span>
                             </div>
                             {contact.companyMatch === 'exact' && (
@@ -550,7 +550,7 @@ export function ContactCSVImport() {
                 </table>
               </div>
               {parsedData.contacts.length > 50 && (
-                <div className="p-3 bg-gray-50 text-sm text-gray-600 text-center">
+                <div className="p-3 bg-muted text-sm text-muted-foreground text-center">
                   Showing first 50 of {parsedData.contacts.length} contacts
                 </div>
               )}
@@ -558,7 +558,7 @@ export function ContactCSVImport() {
 
             {/* Import Actions */}
             <div className="flex justify-between items-center mt-6">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 {parsedData.summary.valid} valid contacts ready for import
               </div>
               <div className="flex gap-3">
@@ -579,7 +579,6 @@ export function ContactCSVImport() {
                 <Button
                   onClick={handleBulkImport}
                   disabled={isImporting || parsedData.summary.valid === 0}
-                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   {isImporting ? (
                     <>

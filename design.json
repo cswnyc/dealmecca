@@ -1,0 +1,864 @@
+{
+  "meta": {
+    "name": "Flokana-inspired Clean SaaS Landing",
+    "purpose": "High-level design system spec for reliably reproducing the attached screenshot style across the app.",
+    "sourceReferences": {
+      "screenshots": [
+        "assets/original-26ce5cf00dbf27777fcf6d86f1f3e0a4-1231e65d-3f45-4d10-a658-a8bbed0ba4b4.png",
+        "assets/Screenshot_2025-12-12_at_12.46.44_PM-903ca253-f12a-43d6-8308-132b044110a8.png"
+      ]
+    },
+    "version": "1.0.0",
+    "authoringVoice": "Creative Director",
+    "implementationNotes": {
+      "themeSwitching": "Use class-based theming (e.g. <html class=\"dark\">) with CSS variables; all tokens must exist for both light and dark.",
+      "tailwindFit": "This repo uses Tailwind with class-based darkMode. Prefer mapping these tokens into CSS variables used by Tailwind (hsl(var(--...))) or into Tailwind theme extension.",
+      "fontReality": "Helvetica Neue is system-native on Apple platforms. For web consistency, use a robust fallback stack (e.g. Inter/DM Sans/system-ui) and treat Helvetica Neue as first-choice when available."
+    }
+  },
+
+  "brand": {
+    "positioning": {
+      "adjectives": [
+        "clean",
+        "calm",
+        "enterprise-ready",
+        "optimistic",
+        "precise",
+        "high-trust"
+      ],
+      "designIntent": "A light, airy SaaS aesthetic with generous whitespace, soft elevation, and a confident blue brand core. Content is calm; CTAs are clear; everything feels modern and credible.",
+      "antiGoals": [
+        "No loud gradients everywhere (use gradients as accents only)",
+        "No harsh borders/shadows",
+        "No visual clutter; avoid dense dashboards on marketing pages",
+        "No playful, cartoony iconography; keep icons crisp and minimal"
+      ]
+    },
+
+    "designPrinciples": [
+      {
+        "name": "Whitespace is a feature",
+        "directive": "Prioritize breathing room. Increase section padding before adding decorative elements."
+      },
+      {
+        "name": "One primary action per viewport",
+        "directive": "Make the next step obvious with a single dominant primary button and one secondary option."
+      },
+      {
+        "name": "Soft structure, sharp typography",
+        "directive": "Use subtle borders and shadows for structure; rely on typography hierarchy for clarity."
+      },
+      {
+        "name": "Consistency beats novelty",
+        "directive": "Reuse card patterns, spacing, and radii across components to feel ‘designed,’ not assembled."
+      },
+      {
+        "name": "Accessible by default",
+        "directive": "Hit contrast targets in both themes, preserve focus rings, and maintain readable line lengths."
+      }
+    ]
+  },
+
+  "layout": {
+    "grid": {
+      "containerMaxWidthPx": 1120,
+      "gutterPx": {
+        "mobile": 16,
+        "tablet": 24,
+        "desktop": 32
+      },
+      "columns": {
+        "mobile": 4,
+        "tablet": 8,
+        "desktop": 12
+      },
+      "baseline": {
+        "system": "8pt",
+        "rule": "All spacing values should be multiples of 4px; default to 8px steps."
+      },
+      "contentLineLength": {
+        "bodyMaxCh": 68,
+        "rule": "Keep paragraph widths comfortable; center marketing copy within a constrained measure."
+      }
+    },
+
+    "pageRhythm": {
+      "sectionPaddingY": {
+        "mobile": 64,
+        "desktop": 96
+      },
+      "sectionPaddingYHero": {
+        "mobile": 80,
+        "desktop": 120
+      },
+      "sectionSpacingBetweenBlocks": {
+        "mobile": 24,
+        "desktop": 32
+      },
+      "cardGridGap": {
+        "mobile": 16,
+        "desktop": 20
+      }
+    },
+
+    "marketingPageStructure": {
+      "header": "Slim top navigation with logo left, 4–6 links center, primary CTA right.",
+      "hero": "Centered headline with gradient-highlighted keyword; short supporting copy; two buttons; product screenshot in a softly elevated frame.",
+      "logoStrip": "Muted partner logos row; low contrast, small, evenly spaced.",
+      "featureGrid": "2–3 rows of small feature cards with icon + title + 1–2 lines of copy.",
+      "missionBand": "Large statement with light decorative accents; one calm supporting paragraph; single secondary CTA.",
+      "caseStudies": "3-up cards with logo, title, excerpt, link; centered section headline.",
+      "blogOrArticleFeature": "Editorial block with strong headline and 3-up image cards below.",
+      "faq": "Accordion list, minimal dividers, lots of whitespace.",
+      "finalCtaBand": "Full-width brand-blue band with centered headline + primary CTA.",
+      "footer": "Multi-column links with small type; brand mark and social icons; legal line."
+    }
+  },
+
+  "tokens": {
+    "typography": {
+      "fontFamilies": {
+        "brandSans": [
+          "Helvetica Neue",
+          "Inter",
+          "DM Sans",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "Roboto",
+          "Arial",
+          "sans-serif"
+        ],
+        "mono": [
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "Liberation Mono",
+          "Courier New",
+          "monospace"
+        ]
+      },
+      "weights": {
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "letterSpacing": {
+        "display": "-0.03em",
+        "heading": "-0.02em",
+        "body": "0em",
+        "overline": "0.08em"
+      },
+      "typeScalePx": {
+        "displayXL": 64,
+        "displayL": 56,
+        "h1": 44,
+        "h2": 36,
+        "h3": 28,
+        "h4": 22,
+        "bodyL": 18,
+        "bodyM": 16,
+        "bodyS": 14,
+        "caption": 12
+      },
+      "lineHeights": {
+        "display": 1.05,
+        "heading": 1.2,
+        "body": 1.55
+      },
+      "textStyles": {
+        "heroHeadline": {
+          "fontFamily": "brandSans",
+          "fontWeight": "bold",
+          "fontSizePx": 56,
+          "lineHeight": 1.05,
+          "letterSpacing": "-0.03em",
+          "notes": "Center-aligned; one keyword may use gradient text."
+        },
+        "sectionHeadline": {
+          "fontFamily": "brandSans",
+          "fontWeight": "bold",
+          "fontSizePx": 36,
+          "lineHeight": 1.2,
+          "letterSpacing": "-0.02em"
+        },
+        "cardTitle": {
+          "fontFamily": "brandSans",
+          "fontWeight": "semibold",
+          "fontSizePx": 16,
+          "lineHeight": 1.3,
+          "letterSpacing": "-0.01em"
+        },
+        "bodyCopy": {
+          "fontFamily": "brandSans",
+          "fontWeight": "regular",
+          "fontSizePx": 16,
+          "lineHeight": 1.55
+        },
+        "microLabel": {
+          "fontFamily": "brandSans",
+          "fontWeight": "medium",
+          "fontSizePx": 12,
+          "letterSpacing": "0.08em",
+          "transform": "uppercase"
+        }
+      }
+    },
+
+    "color": {
+      "brand": {
+        "primary": "#2575FC",
+        "ink": "#162B54",
+        "gradientText": {
+          "stops": [
+            "#2575FC",
+            "#8B5CF6"
+          ],
+          "angleDeg": 90,
+          "usage": "Only for 1–3 words in a headline; never for paragraphs."
+        }
+      },
+
+      "light": {
+        "background": "#F7F9FC",
+        "surface": "#FFFFFF",
+        "surfaceSubtle": "#F3F6FB",
+        "text": {
+          "primary": "#0B1220",
+          "secondary": "#334155",
+          "muted": "#64748B",
+          "inverse": "#FFFFFF"
+        },
+        "border": {
+          "subtle": "#E6EAF2",
+          "strong": "#D7DEEA"
+        },
+        "primary": {
+          "solid": "#2575FC",
+          "hover": "#1E63D8",
+          "active": "#184FB0",
+          "softBg": "#EAF1FF",
+          "softText": "#1E63D8"
+        },
+        "accent": {
+          "violet": "#8B5CF6",
+          "pink": "#EC4899"
+        },
+        "status": {
+          "success": "#16A34A",
+          "warning": "#F59E0B",
+          "danger": "#EF4444",
+          "info": "#2563EB"
+        }
+      },
+
+      "dark": {
+        "background": "#0B1220",
+        "surface": "#0F1A2E",
+        "surfaceSubtle": "#101E38",
+        "text": {
+          "primary": "#EAF0FF",
+          "secondary": "#C7D2FE",
+          "muted": "#9AA7C2",
+          "inverse": "#0B1220"
+        },
+        "border": {
+          "subtle": "#22304A",
+          "strong": "#2C3C5C"
+        },
+        "primary": {
+          "solid": "#5B8DFF",
+          "hover": "#4D7DFF",
+          "active": "#3B68F0",
+          "softBg": "#162449",
+          "softText": "#C7D2FE"
+        },
+        "accent": {
+          "violet": "#A78BFA",
+          "pink": "#F472B6"
+        },
+        "status": {
+          "success": "#22C55E",
+          "warning": "#FBBF24",
+          "danger": "#F87171",
+          "info": "#60A5FA"
+        }
+      }
+    },
+
+    "radii": {
+      "xsPx": 8,
+      "smPx": 10,
+      "mdPx": 14,
+      "lgPx": 18,
+      "xlPx": 24,
+      "pillPx": 999
+    },
+
+    "shadows": {
+      "light": {
+        "card": "0 10px 30px -20px rgba(15, 23, 42, 0.18)",
+        "cardHover": "0 18px 44px -22px rgba(15, 23, 42, 0.22)",
+        "floating": "0 24px 60px -30px rgba(15, 23, 42, 0.28)",
+        "focusRing": "0 0 0 4px rgba(37, 117, 252, 0.20)"
+      },
+      "dark": {
+        "card": "0 10px 30px -20px rgba(0, 0, 0, 0.55)",
+        "cardHover": "0 18px 44px -22px rgba(0, 0, 0, 0.62)",
+        "floating": "0 24px 60px -30px rgba(0, 0, 0, 0.70)",
+        "focusRing": "0 0 0 4px rgba(91, 141, 255, 0.22)"
+      }
+    },
+
+    "borders": {
+      "widthPx": {
+        "hairline": 1,
+        "strong": 2
+      },
+      "style": "solid"
+    },
+
+    "spacingPx": {
+      "0": 0,
+      "4": 4,
+      "8": 8,
+      "12": 12,
+      "16": 16,
+      "20": 20,
+      "24": 24,
+      "32": 32,
+      "40": 40,
+      "48": 48,
+      "64": 64,
+      "80": 80,
+      "96": 96,
+      "120": 120
+    },
+
+    "motion": {
+      "durationMs": {
+        "fast": 150,
+        "base": 200,
+        "slow": 300
+      },
+      "easing": {
+        "standard": "cubic-bezier(0.2, 0, 0, 1)",
+        "emphasized": "cubic-bezier(0.16, 1, 0.3, 1)"
+      },
+      "rules": [
+        "Micro-interactions only; no distracting movement on marketing pages.",
+        "Hover: small elevation + subtle translateY(-2px).",
+        "Respect prefers-reduced-motion: reduce."
+      ]
+    }
+  },
+
+  "visualStyle": {
+    "surfaceLanguage": {
+      "cards": "White (or dark surface) with a subtle 1px border and a soft shadow. Corners are rounded; spacing is generous.",
+      "dividers": "Use subtle borders instead of heavy lines. Prefer spacing over rules.",
+      "background": "Very light gray/blue-tinted background to make white surfaces feel premium and dimensional."
+    },
+    "iconography": {
+      "style": "Thin-line icons (1.5–2px stroke), minimal detail, rounded line caps.",
+      "sizesPx": [16, 20, 24],
+      "color": "Default icons use muted text color; highlight icons use brand primary.",
+      "containers": "Feature icons sit in a small soft square/circle container with a soft primary background."
+    },
+    "imagery": {
+      "productShots": "Presented inside a large rounded frame with subtle shadow and thin border; never hard-edged.",
+      "photos": "Editorial, bright, natural light. Avoid oversaturated stock."
+    },
+    "decoration": {
+      "motifs": [
+        "rounded outline squares",
+        "soft floating accent shapes"
+      ],
+      "rule": "Decorative elements live in the margins at low contrast; never compete with content."
+    }
+  },
+
+  "components": {
+    "foundations": {
+      "Typography": {
+        "guideline": "Use bold, large headlines and calm body copy. Headings are tight, paragraphs are airy.",
+        "do": [
+          "Use one gradient-highlighted keyword in hero headlines",
+          "Use 1–2 lines for feature card titles"
+        ],
+        "dont": [
+          "Don’t use gradient text for body copy",
+          "Don’t compress line-height to fit content"
+        ]
+      },
+      "ColorUsage": {
+        "guideline": "Blue is the signal. Everything else is neutral unless communicating status.",
+        "ctaRule": "Primary actions use solid brand blue; secondary actions use neutral outlines or subtle fills.",
+        "darkModeRule": "In dark mode, surfaces deepen; text becomes cool-white; the brand blue shifts slightly brighter for contrast."
+      }
+    },
+
+    "primitives": {
+      "Button": {
+        "description": "Pill-adjacent buttons with crisp label typography and confident contrast.",
+        "anatomy": [
+          "container",
+          "label",
+          "optional leading icon",
+          "optional trailing icon",
+          "loading spinner"
+        ],
+        "sizes": {
+          "sm": { "heightPx": 36, "paddingXPx": 14, "radius": "pillPx", "font": "bodyS" },
+          "md": { "heightPx": 44, "paddingXPx": 18, "radius": "pillPx", "font": "bodyM" },
+          "lg": { "heightPx": 52, "paddingXPx": 22, "radius": "pillPx", "font": "bodyL" }
+        },
+        "variants": {
+          "primary": {
+            "fill": "primary.solid",
+            "text": "text.inverse",
+            "shadow": "shadows.card",
+            "hover": "primary.hover",
+            "active": "primary.active"
+          },
+          "secondary": {
+            "fill": "surface",
+            "text": "text.primary",
+            "border": "border.subtle",
+            "hover": "surfaceSubtle"
+          },
+          "outline": {
+            "fill": "transparent",
+            "text": "text.primary",
+            "border": "border.strong",
+            "hover": "primary.softBg",
+            "hoverText": "primary.softText"
+          },
+          "ghost": {
+            "fill": "transparent",
+            "text": "text.primary",
+            "hover": "surfaceSubtle"
+          },
+          "link": {
+            "fill": "transparent",
+            "text": "primary.solid",
+            "decoration": "underline-on-hover"
+          }
+        },
+        "states": {
+          "default": "Clear label; medium weight.",
+          "hover": "Slight elevation + color shift; no dramatic animation.",
+          "pressed": "Reduce elevation; subtle scale(0.98).",
+          "disabled": "Lower opacity; remove shadow; keep readable text.",
+          "loading": "Disable interaction; show spinner left of label."
+        },
+        "accessibility": {
+          "minTouchTargetPx": 44,
+          "focus": "Visible ring using tokens.shadows.*.focusRing",
+          "contrast": "Primary button must meet WCAG AA for text."
+        }
+      },
+
+      "Link": {
+        "description": "Minimal links; underline appears on hover or for inline links in body copy.",
+        "styles": {
+          "default": "text.secondary",
+          "hover": "text.primary",
+          "emphasis": "brand.primary"
+        }
+      },
+
+      "Card": {
+        "description": "The primary container pattern: rounded, bordered, softly elevated.",
+        "anatomy": [
+          "container",
+          "optional header",
+          "body",
+          "optional footer"
+        ],
+        "styles": {
+          "background": "surface",
+          "border": "border.subtle",
+          "radius": "lgPx",
+          "shadow": "shadows.card",
+          "padding": {
+            "sm": 16,
+            "md": 20,
+            "lg": 24
+          }
+        },
+        "hover": {
+          "shadow": "shadows.cardHover",
+          "transform": "translateY(-2px)"
+        }
+      },
+
+      "Badge": {
+        "description": "Small rounded pill for labels like ‘New’, ‘Use Case’, ‘FAQ’.",
+        "styles": {
+          "radius": "pillPx",
+          "paddingXPx": 10,
+          "paddingYPx": 6,
+          "font": "microLabel"
+        },
+        "variants": {
+          "neutral": "surfaceSubtle background + muted text",
+          "primary": "primary.softBg background + primary.softText",
+          "outline": "transparent background + subtle border"
+        }
+      },
+
+      "IconButton": {
+        "description": "Square or circular button for small actions; minimal and unobtrusive.",
+        "sizes": {
+          "sm": { "sizePx": 32, "radius": "smPx" },
+          "md": { "sizePx": 40, "radius": "mdPx" }
+        },
+        "variants": {
+          "ghost": "no border; hover uses surfaceSubtle",
+          "soft": "surfaceSubtle background; subtle border"
+        }
+      },
+
+      "Input": {
+        "description": "Modern form input with thin border and clean focus ring.",
+        "anatomy": [
+          "label",
+          "input field",
+          "optional leading icon",
+          "optional trailing icon",
+          "helper text",
+          "error text"
+        ],
+        "sizes": {
+          "md": { "heightPx": 44, "paddingXPx": 14, "radius": "mdPx" },
+          "lg": { "heightPx": 52, "paddingXPx": 16, "radius": "mdPx" }
+        },
+        "states": {
+          "default": "border subtle; surface background",
+          "focus": "primary focus ring; border shifts to primary",
+          "error": "danger border + subtle danger ring; message below",
+          "disabled": "muted surface; reduced contrast but readable"
+        }
+      },
+
+      "Textarea": {
+        "description": "Same styling as Input; default height comfortable for multi-line."
+      },
+
+      "Select": {
+        "description": "Native select or custom select; same field styling; chevron icon.",
+        "rule": "Dropdown panels should match Card styling."
+      },
+
+      "Checkbox": {
+        "description": "Small square with rounded corners; checkmark is crisp and centered.",
+        "styles": {
+          "sizePx": 18,
+          "radius": "xsPx",
+          "checkedFill": "primary.solid"
+        }
+      },
+
+      "Radio": {
+        "description": "Circular control; inner dot uses primary color.",
+        "styles": { "sizePx": 18 }
+      },
+
+      "Switch": {
+        "description": "Pill track with thumb; subtle shadows; primary color when on.",
+        "styles": {
+          "heightPx": 24,
+          "widthPx": 44,
+          "radius": "pillPx"
+        }
+      },
+
+      "Divider": {
+        "description": "Hairline divider; use sparingly; prefer spacing.",
+        "styles": { "color": "border.subtle" }
+      },
+
+      "Avatar": {
+        "description": "Circular avatar with subtle border; can stack with overlap.",
+        "sizesPx": [24, 32, 40, 48],
+        "stacking": {
+          "overlapPx": 10,
+          "border": "2px solid surface"
+        }
+      },
+
+      "Tooltip": {
+        "description": "Small floating label; subtle elevation; short text.",
+        "styles": {
+          "radius": "smPx",
+          "shadow": "shadows.floating",
+          "paddingXPx": 10,
+          "paddingYPx": 8
+        }
+      }
+    },
+
+    "navigation": {
+      "TopNav": {
+        "description": "Minimal header bar with light border; centered links; primary CTA on right.",
+        "heightPx": 72,
+        "styles": {
+          "background": "surface (95% opacity when sticky)",
+          "borderBottom": "border.subtle",
+          "backdropBlur": "subtle (optional)"
+        },
+        "linkStyle": {
+          "font": "bodyS",
+          "color": "text.muted",
+          "hover": "text.primary",
+          "activeIndicator": "thin underline in brand.primary"
+        }
+      },
+
+      "MobileNav": {
+        "description": "Hamburger opens right/left sheet; sheet uses Card styling and comfortable spacing.",
+        "motion": "slide-in emphasized easing, 200–300ms"
+      },
+
+      "Breadcrumbs": {
+        "description": "Simple text breadcrumbs; low emphasis; use chevrons.",
+        "style": "muted text with hover on last or interactive segments"
+      },
+
+      "Pagination": {
+        "description": "Rounded pills with minimal borders; primary for active page.",
+        "sizes": "Use Button sm"
+      }
+    },
+
+    "sections": {
+      "Hero": {
+        "description": "Centered hero with strong headline, subtle badge, and dual CTAs; product screenshot below.",
+        "anatomy": [
+          "optional badge",
+          "headline (with gradient keyword)",
+          "supporting text",
+          "primary CTA",
+          "secondary CTA",
+          "hero media frame",
+          "logo strip"
+        ],
+        "compositionRules": [
+          "Headline max 2 lines on desktop, 3 on mobile.",
+          "Keep supporting text to 1–2 lines.",
+          "Buttons centered and aligned; primary left, secondary right.",
+          "Hero media has a light shadow and rounded corners; never edge-to-edge."
+        ]
+      },
+
+      "LogoStrip": {
+        "description": "Muted partner logos in a single row; low contrast; evenly spaced.",
+        "rules": [
+          "Use grayscale or low-opacity logos.",
+          "Keep height consistent.",
+          "Avoid heavy backgrounds behind logos."
+        ]
+      },
+
+      "FeatureCardGrid": {
+        "description": "Grid of small cards with icon, title, and short copy.",
+        "cardSpec": {
+          "uses": "Card primitive",
+          "iconContainer": "soft square with subtle primary background",
+          "title": "cardTitle",
+          "copy": "bodyS muted"
+        },
+        "gridRules": [
+          "2 columns on mobile, 3 on desktop where possible.",
+          "Keep copy to 2 lines.",
+          "All cards equal height for a premium feel."
+        ]
+      },
+
+      "MissionStatement": {
+        "description": "Large, centered statement with light decorative accents; single secondary CTA.",
+        "rule": "Use decoration at the corners/margins only; keep center clean."
+      },
+
+      "CaseStudyCards": {
+        "description": "Three cards, each with logo, title, metric, and link.",
+        "cardSpec": {
+          "uses": "Card primitive",
+          "logo": "small, top-left",
+          "title": "cardTitle",
+          "link": "Link emphasis"
+        }
+      },
+
+      "EditorialFeature": {
+        "description": "Strong article headline with supporting copy and 3-up photo cards.",
+        "photoCard": {
+          "radius": "lgPx",
+          "imageStyle": "rounded corners; cover; gentle shadow"
+        }
+      },
+
+      "FAQ": {
+        "description": "Accordion list with clean dividers and minimal icons.",
+        "accordionSpec": {
+          "rowHeightPx": 56,
+          "divider": "border.subtle",
+          "icon": "plus/minus, thin stroke",
+          "contentPaddingYPx": 16
+        }
+      },
+
+      "CtaBand": {
+        "description": "Full-width brand-blue band with centered headline and a single primary CTA.",
+        "style": {
+          "background": "brand.primary",
+          "text": "text.inverse",
+          "button": "secondary-inverse (white fill, ink text)"
+        },
+        "rule": "Keep this section visually simple and high-contrast."
+      },
+
+      "Footer": {
+        "description": "Light footer with multi-column links and subtle separators.",
+        "style": {
+          "background": "surface",
+          "borderTop": "border.subtle",
+          "linkColor": "text.muted",
+          "linkHover": "text.primary"
+        },
+        "anatomy": [
+          "brand block",
+          "link columns",
+          "social icons",
+          "legal line"
+        ]
+      }
+    },
+
+    "feedback": {
+      "Alert": {
+        "description": "Inline banners for status messages. Subtle backgrounds, clear icons.",
+        "variants": {
+          "info": "soft primary background",
+          "success": "soft success background",
+          "warning": "soft warning background",
+          "danger": "soft danger background"
+        },
+        "style": "Rounded md; 1px border; icon left; short message."
+      },
+
+      "Toast": {
+        "description": "Small transient notifications; matches Card styling; appears bottom-right.",
+        "motion": "fade+slide 200ms emphasized"
+      },
+
+      "EmptyState": {
+        "description": "Centered icon, headline, short copy, primary CTA.",
+        "rule": "Use calm, encouraging language; keep visuals minimal."
+      },
+
+      "Loading": {
+        "description": "Skeletons with subtle shimmer; spinners only for short operations.",
+        "skeletonStyle": "Muted surface with gentle animated highlight."
+      }
+    },
+
+    "overlays": {
+      "Modal": {
+        "description": "Centered dialog with soft shadow and rounded corners.",
+        "style": {
+          "radius": "lgPx",
+          "shadow": "shadows.floating",
+          "overlay": "black at 35% (light), 55% (dark)"
+        },
+        "anatomy": [
+          "title",
+          "body",
+          "actions"
+        ]
+      },
+
+      "Drawer": {
+        "description": "Side sheet for navigation or filters; uses surface with subtle border.",
+        "motion": "slide-in 200–300ms"
+      },
+
+      "Popover": {
+        "description": "Small floating panel for menus; matches Card.",
+        "rule": "Keep width narrow and content short."
+      },
+
+      "DropdownMenu": {
+        "description": "Menu list with comfortable item height and hover background.",
+        "itemHeightPx": 40
+      }
+    },
+
+    "dataDisplay": {
+      "Table": {
+        "description": "Clean, minimal tables with subtle dividers and generous cell padding.",
+        "rules": [
+          "Avoid heavy zebra striping; use subtle row hover.",
+          "Headers are medium weight and muted."
+        ]
+      },
+
+      "Stat": {
+        "description": "Large number with label; used in cards or strips.",
+        "style": {
+          "value": "bold",
+          "label": "muted"
+        }
+      },
+
+      "Progress": {
+        "description": "Thin progress bars with rounded ends.",
+        "heightPx": 8,
+        "radius": "pillPx"
+      },
+
+      "Tabs": {
+        "description": "Minimal tabs with subtle underline/indicator.",
+        "indicator": "2px brand.primary"
+      },
+
+      "Accordion": {
+        "description": "Used for FAQ and compact disclosures; clean plus/minus icon.",
+        "rule": "One open at a time on FAQ; allow multi-open in settings contexts."
+      }
+    }
+  },
+
+  "accessibility": {
+    "contrast": {
+      "target": "WCAG AA",
+      "notes": "Primary button text must pass AA; muted text must remain readable on light and dark surfaces."
+    },
+    "focus": {
+      "rule": "Never remove focus outlines. Use a consistent brand-tinted ring on interactive elements.",
+      "style": "Use tokens.shadows.*.focusRing + a subtle border color change."
+    },
+    "motion": {
+      "rule": "All non-essential animation must reduce/disable under prefers-reduced-motion."
+    },
+    "touch": {
+      "minTargetPx": 44,
+      "spacing": "Do not pack tap targets; add vertical rhythm instead."
+    }
+  },
+
+  "qualityBar": {
+    "checklist": [
+      "All components use the same radii family (md/lg/pill) and soft shadows.",
+      "Primary CTA always uses brand blue; secondary actions are quiet.",
+      "Marketing pages feel airy: section padding is generous and consistent.",
+      "Typography hierarchy is obvious without relying on color.",
+      "Light and dark themes both feel intentional (not inverted)."
+    ]
+  }
+}

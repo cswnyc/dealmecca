@@ -111,14 +111,14 @@ export default function ImageUpload({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="text-sm font-medium text-foreground">
         {label}
       </label>
 
       <div className="flex items-start gap-4">
         {/* Preview Circle */}
         <div className="relative">
-          <div className="w-24 h-24 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-hidden">
+          <div className="w-24 h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-muted overflow-hidden">
             {previewUrl ? (
               <Image
                 src={previewUrl}
@@ -128,14 +128,14 @@ export default function ImageUpload({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <ImageIcon className="w-8 h-8 text-gray-400" />
+              <ImageIcon className="w-8 h-8 text-muted-foreground" />
             )}
           </div>
           {previewUrl && (
             <button
               type="button"
               onClick={handleRemove}
-              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+              className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90 transition-colors"
               title="Remove image"
             >
               <X className="w-3 h-3" />
@@ -164,14 +164,14 @@ export default function ImageUpload({
             className="hidden"
           />
 
-          <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+          <div className="text-xs text-muted-foreground space-y-1">
             <p>• Supported formats: JPEG, PNG, WebP</p>
             <p>• Maximum size: 5MB</p>
             <p>• Images will be optimized to 400×400 pixels</p>
           </div>
 
           {error && (
-            <p className="text-xs text-red-600 dark:text-red-400">
+            <p className="text-xs text-destructive">
               {error}
             </p>
           )}

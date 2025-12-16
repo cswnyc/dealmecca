@@ -174,13 +174,13 @@ export default function ForumPostsAdmin() {
     return (
       <div className="container mx-auto py-6 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-card rounded-lg border border-border p-6">
             <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+              <div className="h-8 bg-muted rounded w-1/3"></div>
               <div className="space-y-3">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                <div className="h-4 bg-muted rounded"></div>
+                <div className="h-4 bg-muted rounded w-5/6"></div>
+                <div className="h-4 bg-muted rounded w-4/6"></div>
               </div>
             </div>
           </div>
@@ -196,22 +196,22 @@ export default function ForumPostsAdmin() {
         <div className="mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 flex items-center">
+              <h1 className="text-2xl font-semibold text-foreground flex items-center">
                 <MessageSquare className="w-6 h-6 mr-2" />
                 Forum Posts
               </h1>
-              <p className="text-gray-600 mt-1">Manage forum posts, moderation, and community content</p>
+              <p className="text-muted-foreground mt-1">Manage forum posts, moderation, and community content</p>
             </div>
             <div className="flex space-x-3">
               <Link
                 href="/admin/forum/categories"
-                className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-foreground bg-card border border-border rounded-md hover:bg-muted"
               >
                 Categories
               </Link>
               <Link
                 href="/forum"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-primary/10 hover:bg-primary/20"
               >
                 <ExternalLink className="w-4 h-4 mr-1" />
                 View Forum
@@ -222,82 +222,82 @@ export default function ForumPostsAdmin() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-card rounded-lg border border-border p-4">
             <div className="flex items-center">
-              <MessageSquare className="w-8 h-8 text-blue-600" />
+              <MessageSquare className="w-8 h-8 text-primary" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Total Posts</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Posts</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.total}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-card rounded-lg border border-border p-4">
             <div className="flex items-center">
               <CheckSquare className="w-8 h-8 text-green-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Published</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.published}</p>
+                <p className="text-sm font-medium text-muted-foreground">Published</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.published}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-card rounded-lg border border-border p-4">
             <div className="flex items-center">
-              <Edit className="w-8 h-8 text-gray-600" />
+              <Edit className="w-8 h-8 text-muted-foreground" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Drafts</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.draft}</p>
+                <p className="text-sm font-medium text-muted-foreground">Drafts</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.draft}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-card rounded-lg border border-border p-4">
             <div className="flex items-center">
               <AlertCircle className="w-8 h-8 text-yellow-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Pending</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.pending}</p>
+                <p className="text-sm font-medium text-muted-foreground">Pending</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.pending}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-card rounded-lg border border-border p-4">
             <div className="flex items-center">
               <Flag className="w-8 h-8 text-red-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Flagged</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.flagged}</p>
+                <p className="text-sm font-medium text-muted-foreground">Flagged</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.flagged}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div className="bg-card rounded-lg border border-border p-6 mb-6">
           <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-4">
             <div className="flex-1 min-w-0">
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="search" className="block text-sm font-medium text-foreground mb-1">
                 Search Posts
               </label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <input
                   type="text"
                   id="search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by title, content, or author..."
-                  className="pl-9 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder:text-gray-400"
+                  className="pl-9 w-full border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-card text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-1">
                 Status
               </label>
               <select
                 id="status"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-card text-foreground"
               >
                 <option value="">All Status</option>
                 <option value="PUBLISHED">Published</option>
@@ -308,14 +308,14 @@ export default function ForumPostsAdmin() {
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground mb-1">
                 Category
               </label>
               <select
                 id="category"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-card text-foreground"
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
@@ -327,14 +327,14 @@ export default function ForumPostsAdmin() {
             </div>
 
             <div>
-              <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="sort" className="block text-sm font-medium text-foreground mb-1">
                 Sort By
               </label>
               <select
                 id="sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-card text-foreground"
               >
                 <option value="latest">Latest</option>
                 <option value="popular">Popular</option>
@@ -345,7 +345,7 @@ export default function ForumPostsAdmin() {
 
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
               Search
             </button>
@@ -390,12 +390,12 @@ export default function ForumPostsAdmin() {
         )}
 
         {/* Posts Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-12">
                     <input
                       type="checkbox"
                       checked={selectedPosts.length === posts.length && posts.length > 0}
@@ -409,41 +409,41 @@ export default function ForumPostsAdmin() {
                       className="rounded"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Post
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Author
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Engagement
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {posts.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
-                      <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground">
+                      <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
                       <p className="text-lg font-medium">No forum posts found</p>
                       <p className="mt-1">Forum post management is being restored.</p>
                     </td>
                   </tr>
                 ) : (
                   posts.map((post) => (
-                    <tr key={post.id} className="hover:bg-gray-50">
+                    <tr key={post.id} className="hover:bg-muted">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
@@ -462,10 +462,10 @@ export default function ForumPostsAdmin() {
                         <div className="max-w-xs">
                           <div className="flex items-start space-x-3">
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">
+                              <p className="text-sm font-medium text-foreground truncate">
                                 <MentionText>{post.title}</MentionText>
                               </p>
-                              <p className="text-sm text-gray-500 truncate">
+                              <p className="text-sm text-muted-foreground truncate">
                                 <MentionText>{post.content?.substring(0, 100)}...</MentionText>
                               </p>
                             </div>
@@ -478,18 +478,18 @@ export default function ForumPostsAdmin() {
                             {post.author?.profileImage ? (
                               <img className="h-8 w-8 rounded-full" src={post.author.profileImage} alt="" />
                             ) : (
-                              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <User className="w-4 h-4 text-gray-500" />
+                              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                                <User className="w-4 h-4 text-muted-foreground" />
                               </div>
                             )}
                           </div>
                           <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-foreground">
                               {post.isAnonymous
                                 ? (post.anonymousHandle || 'Anonymous')
                                 : (post.author?.anonymousUsername || post.author?.publicHandle || post.author?.name)}
                             </p>
-                            <p className="text-sm text-gray-500">{post.author?.email}</p>
+                            <p className="text-sm text-muted-foreground">{post.author?.email}</p>
                           </div>
                         </div>
                       </td>
@@ -516,7 +516,7 @@ export default function ForumPostsAdmin() {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         <div className="flex items-center space-x-3">
                           <div className="flex items-center">
                             <MessageCircle className="w-4 h-4 mr-1" />
@@ -528,7 +528,7 @@ export default function ForumPostsAdmin() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         <div>
                           <p>{new Date(post.createdAt).toLocaleDateString()}</p>
                           <p className="text-xs">{new Date(post.createdAt).toLocaleTimeString()}</p>
@@ -538,14 +538,14 @@ export default function ForumPostsAdmin() {
                         <div className="flex items-center space-x-2">
                           <Link
                             href={`/forum?post=${post.id}`}
-                            className="text-blue-600 hover:text-blue-900"
+                            className="text-primary hover:text-primary/80"
                             target="_blank"
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
                           <Link
                             href={`/admin/forum/posts/${post.id}/edit`}
-                            className="text-green-600 hover:text-green-900"
+                            className="text-green-600 hover:text-green-700"
                           >
                             <Edit className="w-4 h-4" />
                           </Link>
@@ -567,7 +567,7 @@ export default function ForumPostsAdmin() {
                                 }
                               }
                             }}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-destructive hover:text-destructive/80"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -584,21 +584,21 @@ export default function ForumPostsAdmin() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+            <div className="text-sm text-muted-foreground">
               Showing page {currentPage} of {totalPages}
             </div>
             <div className="flex space-x-2">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-2 border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
               >
                 Previous
               </button>
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-2 border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
               >
                 Next
               </button>

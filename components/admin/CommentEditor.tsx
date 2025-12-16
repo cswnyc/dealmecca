@@ -154,8 +154,8 @@ export default function CommentEditor({
   const hasReplies = comment.replies && comment.replies.length > 0;
 
   return (
-    <div className={`border-l-2 ${level > 0 ? 'border-gray-200 ml-4 pl-4' : 'border-transparent'}`}>
-      <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+    <div className={`border-l-2 ${level > 0 ? 'border-border ml-4 pl-4' : 'border-transparent'}`}>
+      <div className="bg-card border border-border rounded-lg p-4 mb-4">
         {/* Comment Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-3">
@@ -167,25 +167,25 @@ export default function CommentEditor({
               />
             ) : (
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                comment.isAnonymous ? 'bg-gray-100' : 'bg-blue-100'
+                comment.isAnonymous ? 'bg-muted' : 'bg-primary/10'
               }`}>
                 {comment.isAnonymous ? (
-                  <UserX className="w-4 h-4 text-gray-600" />
+                  <UserX className="w-4 h-4 text-muted-foreground" />
                 ) : (
-                  <User className="w-4 h-4 text-blue-600" />
+                  <User className="w-4 h-4 text-primary" />
                 )}
               </div>
             )}
             <div>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-foreground">
                 {displayName}
                 {comment.isAnonymous && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-foreground">
                     Anonymous
                   </span>
                 )}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 {new Date(comment.createdAt).toLocaleString()}
                 {comment.updatedAt !== comment.createdAt && (
                   <span className="ml-1">(edited)</span>
@@ -197,7 +197,7 @@ export default function CommentEditor({
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground hover:text-foreground"
             >
               {isExpanded ? (
                 <ChevronUp className="w-4 h-4" />
@@ -229,9 +229,9 @@ export default function CommentEditor({
                         type="checkbox"
                         checked={editAnonymous}
                         onChange={(e) => setEditAnonymous(e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        className="rounded border-border text-primary shadow-sm focus:border-primary focus:ring focus:ring-primary/20 focus:ring-opacity-50"
                       />
-                      <span className="ml-2 text-sm text-gray-700">Anonymous Comment</span>
+                      <span className="ml-2 text-sm text-foreground">Anonymous Comment</span>
                     </label>
 
                     {editAnonymous && (
@@ -240,7 +240,7 @@ export default function CommentEditor({
                         value={editAnonymousHandle}
                         onChange={(e) => setEditAnonymousHandle(e.target.value)}
                         placeholder="Anonymous handle (optional)"
-                        className="text-sm border border-gray-300 rounded px-2 py-1"
+                        className="text-sm border border-border rounded px-2 py-1"
                       />
                     )}
                   </div>
@@ -252,9 +252,9 @@ export default function CommentEditor({
                         type="checkbox"
                         checked={editModerated}
                         onChange={(e) => setEditModerated(e.target.checked)}
-                        className="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50"
+                        className="rounded border-border text-destructive shadow-sm focus:border-destructive focus:ring focus:ring-destructive/20 focus:ring-opacity-50"
                       />
-                      <span className="ml-2 text-sm text-gray-700">Mark as Moderated</span>
+                      <span className="ml-2 text-sm text-foreground">Mark as Moderated</span>
                     </label>
 
                     {editModerated && (
@@ -263,25 +263,25 @@ export default function CommentEditor({
                         value={editModerationReason}
                         onChange={(e) => setEditModerationReason(e.target.value)}
                         placeholder="Moderation reason"
-                        className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                        className="w-full text-sm border border-border rounded px-2 py-1"
                       />
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="prose prose-sm max-w-none text-gray-900">
+                <div className="prose prose-sm max-w-none text-foreground">
                   {comment.isModerated ? (
-                    <div className="bg-red-50 border border-red-200 rounded p-3">
-                      <div className="flex items-center space-x-2 text-red-700 mb-1">
+                    <div className="bg-destructive/10 border border-destructive/20 rounded p-3">
+                      <div className="flex items-center space-x-2 text-destructive mb-1">
                         <Flag className="w-4 h-4" />
                         <span className="text-sm font-medium">Moderated Content</span>
                       </div>
                       {comment.moderationReason && (
-                        <p className="text-xs text-red-600 mb-2">
+                        <p className="text-xs text-destructive/80 mb-2">
                           Reason: {comment.moderationReason}
                         </p>
                       )}
-                      <div className="text-gray-500 italic">
+                      <div className="text-muted-foreground italic">
                         <MentionText>{comment.content}</MentionText>
                       </div>
                     </div>
@@ -293,7 +293,7 @@ export default function CommentEditor({
             </div>
 
             {/* Comment Stats */}
-            <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1">
                   <ThumbsUp className="w-3 h-3" />
@@ -322,7 +322,7 @@ export default function CommentEditor({
                 {hasReplies && (
                   <button
                     onClick={() => setShowReplies(!showReplies)}
-                    className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                    className="text-xs px-2 py-1 bg-muted text-foreground rounded hover:bg-muted/80"
                   >
                     {showReplies ? (
                       <><EyeOff className="w-3 h-3 inline mr-1" />Hide Replies</>
@@ -339,7 +339,7 @@ export default function CommentEditor({
                     <button
                       onClick={handleCancel}
                       disabled={saving}
-                      className="text-xs px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:opacity-50"
+                      className="text-xs px-3 py-1 bg-muted text-foreground rounded hover:bg-muted/80 disabled:opacity-50"
                     >
                       <X className="w-3 h-3 inline mr-1" />
                       Cancel
@@ -347,7 +347,7 @@ export default function CommentEditor({
                     <button
                       onClick={handleSave}
                       disabled={saving || !editContent.trim()}
-                      className="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                      className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 disabled:opacity-50"
                     >
                       <Save className="w-3 h-3 inline mr-1" />
                       {saving ? 'Saving...' : 'Save'}
@@ -364,7 +364,7 @@ export default function CommentEditor({
                     </button>
                     <button
                       onClick={handleDelete}
-                      className="text-xs px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                      className="text-xs px-3 py-1 bg-destructive text-destructive-foreground rounded hover:bg-destructive/90"
                     >
                       <Trash2 className="w-3 h-3 inline mr-1" />
                       Delete

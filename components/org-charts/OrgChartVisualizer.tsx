@@ -59,7 +59,7 @@ const getSeniorityColor = (seniority?: string): string => {
     case 'senior_specialist':
       return 'bg-orange-100 text-orange-800 border-orange-200';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-gray-100 text-gray-800 border-border';
   }
 };
 
@@ -266,7 +266,7 @@ export function OrgChartVisualizer({
       <div key={node.id} className="relative">
         {/* Connection Lines */}
         {node.level > 0 && (
-          <div className="absolute left-0 top-0 w-6 h-6 border-l-2 border-b-2 border-gray-300 -ml-6 -mt-3"></div>
+          <div className="absolute left-0 top-0 w-6 h-6 border-l-2 border-b-2 border-input -ml-6 -mt-3"></div>
         )}
 
         {/* Node Card */}
@@ -290,7 +290,7 @@ export function OrgChartVisualizer({
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="font-semibold text-gray-900 truncate">{node.name}</h3>
+                    <h3 className="font-semibold text-foreground truncate">{node.name}</h3>
                     {node.department && (
                       <span className="text-lg" title={formatDepartment(node.department)}>
                         {getDepartmentIcon(node.department)}
@@ -298,7 +298,7 @@ export function OrgChartVisualizer({
                     )}
                   </div>
                   
-                  <p className="text-sm font-medium text-gray-700 mb-1">{node.title}</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">{node.title}</p>
                   
                   <div className="flex flex-wrap gap-2 mb-2">
                     {node.seniority && (
@@ -321,7 +321,7 @@ export function OrgChartVisualizer({
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-3 text-xs text-gray-500">
+                  <div className="flex items-center space-x-3 text-xs text-muted-foreground">
                     {node.email && (
                       <div className="flex items-center space-x-1">
                         <Mail className="h-3 w-3" />
@@ -362,7 +362,7 @@ export function OrgChartVisualizer({
 
         {/* Render Children */}
         {isExpanded && node.children && (
-          <div className="ml-6 border-l-2 border-gray-200 pl-4">
+          <div className="ml-6 border-l-2 border-border pl-4">
             {node.children.map((child, childIndex) => renderOrgNode(child, childIndex))}
           </div>
         )}
@@ -392,16 +392,16 @@ export function OrgChartVisualizer({
   if (loading) {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-8 bg-muted rounded w-1/3"></div>
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="bg-white rounded-lg p-4 border">
               <div className="flex space-x-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                <div className="w-12 h-12 bg-muted rounded-full"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-4 bg-muted rounded w-1/3"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
+                  <div className="h-3 bg-muted rounded w-1/4"></div>
                 </div>
               </div>
             </div>
@@ -417,8 +417,8 @@ export function OrgChartVisualizer({
       <div className="bg-white rounded-lg border p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Building2 className="h-5 w-5 text-gray-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Organization Chart</h2>
+            <Building2 className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-lg font-semibold text-foreground">Organization Chart</h2>
             <Badge variant="outline">{companyName}</Badge>
           </div>
           
@@ -430,7 +430,7 @@ export function OrgChartVisualizer({
             >
               <ZoomOut className="h-4 w-4" />
             </Button>
-            <span className="text-sm text-gray-600 min-w-12 text-center">
+            <span className="text-sm text-muted-foreground min-w-12 text-center">
               {Math.round(zoom * 100)}%
             </span>
             <Button
@@ -450,20 +450,20 @@ export function OrgChartVisualizer({
         {/* Search and Filters */}
         <div className="flex flex-wrap gap-4">
           <div className="relative flex-1 min-w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <input
               type="text"
               placeholder="Search employees..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           <select
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">All Departments</option>
             <option value="leadership">Leadership</option>
@@ -477,7 +477,7 @@ export function OrgChartVisualizer({
           <select
             value={selectedSeniority}
             onChange={(e) => setSelectedSeniority(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">All Levels</option>
             <option value="c_level">C-Level</option>
@@ -496,9 +496,9 @@ export function OrgChartVisualizer({
       >
         {filteredData.length === 0 ? (
           <div className="text-center py-12">
-            <Users className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No employees found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-2 text-sm font-medium text-foreground">No employees found</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               Try adjusting your search criteria.
             </p>
           </div>

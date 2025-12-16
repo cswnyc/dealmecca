@@ -77,14 +77,14 @@ export default function EditEvent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-muted py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+            <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
             <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+              <div className="h-32 bg-muted rounded"></div>
             </div>
           </div>
         </div>
@@ -94,13 +94,13 @@ export default function EditEvent() {
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-muted py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl font-bold text-foreground mb-4">
               {error || 'Event not found'}
             </h1>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               {error ? 'There was an error loading the event.' : "The event you're looking for doesn't exist."}
             </p>
           </div>
@@ -110,7 +110,7 @@ export default function EditEvent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-muted py-8">
       <div className="max-w-7xl mx-auto px-4">
         <EventForm mode="edit" event={event} />
       </div>

@@ -70,23 +70,23 @@ export default function LinkedInCustomAuthPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading...</p>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-muted py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-foreground">
             Continue with LinkedIn
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Sign in to your account using LinkedIn
           </p>
         </div>
@@ -145,7 +145,7 @@ export default function LinkedInCustomAuthPage() {
 
           <button
             onClick={handleBackToSignIn}
-            className="w-full flex justify-center py-2 px-4 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+            className="w-full flex justify-center py-2 px-4 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Back to Sign In
           </button>
@@ -154,17 +154,17 @@ export default function LinkedInCustomAuthPage() {
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+              <div className="w-full border-t border-input" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-50 text-gray-500">
+              <span className="px-2 bg-muted text-muted-foreground">
                 Secure authentication powered by LinkedIn
               </span>
             </div>
           </div>
         </div>
 
-        <div className="text-center text-xs text-gray-500">
+        <div className="text-center text-xs text-muted-foreground">
           <p>
             By continuing, you agree to our{' '}
             <a href="/terms" className="text-blue-600 hover:text-blue-500">

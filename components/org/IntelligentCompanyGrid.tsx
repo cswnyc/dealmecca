@@ -92,8 +92,8 @@ export function IntelligentCompanyGrid({
           <div className="flex space-x-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="bg-white rounded-lg p-4 flex-1 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                <div className="h-4 bg-muted rounded w-1/2 mb-2"></div>
+                <div className="h-6 bg-muted rounded w-1/3"></div>
               </div>
             ))}
           </div>
@@ -103,21 +103,21 @@ export function IntelligentCompanyGrid({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-white rounded-lg border animate-pulse">
-              <div className="h-1 w-full bg-gray-200 rounded-t-lg" />
+              <div className="h-1 w-full bg-muted rounded-t-lg" />
               <div className="p-6">
                 <div className="flex items-start space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="w-12 h-12 bg-muted rounded-full"></div>
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="h-3 bg-gray-200 rounded w-full"></div>
-                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  <div className="h-3 bg-muted rounded w-full"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
                   <div className="flex space-x-2 mt-4">
-                    <div className="h-8 bg-gray-200 rounded flex-1"></div>
-                    <div className="h-8 bg-gray-200 rounded w-10"></div>
+                    <div className="h-8 bg-muted rounded flex-1"></div>
+                    <div className="h-8 bg-muted rounded w-10"></div>
                   </div>
                 </div>
               </div>
@@ -131,9 +131,9 @@ export function IntelligentCompanyGrid({
   if (companies.length === 0) {
     return (
       <div className="text-center py-12">
-        <Building2 className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No companies found</h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <Building2 className="mx-auto h-12 w-12 text-muted-foreground" />
+        <h3 className="mt-2 text-sm font-medium text-foreground">No companies found</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
           Try adjusting your search or filters to find the right companies.
         </p>
       </div>

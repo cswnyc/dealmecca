@@ -287,7 +287,7 @@ export default function ContactScoring({
       <CardContent>
         {/* Contact Summary */}
         <div className="flex items-start gap-4 mb-6">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
             {contact.profileImageUrl ? (
               <img
                 src={contact.profileImageUrl}
@@ -295,20 +295,20 @@ export default function ContactScoring({
                 className="w-16 h-16 rounded-full object-cover"
               />
             ) : (
-              <User className="w-8 h-8 text-gray-400" />
+              <User className="w-8 h-8 text-muted-foreground" />
             )}
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-lg text-gray-900">{contact.name}</h3>
+              <h3 className="font-semibold text-lg text-foreground">{contact.name}</h3>
               {contact.isDecisionMaker && (
                 <Badge variant="destructive" className="text-xs">
                   Decision Maker
                 </Badge>
               )}
             </div>
-            <p className="text-gray-600 mb-2">{contact.title}</p>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <p className="text-muted-foreground mb-2">{contact.title}</p>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Building2 className="w-4 h-4" />
                 <span>{contact.company.name}</span>
@@ -331,22 +331,22 @@ export default function ContactScoring({
             <div className="flex items-center gap-3">
               {getScoreIcon(score.overall)}
               <div>
-                <h4 className="font-semibold text-gray-900">Overall Score</h4>
-                <p className="text-sm text-gray-600">{recommendation.action}</p>
+                <h4 className="font-semibold text-foreground">Overall Score</h4>
+                <p className="text-sm text-muted-foreground">{recommendation.action}</p>
               </div>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-blue-600">{score.overall}</div>
-              <div className="text-sm text-gray-500">/100</div>
+              <div className="text-sm text-muted-foreground">/100</div>
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+          <div className="w-full bg-muted rounded-full h-2 mb-3">
             <div 
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${score.overall}%` }}
             />
           </div>
-          <p className="text-sm text-gray-600">{recommendation.message}</p>
+          <p className="text-sm text-muted-foreground">{recommendation.message}</p>
         </div>
 
         {/* Score Breakdown */}
@@ -356,46 +356,46 @@ export default function ContactScoring({
               <Award className="w-5 h-5 mx-auto mb-1" />
               <div className="font-semibold">{score.influence}</div>
             </div>
-            <div className="text-xs text-gray-600 mt-1">Influence</div>
+            <div className="text-xs text-muted-foreground mt-1">Influence</div>
           </div>
           <div className="text-center">
             <div className={`p-3 rounded-lg ${getScoreColor(score.accessibility)}`}>
               <Users className="w-5 h-5 mx-auto mb-1" />
               <div className="font-semibold">{score.accessibility}</div>
             </div>
-            <div className="text-xs text-gray-600 mt-1">Accessibility</div>
+            <div className="text-xs text-muted-foreground mt-1">Accessibility</div>
           </div>
           <div className="text-center">
             <div className={`p-3 rounded-lg ${getScoreColor(score.budgetPotential)}`}>
               <DollarSign className="w-5 h-5 mx-auto mb-1" />
               <div className="font-semibold">{score.budgetPotential}</div>
             </div>
-            <div className="text-xs text-gray-600 mt-1">Budget Potential</div>
+            <div className="text-xs text-muted-foreground mt-1">Budget Potential</div>
           </div>
           <div className="text-center">
             <div className={`p-3 rounded-lg ${getScoreColor(score.urgency)}`}>
               <Zap className="w-5 h-5 mx-auto mb-1" />
               <div className="font-semibold">{score.urgency}</div>
             </div>
-            <div className="text-xs text-gray-600 mt-1">Urgency</div>
+            <div className="text-xs text-muted-foreground mt-1">Urgency</div>
           </div>
           <div className="text-center">
             <div className={`p-3 rounded-lg ${getScoreColor(score.responseRate)}`}>
               <Activity className="w-5 h-5 mx-auto mb-1" />
               <div className="font-semibold">{score.responseRate}</div>
             </div>
-            <div className="text-xs text-gray-600 mt-1">Response Rate</div>
+            <div className="text-xs text-muted-foreground mt-1">Response Rate</div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-200 mb-6">
+        <div className="flex border-b border-border mb-6">
           <button
             onClick={() => setActiveTab('score')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'score'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Score Analysis
@@ -405,7 +405,7 @@ export default function ContactScoring({
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'factors'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Scoring Factors
@@ -415,7 +415,7 @@ export default function ContactScoring({
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'history'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Engagement History
@@ -427,18 +427,18 @@ export default function ContactScoring({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h5 className="font-medium text-gray-900 mb-3">Media Spend Analysis</h5>
+                <h5 className="font-medium text-foreground mb-3">Media Spend Analysis</h5>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Current Annual Spend</span>
+                    <span className="text-sm text-muted-foreground">Current Annual Spend</span>
                     <span className="font-medium">${(contact.mediaSpend.current / 1000000).toFixed(1)}M</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Potential Annual Spend</span>
+                    <span className="text-sm text-muted-foreground">Potential Annual Spend</span>
                     <span className="font-medium">${(contact.mediaSpend.potential / 1000000).toFixed(1)}M</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Spending Trend</span>
+                    <span className="text-sm text-muted-foreground">Spending Trend</span>
                     <Badge className={`text-xs ${
                       contact.mediaSpend.trends === 'increasing' ? 'bg-green-100 text-green-800' :
                       contact.mediaSpend.trends === 'stable' ? 'bg-yellow-100 text-yellow-800' :
@@ -448,17 +448,17 @@ export default function ContactScoring({
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Active Channels</span>
+                    <span className="text-sm text-muted-foreground">Active Channels</span>
                     <span className="font-medium">{contact.mediaSpend.channels.length}</span>
                   </div>
                 </div>
               </div>
               
               <div>
-                <h5 className="font-medium text-gray-900 mb-3">Contact Intelligence</h5>
+                <h5 className="font-medium text-foreground mb-3">Contact Intelligence</h5>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Connection Type</span>
+                    <span className="text-sm text-muted-foreground">Connection Type</span>
                     <Badge className={`text-xs ${
                       contact.connectionStrength === 'direct' ? 'bg-green-100 text-green-800' :
                       contact.connectionStrength === 'warm' ? 'bg-yellow-100 text-yellow-800' :
@@ -468,15 +468,15 @@ export default function ContactScoring({
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Mutual Connections</span>
+                    <span className="text-sm text-muted-foreground">Mutual Connections</span>
                     <span className="font-medium">{contact.mutualConnections}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Recent News Items</span>
+                    <span className="text-sm text-muted-foreground">Recent News Items</span>
                     <span className="font-medium">{contact.recentNews.length}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Competitor Activity</span>
+                    <span className="text-sm text-muted-foreground">Competitor Activity</span>
                     <span className="font-medium">{contact.competitorInteractions}</span>
                   </div>
                 </div>
@@ -485,11 +485,11 @@ export default function ContactScoring({
 
             {contact.recentNews.length > 0 && (
               <div>
-                <h5 className="font-medium text-gray-900 mb-3">Recent News & Updates</h5>
+                <h5 className="font-medium text-foreground mb-3">Recent News & Updates</h5>
                 <div className="space-y-2">
                   {contact.recentNews.slice(0, 3).map((news, index) => (
-                    <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm text-gray-700">{news}</p>
+                    <div key={index} className="bg-muted p-3 rounded-lg">
+                      <p className="text-sm text-foreground">{news}</p>
                     </div>
                   ))}
                 </div>
@@ -503,7 +503,7 @@ export default function ContactScoring({
             {scoringFactors.map((factor, index) => (
               <div key={index} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h5 className="font-medium text-gray-900">{factor.name}</h5>
+                  <h5 className="font-medium text-foreground">{factor.name}</h5>
                   <div className="flex items-center gap-2">
                     <Badge className={`text-xs ${
                       factor.impact === 'positive' ? 'bg-green-100 text-green-800' :
@@ -515,7 +515,7 @@ export default function ContactScoring({
                     <span className="text-sm font-medium">{factor.value}/100</span>
                   </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                <div className="w-full bg-muted rounded-full h-2 mb-2">
                   <div 
                     className={`h-2 rounded-full transition-all duration-300 ${
                       factor.impact === 'positive' ? 'bg-green-500' :
@@ -525,8 +525,8 @@ export default function ContactScoring({
                     style={{ width: `${factor.value}%` }}
                   />
                 </div>
-                <p className="text-sm text-gray-600">{factor.explanation}</p>
-                <div className="text-xs text-gray-500 mt-1">Weight: {factor.weight}%</div>
+                <p className="text-sm text-muted-foreground">{factor.explanation}</p>
+                <div className="text-xs text-muted-foreground mt-1">Weight: {factor.weight}%</div>
               </div>
             ))}
           </div>
@@ -536,18 +536,18 @@ export default function ContactScoring({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h5 className="font-medium text-gray-900 mb-3">Email Engagement</h5>
+                <h5 className="font-medium text-foreground mb-3">Email Engagement</h5>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Email Opens</span>
+                    <span className="text-sm text-muted-foreground">Email Opens</span>
                     <span className="font-medium">{contact.engagement.emailOpens}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Email Clicks</span>
+                    <span className="text-sm text-muted-foreground">Email Clicks</span>
                     <span className="font-medium">{contact.engagement.emailClicks}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Click-through Rate</span>
+                    <span className="text-sm text-muted-foreground">Click-through Rate</span>
                     <span className="font-medium">
                       {contact.engagement.emailOpens > 0 ? 
                         `${((contact.engagement.emailClicks / contact.engagement.emailOpens) * 100).toFixed(1)}%` : 
@@ -559,18 +559,18 @@ export default function ContactScoring({
               </div>
               
               <div>
-                <h5 className="font-medium text-gray-900 mb-3">Digital Engagement</h5>
+                <h5 className="font-medium text-foreground mb-3">Digital Engagement</h5>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">LinkedIn Profile Views</span>
+                    <span className="text-sm text-muted-foreground">LinkedIn Profile Views</span>
                     <span className="font-medium">{contact.engagement.linkedinViews}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Website Visits</span>
+                    <span className="text-sm text-muted-foreground">Website Visits</span>
                     <span className="font-medium">{contact.engagement.websiteVisits}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Last Activity</span>
+                    <span className="text-sm text-muted-foreground">Last Activity</span>
                     <span className="font-medium">{contact.lastActivity}</span>
                   </div>
                 </div>

@@ -19,16 +19,16 @@ export default function SimpleDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 to-teal-50">
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-xl font-bold text-gray-900">
+              <Link href="/" className="text-xl font-bold text-foreground">
                 DealMecca
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/auth/signin" className="text-gray-600 hover:text-gray-900">
+              <Link href="/auth/signin" className="text-muted-foreground hover:text-foreground">
                 Sign In
               </Link>
             </div>
@@ -37,10 +37,10 @@ export default function SimpleDashboardPage() {
       </div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-foreground mb-2">
             Dashboard (Simple)
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             Simple dashboard page is temporarily disabled during deployment migration.
           </p>
         </div>

@@ -145,9 +145,9 @@ export function DataEnrichment() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Basic': return 'bg-green-100 text-green-700 border-green-200';
-      case 'Standard': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'Standard': return 'bg-primary/20 text-primary border-primary/30';
       case 'Premium': return 'bg-purple-100 text-purple-700 border-purple-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -202,21 +202,21 @@ export function DataEnrichment() {
             <Sparkles className="w-5 h-5 mr-2 text-yellow-500" />
             Data Enrichment Options
           </CardTitle>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Enhance your uploaded data with additional information from premium sources
           </p>
         </CardHeader>
         <CardContent>
           {/* Records Selection */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="mb-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-blue-900">Records to Enrich</h4>
-                <p className="text-sm text-blue-700">Select the number of records to process</p>
+                <h4 className="font-medium text-primary">Records to Enrich</h4>
+                <p className="text-sm text-primary/80">Select the number of records to process</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-blue-900">{selectedRecords.toLocaleString()}</p>
-                <p className="text-sm text-blue-700">companies selected</p>
+                <p className="text-2xl font-bold text-primary">{selectedRecords.toLocaleString()}</p>
+                <p className="text-sm text-primary/80">companies selected</p>
               </div>
             </div>
           </div>
@@ -225,7 +225,7 @@ export function DataEnrichment() {
           {Object.entries(groupedFeatures).map(([category, features]) => (
             <div key={category} className="mb-6">
               <div className="flex items-center mb-3">
-                <h3 className="text-lg font-semibold text-gray-900 mr-3">{category} Features</h3>
+                <h3 className="text-lg font-semibold text-foreground mr-3">{category} Features</h3>
                 <Badge className={getCategoryColor(category)}>
                   {category}
                 </Badge>
@@ -235,9 +235,9 @@ export function DataEnrichment() {
                 {features.map((feature) => {
                   const Icon = feature.icon;
                   return (
-                    <div key={feature.key} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <div key={feature.key} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
                       <div className="flex items-center space-x-3">
-                        <Icon className="w-5 h-5 text-blue-500" />
+                        <Icon className="w-5 h-5 text-primary" />
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
                             <span className="font-medium">{feature.title}</span>
@@ -245,7 +245,7 @@ export function DataEnrichment() {
                               {feature.credits} {feature.credits === 1 ? 'credit' : 'credits'}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-600">{feature.description}</p>
+                          <p className="text-sm text-muted-foreground">{feature.description}</p>
                         </div>
                       </div>
                       <Switch
@@ -262,19 +262,19 @@ export function DataEnrichment() {
           ))}
 
           {/* Cost Summary */}
-          <div className="mt-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+          <div className="mt-6 p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-lg font-semibold text-gray-900">Total Cost Estimate</p>
-                <p className="text-sm text-gray-600">
+                <p className="text-lg font-semibold text-foreground">Total Cost Estimate</p>
+                <p className="text-sm text-muted-foreground">
                   {totalCredits} credits per record × {selectedRecords.toLocaleString()} records
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-blue-900">
+                <p className="text-3xl font-bold text-primary">
                   {totalCost.toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">credits</p>
+                <p className="text-sm text-muted-foreground">credits</p>
               </div>
             </div>
             
@@ -298,10 +298,10 @@ export function DataEnrichment() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-medium">Enriching Data</span>
-                <span className="text-sm text-gray-600">{Math.round(enrichmentProgress)}%</span>
+                <span className="text-sm text-muted-foreground">{Math.round(enrichmentProgress)}%</span>
               </div>
               <Progress value={enrichmentProgress} className="h-3" />
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className="text-sm text-muted-foreground space-y-1">
                 <p>• Fetching company logos and brand assets</p>
                 <p>• Updating employee counts and company metrics</p>
                 <p>• Standardizing industry classifications</p>
@@ -324,21 +324,21 @@ export function DataEnrichment() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-3xl font-bold text-blue-600">{results.processed.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Records Processed</div>
+              <div className="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="text-3xl font-bold text-primary">{results.processed.toLocaleString()}</div>
+                <div className="text-sm text-muted-foreground mt-1">Records Processed</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
                 <div className="text-3xl font-bold text-green-600">{results.enriched.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Successfully Enriched</div>
+                <div className="text-sm text-muted-foreground mt-1">Successfully Enriched</div>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
                 <div className="text-3xl font-bold text-red-600">{results.failed.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Failed to Enrich</div>
+                <div className="text-sm text-muted-foreground mt-1">Failed to Enrich</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
                 <div className="text-3xl font-bold text-purple-600">{results.creditsUsed.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Credits Used</div>
+                <div className="text-sm text-muted-foreground mt-1">Credits Used</div>
               </div>
             </div>
 

@@ -188,7 +188,7 @@ export function RichTextPostForm({ categories, onSubmit, isLoading = false }: Ri
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="ml-1 hover:text-red-600"
+                      className="ml-1 hover:text-destructive"
                       disabled={isLoading}
                     >
                       <X className="w-3 h-3" />
@@ -206,7 +206,7 @@ export function RichTextPostForm({ categories, onSubmit, isLoading = false }: Ri
               id="anonymous"
               checked={formData.isAnonymous}
               onChange={(e) => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded border-border text-primary focus:ring-ring"
               disabled={isLoading}
             />
             <Label htmlFor="anonymous" className="text-sm font-normal">

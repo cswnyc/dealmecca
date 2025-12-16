@@ -47,7 +47,7 @@ interface EnhancedContactCardProps {
 
 export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedContactCardProps) {
   const getSeniorityColor = (seniority?: string) => {
-    if (!seniority) return 'bg-gray-100 text-gray-700 border-gray-200';
+    if (!seniority) return 'bg-muted text-muted-foreground border-border';
     
     const seniorityLower = seniority.toLowerCase().replace(/_/g, ' ');
     
@@ -63,7 +63,7 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
     if (seniorityLower.includes('manager')) {
       return 'bg-orange-100 text-orange-700 border-orange-200';
     }
-    return 'bg-gray-100 text-gray-700 border-gray-200';
+    return 'bg-muted text-muted-foreground border-border';
   };
 
   const handleAction = (action: string, value?: string) => {
@@ -93,28 +93,28 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
     : contact.company?.city || 'Location not specified';
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500 bg-gradient-to-r from-white to-blue-50/30">
+    <Card className="group hover:shadow-lg transition-all duration-300 border-l-4 border-l-primary bg-gradient-to-r from-card to-primary/5">
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-4">
-            <Avatar className="w-14 h-14 ring-2 ring-white shadow-md">
+            <Avatar className="w-14 h-14 ring-2 ring-background shadow-md">
               <AvatarImage src={contact.avatar} alt={displayName} />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold text-lg">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground font-semibold text-lg">
                 {displayName.split(' ').map(n => n.charAt(0)).join('')}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                <h3 className="font-semibold text-gray-900 text-lg">
+                <h3 className="font-semibold text-foreground text-lg">
                   {displayName}
                 </h3>
                 {contact.verified && (
                   <Star className="w-4 h-4 text-yellow-500 fill-current" />
                 )}
               </div>
-              <p className="text-gray-600 font-medium mb-1">{displayRole}</p>
+              <p className="text-muted-foreground font-medium mb-1">{displayRole}</p>
               {contact.company && (
-                <div className="flex items-center text-sm text-gray-500">
+                <div className="flex items-center text-sm text-muted-foreground">
                   <Building2 className="w-3 h-3 mr-1" />
                   {contact.company.name}
                   {contact.company.verified && (
@@ -131,7 +131,7 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
 
         {/* Company Location */}
         {contact.company && (
-          <div className="flex items-center text-sm text-gray-500 mb-3">
+          <div className="flex items-center text-sm text-muted-foreground mb-3">
             <Building2 className="w-3 h-3 mr-1" />
             <span>{companyLocation}</span>
           </div>
@@ -147,7 +147,7 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
         )}
 
         {/* Last Activity */}
-        <div className="flex items-center text-xs text-gray-500 mb-4">
+        <div className="flex items-center text-xs text-muted-foreground mb-4">
           <Clock className="w-3 h-3 mr-1" />
           Last active: {displayLastActive}
         </div>
@@ -155,9 +155,9 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
         {/* Action Buttons Row */}
         <div className="flex space-x-2">
           {contact.email && (
-            <Button 
-              size="sm" 
-              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+            <Button
+              size="sm"
+              className="flex-1 bg-primary hover:bg-primary/90"
               onClick={() => handleAction('email', contact.email)}
             >
               <Mail className="w-3 h-3 mr-2" />
@@ -178,10 +178,10 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
           )}
           
           {contact.linkedinUrl && (
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
-              className="border-blue-200 text-blue-700 hover:bg-blue-50"
+              className="border-primary/30 text-primary hover:bg-primary/10"
               onClick={() => handleAction('linkedin', contact.linkedinUrl)}
             >
               <Linkedin className="w-3 h-3 mr-1" />

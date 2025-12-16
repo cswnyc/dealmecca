@@ -97,15 +97,15 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
 
   const getProgressColor = (percentage: number) => {
     if (percentage >= 100) return 'bg-green-500'
-    if (percentage >= 75) return 'bg-blue-500'
+    if (percentage >= 75) return 'bg-primary'
     if (percentage >= 50) return 'bg-yellow-500'
-    return 'bg-gray-400'
+    return 'bg-muted-foreground'
   }
 
   const getSearchUsageColor = (used: number, limit: number) => {
-    if (limit === -1) return 'bg-blue-500' // Unlimited
+    if (limit === -1) return 'bg-primary' // Unlimited
     const percentage = (used / limit) * 100
-    if (percentage >= 90) return 'bg-red-500'
+    if (percentage >= 90) return 'bg-destructive'
     if (percentage >= 75) return 'bg-yellow-500'
     return 'bg-green-500'
   }
@@ -125,8 +125,8 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
 
   const getTrendIcon = (value: number) => {
     if (value > 0) return <ArrowUp className="w-4 h-4 text-green-600" />
-    if (value < 0) return <ArrowDown className="w-4 h-4 text-red-700" />
-    return <Minus className="w-4 h-4 text-gray-400" />
+    if (value < 0) return <ArrowDown className="w-4 h-4 text-destructive" />
+    return <Minus className="w-4 h-4 text-muted-foreground" />
   }
 
   if (loading) {
@@ -135,7 +135,7 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
         {[...Array(8)].map((_, i) => (
           <Card key={i} className="animate-pulse">
             <CardContent className="p-6">
-              <div className="h-16 bg-gray-200 rounded"></div>
+              <div className="h-16 bg-muted rounded"></div>
             </CardContent>
           </Card>
         ))}
@@ -148,7 +148,7 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
       <Card>
         <CardContent className="p-6 text-center">
           {error && (
-            <p className="text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">Error loading metrics: {error}</p>
+            <p className="text-destructive bg-destructive/10 p-3 rounded-lg border border-destructive/20">Error loading metrics: {error}</p>
           )}
           <Button onClick={fetchMetrics} className="mt-2" variant="outline">
             Retry
@@ -162,7 +162,7 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
     <div className="space-y-6">
       {/* Period Selector */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Performance Overview</h2>
+        <h2 className="text-2xl font-bold text-foreground">Performance Overview</h2>
         <div className="flex gap-2">
           {(['month', 'quarter', 'year'] as const).map((p) => (
             <Button
@@ -184,10 +184,10 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <Search className="w-8 h-8 text-blue-600 mr-3" />
+                <Search className="w-8 h-8 text-primary mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Searches</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Searches</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {metrics.searches.used}
                     {metrics.searches.limit !== -1 && `/${metrics.searches.limit}`}
                   </p>
@@ -197,19 +197,19 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
             
             {metrics.searches.limit !== -1 && (
               <>
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                  <div 
+                <div className="w-full bg-muted rounded-full h-2 mb-2">
+                  <div
                     className={`h-2 rounded-full transition-all duration-300 ${getSearchUsageColor(metrics.searches.used, metrics.searches.limit)}`}
                     style={{ width: `${Math.min((metrics.searches.used / metrics.searches.limit) * 100, 100)}%` }}
                   ></div>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {metrics.searches.remaining} remaining • Resets {metrics.searches.resetDate.toLocaleDateString()}
                 </p>
               </>
             )}
             {metrics.searches.limit === -1 && (
-              <p className="text-xs text-blue-600 font-medium">Unlimited searches</p>
+              <p className="text-xs text-primary font-medium">Unlimited searches</p>
             )}
           </CardContent>
         </Card>
@@ -221,15 +221,15 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
               <div className="flex items-center">
                 <DollarSign className="w-8 h-8 text-green-600 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Event ROI</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Event ROI</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {formatPercentage(metrics.events.estimatedROI)}
                   </p>
                 </div>
               </div>
               {getTrendIcon(metrics.events.estimatedROI)}
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {metrics.events.attended} events • {formatCurrency(metrics.events.totalCost)} invested
             </p>
           </CardContent>
@@ -242,21 +242,21 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
               <div className="flex items-center">
                 <Users className="w-8 h-8 text-purple-600 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Connections</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Connections</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {metrics.networking.connectionsThisMonth}
                   </p>
                 </div>
               </div>
             </div>
-            
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-              <div 
+
+            <div className="w-full bg-muted rounded-full h-2 mb-2">
+              <div
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(metrics.networking.progress)}`}
                 style={{ width: `${Math.min(metrics.networking.progress, 100)}%` }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {formatPercentage(metrics.networking.progress)} of annual goal • {metrics.networking.activeDeals} active deals
             </p>
           </CardContent>
@@ -267,23 +267,23 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <Calendar className="w-8 h-8 text-indigo-600 mr-3" />
+                <Calendar className="w-8 h-8 text-primary mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Events</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Events</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {metrics.events.attended}
                   </p>
                 </div>
               </div>
             </div>
-            
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-              <div 
+
+            <div className="w-full bg-muted rounded-full h-2 mb-2">
+              <div
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(metrics.events.progress)}`}
                 style={{ width: `${Math.min(metrics.events.progress, 100)}%` }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {formatPercentage(metrics.events.progress)} of annual goal • {metrics.events.planned} planned
             </p>
           </CardContent>
@@ -296,14 +296,14 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
               <div className="flex items-center">
                 <MessageSquare className="w-8 h-8 text-orange-600 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Forum Posts</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Forum Posts</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {metrics.forum.postsCreated}
                   </p>
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {metrics.forum.helpfulVotes} helpful votes • {metrics.forum.questionsAnswered} answers
             </p>
           </CardContent>
@@ -316,14 +316,14 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
               <div className="flex items-center">
                 <Trophy className="w-8 h-8 text-yellow-600 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Achievements</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Achievements</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {metrics.achievements.unlocked}
                   </p>
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {metrics.achievements.total} points earned
             </p>
           </CardContent>
@@ -336,15 +336,15 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
               <div className="flex items-center">
                 <Eye className="w-8 h-8 text-teal-600 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Dashboard Visits</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Dashboard Visits</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {metrics.engagement.dashboardVisits}
                   </p>
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500">
-              Last visit: {metrics.engagement.lastVisit 
+            <p className="text-xs text-muted-foreground">
+              Last visit: {metrics.engagement.lastVisit
                 ? metrics.engagement.lastVisit.toLocaleDateString()
                 : 'Never'
               }
@@ -353,21 +353,21 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
         </Card>
 
         {/* Overall Performance Score */}
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <Target className="w-8 h-8 text-blue-600 mr-3" />
+                <Target className="w-8 h-8 text-primary mr-3" />
                 <div>
-                  <p className="text-sm text-blue-700">Overall Score</p>
-                  <p className="text-2xl font-bold text-blue-900">
+                  <p className="text-sm text-primary">Overall Score</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {Math.round((metrics.networking.progress + metrics.events.progress) / 2)}%
                   </p>
                 </div>
               </div>
-              <TrendingUp className="w-6 h-6 text-blue-600" />
+              <TrendingUp className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-xs text-blue-600">
+            <p className="text-xs text-primary">
               Based on goal progress and activity
             </p>
           </CardContent>

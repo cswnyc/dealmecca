@@ -80,12 +80,12 @@ const RoleIcons: Record<UserRole, React.ComponentType<any>> = {
 };
 
 const RoleColors: Record<UserRole, string> = {
-  FREE: 'bg-gray-100 text-gray-800',
-  PRO: 'bg-blue-100 text-blue-800',
+  FREE: 'bg-muted text-muted-foreground',
+  PRO: 'bg-primary/20 text-primary',
   TEAM: 'bg-green-100 text-green-800',
   ENTERPRISE: 'bg-purple-100 text-purple-800',
   ADMIN: 'bg-orange-100 text-orange-800',
-  SUPER_ADMIN: 'bg-red-100 text-red-800'
+  SUPER_ADMIN: 'bg-destructive/20 text-destructive'
 };
 
 export default function RoleManager() {
@@ -243,7 +243,7 @@ export default function RoleManager() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }

@@ -168,14 +168,14 @@ export default function ViewContact() {
     return (
       <div className="container mx-auto py-6 px-4">
         <div className="max-w-4xl mx-auto space-y-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white rounded-lg border border-border p-6">
             <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-8 bg-muted rounded w-1/3"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
               <div className="space-y-3">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                <div className="h-4 bg-muted rounded"></div>
+                <div className="h-4 bg-muted rounded w-5/6"></div>
+                <div className="h-4 bg-muted rounded w-4/6"></div>
               </div>
             </div>
           </div>
@@ -188,8 +188,8 @@ export default function ViewContact() {
     return (
       <div className="container mx-auto py-6 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-4">Contact Not Found</h1>
+          <div className="bg-white rounded-lg border border-border p-6">
+            <h1 className="text-2xl font-semibold text-foreground mb-4">Contact Not Found</h1>
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
               <p className="text-red-800">{error || 'Contact not found'}</p>
             </div>
@@ -216,10 +216,10 @@ export default function ViewContact() {
               Back
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{contact.fullName}</h1>
-              <p className="text-gray-600">{contact.title}</p>
+              <h1 className="text-3xl font-bold text-foreground">{contact.fullName}</h1>
+              <p className="text-muted-foreground">{contact.title}</p>
               <div className="flex items-center flex-wrap gap-2 mt-2">
-                <Badge variant={contact.verified ? "default" : "secondary"} className={!contact.verified ? "bg-gray-200 text-gray-800" : ""}>
+                <Badge variant={contact.verified ? "default" : "secondary"} className={!contact.verified ? "bg-muted text-foreground" : ""}>
                   {contact.verified ? "Verified" : "Unverified"}
                 </Badge>
                 {!contact.isActive && (
@@ -237,7 +237,7 @@ export default function ViewContact() {
                     ))}
                   </>
                 )}
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   Created {new Date(contact.createdAt).toLocaleDateString()}
                 </span>
               </div>
@@ -292,40 +292,40 @@ export default function ViewContact() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {contact.email && (
                     <div className="flex items-center space-x-3">
-                      <Mail className="w-4 h-4 text-gray-500" />
+                      <Mail className="w-4 h-4 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Business Email</p>
-                        <p className="text-sm text-gray-600">{contact.email}</p>
+                        <p className="text-sm font-medium text-foreground">Business Email</p>
+                        <p className="text-sm text-muted-foreground">{contact.email}</p>
                       </div>
                     </div>
                   )}
 
                   {contact.personalEmail && (
                     <div className="flex items-center space-x-3">
-                      <Mail className="w-4 h-4 text-gray-500" />
+                      <Mail className="w-4 h-4 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Personal Email</p>
-                        <p className="text-sm text-gray-600">{contact.personalEmail}</p>
+                        <p className="text-sm font-medium text-foreground">Personal Email</p>
+                        <p className="text-sm text-muted-foreground">{contact.personalEmail}</p>
                       </div>
                     </div>
                   )}
 
                   {contact.phone && (
                     <div className="flex items-center space-x-3">
-                      <Phone className="w-4 h-4 text-gray-500" />
+                      <Phone className="w-4 h-4 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Phone</p>
-                        <p className="text-sm text-gray-600">{contact.phone}</p>
+                        <p className="text-sm font-medium text-foreground">Phone</p>
+                        <p className="text-sm text-muted-foreground">{contact.phone}</p>
                       </div>
                     </div>
                   )}
 
                   {contact.preferredContact && (
                     <div className="flex items-center space-x-3">
-                      <Star className="w-4 h-4 text-gray-500" />
+                      <Star className="w-4 h-4 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Preferred Contact</p>
-                        <p className="text-sm text-gray-600">{contact.preferredContact?.replace(/_/g, ' ') || contact.preferredContact}</p>
+                        <p className="text-sm font-medium text-foreground">Preferred Contact</p>
+                        <p className="text-sm text-muted-foreground">{contact.preferredContact?.replace(/_/g, ' ') || contact.preferredContact}</p>
                       </div>
                     </div>
                   )}
@@ -344,20 +344,20 @@ export default function ViewContact() {
               <CardContent>
                 <div className="flex items-start space-x-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">{contact.company.name}</h3>
-                    <p className="text-gray-600">{contact.company.companyType?.replace(/_/g, ' ') || contact.company.companyType || 'N/A'}</p>
-                    <p className="text-gray-600">{contact.company.industry?.replace(/_/g, ' ') || contact.company.industry || 'N/A'}</p>
+                    <h3 className="text-lg font-semibold text-foreground">{contact.company.name}</h3>
+                    <p className="text-muted-foreground">{contact.company.companyType?.replace(/_/g, ' ') || contact.company.companyType || 'N/A'}</p>
+                    <p className="text-muted-foreground">{contact.company.industry?.replace(/_/g, ' ') || contact.company.industry || 'N/A'}</p>
                     {(contact.company.city || contact.company.state) && (
                       <div className="flex items-center space-x-1 mt-2">
-                        <MapPin className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
                           {[contact.company.city, contact.company.state].filter(Boolean).join(', ')}
                         </span>
                       </div>
                     )}
                     {contact.company.website && (
                       <div className="flex items-center space-x-1 mt-2">
-                        <Globe className="w-4 h-4 text-gray-500" />
+                        <Globe className="w-4 h-4 text-muted-foreground" />
                         <a
                           href={contact.company.website}
                           target="_blank"
@@ -392,7 +392,7 @@ export default function ViewContact() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {contact.department && getDepartmentInfo(contact.department) && (
                     <div>
-                      <p className="text-sm font-medium text-gray-900 mb-1">Department</p>
+                      <p className="text-sm font-medium text-foreground mb-1">Department</p>
                       <Badge variant="outline">
                         {getDepartmentInfo(contact.department)?.icon} {getDepartmentInfo(contact.department)?.label}
                       </Badge>
@@ -401,7 +401,7 @@ export default function ViewContact() {
 
                   {getSeniorityInfo(contact.seniority) && (
                     <div>
-                      <p className="text-sm font-medium text-gray-900 mb-1">Seniority Level</p>
+                      <p className="text-sm font-medium text-foreground mb-1">Seniority Level</p>
                       <Badge className={getSeniorityInfo(contact.seniority)?.color}>
                         {getSeniorityInfo(contact.seniority)?.icon} {getSeniorityInfo(contact.seniority)?.label}
                       </Badge>
@@ -410,13 +410,13 @@ export default function ViewContact() {
 
                   {contact.primaryRole && (
                     <div>
-                      <p className="text-sm font-medium text-gray-900 mb-1">Primary Role</p>
-                      <p className="text-sm text-gray-600">{contact.primaryRole?.replace(/_/g, ' ') || contact.primaryRole}</p>
+                      <p className="text-sm font-medium text-foreground mb-1">Primary Role</p>
+                      <p className="text-sm text-muted-foreground">{contact.primaryRole?.replace(/_/g, ' ') || contact.primaryRole}</p>
                     </div>
                   )}
 
                   <div>
-                    <p className="text-sm font-medium text-gray-900 mb-1">Data Quality</p>
+                    <p className="text-sm font-medium text-foreground mb-1">Data Quality</p>
                     <Badge variant={contact.dataQuality === 'HIGH' ? 'default' : 'secondary'}>
                       {contact.dataQuality}
                     </Badge>
@@ -436,11 +436,11 @@ export default function ViewContact() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {contact.teams.map((team) => (
-                    <div key={team.id} className="border border-gray-200 rounded-lg p-4">
+                    <div key={team.id} className="border border-border rounded-lg p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-gray-900">{team.name}</h4>
+                            <h4 className="font-semibold text-foreground">{team.name}</h4>
                             {team.isPrimary && (
                               <Badge variant="default" className="text-xs">Primary</Badge>
                             )}
@@ -449,13 +449,13 @@ export default function ViewContact() {
                             </Badge>
                           </div>
                           {team.role && (
-                            <p className="text-sm text-gray-600 mt-1">{team.role}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{team.role}</p>
                           )}
                           {team.description && (
-                            <p className="text-sm text-gray-500 mt-1">{team.description}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{team.description}</p>
                           )}
                           <div className="flex items-center gap-1 mt-2">
-                            <Building2 className="w-3 h-3 text-gray-500" />
+                            <Building2 className="w-3 h-3 text-muted-foreground" />
                             <Link
                               href={`/admin/orgs/companies/${team.company.id}`}
                               className="text-xs text-blue-600 hover:text-blue-800"
@@ -484,23 +484,23 @@ export default function ViewContact() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Teams</span>
+                  <span className="text-sm text-muted-foreground">Teams</span>
                   <Badge variant="outline">{contact._count.teams}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Interactions</span>
+                  <span className="text-sm text-muted-foreground">Interactions</span>
                   <Badge variant="outline">{contact._count.interactions}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Notes</span>
+                  <span className="text-sm text-muted-foreground">Notes</span>
                   <Badge variant="outline">{contact._count.notes}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Connections</span>
+                  <span className="text-sm text-muted-foreground">Connections</span>
                   <Badge variant="outline">{contact._count.connections}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Community Score</span>
+                  <span className="text-sm text-muted-foreground">Community Score</span>
                   <Badge variant="outline">{contact.communityScore}</Badge>
                 </div>
               </CardContent>
@@ -516,19 +516,19 @@ export default function ViewContact() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center space-x-2 text-sm">
-                  <Calendar className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-600">Created:</span>
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Created:</span>
                   <span className="font-medium">{new Date(contact.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
-                  <Calendar className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-600">Updated:</span>
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Updated:</span>
                   <span className="font-medium">{new Date(contact.updatedAt).toLocaleDateString()}</span>
                 </div>
                 {contact.lastVerified && (
                   <div className="flex items-center space-x-2 text-sm">
-                    <Shield className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-600">Last verified:</span>
+                    <Shield className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Last verified:</span>
                     <span className="font-medium">{new Date(contact.lastVerified).toLocaleDateString()}</span>
                   </div>
                 )}
@@ -548,13 +548,13 @@ export default function ViewContact() {
                   {contact.recentInteractions?.slice(0, 3).map((interaction, index) => (
                     <div key={index} className="text-sm">
                       <p className="font-medium">{interaction.type?.replace(/_/g, ' ')}</p>
-                      <p className="text-gray-600">{new Date(interaction.createdAt).toLocaleDateString()}</p>
+                      <p className="text-muted-foreground">{new Date(interaction.createdAt).toLocaleDateString()}</p>
                     </div>
                   ))}
                   {contact.recentNotes?.slice(0, 3).map((note, index) => (
                     <div key={index} className="text-sm">
                       <p className="font-medium">Note added</p>
-                      <p className="text-gray-600">{new Date(note.createdAt).toLocaleDateString()}</p>
+                      <p className="text-muted-foreground">{new Date(note.createdAt).toLocaleDateString()}</p>
                     </div>
                   ))}
                 </CardContent>

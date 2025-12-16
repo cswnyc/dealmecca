@@ -90,7 +90,7 @@ export function SearchHistoryDropdown({ onSelectHistory }: SearchHistoryDropdown
         variant="ghost"
         size="sm"
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+        className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
       >
         <History className="h-4 w-4" />
         <span className="hidden sm:inline">History</span>
@@ -105,15 +105,15 @@ export function SearchHistoryDropdown({ onSelectHistory }: SearchHistoryDropdown
           />
 
           {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-            <div className="p-3 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-900 flex items-center">
-                <Clock className="h-4 w-4 mr-2 text-gray-600" />
+          <div className="absolute right-0 mt-2 w-80 bg-card rounded-lg shadow-xl border border-border z-50">
+            <div className="p-3 border-b border-border flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground flex items-center">
+                <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
                 Recent Searches
               </h3>
               <button
                 onClick={() => setShowDropdown(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -122,12 +122,12 @@ export function SearchHistoryDropdown({ onSelectHistory }: SearchHistoryDropdown
             <div className="max-h-80 overflow-y-auto">
               {loading ? (
                 <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-sm text-gray-500 mt-2">Loading...</p>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="text-sm text-muted-foreground mt-2">Loading...</p>
                 </div>
               ) : searchHistory.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
-                  <History className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <div className="p-8 text-center text-muted-foreground">
+                  <History className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                   <p className="text-sm">No recent searches</p>
                 </div>
               ) : (
@@ -139,13 +139,13 @@ export function SearchHistoryDropdown({ onSelectHistory }: SearchHistoryDropdown
                         onSelectHistory(item.query);
                         setShowDropdown(false);
                       }}
-                      className="w-full p-2 rounded-md hover:bg-gray-50 text-left transition-colors"
+                      className="w-full p-2 rounded-md hover:bg-muted text-left transition-colors"
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-gray-900 truncate flex-1">
+                        <span className="text-sm font-medium text-foreground truncate flex-1">
                           {item.query}
                         </span>
-                        <span className="text-xs text-gray-500 ml-2">
+                        <span className="text-xs text-muted-foreground ml-2">
                           {formatTimeAgo(item.createdAt)}
                         </span>
                       </div>
@@ -155,7 +155,7 @@ export function SearchHistoryDropdown({ onSelectHistory }: SearchHistoryDropdown
                             {item.resultsCount} results
                           </Badge>
                           {item.searchType && (
-                            <span className="text-xs text-gray-500">{item.searchType}</span>
+                            <span className="text-xs text-muted-foreground">{item.searchType}</span>
                           )}
                         </div>
                       )}
@@ -166,7 +166,7 @@ export function SearchHistoryDropdown({ onSelectHistory }: SearchHistoryDropdown
             </div>
 
             {searchHistory.length > 0 && (
-              <div className="p-2 border-t border-gray-200">
+              <div className="p-2 border-t border-border">
                 <button
                   onClick={handleClearHistory}
                   className="w-full flex items-center justify-center space-x-2 p-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"

@@ -69,9 +69,9 @@ export function EnhancedPartnershipCards({
     return (
       <Card className={`border-dashed ${className}`}>
         <CardContent className="p-8 text-center">
-          <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">No Partnerships Yet</h3>
-          <p className="text-gray-500 mb-4">
+          <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">No Partnerships Yet</h3>
+          <p className="text-muted-foreground mb-4">
             Start building {companyName}'s partnership network
           </p>
           <Button variant="outline">
@@ -139,7 +139,7 @@ export function EnhancedPartnershipCards({
         <img 
           src={partner.logoUrl} 
           alt={`${partner.name} logo`}
-          className="w-12 h-12 rounded-xl object-cover border border-gray-200 shadow-sm"
+          className="w-12 h-12 rounded-xl object-cover border border-border shadow-sm"
         />
       );
     }
@@ -154,7 +154,7 @@ export function EnhancedPartnershipCards({
     <div className={`space-y-4 ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-foreground">
           Partnership Portfolio
         </h3>
         <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
@@ -186,7 +186,7 @@ export function EnhancedPartnershipCards({
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
-                          <h4 className="font-semibold text-gray-900 truncate">
+                          <h4 className="font-semibold text-foreground truncate">
                             {partner.name}
                           </h4>
                           {partner.verified && (
@@ -214,7 +214,7 @@ export function EnhancedPartnershipCards({
                         </div>
 
                         {/* Quick Stats */}
-                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                           {partner.city && partner.state && (
                             <div className="flex items-center space-x-1">
                               <MapPin className="w-3 h-3" />
@@ -258,10 +258,10 @@ export function EnhancedPartnershipCards({
                         {/* Partnership Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <h5 className="font-medium text-gray-900 mb-2">Partnership Details</h5>
+                            <h5 className="font-medium text-foreground mb-2">Partnership Details</h5>
                             <div className="space-y-2 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Role:</span>
+                                <span className="text-muted-foreground">Role:</span>
                                 <Badge variant="outline" className="text-xs">
                                   {partnership.currentCompanyRole === 'agency' ? 'We are the Agency' : 'We are the Advertiser'}
                                 </Badge>
@@ -269,14 +269,14 @@ export function EnhancedPartnershipCards({
                               
                               {partnership.startDate && (
                                 <div className="flex justify-between">
-                                  <span className="text-gray-600">Start Date:</span>
+                                  <span className="text-muted-foreground">Start Date:</span>
                                   <span>{formatDate(partnership.startDate)}</span>
                                 </div>
                               )}
                               
                               {partnership.endDate && (
                                 <div className="flex justify-between">
-                                  <span className="text-gray-600">End Date:</span>
+                                  <span className="text-muted-foreground">End Date:</span>
                                   <span>{formatDate(partnership.endDate)}</span>
                                 </div>
                               )}
@@ -284,22 +284,22 @@ export function EnhancedPartnershipCards({
                           </div>
                           
                           <div>
-                            <h5 className="font-medium text-gray-900 mb-2">Company Info</h5>
+                            <h5 className="font-medium text-foreground mb-2">Company Info</h5>
                             <div className="space-y-2 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Type:</span>
+                                <span className="text-muted-foreground">Type:</span>
                                 <span>{partner.companyType.replace(/_/g, ' ')}</span>
                               </div>
                               
                               {partner.city && partner.state && (
                                 <div className="flex justify-between">
-                                  <span className="text-gray-600">Location:</span>
+                                  <span className="text-muted-foreground">Location:</span>
                                   <span>{partner.city}, {partner.state}</span>
                                 </div>
                               )}
                               
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Verified:</span>
+                                <span className="text-muted-foreground">Verified:</span>
                                 <span className="flex items-center space-x-1">
                                   {partner.verified ? (
                                     <>
@@ -307,7 +307,7 @@ export function EnhancedPartnershipCards({
                                       <span className="text-green-600">Yes</span>
                                     </>
                                   ) : (
-                                    <span className="text-gray-500">No</span>
+                                    <span className="text-muted-foreground">No</span>
                                   )}
                                 </span>
                               </div>
@@ -318,8 +318,8 @@ export function EnhancedPartnershipCards({
                         {/* Notes */}
                         {partnership.notes && (
                           <div>
-                            <h5 className="font-medium text-gray-900 mb-2">Notes</h5>
-                            <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                            <h5 className="font-medium text-foreground mb-2">Notes</h5>
+                            <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">
                               {partnership.notes}
                             </p>
                           </div>

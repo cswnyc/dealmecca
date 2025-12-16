@@ -19,6 +19,33 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // ------------------------------------------------------------
+        // Flokana-inspired design tokens (scoped via CSS variables)
+        // Use by wrapping a subtree in `.flk` (see app/design-system/flokana/flokana.css)
+        // ------------------------------------------------------------
+        flk: {
+          bg: 'rgb(var(--flk-bg) / <alpha-value>)',
+          surface: 'rgb(var(--flk-surface) / <alpha-value>)',
+          'surface-subtle': 'rgb(var(--flk-surface-subtle) / <alpha-value>)',
+          'text-primary': 'rgb(var(--flk-text-primary) / <alpha-value>)',
+          'text-secondary': 'rgb(var(--flk-text-secondary) / <alpha-value>)',
+          'text-muted': 'rgb(var(--flk-text-muted) / <alpha-value>)',
+          'text-inverse': 'rgb(var(--flk-text-inverse) / <alpha-value>)',
+          'border-subtle': 'rgb(var(--flk-border-subtle) / <alpha-value>)',
+          'border-strong': 'rgb(var(--flk-border-strong) / <alpha-value>)',
+          primary: 'rgb(var(--flk-primary) / <alpha-value>)',
+          'primary-hover': 'rgb(var(--flk-primary-hover) / <alpha-value>)',
+          'primary-active': 'rgb(var(--flk-primary-active) / <alpha-value>)',
+          'primary-soft-bg': 'rgb(var(--flk-primary-soft-bg) / <alpha-value>)',
+          'primary-soft-text': 'rgb(var(--flk-primary-soft-text) / <alpha-value>)',
+          'accent-violet': 'rgb(var(--flk-accent-violet) / <alpha-value>)',
+          'accent-pink': 'rgb(var(--flk-accent-pink) / <alpha-value>)',
+          'status-success': 'rgb(var(--flk-status-success) / <alpha-value>)',
+          'status-warning': 'rgb(var(--flk-status-warning) / <alpha-value>)',
+          'status-danger': 'rgb(var(--flk-status-danger) / <alpha-value>)',
+          'status-info': 'rgb(var(--flk-status-info) / <alpha-value>)',
+          'brand-ink': 'rgb(var(--flk-brand-ink) / <alpha-value>)',
+        },
         // DealMecca Premium Brand Colors
         primary: {
           DEFAULT: 'hsl(var(--primary))',
@@ -98,12 +125,33 @@ const config: Config = {
         },
       },
       fontFamily: {
+        flk: [
+          'Helvetica Neue',
+          'Inter',
+          'DM Sans',
+          'system-ui',
+          '-apple-system',
+          'Segoe UI',
+          'Roboto',
+          'Arial',
+          'sans-serif',
+        ],
         headline: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
         body: ['Roboto', 'Open Sans', 'system-ui', 'sans-serif'],
         display: ['Inter', 'system-ui', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       fontSize: {
+        'flk-display-xl': ['64px', { lineHeight: '1.05', letterSpacing: '-0.03em' }],
+        'flk-display-l': ['56px', { lineHeight: '1.05', letterSpacing: '-0.03em' }],
+        'flk-h1': ['44px', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'flk-h2': ['36px', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'flk-h3': ['28px', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'flk-h4': ['22px', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'flk-body-l': ['18px', { lineHeight: '1.55' }],
+        'flk-body-m': ['16px', { lineHeight: '1.55' }],
+        'flk-body-s': ['14px', { lineHeight: '1.55' }],
+        'flk-caption': ['12px', { lineHeight: '1.55' }],
         hero: ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
         display: ['3rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
         heading: ['2rem', { lineHeight: '1.3', letterSpacing: '-0.01em' }],
@@ -117,6 +165,14 @@ const config: Config = {
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       boxShadow: {
+        'flk-card': '0 10px 30px -20px rgba(15, 23, 42, 0.18)',
+        'flk-card-hover': '0 18px 44px -22px rgba(15, 23, 42, 0.22)',
+        'flk-floating': '0 24px 60px -30px rgba(15, 23, 42, 0.28)',
+        'flk-focus': '0 0 0 4px rgba(37, 117, 252, 0.20)',
+        'flk-card-dark': '0 10px 30px -20px rgba(0, 0, 0, 0.55)',
+        'flk-card-hover-dark': '0 18px 44px -22px rgba(0, 0, 0, 0.62)',
+        'flk-floating-dark': '0 24px 60px -30px rgba(0, 0, 0, 0.70)',
+        'flk-focus-dark': '0 0 0 4px rgba(91, 141, 255, 0.22)',
         // Premium shadows
         premium: '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         'premium-lg': '0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 16px -4px rgba(0, 0, 0, 0.08)',
@@ -141,6 +197,12 @@ const config: Config = {
         xl: '0.75rem',
         '2xl': '1rem',
         '3xl': '1.5rem',
+        'flk-xs': '8px',
+        'flk-sm': '10px',
+        'flk-md': '14px',
+        'flk-lg': '18px',
+        'flk-xl': '24px',
+        'flk-pill': '999px',
       },
       backdropBlur: {
         xs: '2px',

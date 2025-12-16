@@ -194,11 +194,11 @@ export function AdvancedSearchFilters({
             )}
           </CardTitle>
           {activeFilterCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={clearAllFilters}
-              className="bg-red-600 text-white hover:bg-red-700 hover:text-white"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground"
             >
               <X className="w-4 h-4 mr-1" />
               Clear
@@ -209,13 +209,13 @@ export function AdvancedSearchFilters({
 
       <CardContent className="space-y-4">
         {/* Verification Filter */}
-        <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+        <div className="flex items-center space-x-2 p-3 bg-primary/10 rounded-lg">
           <Checkbox
             id="verified"
             checked={localFilters.verified || false}
             onCheckedChange={handleVerificationToggle}
           />
-          <Shield className="w-4 h-4 text-blue-600" />
+          <Shield className="w-4 h-4 text-primary" />
           <label htmlFor="verified" className="text-sm font-medium">
             Verified only
           </label>
@@ -228,7 +228,7 @@ export function AdvancedSearchFilters({
               open={expandedSections[section.key]} 
               onOpenChange={() => toggleSection(section.key)}
             >
-              <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-gray-50 rounded">
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-muted rounded">
                 <span className="font-medium text-sm">{section.label}</span>
                 <div className="flex items-center space-x-2">
                   {localFilters[section.key]?.length > 0 && (
@@ -261,7 +261,7 @@ export function AdvancedSearchFilters({
                       >
                         {option.label}
                         {option.count && (
-                          <span className="text-gray-500 ml-1">({option.count})</span>
+                          <span className="text-muted-foreground ml-1">({option.count})</span>
                         )}
                       </label>
                     </div>

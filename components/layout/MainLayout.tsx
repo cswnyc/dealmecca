@@ -84,9 +84,9 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         <div className="animate-pulse">
-          <div className="h-screen bg-gray-200"></div>
+          <div className="h-screen bg-muted"></div>
         </div>
       </div>
     );

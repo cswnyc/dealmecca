@@ -103,16 +103,16 @@ export function PartnershipCard({
 
   const getRelationshipColor = (type?: string) => {
     const colors = {
-      'AGENCY_CLIENT': 'bg-blue-100 text-blue-800 border-blue-200',
+      'AGENCY_CLIENT': 'bg-primary/10 text-primary border-primary/20',
       'MEDIA_PARTNERSHIP': 'bg-purple-100 text-purple-800 border-purple-200',
       'STRATEGIC_ALLIANCE': 'bg-green-100 text-green-800 border-green-200',
       'PREFERRED_VENDOR': 'bg-orange-100 text-orange-800 border-orange-200',
-      'HOLDING_COMPANY_SUBSIDIARY': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+      'HOLDING_COMPANY_SUBSIDIARY': 'bg-accent/10 text-accent-foreground border-accent/20',
       'SISTER_AGENCY': 'bg-pink-100 text-pink-800 border-pink-200',
       'JOINT_VENTURE': 'bg-teal-100 text-teal-800 border-teal-200',
-      'SUBCONTRACTOR': 'bg-gray-100 text-gray-800 border-gray-200'
+      'SUBCONTRACTOR': 'bg-muted text-foreground border-border'
     };
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200';
+    return colors[type as keyof typeof colors] || 'bg-muted text-foreground border-border';
   };
 
   const CompanyLogo = ({ logoUrl, name }: { logoUrl?: string; name: string }) => {
@@ -121,12 +121,12 @@ export function PartnershipCard({
         <img
           src={logoUrl}
           alt={`${name} logo`}
-          className="w-14 h-14 rounded-xl object-cover border border-gray-200 shadow-sm"
+          className="w-14 h-14 rounded-xl object-cover border border-border shadow-sm"
         />
       );
     }
     return (
-      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
+      <div className="w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-sm">
         <Building2 className="w-7 h-7 text-white" />
       </div>
     );
@@ -135,7 +135,7 @@ export function PartnershipCard({
   const ContactAvatar = ({ contact }: { contact: Contact }) => {
     const initials = `${contact.firstName[0]}${contact.lastName[0]}`.toUpperCase();
     return (
-      <div className="w-10 h-10 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+      <div className="w-10 h-10 bg-gradient-to-br from-muted-foreground to-foreground rounded-full flex items-center justify-center text-white font-semibold text-sm">
         {initials}
       </div>
     );
@@ -144,7 +144,7 @@ export function PartnershipCard({
   return (
     <Card
       className={`transition-all duration-200 hover:shadow-lg cursor-pointer ${
-        isExpanded ? 'ring-2 ring-blue-500 shadow-lg' : ''
+        isExpanded ? 'ring-2 ring-primary shadow-lg' : ''
       }`}
       onClick={() => setIsExpanded(!isExpanded)}
     >
@@ -160,7 +160,7 @@ export function PartnershipCard({
                 <div className="flex items-center space-x-2 mb-1 flex-wrap">
                   <Link
                     href={`/companies/${partner.id}`}
-                    className="font-semibold text-gray-900 hover:text-blue-600 truncate"
+                    className="font-semibold text-foreground hover:text-primary truncate"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {partner.name}
@@ -199,7 +199,7 @@ export function PartnershipCard({
                 </div>
 
                 {/* Quick Stats */}
-                <div className="flex items-center space-x-4 text-sm text-gray-600 flex-wrap gap-y-1">
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground flex-wrap gap-y-1">
                   {partner.companyType && (
                     <div className="flex items-center space-x-1">
                       <Briefcase className="w-3 h-3" />
@@ -240,15 +240,15 @@ export function PartnershipCard({
                 {/* Partnership Details */}
                 {partnership.services && (
                   <div>
-                    <h5 className="font-medium text-gray-900 mb-2 text-sm">Services</h5>
-                    <p className="text-sm text-gray-600">{partnership.services}</p>
+                    <h5 className="font-medium text-foreground mb-2 text-sm">Services</h5>
+                    <p className="text-sm text-muted-foreground">{partnership.services}</p>
                   </div>
                 )}
 
                 {partnership.notes && (
                   <div>
-                    <h5 className="font-medium text-gray-900 mb-2 text-sm">Notes</h5>
-                    <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                    <h5 className="font-medium text-foreground mb-2 text-sm">Notes</h5>
+                    <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">
                       {partnership.notes}
                     </p>
                   </div>
@@ -257,7 +257,7 @@ export function PartnershipCard({
                 {/* Team Members */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h5 className="font-medium text-gray-900 text-sm flex items-center">
+                    <h5 className="font-medium text-foreground text-sm flex items-center">
                       <Users className="w-4 h-4 mr-2" />
                       Key Team Members
                     </h5>
@@ -270,7 +270,7 @@ export function PartnershipCard({
 
                   {loadingTeam ? (
                     <div className="flex items-center justify-center py-6">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
                     </div>
                   ) : teamMembers.length > 0 ? (
                     <div className="space-y-2">
@@ -278,48 +278,48 @@ export function PartnershipCard({
                         <Link
                           key={contact.id}
                           href={`/people/${contact.id}`}
-                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100 group"
+                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors border border-border group"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ContactAvatar contact={contact} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2">
-                              <h4 className="font-medium text-gray-900 group-hover:text-blue-600 text-sm truncate">
+                              <h4 className="font-medium text-foreground group-hover:text-primary text-sm truncate">
                                 {contact.fullName}
                               </h4>
                               {contact.verified && (
                                 <Shield className="w-3 h-3 text-green-600 flex-shrink-0" />
                               )}
                             </div>
-                            <p className="text-xs text-gray-600 truncate">{contact.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{contact.title}</p>
                             {contact.department && (
-                              <p className="text-xs text-gray-500 mt-0.5">
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 {contact.department.replace(/_/g, ' ')}
                               </p>
                             )}
                           </div>
                           <div className="flex items-center space-x-1 flex-shrink-0">
                             {contact.email && (
-                              <Mail className="w-3 h-3 text-gray-400" />
+                              <Mail className="w-3 h-3 text-muted-foreground" />
                             )}
                             {contact.phone && (
-                              <Phone className="w-3 h-3 text-gray-400" />
+                              <Phone className="w-3 h-3 text-muted-foreground" />
                             )}
                           </div>
                         </Link>
                       ))}
                       <Link
                         href={`/companies/${partner.id}?tab=team`}
-                        className="block text-center py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        className="block text-center py-2 text-sm text-primary hover:text-primary/80 font-medium"
                         onClick={(e) => e.stopPropagation()}
                       >
                         View all team members →
                       </Link>
                     </div>
                   ) : (
-                    <div className="text-center py-6 border border-dashed border-gray-300 rounded-lg">
-                      <Users className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500">No team members listed yet</p>
+                    <div className="text-center py-6 border border-dashed border-border rounded-lg">
+                      <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">No team members listed yet</p>
                     </div>
                   )}
                 </div>

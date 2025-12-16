@@ -90,7 +90,7 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
   const getActivityColor = (type: string) => {
     switch (type) {
       case 'POST':
-        return 'text-blue-600 bg-blue-50';
+        return 'text-primary bg-primary/10';
       case 'COMMENT':
         return 'text-purple-600 bg-purple-50';
       case 'UPVOTE':
@@ -98,7 +98,7 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
       case 'POLL':
         return 'text-orange-600 bg-orange-50';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-muted-foreground bg-muted';
     }
   };
 
@@ -135,7 +135,7 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center text-base">
-            <Activity className="h-5 w-5 mr-2 text-blue-600" />
+            <Activity className="h-5 w-5 mr-2 text-primary" />
             Community Activity
           </CardTitle>
         </CardHeader>
@@ -143,10 +143,10 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="animate-pulse flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                <div className="w-8 h-8 bg-muted rounded-lg"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-3 bg-muted rounded w-3/4"></div>
+                  <div className="h-2 bg-muted rounded w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -161,7 +161,7 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center text-base">
-            <Activity className="h-5 w-5 mr-2 text-blue-600" />
+            <Activity className="h-5 w-5 mr-2 text-primary" />
             Community Activity
           </CardTitle>
           <Button
@@ -174,14 +174,14 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Last updated {formatTimeAgo(lastRefresh.toISOString())}
         </p>
       </CardHeader>
       <CardContent className="pt-0">
         {activities.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Activity className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+          <div className="text-center py-8 text-muted-foreground">
+            <Activity className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
             <p className="text-sm font-medium">No recent activity</p>
             <p className="text-xs mt-1">Be the first to start a conversation!</p>
           </div>
@@ -193,7 +193,7 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
                 href={`/forum/post/${activity.post.id}`}
                 className="block group"
               >
-                <div className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-start space-x-3 p-2 rounded-lg hover:bg-muted transition-colors">
                   {/* Activity Icon */}
                   <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${getActivityColor(activity.type)}`}>
                     {getActivityIcon(activity.type)}
@@ -203,21 +203,21 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center space-x-2 min-w-0 flex-1">
-                        <span className="text-sm font-semibold text-gray-900 truncate">
+                        <span className="text-sm font-semibold text-foreground truncate">
                           {activity.user.name}
                         </span>
                         {activity.user.isVIP && (
                           <Sparkles className="h-3 w-3 text-yellow-600 flex-shrink-0" />
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
+                      <span className="text-xs text-muted-foreground ml-2 flex-shrink-0">
                         {formatTimeAgo(activity.timestamp)}
                       </span>
                     </div>
 
-                    <p className="text-xs text-gray-600 mb-1">
+                    <p className="text-xs text-muted-foreground mb-1">
                       {getActivityText(activity)}{' '}
-                      <span className="font-medium text-gray-900 group-hover:text-blue-600">
+                      <span className="font-medium text-foreground group-hover:text-primary">
                         {activity.post.title}
                       </span>
                     </p>
@@ -226,13 +226,13 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
                     {activity.metadata && (
                       <div className="flex items-center space-x-3 mt-1.5">
                         {activity.metadata.commentCount !== undefined && (
-                          <span className="flex items-center space-x-1 text-xs text-gray-500">
+                          <span className="flex items-center space-x-1 text-xs text-muted-foreground">
                             <MessageSquare className="h-3 w-3" />
                             <span>{activity.metadata.commentCount}</span>
                           </span>
                         )}
                         {activity.metadata.voteCount !== undefined && (
-                          <span className="flex items-center space-x-1 text-xs text-gray-500">
+                          <span className="flex items-center space-x-1 text-xs text-muted-foreground">
                             <ThumbsUp className="h-3 w-3" />
                             <span>{activity.metadata.voteCount}</span>
                           </span>
@@ -250,10 +250,10 @@ export function CommunityActivity({ limit = 10, compact = false }: CommunityActi
         )}
 
         {activities.length > 0 && (
-          <div className="mt-4 pt-3 border-t">
+          <div className="mt-4 pt-3 border-t border-border">
             <Link
               href="/forum"
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center group"
+              className="text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center group"
             >
               View All Activity
               <TrendingUp className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />

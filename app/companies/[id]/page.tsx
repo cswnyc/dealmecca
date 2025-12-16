@@ -487,10 +487,10 @@ export default function CompanyDetailPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-muted flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading company details...</p>
+            <p className="text-muted-foreground text-lg">Loading company details...</p>
           </div>
         </div>
       </MainLayout>
@@ -500,15 +500,15 @@ export default function CompanyDetailPage() {
   if (error || !company) {
     return (
       <MainLayout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
           <Card className="max-w-md">
             <CardContent className="pt-6">
               <div className="text-center">
-                <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-foreground mb-2">
                   {error || 'Company Not Found'}
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-muted-foreground mb-6">
                   The company you're looking for doesn't exist or has been removed.
                 </p>
                 <Button onClick={() => router.push('/organizations')} className="w-full">
@@ -537,7 +537,7 @@ export default function CompanyDetailPage() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         {company.companyType === 'MEDIA_HOLDING_COMPANY' ? (
           <>
             {/* Header Section */}
@@ -545,14 +545,14 @@ export default function CompanyDetailPage() {
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="py-6">
                   {/* Breadcrumb Navigation */}
-                  <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-                    <Link href="/organizations" className="hover:text-gray-900">Agencies</Link>
+                  <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+                    <Link href="/organizations" className="hover:text-foreground">Agencies</Link>
                     {company.parentChain && company.parentChain.length > 0 && (
                       <>
                         {company.parentChain.map((parent) => (
                           <span key={parent.id} className="flex items-center gap-2">
                             <span>›</span>
-                            <Link href={`/companies/${parent.id}`} className="hover:text-gray-900">
+                            <Link href={`/companies/${parent.id}`} className="hover:text-foreground">
                               {parent.name}
                             </Link>
                           </span>
@@ -560,7 +560,7 @@ export default function CompanyDetailPage() {
                       </>
                     )}
                     <span>›</span>
-                    <span className="text-gray-900 font-medium">{company.name}</span>
+                    <span className="text-foreground font-medium">{company.name}</span>
                   </div>
 
                   {/* Company Header */}
@@ -574,7 +574,7 @@ export default function CompanyDetailPage() {
                       />
                       <div>
                         <div className="flex items-center gap-2 mb-2">
-                          <h1 className="text-3xl font-bold text-gray-900">{company.name}</h1>
+                          <h1 className="text-3xl font-bold text-foreground">{company.name}</h1>
                           {company.verified && (
                             <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
                               Verified
@@ -582,9 +582,9 @@ export default function CompanyDetailPage() {
                           )}
                         </div>
                         {company.description && (
-                          <p className="text-gray-600 mb-3">{company.description}</p>
+                          <p className="text-muted-foreground mb-3">{company.description}</p>
                         )}
-                        <div className="flex items-center gap-6 text-sm text-gray-600">
+                        <div className="flex items-center gap-6 text-sm text-muted-foreground">
                           {company._count.subsidiaries > 0 && (
                             <div className="flex items-center gap-1">
                               <Building2 className="h-4 w-4" />
@@ -604,11 +604,11 @@ export default function CompanyDetailPage() {
                     </div>
                     <div className="flex gap-2">
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <input
                           type="text"
                           placeholder="Search..."
-                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                          className="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
                         />
                       </div>
                     </div>
@@ -628,7 +628,7 @@ export default function CompanyDetailPage() {
                           className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
                             activeTab === tab.id
                               ? 'bg-white text-blue-600 border-t-2 border-blue-600'
-                              : 'text-gray-600 hover:text-gray-900'
+                              : 'text-muted-foreground hover:text-foreground'
                           }`}
                         >
                           {tab.label}
@@ -649,9 +649,9 @@ export default function CompanyDetailPage() {
                   {activeTab === 'overview' && (
                     <div className="space-y-4">
                       {company.description && (
-                        <div className="bg-white rounded-lg border border-gray-200 p-6">
-                          <h2 className="text-lg font-semibold text-gray-900 mb-4">About</h2>
-                          <p className="text-gray-700 whitespace-pre-wrap">{company.description}</p>
+                        <div className="bg-white rounded-lg border border-border p-6">
+                          <h2 className="text-lg font-semibold text-foreground mb-4">About</h2>
+                          <p className="text-foreground whitespace-pre-wrap">{company.description}</p>
                         </div>
                       )}
                     </div>
@@ -662,27 +662,27 @@ export default function CompanyDetailPage() {
                       {/* Search Bar */}
                       <div className="mb-6">
                         <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                           <input
                             type="text"
                             placeholder="Search agencies, teams, or locations..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           />
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-semibold text-gray-900">
+                        <h2 className="text-lg font-semibold text-foreground">
                           All Agencies ({filteredSubsidiaries.length})
                         </h2>
                       </div>
                       {filteredSubsidiaries.map((subsidiary) => (
-                        <div key={subsidiary.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div key={subsidiary.id} className="bg-white border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                           {/* Agency Header - Clickable */}
                           <div
-                            className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                            className="p-6 cursor-pointer hover:bg-muted transition-colors"
                             onClick={() => toggleAgency(subsidiary.id)}
                           >
                             <div className="flex items-start justify-between">
@@ -695,21 +695,21 @@ export default function CompanyDetailPage() {
                                 />
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <h3 className="text-xl font-semibold text-gray-900">{subsidiary.name}</h3>
+                                    <h3 className="text-xl font-semibold text-foreground">{subsidiary.name}</h3>
                                     {subsidiary.verified && (
                                       <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                                     )}
                                     <button
-                                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                      className="p-1 hover:bg-muted rounded transition-colors"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         toggleAgency(subsidiary.id);
                                       }}
                                     >
-                                      <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${expandedAgencies.has(subsidiary.id) ? 'rotate-180' : ''}`} />
+                                      <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${expandedAgencies.has(subsidiary.id) ? 'rotate-180' : ''}`} />
                                     </button>
                                   </div>
-                                  <p className="text-sm text-gray-600 mt-2">
+                                  <p className="text-sm text-muted-foreground mt-2">
                                     {getCompanyTypeLabel(subsidiary.companyType)}
                                   </p>
                                 </div>
@@ -717,7 +717,7 @@ export default function CompanyDetailPage() {
                               <div className="flex items-center gap-2">
                                 <Link
                                   href={`/companies/${subsidiary.id}`}
-                                  className="p-2 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50"
+                                  className="p-2 text-muted-foreground hover:text-blue-600 rounded hover:bg-blue-50"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <ExternalLink className="h-4 w-4" />
@@ -728,7 +728,7 @@ export default function CompanyDetailPage() {
 
                           {/* Expandable Content - Shows link to full page */}
                           {expandedAgencies.has(subsidiary.id) && (
-                            <div className="border-t border-gray-200 bg-gray-50 p-6">
+                            <div className="border-t border-border bg-muted p-6">
                               <Link
                                 href={`/companies/${subsidiary.id}`}
                                 className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
@@ -745,9 +745,9 @@ export default function CompanyDetailPage() {
 
                   {activeTab === 'intel' && (
                     <div className="space-y-4">
-                      <div className="bg-white rounded-lg border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Intel</h2>
-                        <p className="text-gray-600">Coming soon...</p>
+                      <div className="bg-white rounded-lg border border-border p-6">
+                        <h2 className="text-lg font-semibold text-foreground mb-4">Intel</h2>
+                        <p className="text-muted-foreground">Coming soon...</p>
                       </div>
                     </div>
                   )}
@@ -765,15 +765,15 @@ export default function CompanyDetailPage() {
                         <div className="flex-shrink-0">
                           <Lightbulb className="h-6 w-6 text-yellow-500" />
                         </div>
-                        <h3 className="font-bold text-gray-900 text-lg">
+                        <h3 className="font-bold text-foreground text-lg">
                           Suggest an edit for this company
                         </h3>
                       </div>
-                      <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform flex-shrink-0 ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform flex-shrink-0 ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
                     </div>
 
                     {!isSuggestEditExpanded && (
-                      <p className="px-5 pb-5 text-sm text-gray-600">
+                      <p className="px-5 pb-5 text-sm text-muted-foreground">
                         Click to expand
                       </p>
                     )}
@@ -783,21 +783,21 @@ export default function CompanyDetailPage() {
                         <div className="space-y-2 mb-4">
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-gray-700">Should we add or remove people?</span>
+                            <span className="text-foreground">Should we add or remove people?</span>
                           </label>
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-gray-700">Are any teams no longer active?</span>
+                            <span className="text-foreground">Are any teams no longer active?</span>
                           </label>
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-gray-700">Are there other agencies we should add?</span>
+                            <span className="text-foreground">Are there other agencies we should add?</span>
                           </label>
                         </div>
 
                         <textarea
                           placeholder="Write your suggestion here..."
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                           rows={3}
                         />
 
@@ -805,7 +805,7 @@ export default function CompanyDetailPage() {
                           Submit
                         </button>
 
-                        <p className="text-xs text-gray-600 text-center">
+                        <p className="text-xs text-muted-foreground text-center">
                           Share information with the community and obtain rewards when you do.
                         </p>
                       </div>
@@ -813,25 +813,25 @@ export default function CompanyDetailPage() {
                   </div>
 
                   {/* Quick Stats */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-6">
-                    <h3 className="font-semibold text-gray-900 mb-4">Quick Stats</h3>
+                  <div className="bg-white border border-border rounded-lg p-6">
+                    <h3 className="font-semibold text-foreground mb-4">Quick Stats</h3>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Agencies</span>
-                        <span className="font-semibold text-gray-900">{company._count.subsidiaries}</span>
+                        <span className="text-muted-foreground">Agencies</span>
+                        <span className="font-semibold text-foreground">{company._count.subsidiaries}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Contact Info */}
                   {(company.address || company.website || company.linkedinUrl) && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
-                      <h3 className="font-semibold text-gray-900 mb-4">Contact Info</h3>
+                    <div className="bg-white border border-border rounded-lg p-6">
+                      <h3 className="font-semibold text-foreground mb-4">Contact Info</h3>
                       <div className="space-y-3">
                         {company.address && (
                           <div>
-                            <div className="text-xs font-medium text-gray-500 mb-1">Address</div>
-                            <div className="text-sm text-gray-900">
+                            <div className="text-xs font-medium text-muted-foreground mb-1">Address</div>
+                            <div className="text-sm text-foreground">
                               {company.address}
                               {company.zipCode && <><br />{company.zipCode}</>}
                             </div>
@@ -840,7 +840,7 @@ export default function CompanyDetailPage() {
 
                         {company.website && (
                           <div>
-                            <div className="text-xs font-medium text-gray-500 mb-1">Website</div>
+                            <div className="text-xs font-medium text-muted-foreground mb-1">Website</div>
                             <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                               {company.website.replace(/^https?:\/\//, '')} →
                             </a>
@@ -849,7 +849,7 @@ export default function CompanyDetailPage() {
 
                         {company.linkedinUrl && (
                           <div>
-                            <div className="text-xs font-medium text-gray-500 mb-1">LinkedIn</div>
+                            <div className="text-xs font-medium text-muted-foreground mb-1">LinkedIn</div>
                             <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                               View Profile →
                             </a>
@@ -866,10 +866,10 @@ export default function CompanyDetailPage() {
           /* NON-HOLDING COMPANY LAYOUT - Compact card design */
           <>
             {/* Breadcrumb outside card */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-white border-b border-border">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                <div className="text-sm text-gray-500 flex items-center gap-2">
-                  <Link href="/organizations" className="hover:text-gray-700">
+                <div className="text-sm text-muted-foreground flex items-center gap-2">
+                  <Link href="/organizations" className="hover:text-foreground">
                     {company.companyType === 'ADVERTISER' ? 'Advertisers' : 'Agencies'}
                   </Link>
                   {company.parentChain && company.parentChain.length > 0 && (
@@ -877,7 +877,7 @@ export default function CompanyDetailPage() {
                       {company.parentChain.map((parent) => (
                         <span key={parent.id} className="flex items-center gap-2">
                           <span>›</span>
-                          <Link href={`/companies/${parent.id}`} className="hover:text-gray-700">
+                          <Link href={`/companies/${parent.id}`} className="hover:text-foreground">
                             {parent.name}
                           </Link>
                         </span>
@@ -885,7 +885,7 @@ export default function CompanyDetailPage() {
                     </>
                   )}
                   <span>›</span>
-                  <span className="text-gray-900">{company.name}</span>
+                  <span className="text-foreground">{company.name}</span>
                 </div>
               </div>
             </div>
@@ -895,7 +895,7 @@ export default function CompanyDetailPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                   {/* Company Header Card */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="bg-white rounded-lg border border-border p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start gap-4">
                         <CompanyLogo
@@ -906,14 +906,14 @@ export default function CompanyDetailPage() {
                         />
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
+                            <h1 className="text-2xl font-bold text-foreground">{company.name}</h1>
                             {company.verified && (
                               <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
                                 Verified
                               </span>
                             )}
                           </div>
-                          <p className="text-gray-600">
+                          <p className="text-muted-foreground">
                             {getCompanyTypeLabel(company.companyType)}
                             {(company.city || company.state) && (
                               <> • {[company.city, company.state].filter(Boolean).join(', ')}</>
@@ -925,7 +925,7 @@ export default function CompanyDetailPage() {
                         <button
                           onClick={handleToggleFollow}
                           disabled={followLoading}
-                          className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                          className="px-4 py-2 text-sm text-foreground border border-border rounded-lg hover:bg-muted"
                         >
                           {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
                         </button>
@@ -936,29 +936,29 @@ export default function CompanyDetailPage() {
                     </div>
 
                     {/* Stats Row */}
-                    <div className="grid grid-cols-4 gap-4 pt-4 border-t border-gray-200">
+                    <div className="grid grid-cols-4 gap-4 pt-4 border-t border-border">
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">{totalPartnerships}</div>
-                        <div className="text-sm text-gray-500">Partnerships</div>
+                        <div className="text-2xl font-bold text-foreground">{totalPartnerships}</div>
+                        <div className="text-sm text-muted-foreground">Partnerships</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">{totalContacts}</div>
-                        <div className="text-sm text-gray-500">Contacts</div>
+                        <div className="text-2xl font-bold text-foreground">{totalContacts}</div>
+                        <div className="text-sm text-muted-foreground">Contacts</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">{totalTeams}</div>
-                        <div className="text-sm text-gray-500">Teams</div>
+                        <div className="text-2xl font-bold text-foreground">{totalTeams}</div>
+                        <div className="text-sm text-muted-foreground">Teams</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">2 hrs</div>
-                        <div className="text-sm text-gray-500">Last activity</div>
+                        <div className="text-2xl font-bold text-foreground">2 hrs</div>
+                        <div className="text-sm text-muted-foreground">Last activity</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Tabs Navigation + Content Card */}
-                  <div className="bg-white rounded-lg border border-gray-200">
-                    <div className="border-b border-gray-200 px-6">
+                  <div className="bg-white rounded-lg border border-border">
+                    <div className="border-b border-border px-6">
                       <nav className="-mb-px flex gap-8">
                         {[
                           { id: 'overview', label: 'Overview', count: null },
@@ -975,7 +975,7 @@ export default function CompanyDetailPage() {
                             className={`py-4 px-1 border-b-2 transition-colors text-sm font-medium ${
                               activeTab === tab.id
                                 ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                : 'border-transparent text-muted-foreground hover:text-foreground'
                             }`}
                           >
                             {tab.label}{tab.count !== null && ` (${tab.count})`}
@@ -987,11 +987,11 @@ export default function CompanyDetailPage() {
                     {/* Overview Tab Content */}
                     {activeTab === 'overview' && (
                       <div className="p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Company Overview</h2>
+                        <h2 className="text-lg font-semibold text-foreground mb-4">Company Overview</h2>
                         {company.description ? (
-                          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.description}</p>
+                          <p className="text-foreground leading-relaxed whitespace-pre-wrap">{company.description}</p>
                         ) : (
-                          <p className="text-gray-500 italic">
+                          <p className="text-muted-foreground italic">
                             No company overview available yet. {company.name} is a {company.companyType === 'ADVERTISER' ? 'advertiser' : company.companyType === 'AGENCY' || company.companyType === 'INDEPENDENT_AGENCY' ? 'agency' : 'company'}{company.city && company.state ? ` based in ${company.city}, ${company.state}` : ''}.
                           </p>
                         )}
@@ -1001,11 +1001,11 @@ export default function CompanyDetailPage() {
                     {/* People Tab */}
                     {activeTab === 'people' && (
                       <div className="p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">People ({company._count.contacts})</h2>
+                        <h2 className="text-lg font-semibold text-foreground mb-4">People ({company._count.contacts})</h2>
                       {company.contacts.length === 0 ? (
                         <div className="text-center py-12">
-                          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-600">No team members listed yet</p>
+                          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                          <p className="text-muted-foreground">No team members listed yet</p>
                         </div>
                       ) : (
                         <div className="space-y-4">
@@ -1019,7 +1019,7 @@ export default function CompanyDetailPage() {
 
                   {/* Teams Tab - Shows company teams */}
                   {activeTab === 'teams' && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-white rounded-lg border border-border p-6">
                       {/* Group teams by type */}
                       {(() => {
                         const inHouseTeams = company.teams.filter(t => t.type !== 'ADVERTISER_TEAM');
@@ -1030,7 +1030,7 @@ export default function CompanyDetailPage() {
                             {/* In-House Teams */}
                             {inHouseTeams.length > 0 && (
                               <div className="mb-8">
-                                <h3 className="text-base font-semibold text-gray-800 mb-4">In-House Teams</h3>
+                                <h3 className="text-base font-semibold text-foreground mb-4">In-House Teams</h3>
                                 <div className="space-y-4">
                                   {inHouseTeams.map((team) => (
                                     <TeamCard key={team.id} team={team} />
@@ -1042,7 +1042,7 @@ export default function CompanyDetailPage() {
                             {/* Agency Client Teams */}
                             {clientTeams.length > 0 && (
                               <div>
-                                <h3 className="text-base font-semibold text-gray-800 mb-4">Agency Client Teams</h3>
+                                <h3 className="text-base font-semibold text-foreground mb-4">Agency Client Teams</h3>
                                 <div className="space-y-4">
                                   {clientTeams.map((team) => (
                                     <TeamCard key={team.id} team={team} />
@@ -1054,8 +1054,8 @@ export default function CompanyDetailPage() {
                             {/* Empty state */}
                             {company.teams.length === 0 && (
                               <div className="text-center py-12">
-                                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                <p className="text-gray-600">No teams listed yet</p>
+                                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                <p className="text-muted-foreground">No teams listed yet</p>
                               </div>
                             )}
                           </>
@@ -1068,7 +1068,7 @@ export default function CompanyDetailPage() {
                   {activeTab === 'duties' && (
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-semibold text-gray-900">Duties</h2>
+                        <h2 className="text-lg font-semibold text-foreground">Duties</h2>
                       </div>
 
                       {/* Filter Pills */}
@@ -1089,7 +1089,7 @@ export default function CompanyDetailPage() {
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                               selectedDutyCategory === filter.value
                                 ? 'bg-blue-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                : 'bg-muted text-foreground hover:bg-muted/80'
                             }`}
                           >
                             {filter.label} ({filter.count})
@@ -1101,27 +1101,27 @@ export default function CompanyDetailPage() {
                       {dutiesLoading ? (
                         <div className="text-center py-12">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                          <p className="text-gray-600 mt-4">Loading duties...</p>
+                          <p className="text-muted-foreground mt-4">Loading duties...</p>
                         </div>
                       ) : duties.length === 0 ? (
                         <div className="text-center py-12">
-                          <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-600">No duties assigned yet</p>
+                          <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                          <p className="text-muted-foreground">No duties assigned yet</p>
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {duties.map((duty) => (
                             <div
                               key={duty.id}
-                              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                              className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
                             >
                               <div>
-                                <h4 className="font-semibold text-gray-900">{duty.name}</h4>
-                                <p className="text-xs text-gray-500 mt-1">
+                                <h4 className="font-semibold text-foreground">{duty.name}</h4>
+                                <p className="text-xs text-muted-foreground mt-1">
                                   {duty.category.replace(/_/g, ' ')}
                                 </p>
                                 {duty.description && (
-                                  <p className="text-sm text-gray-600 mt-2">{duty.description}</p>
+                                  <p className="text-sm text-muted-foreground mt-2">{duty.description}</p>
                                 )}
                               </div>
                             </div>
@@ -1135,7 +1135,7 @@ export default function CompanyDetailPage() {
                   {/* Subsidiaries Tab */}
                   {activeTab === 'subsidiaries' && company._count.subsidiaries > 0 && (
                     <div className="space-y-4">
-                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Subsidiaries ({company._count.subsidiaries})</h2>
+                      <h2 className="text-lg font-semibold text-foreground mb-4">Subsidiaries ({company._count.subsidiaries})</h2>
                       {company.subsidiaries.map((subsidiary) => {
                         const clients = subsidiary.Team?.map(t => t.clientCompany).filter(Boolean) || [];
                         const visibleClients = clients.slice(0, 3);
@@ -1149,7 +1149,7 @@ export default function CompanyDetailPage() {
                           : subsidiary.city || subsidiary.state || '';
 
                         return (
-                          <div key={subsidiary.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                          <div key={subsidiary.id} className="bg-white border border-border rounded-lg p-4 hover:shadow-sm transition-shadow">
                             <div className="flex items-start gap-3">
                               {/* Logo */}
                               <CompanyLogo
@@ -1165,7 +1165,7 @@ export default function CompanyDetailPage() {
                                 <div className="flex items-center gap-2 mb-2">
                                   <Link
                                     href={`/companies/${subsidiary.id}`}
-                                    className="font-semibold text-gray-900 hover:text-blue-600"
+                                    className="font-semibold text-foreground hover:text-blue-600"
                                   >
                                     {subsidiary.name}
                                   </Link>
@@ -1173,7 +1173,7 @@ export default function CompanyDetailPage() {
 
                                 {/* Clients */}
                                 {clients.length > 0 && (
-                                  <div className="text-sm text-gray-600 mb-2 flex flex-wrap items-center gap-1">
+                                  <div className="text-sm text-muted-foreground mb-2 flex flex-wrap items-center gap-1">
                                     {visibleClients.map((client, index) => (
                                       <span key={client.id}>
                                         <CompanyLogo
@@ -1204,7 +1204,7 @@ export default function CompanyDetailPage() {
 
                                 {/* Duties */}
                                 {duties.length > 0 && (
-                                  <div className="text-sm text-gray-600 mb-2">
+                                  <div className="text-sm text-muted-foreground mb-2">
                                     <span className="font-medium">Handles:</span> {visibleDuties.join(', ')}
                                     {hiddenDutiesCount > 0 && (
                                       <Link
@@ -1219,13 +1219,13 @@ export default function CompanyDetailPage() {
 
                                 {/* Location */}
                                 {locationString && (
-                                  <div className="text-sm text-gray-500 mb-1">
+                                  <div className="text-sm text-muted-foreground mb-1">
                                     {locationString}
                                   </div>
                                 )}
 
                                 {/* Last Activity */}
-                                <div className="text-xs text-gray-400">
+                                <div className="text-xs text-muted-foreground/70">
                                   Last activity: 23 hrs
                                 </div>
                               </div>
@@ -1233,7 +1233,7 @@ export default function CompanyDetailPage() {
                               {/* Right side: People count and action icons */}
                               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                                 {contactCount > 0 && (
-                                  <div className="text-sm text-gray-500 flex items-center gap-1">
+                                  <div className="text-sm text-muted-foreground flex items-center gap-1">
                                     <Users className="h-4 w-4" />
                                     <span>{contactCount} {contactCount === 1 ? 'person' : 'people'}</span>
                                   </div>
@@ -1241,11 +1241,11 @@ export default function CompanyDetailPage() {
                                 <div className="flex items-center gap-2">
                                   <Link
                                     href={`/admin/orgs/companies/${subsidiary.id}/edit`}
-                                    className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-50"
+                                    className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-muted"
                                   >
                                     <Edit3 className="h-4 w-4" />
                                   </Link>
-                                  <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-50">
+                                  <button className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-muted">
                                     <Bookmark className="h-4 w-4" />
                                   </button>
                                 </div>
@@ -1259,8 +1259,8 @@ export default function CompanyDetailPage() {
 
                   {/* Activity Tab */}
                   {activeTab === 'activity' && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                    <div className="bg-white rounded-lg border border-border p-6">
+                      <h2 className="text-lg font-semibold text-foreground mb-4">
                         Recent Activity {activitiesTotal > 0 && `(${activitiesTotal})`}
                       </h2>
                       <div className="space-y-4">
@@ -1268,7 +1268,7 @@ export default function CompanyDetailPage() {
                         {activitiesLoading && activities.length === 0 && (
                           <div className="text-center py-8">
                             <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-                            <p className="text-gray-500 text-sm">Loading activity...</p>
+                            <p className="text-muted-foreground text-sm">Loading activity...</p>
                           </div>
                         )}
 
@@ -1281,13 +1281,13 @@ export default function CompanyDetailPage() {
                                 <Icon className={`h-4 w-4 ${iconColor}`} />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm text-gray-900">
+                                <p className="text-sm text-foreground">
                                   <Link href={`/people/${activity.contactId}`} className="font-semibold hover:text-blue-600">
                                     {activity.contactName}
                                   </Link>
                                   {' '}{activity.type === 'CONTACT_JOINED' ? 'joined' : activity.type === 'CONTACT_UPDATED' ? 'profile updated' : activity.title.replace(activity.contactName, '').trim()}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                   {activity.description && `${activity.description} • `}
                                   {formatRelativeTime(activity.createdAt)}
                                 </p>
@@ -1312,9 +1312,9 @@ export default function CompanyDetailPage() {
                         {/* Empty state if no activity */}
                         {!activitiesLoading && activities.length === 0 && (
                           <div className="text-center py-8">
-                            <ActivityIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                            <p className="text-gray-600 text-sm">No recent activity to show</p>
-                            <p className="text-gray-500 text-xs mt-1">Activity will appear here as the team grows</p>
+                            <ActivityIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                            <p className="text-muted-foreground text-sm">No recent activity to show</p>
+                            <p className="text-muted-foreground/70 text-xs mt-1">Activity will appear here as the team grows</p>
                           </div>
                         )}
                       </div>
@@ -1324,9 +1324,9 @@ export default function CompanyDetailPage() {
 
                   {/* Teams Card - Separate card for Overview tab */}
                   {activeTab === 'overview' && totalTeams > 0 && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-white rounded-lg border border-border p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-gray-900">
+                        <h2 className="text-xl font-bold text-foreground">
                           What does {company.name} do? ({totalTeams} {totalTeams === 1 ? 'team' : 'teams'})
                         </h2>
                         <button
@@ -1357,9 +1357,9 @@ export default function CompanyDetailPage() {
 
                   {/* People Card - Separate card for Overview tab */}
                   {activeTab === 'overview' && company.contacts.length > 0 && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-white rounded-lg border border-border p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-gray-900">
+                        <h2 className="text-xl font-bold text-foreground">
                           People ({company._count.contacts})
                         </h2>
                         <button
@@ -1380,8 +1380,8 @@ export default function CompanyDetailPage() {
 
                   {/* Latest Activity Card - Separate card for Overview tab */}
                   {activeTab === 'overview' && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
-                      <h2 className="text-xl font-bold text-gray-900 mb-6">
+                    <div className="bg-white rounded-lg border border-border p-6">
+                      <h2 className="text-xl font-bold text-foreground mb-6">
                         Latest Activity {activitiesTotal > 0 && `(${activitiesTotal} items)`}
                       </h2>
 
@@ -1404,13 +1404,13 @@ export default function CompanyDetailPage() {
                                 </div>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-gray-900">
+                                <p className="text-foreground">
                                   <Link href={`/people/${activity.contactId}`} className="font-semibold hover:text-blue-600">
                                     {activity.contactName}
                                   </Link>
                                   {' '}{activity.type === 'CONTACT_JOINED' ? 'joined' : activity.type === 'CONTACT_UPDATED' ? 'profile updated' : activity.title.replace(activity.contactName, '').trim()}
                                 </p>
-                                <p className="text-sm text-gray-500 mt-1">
+                                <p className="text-sm text-muted-foreground mt-1">
                                   {activity.description && `${activity.description} • `}
                                   {formatRelativeTime(activity.createdAt)}
                                 </p>
@@ -1422,8 +1422,8 @@ export default function CompanyDetailPage() {
                         {/* Empty state */}
                         {!activitiesLoading && activities.length === 0 && (
                           <div className="text-center py-4">
-                            <ActivityIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                            <p className="text-gray-500 text-sm">No recent activity</p>
+                            <ActivityIcon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-muted-foreground text-sm">No recent activity</p>
                           </div>
                         )}
                       </div>
@@ -1455,16 +1455,16 @@ export default function CompanyDetailPage() {
                         <span className="text-2xl">💡</span>
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1">
+                        <h3 className="font-semibold text-foreground mb-1">
                           Suggest an edit for this company
                         </h3>
                         {!isSuggestEditExpanded && (
-                          <p className="text-xs text-gray-600">
+                          <p className="text-xs text-muted-foreground">
                             Click to expand
                           </p>
                         )}
                       </div>
-                      <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
                     </div>
 
                     {isSuggestEditExpanded && (
@@ -1472,21 +1472,21 @@ export default function CompanyDetailPage() {
                         <div className="space-y-2 mb-4">
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-gray-700">Should we add or remove people?</span>
+                            <span className="text-foreground">Should we add or remove people?</span>
                           </label>
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-gray-700">Are any teams no longer active?</span>
+                            <span className="text-foreground">Are any teams no longer active?</span>
                           </label>
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-gray-700">Are there other agencies we should add?</span>
+                            <span className="text-foreground">Are there other agencies we should add?</span>
                           </label>
                         </div>
 
                         <textarea
                           placeholder="Write your suggestion here..."
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                           rows={3}
                         />
 
@@ -1494,7 +1494,7 @@ export default function CompanyDetailPage() {
                           Submit
                         </button>
 
-                        <p className="text-xs text-gray-600 text-center">
+                        <p className="text-xs text-muted-foreground text-center">
                           Share information with the community and obtain rewards when you do.
                         </p>
                       </>
@@ -1503,13 +1503,13 @@ export default function CompanyDetailPage() {
 
                   {/* Contact Info */}
                   {(company.address || company.website || company.linkedinUrl) && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
-                      <h3 className="font-semibold text-gray-900 mb-4">Contact Info</h3>
+                    <div className="bg-white border border-border rounded-lg p-6">
+                      <h3 className="font-semibold text-foreground mb-4">Contact Info</h3>
                       <div className="space-y-3">
                         {company.address && (
                           <div>
-                            <div className="text-xs font-medium text-gray-500 mb-1">Address</div>
-                            <div className="text-sm text-gray-900">
+                            <div className="text-xs font-medium text-muted-foreground mb-1">Address</div>
+                            <div className="text-sm text-foreground">
                               {company.address}
                               {company.zipCode && <><br />{company.zipCode}</>}
                             </div>
@@ -1518,7 +1518,7 @@ export default function CompanyDetailPage() {
 
                         {company.website && (
                           <div>
-                            <div className="text-xs font-medium text-gray-500 mb-1">Website</div>
+                            <div className="text-xs font-medium text-muted-foreground mb-1">Website</div>
                             <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                               {company.website.replace(/^https?:\/\//, '')} →
                             </a>
@@ -1527,7 +1527,7 @@ export default function CompanyDetailPage() {
 
                         {company.linkedinUrl && (
                           <div>
-                            <div className="text-xs font-medium text-gray-500 mb-1">LinkedIn</div>
+                            <div className="text-xs font-medium text-muted-foreground mb-1">LinkedIn</div>
                             <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                               View Profile →
                             </a>
@@ -1536,8 +1536,8 @@ export default function CompanyDetailPage() {
                       </div>
 
                       {company.lastVerified && (
-                        <div className="mt-4 pt-4 border-t border-gray-200">
-                          <div className="text-xs text-gray-500">
+                        <div className="mt-4 pt-4 border-t border-border">
+                          <div className="text-xs text-muted-foreground">
                             Contact information last updated {new Date(company.lastVerified).toLocaleDateString()}
                           </div>
                         </div>
@@ -1547,15 +1547,15 @@ export default function CompanyDetailPage() {
 
                   {/* Top Locations */}
                   {(company.city || company.state) && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
-                      <h3 className="font-semibold text-gray-900 mb-4">Top Locations</h3>
+                    <div className="bg-white border border-border rounded-lg p-6">
+                      <h3 className="font-semibold text-foreground mb-4">Top Locations</h3>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-gray-400" />
-                            <span className="text-gray-900">{[company.city, company.state].filter(Boolean).join(', ')}</span>
+                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-foreground">{[company.city, company.state].filter(Boolean).join(', ')}</span>
                           </div>
-                          <span className="text-gray-600">HQ</span>
+                          <span className="text-muted-foreground">HQ</span>
                         </div>
                       </div>
                     </div>

@@ -161,7 +161,7 @@ export default function EventHeader({
   };
 
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+    <div className="bg-gradient-to-r from-primary to-accent text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Event Info */}
@@ -281,12 +281,12 @@ export default function EventHeader({
                     onClick={handleAttendanceClick}
                     disabled={isLoading}
                     variant={getAttendanceButtonVariant()}
-                    className="w-full bg-white text-blue-600 hover:bg-gray-100 disabled:opacity-50"
+                    className="w-full bg-white text-primary hover:bg-muted disabled:opacity-50"
                     size="lg"
                   >
                     {isLoading ? (
                       <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
                         Updating...
                       </div>
                     ) : (
@@ -324,7 +324,7 @@ export default function EventHeader({
                         {[...Array(Math.min(5, event._count.attendees))].map((_, i) => (
                           <div
                             key={i}
-                            className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 border-2 border-white flex items-center justify-center text-xs font-bold text-white"
+                            className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-white flex items-center justify-center text-xs font-bold text-white"
                           >
                             {String.fromCharCode(65 + i)}
                           </div>

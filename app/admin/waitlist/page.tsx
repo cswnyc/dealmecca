@@ -89,7 +89,7 @@ export default function WaitlistAdminPage() {
       case 'INVITED': return 'bg-blue-100 text-blue-800';
       case 'REGISTERED': return 'bg-green-100 text-green-800';
       case 'DECLINED': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -97,13 +97,13 @@ export default function WaitlistAdminPage() {
     return (
       <div className="max-w-7xl mx-auto p-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+              <div key={i} className="h-24 bg-muted rounded"></div>
             ))}
           </div>
-          <div className="h-96 bg-gray-200 rounded"></div>
+          <div className="h-96 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -134,7 +134,7 @@ export default function WaitlistAdminPage() {
         transition={{ duration: reducedMotion ? 0 : 0.6 }}
       >
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Waitlist Management</h1>
+          <h1 className="text-3xl font-bold text-foreground">Waitlist Management</h1>
           <button
             onClick={exportCSV}
             className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
@@ -147,53 +147,53 @@ export default function WaitlistAdminPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-sm border"
+            className="bg-card p-6 rounded-lg shadow-sm border border-border"
             whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Users className="w-8 h-8 text-emerald-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Signups</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.total || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Signups</p>
+                <p className="text-2xl font-bold text-foreground">{stats?.total || 0}</p>
               </div>
             </div>
           </motion.div>
 
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-sm border"
+            className="bg-card p-6 rounded-lg shadow-sm border border-border"
             whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Mail className="w-8 h-8 text-yellow-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.byStatus?.PENDING || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">Pending</p>
+                <p className="text-2xl font-bold text-foreground">{stats?.byStatus?.PENDING || 0}</p>
               </div>
             </div>
           </motion.div>
 
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-sm border"
+            className="bg-card p-6 rounded-lg shadow-sm border border-border"
             whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Calendar className="w-8 h-8 text-blue-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Invited</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.byStatus?.INVITED || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">Invited</p>
+                <p className="text-2xl font-bold text-foreground">{stats?.byStatus?.INVITED || 0}</p>
               </div>
             </div>
           </motion.div>
 
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-sm border"
+            className="bg-card p-6 rounded-lg shadow-sm border border-border"
             whileHover={reducedMotion ? {} : designTokens.hover.card}
           >
             <div className="flex items-center">
               <Users className="w-8 h-8 text-green-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Registered</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.byStatus?.REGISTERED || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">Registered</p>
+                <p className="text-2xl font-bold text-foreground">{stats?.byStatus?.REGISTERED || 0}</p>
               </div>
             </div>
           </motion.div>
@@ -202,12 +202,12 @@ export default function WaitlistAdminPage() {
         {/* Filter Controls */}
         <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
           <div className="flex items-center space-x-4">
-            <Filter className="w-5 h-5 text-gray-600" />
-            <label className="text-sm font-medium text-gray-700">Filter by status:</label>
+            <Filter className="w-5 h-5 text-muted-foreground" />
+            <label className="text-sm font-medium text-muted-foreground">Filter by status:</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+              className="border border-input rounded-md px-3 py-1 text-sm"
             >
               <option value="all">All ({stats?.total || 0})</option>
               <option value="PENDING">Pending ({stats?.byStatus?.PENDING || 0})</option>
@@ -221,40 +221,40 @@ export default function WaitlistAdminPage() {
         {/* Email List */}
         <div className="bg-white rounded-lg shadow-sm border">
           <div className="px-6 py-4 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-foreground">
               Email List ({getFilteredEmails().length} entries)
             </h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Source
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Created At
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-border">
                 {getFilteredEmails().map((entry) => (
                   <motion.tr
                     key={entry.id}
                     {...motionVariants.fadeIn}
                     transition={{ duration: reducedMotion ? 0 : 0.3 }}
-                    className="hover:bg-gray-50"
+                    className="hover:bg-muted"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {entry.email}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {entry.source}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -262,7 +262,7 @@ export default function WaitlistAdminPage() {
                         {entry.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {new Date(entry.createdAt).toLocaleDateString()}
                     </td>
                   </motion.tr>
@@ -272,7 +272,7 @@ export default function WaitlistAdminPage() {
 
             {getFilteredEmails().length === 0 && (
               <div className="px-6 py-12 text-center">
-                <p className="text-gray-500">No waitlist entries found.</p>
+                <p className="text-muted-foreground">No waitlist entries found.</p>
               </div>
             )}
           </div>

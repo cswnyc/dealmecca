@@ -204,7 +204,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
     return (
     <Card 
       key={entity.id} 
-      className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-0 bg-gradient-to-br from-white to-gray-50/30 hover:from-blue-50/50 hover:to-white relative overflow-hidden"
+      className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-0 bg-gradient-to-br from-white to-muted/30 hover:from-blue-50/50 hover:to-white relative overflow-hidden"
       onClick={() => handleEntityClick(entity)}
     >
       {/* Gradient overlay on hover */}
@@ -228,7 +228,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-2">
-                <h3 className="font-bold text-xl text-gray-900 truncate group-hover:text-blue-700 transition-colors">
+                <h3 className="font-bold text-xl text-foreground truncate group-hover:text-blue-700 transition-colors">
                   {highlightText(entity.name, searchQuery)}
                 </h3>
                 {entity.verified && (
@@ -245,7 +245,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               </div>
               
               {entity.description && (
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
                   {highlightText(entity.description, searchQuery)}
                 </p>
               )}
@@ -274,16 +274,16 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               )}
               
               {/* Location and Activity */}
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 {entity.location && (
                   <div className="flex items-center space-x-1">
-                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
                     <span className="font-medium">{highlightText(entity.location, searchQuery)}</span>
                   </div>
                 )}
                 {entity.lastActivity && (
                   <div className="flex items-center space-x-1">
-                    <Clock className="w-4 h-4 text-gray-400" />
+                    <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>Active {entity.lastActivity} ago</span>
                   </div>
                 )}
@@ -300,7 +300,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               <Bookmark className="w-4 h-4" />
             </Button>
             {isAdmin && (
-              <Button size="sm" variant="ghost" className="p-2 hover:bg-gray-100">
+              <Button size="sm" variant="ghost" className="p-2 hover:bg-muted">
                 <Edit className="w-4 h-4" />
               </Button>
             )}
@@ -309,13 +309,13 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
         
         {/* Stats */}
         {(entity.teamCount || entity.clientCount || entity.agencyCount) && (
-          <div className="flex items-center space-x-8 mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center space-x-8 mt-4 pt-4 border-t border-border">
             {entity.teamCount && (
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div className="text-sm">
-                  <span className="font-bold text-gray-900 text-lg">{entity.teamCount.toLocaleString()}</span>
-                  <span className="text-gray-600 ml-1 text-xs">team members</span>
+                  <span className="font-bold text-foreground text-lg">{entity.teamCount.toLocaleString()}</span>
+                  <span className="text-muted-foreground ml-1 text-xs">team members</span>
                 </div>
               </div>
             )}
@@ -323,8 +323,8 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="text-sm">
-                  <span className="font-bold text-gray-900 text-lg">{entity.clientCount.toLocaleString()}</span>
-                  <span className="text-gray-600 ml-1 text-xs">clients</span>
+                  <span className="font-bold text-foreground text-lg">{entity.clientCount.toLocaleString()}</span>
+                  <span className="text-muted-foreground ml-1 text-xs">clients</span>
                 </div>
               </div>
             )}
@@ -332,8 +332,8 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                 <div className="text-sm">
-                  <span className="font-bold text-gray-900 text-lg">{entity.agencyCount.toLocaleString()}</span>
-                  <span className="text-gray-600 ml-1 text-xs">agencies</span>
+                  <span className="font-bold text-foreground text-lg">{entity.agencyCount.toLocaleString()}</span>
+                  <span className="text-muted-foreground ml-1 text-xs">agencies</span>
                 </div>
               </div>
             )}
@@ -348,17 +348,17 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-12 bg-gray-200 rounded mb-4"></div>
+          <div className="h-10 bg-muted rounded w-1/3 mb-4"></div>
+          <div className="h-12 bg-muted rounded mb-4"></div>
           <div className="grid grid-cols-1 gap-4">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-white rounded-lg p-6 border">
                 <div className="flex space-x-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="w-12 h-12 bg-muted rounded-full"></div>
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-muted rounded w-1/3"></div>
+                    <div className="h-3 bg-muted rounded w-2/3"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
                   </div>
                 </div>
               </div>
@@ -404,7 +404,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
       </div>
 
       {/* Enhanced Tabs */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="bg-card rounded-xl border border-border shadow-sm">
         <div className="flex space-x-1 p-2 overflow-x-auto">
           {tabs.map((tab) => (
             <button
@@ -413,7 +413,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 whitespace-nowrap flex items-center space-x-2 ${
                 activeTab === tab.id
                   ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
             >
               <span>{tab.label}</span>
@@ -421,7 +421,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   activeTab === tab.id
                     ? 'bg-white/20 text-white'
-                    : 'bg-gray-100 text-gray-600'
+                    : 'bg-muted text-muted-foreground'
                 }`}>
                   {tab.count.toLocaleString()}
                 </span>
@@ -432,21 +432,21 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
       </div>
 
       {/* Modern Search and Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-4">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
               type="text"
               placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-12 h-12 bg-gray-50/50 border-gray-200 rounded-xl text-base focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+              className="pl-12 pr-12 h-12 bg-muted/50 border-border rounded-xl text-base focus:ring-2 focus:ring-blue-500 focus:bg-card transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-5 h-5 flex items-center justify-center rounded-full hover:bg-gray-100"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground w-5 h-5 flex items-center justify-center rounded-full hover:bg-muted"
               >
                 ×
               </button>
@@ -468,7 +468,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               )}
             </Button>
             
-            <div className="hidden sm:flex items-center space-x-2 bg-gray-50 rounded-xl p-1">
+            <div className="hidden sm:flex items-center space-x-2 bg-muted rounded-xl p-1">
               <Button
                 variant="ghost"
                 size="sm"
@@ -489,7 +489,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
 
         {/* Search Results Highlighting */}
         {searchQuery && (
-          <div className="flex items-center text-sm text-gray-600 mb-2">
+          <div className="flex items-center text-sm text-muted-foreground mb-2">
             <span>Search terms highlighted in results</span>
           </div>
         )}
@@ -501,7 +501,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
               {/* Agency Type Filter */}
               {activeTab === 'agencies' && (
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-foreground mb-3">
                     By Agency Type
                   </label>
                   <div className="space-y-2">
@@ -515,7 +515,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
                         onChange={(e) => setFilters(prev => ({ ...prev, companyType: e.target.value }))}
                         className="w-4 h-4 text-blue-600"
                       />
-                      <label htmlFor="any-type" className="text-sm text-gray-700">Any type</label>
+                      <label htmlFor="any-type" className="text-sm text-foreground">Any type</label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <input
@@ -527,23 +527,23 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
                         onChange={(e) => setFilters(prev => ({ ...prev, companyType: e.target.value }))}
                         className="w-4 h-4 text-blue-600"
                       />
-                      <label htmlFor="independent-agency" className="text-sm text-gray-700">Independent Agency</label>
+                      <label htmlFor="independent-agency" className="text-sm text-foreground">Independent Agency</label>
                     </div>
                   </div>
                   
                   <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Holding/Parent Co.</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Holding/Parent Co.</label>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">Publicis Groupe</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">WPP</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">Omnicom Group</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">Interpublic Group</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">dentsu</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">Spark Foundry</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">GroupM</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">EssenceMediacom</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">Mindshare</Badge>
-                      <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">Starcom Worldwide</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">Publicis Groupe</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">WPP</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">Omnicom Group</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">Interpublic Group</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">dentsu</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">Spark Foundry</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">GroupM</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">EssenceMediacom</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">Mindshare</Badge>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-muted">Starcom Worldwide</Badge>
                     </div>
                   </div>
                 </div>
@@ -551,7 +551,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
 
               {/* Geographic Filter */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-foreground mb-3">
                   By Geography
                 </label>
                 <div className="space-y-2">
@@ -565,8 +565,8 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
                       onChange={(e) => setFilters(prev => ({ ...prev, geography: e.target.value }))}
                       className="w-4 h-4 text-blue-600"
                     />
-                    <label htmlFor="any-geography" className="text-sm text-gray-700">Any geography</label>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <label htmlFor="any-geography" className="text-sm text-foreground">Any geography</label>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </div>
                 
@@ -583,7 +583,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
 
               {/* Size/Scale Filter */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-foreground mb-3">
                   By Size
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -605,7 +605,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
                       }}
                       className="w-4 h-4 text-blue-600"
                     />
-                    <label htmlFor="startup" className="text-sm text-gray-700">1-50</label>
+                    <label htmlFor="startup" className="text-sm text-foreground">1-50</label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -625,7 +625,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
                       }}
                       className="w-4 h-4 text-blue-600"
                     />
-                    <label htmlFor="mid" className="text-sm text-gray-700">51-500</label>
+                    <label htmlFor="mid" className="text-sm text-foreground">51-500</label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -645,18 +645,18 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
                       }}
                       className="w-4 h-4 text-blue-600"
                     />
-                    <label htmlFor="large" className="text-sm text-gray-700">500+</label>
+                    <label htmlFor="large" className="text-sm text-foreground">500+</label>
                   </div>
                 </div>
               </div>
 
               {/* Sort By */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Sort by
                 </label>
                 <select
-                  className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -669,9 +669,9 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
 
               {/* Active Filters */}
               {(filters.companyType || filters.geography || filters.size) && (
-                <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="mt-6 pt-4 border-t border-border">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Active filters:</span>
+                    <span className="text-sm font-medium text-foreground">Active filters:</span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -725,7 +725,7 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
 
       {/* Results */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           {totalCount.toLocaleString()} {activeTab}
         </p>
       </div>
@@ -737,9 +737,9 @@ export function EnhancedOrgCharts({ initialTab = 'companies' }: EnhancedOrgChart
 
       {entities.length === 0 && !loading && (
         <div className="text-center py-12">
-          <Building2 className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No {activeTab} found</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <Building2 className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-2 text-sm font-medium text-foreground">No {activeTab} found</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
             Try adjusting your search or filters.
           </p>
         </div>

@@ -95,7 +95,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
     if (seniority === 'C_LEVEL') return <Crown className="h-4 w-4 text-yellow-600" />;
     if (seniority === 'VP') return <Shield className="h-4 w-4 text-blue-600" />;
     if (seniority === 'DIRECTOR') return <Shield className="h-4 w-4 text-green-600" />;
-    return <User className="h-4 w-4 text-gray-600" />;
+    return <User className="h-4 w-4 text-muted-foreground" />;
   }
 
   function SeniorityBadge({ seniority }: { seniority?: string }) {
@@ -120,7 +120,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
     if (!seniority) return null;
 
     return (
-      <Badge variant="secondary" className={colors[seniority] || 'bg-gray-100 text-gray-800'}>
+      <Badge variant="secondary" className={colors[seniority] || 'bg-muted text-foreground'}>
         {labels[seniority] || seniority}
       </Badge>
     );
@@ -163,25 +163,25 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
                 <CardContent className="space-y-4">
                   {company.description && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">Description</p>
-                      <p className="text-sm text-gray-600">{company.description}</p>
+                      <p className="text-sm font-medium text-foreground mb-1">Description</p>
+                      <p className="text-sm text-muted-foreground">{company.description}</p>
                     </div>
                   )}
                   
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Industry</p>
-                    <p className="text-sm text-gray-600">{company.industry}</p>
+                    <p className="text-sm font-medium text-foreground mb-1">Industry</p>
+                    <p className="text-sm text-muted-foreground">{company.industry}</p>
                   </div>
 
                   {company.city && company.state && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">Location</p>
-                      <p className="text-sm text-gray-600">{company.city}, {company.state}</p>
+                      <p className="text-sm font-medium text-foreground mb-1">Location</p>
+                      <p className="text-sm text-muted-foreground">{company.city}, {company.state}</p>
                     </div>
                   )}
 
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Company Type</p>
+                    <p className="text-sm font-medium text-foreground mb-1">Company Type</p>
                     <Badge variant="secondary">{company.companyType.replace('_', ' ')}</Badge>
                   </div>
                 </CardContent>
@@ -196,22 +196,22 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Team Members</span>
+                    <span className="text-sm font-medium text-foreground">Team Members</span>
                     <Badge variant="secondary">{company.contacts.length}</Badge>
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Subsidiaries</span>
+                    <span className="text-sm font-medium text-foreground">Subsidiaries</span>
                     <Badge variant="secondary">{company.subsidiaries.length}</Badge>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Employee Range</span>
+                    <span className="text-sm font-medium text-foreground">Employee Range</span>
                     <Badge variant="outline">{company.employeeCount.replace('_', '-')}</Badge>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Revenue Range</span>
+                    <span className="text-sm font-medium text-foreground">Revenue Range</span>
                     <Badge variant="outline">{company.revenueRange}</Badge>
                   </div>
                 </CardContent>
@@ -227,7 +227,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
                 <CardContent className="space-y-4">
                   {company.parentCompany && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">Parent Company</p>
+                      <p className="text-sm font-medium text-foreground mb-2">Parent Company</p>
                       <Badge variant="outline" className="mr-2">
                         <Building2 className="w-3 h-3 mr-1" />
                         {company.parentCompany.name}
@@ -237,7 +237,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
 
                   {company.subsidiaries.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">
+                      <p className="text-sm font-medium text-foreground mb-2">
                         Portfolio Companies ({company.subsidiaries.length})
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -294,7 +294,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
                           <SeniorityIcon seniority={contact.seniority} />
                           <div className="flex-1 min-w-0">
                             <h5 className="font-semibold text-sm truncate">{contact.fullName}</h5>
-                            <p className="text-xs text-gray-600 truncate">{contact.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{contact.title}</p>
                           </div>
                         </div>
                         
@@ -339,7 +339,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
                           <SeniorityIcon seniority={contact.seniority} />
                           <div className="flex-1 min-w-0">
                             <h5 className="font-semibold text-sm truncate">{contact.fullName}</h5>
-                            <p className="text-xs text-gray-600 truncate">{contact.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{contact.title}</p>
                           </div>
                         </div>
                         
@@ -373,7 +373,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
             {otherContacts.length > 0 && (
               <div>
                 <h4 className="text-md font-semibold mb-3 flex items-center">
-                  <Users className="h-4 w-4 mr-2 text-gray-600" />
+                  <Users className="h-4 w-4 mr-2 text-muted-foreground" />
                   Team Members
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -384,7 +384,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
                           <SeniorityIcon seniority={contact.seniority} />
                           <div className="flex-1 min-w-0">
                             <h5 className="font-semibold text-sm truncate">{contact.fullName}</h5>
-                            <p className="text-xs text-gray-600 truncate">{contact.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{contact.title}</p>
                           </div>
                         </div>
                         
@@ -425,9 +425,9 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
             <CardContent className="space-y-4">
               {company.website && (
                 <div className="flex items-center space-x-3">
-                  <Globe className="w-4 h-4 text-gray-500" />
+                  <Globe className="w-4 h-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Website</p>
+                    <p className="text-sm font-medium text-foreground">Website</p>
                     <a 
                       href={company.website}
                       target="_blank"
@@ -442,27 +442,27 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
 
               {company.city && company.state && (
                 <div className="flex items-center space-x-3">
-                  <MapPin className="w-4 h-4 text-gray-500" />
+                  <MapPin className="w-4 h-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Address</p>
-                    <p className="text-sm text-gray-600">{company.city}, {company.state}</p>
+                    <p className="text-sm font-medium text-foreground">Address</p>
+                    <p className="text-sm text-muted-foreground">{company.city}, {company.state}</p>
                   </div>
                 </div>
               )}
 
               <div className="flex items-center space-x-3">
-                <Building2 className="w-4 h-4 text-gray-500" />
+                <Building2 className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Company Type</p>
-                  <p className="text-sm text-gray-600">{company.companyType.replace('_', ' ')}</p>
+                  <p className="text-sm font-medium text-foreground">Company Type</p>
+                  <p className="text-sm text-muted-foreground">{company.companyType.replace('_', ' ')}</p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
-                <Users className="w-4 h-4 text-gray-500" />
+                <Users className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Employee Range</p>
-                  <p className="text-sm text-gray-600">{company.employeeCount.replace('_', '-')}</p>
+                  <p className="text-sm font-medium text-foreground">Employee Range</p>
+                  <p className="text-sm text-muted-foreground">{company.employeeCount.replace('_', '-')}</p>
                 </div>
               </div>
             </CardContent>
@@ -472,9 +472,9 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
       default:
         return (
           <div className="text-center py-12">
-            <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Coming Soon</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-2 text-sm font-medium text-foreground">Coming Soon</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               This section is currently under development.
             </p>
           </div>
@@ -485,8 +485,8 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
   return (
     <div className="space-y-6">
       {/* Tabs */}
-      <div className="bg-white rounded-lg border">
-        <div className="border-b border-gray-200">
+      <div className="bg-card rounded-lg border">
+        <div className="border-b border-border">
           <div className="flex space-x-1 overflow-x-auto px-6">
             {tabs.map((tab) => (
               <button
@@ -495,7 +495,7 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
                 className={`flex items-center space-x-2 py-4 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }`}
               >
                 {tab.icon}

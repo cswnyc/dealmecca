@@ -126,21 +126,21 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b p-4">
+      <div className="min-h-screen bg-muted">
+        <div className="bg-card border-b p-4">
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
-            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-6 bg-muted rounded w-3/4 mb-3"></div>
+            <div className="h-10 bg-muted rounded"></div>
           </div>
         </div>
         <div className="p-4 space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg p-4 animate-pulse">
+            <div key={i} className="bg-card rounded-lg p-4 animate-pulse">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                <div className="w-12 h-12 bg-muted rounded-lg"></div>
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
               </div>
             </div>
@@ -153,23 +153,23 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
   // Overview View - Department List
   if (currentView === 'overview') {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="min-h-screen bg-muted pb-20">
         {/* Mobile Header */}
-        <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
+        <div className="bg-card border-b sticky top-0 z-10 shadow-sm">
           <div className="p-4">
-            <h1 className="text-lg font-semibold text-gray-900 mb-3">
+            <h1 className="text-lg font-semibold text-foreground mb-3">
               {companyName}
             </h1>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               {departments.length} departments • {positions.length} positions
             </p>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search people, roles, departments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 rounded-full bg-gray-50 border-gray-200"
+                className="pl-10 rounded-full bg-muted border-border"
               />
             </div>
           </div>
@@ -197,8 +197,8 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
                         <Icon className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{dept.name}</h3>
-                        <p className="text-sm text-gray-600">
+                        <h3 className="font-semibold text-foreground">{dept.name}</h3>
+                        <p className="text-sm text-muted-foreground">
                           {filledPositions.length} of {dept.positions.length} filled
                         </p>
                       </div>
@@ -207,7 +207,7 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
                       <Badge variant="outline" className="text-xs">
                         {dept.positions.length}
                       </Badge>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
                   
@@ -222,22 +222,22 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
                       </Avatar>
                     ))}
                     {filledPositions.length > 4 && (
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center ring-2 ring-white text-xs text-gray-600 font-medium">
+                      <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center ring-2 ring-white text-xs text-muted-foreground font-medium">
                         +{filledPositions.length - 4}
                       </div>
                     )}
                     {filledPositions.length === 0 && (
-                      <div className="text-xs text-gray-500 italic">No team members yet</div>
+                      <div className="text-xs text-muted-foreground italic">No team members yet</div>
                     )}
                   </div>
 
                   {/* Progress Bar */}
                   <div className="mt-3">
-                    <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <div className="flex justify-between text-xs text-muted-foreground mb-1">
                       <span>Team Progress</span>
                       <span>{Math.round((filledPositions.length / dept.positions.length) * 100)}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div className="w-full bg-muted rounded-full h-1.5">
                       <div 
                         className="bg-gradient-to-r from-blue-500 to-purple-600 h-1.5 rounded-full transition-all duration-500"
                         style={{ width: `${(filledPositions.length / dept.positions.length) * 100}%` }}
@@ -259,7 +259,7 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
     const DeptIcon = getDepartmentIcon(selectedDepartment);
     
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="min-h-screen bg-muted pb-20">
         {/* Department Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
           <div className="p-4">
@@ -312,24 +312,24 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate">{position.contact.fullName}</h3>
-                        <p className="text-sm text-gray-600 truncate">{position.title}</p>
+                        <h3 className="font-semibold text-foreground truncate">{position.contact.fullName}</h3>
+                        <p className="text-sm text-muted-foreground truncate">{position.title}</p>
                         <div className="flex items-center mt-1 space-x-2">
                           <Badge className={`text-xs ${getLevelBadgeColor(position.level)}`}>
                             {getLevelTitle(position.level)}
                           </Badge>
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   ) : (
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center border-2 border-dashed border-gray-300">
-                        <Users className="w-6 h-6 text-gray-400" />
+                      <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center border-2 border-dashed border-border">
+                        <Users className="w-6 h-6 text-muted-foreground" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-500">{position.title}</h3>
-                        <p className="text-sm text-gray-400">Open Position</p>
+                        <h3 className="font-semibold text-muted-foreground">{position.title}</h3>
+                        <p className="text-sm text-muted-foreground/70">Open Position</p>
                         <Badge className={`text-xs mt-1 ${getLevelBadgeColor(position.level)}`}>
                           {getLevelTitle(position.level)}
                         </Badge>
@@ -357,7 +357,7 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
   // Person Detail View
   if (currentView === 'person' && selectedPerson) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="min-h-screen bg-muted pb-20">
         {/* Person Header */}
         <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
           <div className="p-4">
@@ -462,15 +462,15 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
             <CardContent>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Department:</span>
+                  <span className="text-muted-foreground">Department:</span>
                   <span className="font-medium">{selectedPerson.department || 'General'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Seniority Level:</span>
+                  <span className="text-muted-foreground">Seniority Level:</span>
                   <span className="font-medium">{getLevelTitle(selectedPerson.level)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Direct Reports:</span>
+                  <span className="text-muted-foreground">Direct Reports:</span>
                   <span className="font-medium">{selectedPerson.children?.length || 0}</span>
                 </div>
               </div>
@@ -486,19 +486,19 @@ export function MobileOrgChart({ companyName, positions, loading = false }: Mobi
                 <div className="space-y-3 text-sm">
                   {selectedPerson.contact.email && (
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Email:</span>
+                      <span className="text-muted-foreground">Email:</span>
                       <span className="font-medium truncate ml-2">{selectedPerson.contact.email}</span>
                     </div>
                   )}
                   {selectedPerson.contact.phone && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Phone:</span>
+                      <span className="text-muted-foreground">Phone:</span>
                       <span className="font-medium">{selectedPerson.contact.phone}</span>
                     </div>
                   )}
                   {selectedPerson.contact.linkedinUrl && (
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">LinkedIn:</span>
+                      <span className="text-muted-foreground">LinkedIn:</span>
                       <Button 
                         variant="link" 
                         size="sm" 

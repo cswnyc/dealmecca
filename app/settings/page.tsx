@@ -206,10 +206,10 @@ export default function SettingsPage() {
 
   if (!mounted || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading settings...</p>
+          <p className="text-muted-foreground">Loading settings...</p>
         </div>
       </div>
     );
@@ -220,19 +220,19 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white shadow-sm border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/forum" className="flex items-center text-gray-600 hover:text-gray-900">
+              <Link href="/forum" className="flex items-center text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back
               </Link>
               <div className="flex items-center space-x-2">
-                <SettingsIcon className="w-6 h-6 text-gray-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Settings</h1>
+                <SettingsIcon className="w-6 h-6 text-muted-foreground" />
+                <h1 className="text-xl font-semibold text-foreground">Settings</h1>
               </div>
             </div>
             {activeTab !== 'identity' && (
@@ -258,14 +258,14 @@ export default function SettingsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tab Navigation */}
         <div className="mb-8">
-          <div className="border-b border-gray-200">
+          <div className="border-b border-border">
             <nav className="-mb-px flex space-x-8" aria-label="Tabs">
               <button
                 onClick={() => setActiveTab('identity')}
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'identity'
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
                 }`}
               >
                 <User className="w-4 h-4 inline mr-2" />
@@ -276,7 +276,7 @@ export default function SettingsPage() {
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'profile'
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
                 }`}
               >
                 <Mail className="w-4 h-4 inline mr-2" />
@@ -287,7 +287,7 @@ export default function SettingsPage() {
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'notifications'
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
                 }`}
               >
                 <Bell className="w-4 h-4 inline mr-2" />
@@ -298,7 +298,7 @@ export default function SettingsPage() {
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'preferences'
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
                 }`}
               >
                 <Globe className="w-4 h-4 inline mr-2" />
@@ -309,7 +309,7 @@ export default function SettingsPage() {
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'security'
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
                 }`}
               >
                 <Shield className="w-4 h-4 inline mr-2" />
@@ -320,45 +320,45 @@ export default function SettingsPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-border p-6">
           {activeTab === 'identity' && <IdentityTab />}
 
           {activeTab === 'profile' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center">
                   <User className="w-5 h-5 mr-2" />
                   Profile Information
                 </h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Account Name
                     </label>
                     <input
                       type="text"
                       value={settings.displayName}
                       onChange={(e) => handleSettingChange('displayName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter your display name"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Email Address
                     </label>
                     <div className="flex items-center space-x-2">
-                      <Mail className="w-5 h-5 text-gray-400" />
+                      <Mail className="w-5 h-5 text-muted-foreground" />
                       <input
                         type="email"
                         value={settings.email}
                         disabled
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                        className="flex-1 px-3 py-2 border border-input rounded-lg bg-muted text-muted-foreground"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Email cannot be changed. Contact support if you need to update this.
                     </p>
                   </div>
@@ -370,7 +370,7 @@ export default function SettingsPage() {
           {activeTab === 'notifications' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center">
                   <Bell className="w-5 h-5 mr-2" />
                   Notification Preferences
                 </h2>
@@ -378,13 +378,13 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Email Notifications</label>
-                      <p className="text-xs text-gray-500">Receive notifications about new messages and updates</p>
+                      <label className="text-sm font-medium text-muted-foreground">Email Notifications</label>
+                      <p className="text-xs text-muted-foreground">Receive notifications about new messages and updates</p>
                     </div>
                     <button
                       onClick={() => handleSettingChange('emailNotifications', !settings.emailNotifications)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.emailNotifications ? 'bg-blue-600' : 'bg-gray-200'
+                        settings.emailNotifications ? 'bg-blue-600' : 'bg-muted'
                       }`}
                     >
                       <span
@@ -397,13 +397,13 @@ export default function SettingsPage() {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Push Notifications</label>
-                      <p className="text-xs text-gray-500">Get notified about important updates on your device</p>
+                      <label className="text-sm font-medium text-muted-foreground">Push Notifications</label>
+                      <p className="text-xs text-muted-foreground">Get notified about important updates on your device</p>
                     </div>
                     <button
                       onClick={() => handleSettingChange('pushNotifications', !settings.pushNotifications)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.pushNotifications ? 'bg-blue-600' : 'bg-gray-200'
+                        settings.pushNotifications ? 'bg-blue-600' : 'bg-muted'
                       }`}
                     >
                       <span
@@ -416,13 +416,13 @@ export default function SettingsPage() {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Marketing Emails</label>
-                      <p className="text-xs text-gray-500">Receive emails about new features and promotions</p>
+                      <label className="text-sm font-medium text-muted-foreground">Marketing Emails</label>
+                      <p className="text-xs text-muted-foreground">Receive emails about new features and promotions</p>
                     </div>
                     <button
                       onClick={() => handleSettingChange('marketingEmails', !settings.marketingEmails)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.marketingEmails ? 'bg-blue-600' : 'bg-gray-200'
+                        settings.marketingEmails ? 'bg-blue-600' : 'bg-muted'
                       }`}
                     >
                       <span
@@ -440,7 +440,7 @@ export default function SettingsPage() {
           {activeTab === 'preferences' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center">
                   <Globe className="w-5 h-5 mr-2" />
                   Appearance & Preferences
                 </h2>
@@ -448,13 +448,13 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Dark Mode</label>
-                      <p className="text-xs text-gray-500">Switch between light and dark theme</p>
+                      <label className="text-sm font-medium text-muted-foreground">Dark Mode</label>
+                      <p className="text-xs text-muted-foreground">Switch between light and dark theme</p>
                     </div>
                     <button
                       onClick={() => handleSettingChange('darkMode', !settings.darkMode)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.darkMode ? 'bg-blue-600' : 'bg-gray-200'
+                        settings.darkMode ? 'bg-blue-600' : 'bg-muted'
                       }`}
                     >
                       <span
@@ -466,13 +466,13 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Language
                     </label>
                     <select
                       value={settings.language}
                       onChange={(e) => handleSettingChange('language', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="en">English</option>
                       <option value="es">Spanish</option>
@@ -482,13 +482,13 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Timezone
                     </label>
                     <select
                       value={settings.timezone}
                       onChange={(e) => handleSettingChange('timezone', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="UTC">UTC</option>
                       <option value="America/New_York">Eastern Time</option>
@@ -505,7 +505,7 @@ export default function SettingsPage() {
           {activeTab === 'security' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center justify-between">
                   <div className="flex items-center">
                     <Shield className="w-5 h-5 mr-2" />
                     <span>Account Security</span>
@@ -516,12 +516,12 @@ export default function SettingsPage() {
                 </h2>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <Key className="w-5 h-5 text-gray-400" />
+                      <Key className="w-5 h-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Password</p>
-                        <p className="text-xs text-gray-500">Last changed 30 days ago</p>
+                        <p className="text-sm font-medium text-muted-foreground">Password</p>
+                        <p className="text-xs text-muted-foreground">Last changed 30 days ago</p>
                       </div>
                     </div>
                     <button className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
@@ -529,12 +529,12 @@ export default function SettingsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <Smartphone className="w-5 h-5 text-gray-400" />
+                      <Smartphone className="w-5 h-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Two-Factor Authentication</p>
-                        <p className="text-xs text-gray-500">Not enabled</p>
+                        <p className="text-sm font-medium text-muted-foreground">Two-Factor Authentication</p>
+                        <p className="text-xs text-muted-foreground">Not enabled</p>
                       </div>
                     </div>
                     <button className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
@@ -549,33 +549,33 @@ export default function SettingsPage() {
 
         {/* Quick Links */}
         {activeTab === 'profile' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mt-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Quick Links</h2>
+          <div className="bg-white rounded-lg border border-border p-6 mt-8">
+            <h2 className="text-lg font-semibold text-foreground mb-6">Quick Links</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
                 href="/forum"
-                className="flex items-center p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all"
+                className="flex items-center p-4 border border-border rounded-lg hover:border-input hover:shadow-sm transition-all"
               >
                 <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
                   <div className="w-5 h-5 bg-blue-600 rounded"></div>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Community Forum</p>
-                  <p className="text-sm text-gray-500">Join discussions and connect</p>
+                  <p className="font-medium text-foreground">Community Forum</p>
+                  <p className="text-sm text-muted-foreground">Join discussions and connect</p>
                 </div>
               </Link>
 
               <Link
                 href="/organizations"
-                className="flex items-center p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all"
+                className="flex items-center p-4 border border-border rounded-lg hover:border-input hover:shadow-sm transition-all"
               >
                 <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mr-3">
                   <div className="w-5 h-5 bg-green-600 rounded"></div>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Browse Organizations</p>
-                  <p className="text-sm text-gray-500">Explore companies and contacts</p>
+                  <p className="font-medium text-foreground">Browse Organizations</p>
+                  <p className="text-sm text-muted-foreground">Explore companies and contacts</p>
                 </div>
               </Link>
             </div>

@@ -109,27 +109,27 @@ export default function NewsletterSignup({
     switch (variant) {
       case 'minimal':
         return {
-          container: 'bg-transparent border border-gray-200 rounded-lg p-4',
-          input: 'border-gray-300 focus:border-blue-500',
-          button: 'bg-blue-600 text-white hover:bg-blue-700'
+          container: 'bg-transparent border border-border rounded-lg p-4',
+          input: 'border-border focus:border-primary',
+          button: 'bg-primary text-primary-foreground hover:bg-primary/90'
         }
       case 'sidebar':
         return {
-          container: 'bg-gray-50 border border-gray-200 rounded-lg p-4',
-          input: 'border-gray-300 focus:border-blue-500',
+          container: 'bg-muted border border-border rounded-lg p-4',
+          input: 'border-border focus:border-primary',
           button: 'bg-green-600 text-white hover:bg-green-700'
         }
       case 'footer':
         return {
           container: 'bg-gray-800 text-white rounded-lg p-6',
-          input: 'border-gray-600 bg-gray-700 text-white placeholder-gray-300 focus:border-blue-400',
-          button: 'bg-blue-600 text-white hover:bg-blue-700'
+          input: 'border-gray-600 bg-gray-700 text-white placeholder-gray-300 focus:border-primary',
+          button: 'bg-primary text-primary-foreground hover:bg-primary/90'
         }
       default:
         return {
-          container: 'bg-white border border-gray-200 rounded-lg p-6 shadow-sm',
-          input: 'border-gray-300 focus:border-blue-500',
-          button: 'bg-blue-600 text-white hover:bg-blue-700'
+          container: 'bg-card border border-border rounded-lg p-6 shadow-sm',
+          input: 'border-border focus:border-primary',
+          button: 'bg-primary text-primary-foreground hover:bg-primary/90'
         }
     }
   }
@@ -142,7 +142,7 @@ export default function NewsletterSignup({
       <div className={`${variantClasses.container} text-center ${className}`}>
         <CheckCircle className={`${sizeClasses.icon} text-green-500 mx-auto mb-3`} />
         <h3 className="font-semibold mb-2">Thanks for subscribing!</h3>
-        <p className={`text-sm ${variant === 'footer' ? 'text-gray-300' : 'text-gray-600'}`}>
+        <p className={`text-sm ${variant === 'footer' ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
           {message}
         </p>
       </div>
@@ -153,11 +153,11 @@ export default function NewsletterSignup({
     <div className={`${variantClasses.container} ${className}`}>
       {variant !== 'minimal' && (
         <div className="text-center mb-4">
-          {showIcon && <Mail className={`${sizeClasses.icon} mx-auto mb-3 ${variant === 'footer' ? 'text-blue-400' : 'text-blue-600'}`} />}
+          {showIcon && <Mail className={`${sizeClasses.icon} mx-auto mb-3 ${variant === 'footer' ? 'text-blue-400' : 'text-primary'}`} />}
           <h3 className="font-semibold mb-2">
             {variant === 'footer' ? 'Stay Updated' : 'Join Our Newsletter'}
           </h3>
-          <p className={`text-sm ${variant === 'footer' ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p className={`text-sm ${variant === 'footer' ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
             Get the latest deals, insights, and community updates delivered to your inbox.
           </p>
         </div>
@@ -170,7 +170,7 @@ export default function NewsletterSignup({
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="First name (optional)"
-            className={`w-full border rounded-md ${sizeClasses.input} ${variantClasses.input} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
+            className={`w-full border rounded-md ${sizeClasses.input} ${variantClasses.input} focus:outline-none focus:ring-2 focus:ring-ring focus:ring-opacity-50`}
           />
         )}
 
@@ -181,7 +181,7 @@ export default function NewsletterSignup({
             onChange={(e) => setEmail(e.target.value)}
             placeholder={placeholder}
             required
-            className={`w-full border rounded-md ${sizeClasses.input} ${variantClasses.input} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
+            className={`w-full border rounded-md ${sizeClasses.input} ${variantClasses.input} focus:outline-none focus:ring-2 focus:ring-ring focus:ring-opacity-50`}
           />
         </div>
 
@@ -207,7 +207,7 @@ export default function NewsletterSignup({
       )}
 
       {variant !== 'minimal' && (
-        <p className={`text-xs mt-3 ${variant === 'footer' ? 'text-gray-400' : 'text-gray-500'}`}>
+        <p className={`text-xs mt-3 ${variant === 'footer' ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
           No spam, unsubscribe at any time.
         </p>
       )}

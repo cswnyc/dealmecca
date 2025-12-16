@@ -273,9 +273,9 @@ function FeatureCard({
     <Card className={!available ? 'opacity-60' : ''}>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Icon className={`h-5 w-5 ${available ? 'text-blue-600' : 'text-gray-400'}`} />
+          <Icon className={`h-5 w-5 ${available ? 'text-blue-600' : 'text-muted-foreground'}`} />
           <CardTitle className="text-lg">{title}</CardTitle>
-          {!available && <Lock className="h-4 w-4 text-gray-400 ml-auto" />}
+          {!available && <Lock className="h-4 w-4 text-muted-foreground ml-auto" />}
         </div>
         <CardDescription>{description}</CardDescription>
       </CardHeader>

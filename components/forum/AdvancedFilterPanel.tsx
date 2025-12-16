@@ -80,22 +80,22 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
     <div className="fixed inset-0 z-50 overflow-hidden">
       <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
       
-      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-card shadow-xl">
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <div className="flex items-center space-x-2">
-              <FunnelIcon className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Advanced Filters</h2>
+              <FunnelIcon className="w-5 h-5 text-muted-foreground" />
+              <h2 className="text-lg font-semibold text-foreground">Advanced Filters</h2>
               {hasActiveFilters && (
-                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">
                   {getFilterCount()} active
                 </span>
               )}
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <XMarkIcon className="w-6 h-6" />
             </button>
@@ -105,13 +105,13 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Category
               </label>
               <select
                 value={filters.category}
                 onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="">All Categories</option>
                 {categories.map(category => (
@@ -124,13 +124,13 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
 
             {/* Priority Level */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Priority Level
               </label>
               <select
                 value={filters.urgency}
                 onChange={(e) => setFilters(prev => ({ ...prev, urgency: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="">All Levels</option>
                 <option value="URGENT">🚨 Urgent</option>
@@ -142,13 +142,13 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
 
             {/* Deal Size */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Deal Size
               </label>
               <select
                 value={filters.dealSize}
                 onChange={(e) => setFilters(prev => ({ ...prev, dealSize: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="">All Sizes</option>
                 <option value="SMALL">Under $50K</option>
@@ -160,13 +160,13 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
 
             {/* Media Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Media Type
               </label>
               <select
                 value={filters.mediaType}
                 onChange={(e) => setFilters(prev => ({ ...prev, mediaType: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="">All Types</option>
                 <option value="TV">Television</option>
@@ -183,7 +183,7 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
 
             {/* Location */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Location
               </label>
               <input
@@ -191,19 +191,19 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
                 value={filters.location}
                 onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
                 placeholder="City, state, or region"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
             {/* Date Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Time Period
               </label>
               <select
                 value={filters.dateRange}
                 onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="7d">Last 7 days</option>
                 <option value="30d">Last 30 days</option>
@@ -214,13 +214,13 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
 
             {/* Sort Order */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Sort By
               </label>
               <select
                 value={filters.sortBy}
                 onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="relevance">Most Relevant</option>
                 <option value="recent">Most Recent</option>
@@ -232,13 +232,13 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
 
             {/* Quick Filters */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Quick Filters
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, urgency: 'URGENT' }))}
-                  className="px-3 py-2 text-sm bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+                  className="px-3 py-2 text-sm bg-destructive/10 text-destructive rounded-lg hover:bg-destructive/20 transition-colors"
                 >
                   🚨 Urgent Only
                 </button>
@@ -250,13 +250,13 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
                 </button>
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, dealSize: 'ENTERPRISE' }))}
-                  className="px-3 py-2 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                  className="px-3 py-2 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
                 >
                   💰 Big Deals
                 </button>
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, mediaType: 'TV' }))}
-                  className="px-3 py-2 text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
+                  className="px-3 py-2 text-sm bg-accent/20 text-accent-foreground rounded-lg hover:bg-accent/30 transition-colors"
                 >
                   📺 TV Only
                 </button>
@@ -265,18 +265,18 @@ export function AdvancedFilterPanel({ isOpen, onClose, categories }: AdvancedFil
           </div>
 
           {/* Footer */}
-          <div className="border-t border-gray-200 px-6 py-4 space-y-3">
+          <div className="border-t border-border px-6 py-4 space-y-3">
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="w-full px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Clear All Filters
               </button>
             )}
             <button
               onClick={applyFilters}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               Apply Filters
             </button>
@@ -372,12 +372,12 @@ export function FilterSummary({
       {activeFilters.map(filter => (
         <span
           key={filter.key}
-          className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+          className="inline-flex items-center px-3 py-1 bg-primary/20 text-primary text-sm rounded-full"
         >
           {filter.label}
           <button
             onClick={() => onClearFilter(filter.key)}
-            className="ml-2 text-blue-600 hover:text-blue-800"
+            className="ml-2 text-primary hover:text-primary/80"
           >
             ×
           </button>

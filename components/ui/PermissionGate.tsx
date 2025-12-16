@@ -63,8 +63,8 @@ export function PermissionGate(props: PermissionGateProps) {
 
   if (loading) {
     return (
-      <div className="animate-pulse bg-gray-200 h-20 rounded-md flex items-center justify-center">
-        <div className="text-gray-500">Loading permissions...</div>
+      <div className="animate-pulse bg-muted h-20 rounded-md flex items-center justify-center">
+        <div className="text-muted-foreground">Loading permissions...</div>
       </div>
     );
   }

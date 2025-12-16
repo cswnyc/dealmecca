@@ -69,18 +69,18 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
             className="fixed inset-0 flex items-center justify-center p-4"
             style={{ zIndex: designTokens.zIndex.modal }}
           >
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b">
+              <div className="flex items-center justify-between p-6 border-b border-border">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Edit User</h2>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <h2 className="text-2xl font-bold text-foreground">Edit User</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
                     Update user information and permissions
                   </p>
                 </div>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -89,38 +89,38 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
               {/* Form */}
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <p className="text-red-800 text-sm">{error}</p>
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                    <p className="text-destructive text-sm">{error}</p>
                   </div>
                 )}
 
                 {/* User Info Section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">User Information</h3>
+                  <h3 className="text-lg font-semibold text-foreground">User Information</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Name
                       </label>
                       <input
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-md text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="User's full name"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Email
                       </label>
                       <input
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-md text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="user@example.com"
                       />
                     </div>
@@ -129,17 +129,17 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
 
                 {/* Permissions Section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Permissions & Access</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Permissions & Access</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Role
                       </label>
                       <select
                         value={formData.role}
                         onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-md text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                       >
                         <option value="FREE">Free</option>
                         <option value="PREMIUM">Premium</option>
@@ -149,13 +149,13 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Subscription Tier
                       </label>
                       <select
                         value={formData.subscriptionTier}
                         onChange={(e) => setFormData({ ...formData, subscriptionTier: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-md text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                       >
                         <option value="FREE">Free</option>
                         <option value="PREMIUM">Premium</option>
@@ -164,13 +164,13 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Subscription Status
                       </label>
                       <select
                         value={formData.subscriptionStatus}
                         onChange={(e) => setFormData({ ...formData, subscriptionStatus: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-md text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                       >
                         <option value="ACTIVE">Active</option>
                         <option value="INACTIVE">Inactive</option>
@@ -181,12 +181,12 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
                   </div>
 
                   {/* Verified Seller Toggle */}
-                  <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-primary/10 border border-primary/20 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <ShieldCheck className="w-5 h-5 text-blue-600" />
+                      <ShieldCheck className="w-5 h-5 text-primary" />
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">Verified Seller</p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-sm font-semibold text-foreground">Verified Seller</p>
+                        <p className="text-xs text-muted-foreground">
                           Mark this user as a verified media sales professional
                         </p>
                       </div>
@@ -198,40 +198,40 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
                         onChange={(e) => setFormData({ ...formData, verifiedSeller: e.target.checked })}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                   </div>
                 </div>
 
                 {/* Stats Display (Read-only) */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">User Stats (Read-only)</h3>
+                  <h3 className="text-lg font-semibold text-foreground">User Stats (Read-only)</h3>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-xs text-gray-500 mb-1">Email Verified</p>
-                      <p className="text-sm font-semibold text-gray-900">
+                    <div className="bg-muted p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Email Verified</p>
+                      <p className="text-sm font-semibold text-foreground">
                         {user.emailVerified ? 'Yes' : 'No'}
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-xs text-gray-500 mb-1">LinkedIn Verified</p>
-                      <p className="text-sm font-semibold text-gray-900">
+                    <div className="bg-muted p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">LinkedIn Verified</p>
+                      <p className="text-sm font-semibold text-foreground">
                         {user.linkedinVerified ? 'Yes' : 'No'}
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-xs text-gray-500 mb-1">Forum Gems</p>
-                      <p className="text-sm font-semibold text-gray-900">
+                    <div className="bg-muted p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Forum Gems</p>
+                      <p className="text-sm font-semibold text-foreground">
                         {user.forumGems}
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-xs text-gray-500 mb-1">User ID</p>
-                      <p className="text-xs font-mono text-gray-900 truncate">
+                    <div className="bg-muted p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">User ID</p>
+                      <p className="text-xs font-mono text-foreground truncate">
                         {user.id}
                       </p>
                     </div>
@@ -239,19 +239,19 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-end space-x-3 pt-6 border-t">
+                <div className="flex items-center justify-end space-x-3 pt-6 border-t border-border">
                   <button
                     type="button"
                     onClick={onClose}
                     disabled={loading}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 text-foreground border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center space-x-2"
                   >
                     {loading ? (
                       <>

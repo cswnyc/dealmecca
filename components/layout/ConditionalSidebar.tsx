@@ -37,8 +37,9 @@ export default function ConditionalSidebar() {
                      pathname?.startsWith('/sign-up');
   const isAdminPage = pathname?.startsWith('/admin');
   const isInviteOnlyPage = pathname?.startsWith('/invite-only');
+  const isDesignSystemPage = pathname?.startsWith('/design-system');
 
-  if (isLandingPage || isAuthPage || isAdminPage || isInviteOnlyPage) {
+  if (isLandingPage || isAuthPage || isAdminPage || isInviteOnlyPage || isDesignSystemPage) {
     return null;
   }
 

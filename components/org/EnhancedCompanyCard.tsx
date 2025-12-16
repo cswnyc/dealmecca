@@ -123,7 +123,7 @@ export function EnhancedCompanyCard({
       case 'STRONG': return 'text-green-600';
       case 'STABLE': return 'text-blue-600';
       case 'CONCERNING': return 'text-red-600';
-      default: return 'text-gray-600';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -177,7 +177,7 @@ export function EnhancedCompanyCard({
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                <h3 className="font-semibold text-foreground group-hover:text-blue-600 transition-colors truncate">
                   {company.name}
                 </h3>
                 {company.verified && (
@@ -187,7 +187,7 @@ export function EnhancedCompanyCard({
                   <Crown className="w-4 h-4 text-yellow-500 flex-shrink-0" />
                 )}
               </div>
-              <div className="flex items-center text-sm text-gray-500 mt-1">
+              <div className="flex items-center text-sm text-muted-foreground mt-1">
                 <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
                 <span className="truncate">{location}</span>
               </div>
@@ -200,7 +200,7 @@ export function EnhancedCompanyCard({
               size="sm"
               variant="ghost"
               onClick={handleFavorite}
-              className={`p-2 ${isFavorite ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+              className={`p-2 ${isFavorite ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
             >
               <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
             </Button>
@@ -218,14 +218,14 @@ export function EnhancedCompanyCard({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
                 <Target className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-gray-700">Deal Potential</span>
+                <span className="text-sm font-medium text-foreground">Deal Potential</span>
               </div>
               <Badge className={getDealPotentialColor(company.dealPotential)}>
                 {company.dealPotential}
               </Badge>
             </div>
             {company.budgetRange && (
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <DollarSign className="w-3 h-3 mr-1" />
                 <span>Budget: {company.budgetRange}</span>
               </div>
@@ -235,7 +235,7 @@ export function EnhancedCompanyCard({
 
         {/* Company Stats */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-muted-foreground">
             <Users className="w-4 h-4 mr-1 text-blue-500" />
             <span className="font-medium">{teamCount}</span>
             <span className="ml-1">contacts</span>
@@ -249,8 +249,8 @@ export function EnhancedCompanyCard({
         {showIntelligence && relationshipStrength > 0 && (
           <div>
             <div className="flex items-center justify-between text-sm mb-1">
-              <span className="text-gray-600">Relationship Strength</span>
-              <span className="font-medium text-gray-800">{relationshipStrength}%</span>
+              <span className="text-muted-foreground">Relationship Strength</span>
+              <span className="font-medium text-foreground">{relationshipStrength}%</span>
             </div>
             <Progress value={relationshipStrength} className="h-2" />
           </div>
@@ -258,19 +258,19 @@ export function EnhancedCompanyCard({
 
         {/* Key Contacts Summary */}
         {showIntelligence && company.keyContacts && (
-          <div className="flex items-center justify-between text-xs bg-gray-50 rounded p-2">
+          <div className="flex items-center justify-between text-xs bg-muted rounded p-2">
             <div className="flex items-center space-x-3">
               <div className="text-center">
                 <div className="font-semibold text-purple-600">{company.keyContacts.decisionMakers}</div>
-                <div className="text-gray-500">Decision</div>
+                <div className="text-muted-foreground">Decision</div>
               </div>
               <div className="text-center">
                 <div className="font-semibold text-blue-600">{company.keyContacts.influencers}</div>
-                <div className="text-gray-500">Influence</div>
+                <div className="text-muted-foreground">Influence</div>
               </div>
               <div className="text-center">
                 <div className="font-semibold text-green-600">{company.keyContacts.champions}</div>
-                <div className="text-gray-500">Champions</div>
+                <div className="text-muted-foreground">Champions</div>
               </div>
             </div>
           </div>
@@ -296,7 +296,7 @@ export function EnhancedCompanyCard({
                   company.growthTrend === 'GROWING' ? 'text-green-500' : 
                   company.growthTrend === 'STABLE' ? 'text-blue-500' : 'text-red-500'
                 }`} />
-                <span className="text-gray-600">{company.growthTrend}</span>
+                <span className="text-muted-foreground">{company.growthTrend}</span>
               </div>
             )}
           </div>
@@ -304,14 +304,14 @@ export function EnhancedCompanyCard({
 
         {/* Recent Activity */}
         {company.lastEngagement && (
-          <div className="flex items-center text-xs text-gray-500">
+          <div className="flex items-center text-xs text-muted-foreground">
             <Calendar className="w-3 h-3 mr-1 text-green-500" />
             Last contact: {company.lastEngagement}
           </div>
         )}
 
         {/* Social Proof */}
-        <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+        <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border">
           <div className="flex items-center space-x-3">
             {company.views && (
               <div className="flex items-center space-x-1">

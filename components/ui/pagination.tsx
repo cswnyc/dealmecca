@@ -65,7 +65,7 @@ export function Pagination({
   return (
     <div className={`flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 ${className}`}>
       {/* Results Info */}
-      <div className="text-sm text-gray-700">
+      <div className="text-sm text-muted-foreground">
         Showing {startItem.toLocaleString()} to {endItem.toLocaleString()} of {totalItems.toLocaleString()} results
       </div>
 
@@ -88,7 +88,7 @@ export function Pagination({
             <React.Fragment key={index}>
               {pageNumber === '...' ? (
                 <div className="flex h-8 w-8 items-center justify-center">
-                  <MoreHorizontal className="h-4 w-4 text-gray-400" />
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                 </div>
               ) : (
                 <Button
@@ -119,11 +119,11 @@ export function Pagination({
       {/* Items Per Page Selector */}
       {showItemsPerPage && onItemsPerPageChange && (
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-700">Per page:</span>
+          <span className="text-sm text-muted-foreground">Per page:</span>
           <select
             value={itemsPerPage}
             onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
-            className="border border-gray-300 rounded px-2 py-1 text-sm"
+            className="border border-input rounded px-2 py-1 text-sm bg-background"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>

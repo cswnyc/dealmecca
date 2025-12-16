@@ -246,7 +246,7 @@ export function AdminMentionPicker({
         <button
           key={item.id}
           onClick={() => handleSelectItem(item)}
-          className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3"
+          className="w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3"
         >
           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
             {item.logoUrl ? (
@@ -256,9 +256,9 @@ export function AdminMentionPicker({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-900 truncate">{item.name}</div>
+            <div className="font-medium text-foreground truncate">{item.name}</div>
             {item.companyType && (
-              <div className="text-sm text-gray-500">{item.companyType}</div>
+              <div className="text-sm text-muted-foreground">{item.companyType}</div>
             )}
           </div>
           {item.verified && (
@@ -271,15 +271,15 @@ export function AdminMentionPicker({
         <button
           key={item.id}
           onClick={() => handleSelectItem(item)}
-          className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3"
+          className="w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3"
         >
           <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
             <UserIcon className="w-4 h-4 text-green-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-900 truncate">{item.fullName}</div>
+            <div className="font-medium text-foreground truncate">{item.fullName}</div>
             {item.title && item.company && (
-              <div className="text-sm text-gray-500">{item.title} at {item.company.name}</div>
+              <div className="text-sm text-muted-foreground">{item.title} at {item.company.name}</div>
             )}
           </div>
         </button>
@@ -289,13 +289,13 @@ export function AdminMentionPicker({
         <button
           key={item.id}
           onClick={() => handleSelectItem(item)}
-          className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3"
+          className="w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3"
         >
-          <div 
+          <div
             className="w-4 h-4 rounded-full"
             style={{ backgroundColor: item.color }}
           ></div>
-          <div className="font-medium text-gray-900">{item.name}</div>
+          <div className="font-medium text-foreground">{item.name}</div>
         </button>
       );
     } else if (type === 'industries') {
@@ -303,14 +303,14 @@ export function AdminMentionPicker({
         <button
           key={item.id}
           onClick={() => handleSelectItem(item)}
-          className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3"
+          className="w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3"
         >
           <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
             <TagIcon className="w-4 h-4 text-orange-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-900 truncate">{item.name}</div>
-            <div className="text-sm text-gray-500">Industry</div>
+            <div className="font-medium text-foreground truncate">{item.name}</div>
+            <div className="text-sm text-muted-foreground">Industry</div>
           </div>
         </button>
       );
@@ -319,7 +319,7 @@ export function AdminMentionPicker({
         <button
           key={item.id}
           onClick={() => handleSelectItem(item)}
-          className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3"
+          className="w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3"
         >
           <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
             {item.logo ? (
@@ -329,8 +329,8 @@ export function AdminMentionPicker({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-900 truncate">{item.name}</div>
-            <div className="text-sm text-gray-500">DSP/SSP</div>
+            <div className="font-medium text-foreground truncate">{item.name}</div>
+            <div className="text-sm text-muted-foreground">DSP/SSP</div>
           </div>
           {item.verified && (
             <div className="text-indigo-500 text-xs">Verified</div>
@@ -342,7 +342,7 @@ export function AdminMentionPicker({
         <button
           key={item.id}
           onClick={() => handleSelectItem(item)}
-          className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3"
+          className="w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3"
         >
           <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center">
             {item.logo ? (
@@ -352,8 +352,8 @@ export function AdminMentionPicker({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-900 truncate">{item.name}</div>
-            <div className="text-sm text-gray-500">Publisher</div>
+            <div className="font-medium text-foreground truncate">{item.name}</div>
+            <div className="text-sm text-muted-foreground">Publisher</div>
           </div>
           {item.verified && (
             <div className="text-teal-500 text-xs">Verified</div>
@@ -375,28 +375,28 @@ export function AdminMentionPicker({
       {/* Search Input */}
       <div className="relative">
         <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={placeholder}
-            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-3 py-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           {loading && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
             </div>
           )}
         </div>
 
         {/* Suggestions Dropdown */}
         {showSuggestions && (
-          <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-50 mt-1 w-full bg-card border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
             <div className="py-1">
               {suggestions.map(renderSuggestion)}
               {suggestions.length === 0 && !loading && (
-                <div className="px-3 py-2 text-sm text-gray-500">No results found</div>
+                <div className="px-3 py-2 text-sm text-muted-foreground">No results found</div>
               )}
             </div>
           </div>

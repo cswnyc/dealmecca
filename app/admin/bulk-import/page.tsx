@@ -484,14 +484,14 @@ export default function BulkImportPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <div className="max-w-6xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-6">
             <Link
               href="/admin"
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors group"
+              className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               <span>Back to Admin</span>
@@ -505,11 +505,11 @@ export default function BulkImportPage() {
               </div>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">🚀 Bulk Data Import</h1>
-              <p className="text-lg text-gray-600 mt-1">
+              <h1 className="text-3xl font-bold text-foreground">🚀 Bulk Data Import</h1>
+              <p className="text-lg text-muted-foreground mt-1">
                 Scale from 17 to 5000+ companies with intelligent media seller targeting
               </p>
-              <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+              <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
                 <span>📊 CSV, Excel & JSON Support</span>
                 <span>•</span>
                 <span>🎯 Media Seller Intelligence</span>
@@ -522,7 +522,7 @@ export default function BulkImportPage() {
 
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-border">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => {
                 const Icon = step.icon;
@@ -536,7 +536,7 @@ export default function BulkImportPage() {
                         ${step.status === 'completed' ? 'bg-green-500 border-green-500 text-white shadow-lg shadow-green-200' :
                           step.status === 'active' ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200 animate-pulse' :
                           step.status === 'error' ? 'bg-red-500 border-red-500 text-white' :
-                          'bg-gray-100 border-gray-300 text-gray-400'}
+                          'bg-muted border-input text-muted-foreground'}
                       `}>
                         <Icon className="w-5 h-5" />
                       </div>
@@ -544,17 +544,17 @@ export default function BulkImportPage() {
                         <p className={`text-sm font-medium transition-colors ${
                           step.status === 'active' ? 'text-blue-600' :
                           step.status === 'completed' ? 'text-green-600' :
-                          'text-gray-500'
+                          'text-muted-foreground'
                         }`}>
                           {step.label}
                         </p>
-                        <p className="text-xs text-gray-400">{step.description}</p>
+                        <p className="text-xs text-muted-foreground">{step.description}</p>
                       </div>
                     </div>
                     
                     {!isLast && (
                       <div className={`flex-1 h-0.5 mx-4 transition-all duration-500 ${
-                        step.status === 'completed' ? 'bg-gradient-to-r from-green-300 to-green-400' : 'bg-gray-200'
+                        step.status === 'completed' ? 'bg-gradient-to-r from-green-300 to-green-400' : 'bg-muted'
                       }`} />
                     )}
                   </div>
@@ -578,14 +578,14 @@ export default function BulkImportPage() {
         )}
 
         {/* Step Content */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-border">
           {currentStep === 'upload' && (
             <div className="p-8">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                <h2 className="text-2xl font-semibold text-foreground mb-2">
                   📤 Upload Company & Contact Data
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Import CSV, Excel, or JSON files with companies and media seller contacts
                 </p>
               </div>
@@ -601,10 +601,10 @@ export default function BulkImportPage() {
           {currentStep === 'preview' && parsedData && (
             <div className="p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                <h2 className="text-2xl font-semibold text-foreground mb-2">
                   📋 Review & Validate Data
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Review parsed data quality and confirm import settings
                 </p>
               </div>
@@ -619,10 +619,10 @@ export default function BulkImportPage() {
           {currentStep === 'importing' && (
             <div className="p-8">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                <h2 className="text-2xl font-semibold text-foreground mb-2">
                   ⚡ Processing Import...
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Importing companies and contacts into DealMecca
                 </p>
               </div>
@@ -636,10 +636,10 @@ export default function BulkImportPage() {
           {currentStep === 'results' && importResults && (
             <div className="p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                <h2 className="text-2xl font-semibold text-foreground mb-2">
                   🎉 Import Complete
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Your data has been successfully imported into DealMecca
                 </p>
               </div>

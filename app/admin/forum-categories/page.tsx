@@ -189,13 +189,13 @@ export default function ForumCategoriesAdmin() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-muted p-8">
         <div className="max-w-6xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+            <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-20 bg-gray-200 rounded"></div>
+                <div key={i} className="h-20 bg-muted rounded"></div>
               ))}
             </div>
           </div>
@@ -205,13 +205,13 @@ export default function ForumCategoriesAdmin() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-muted p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Forum Categories</h1>
-            <p className="text-gray-600 mt-1">Manage discussion categories and topics</p>
+            <h1 className="text-2xl font-bold text-foreground">Forum Categories</h1>
+            <p className="text-muted-foreground mt-1">Manage discussion categories and topics</p>
           </div>
           <button
             onClick={() => setShowCreateForm(true)}
@@ -224,12 +224,12 @@ export default function ForumCategoriesAdmin() {
 
         {/* Create Form */}
         {showCreateForm && !showEditForm && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="bg-white rounded-lg border border-border p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Create New Category</h2>
               <button
                 onClick={() => setShowCreateForm(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-muted-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -238,7 +238,7 @@ export default function ForumCategoriesAdmin() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Name
                   </label>
                   <input
@@ -251,7 +251,7 @@ export default function ForumCategoriesAdmin() {
                         slug: generateSlug(e.target.value)
                       });
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                     autoComplete="off"
                     data-form-type="other"
                     required
@@ -259,14 +259,14 @@ export default function ForumCategoriesAdmin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Slug
                   </label>
                   <input
                     type="text"
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                     autoComplete="off"
                     data-form-type="other"
                     required
@@ -274,14 +274,14 @@ export default function ForumCategoriesAdmin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Icon (Emoji)
                   </label>
                   <input
                     type="text"
                     value={formData.icon}
                     onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                     autoComplete="off"
                     data-form-type="other"
                     placeholder="📁"
@@ -289,26 +289,26 @@ export default function ForumCategoriesAdmin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Color
                   </label>
                   <input
                     type="color"
                     value={formData.color}
                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full h-10 px-3 py-2 border border-input rounded-lg"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Description
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                   autoComplete="off"
                   data-form-type="other"
                   rows={3}
@@ -321,9 +321,9 @@ export default function ForumCategoriesAdmin() {
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-input text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Active</span>
+                  <span className="ml-2 text-sm text-muted-foreground">Active</span>
                 </label>
               </div>
 
@@ -331,7 +331,7 @@ export default function ForumCategoriesAdmin() {
                 <button
                   type="button"
                   onClick={() => setShowCreateForm(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-input rounded-lg text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
@@ -348,7 +348,7 @@ export default function ForumCategoriesAdmin() {
 
         {/* Edit Form */}
         {showEditForm && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="bg-white rounded-lg border border-border p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Edit Category</h2>
               <button
@@ -365,7 +365,7 @@ export default function ForumCategoriesAdmin() {
                     isActive: true
                   });
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-muted-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -374,7 +374,7 @@ export default function ForumCategoriesAdmin() {
             <form onSubmit={handleEdit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Name
                   </label>
                   <input
@@ -387,7 +387,7 @@ export default function ForumCategoriesAdmin() {
                         slug: generateSlug(e.target.value)
                       });
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                     autoComplete="off"
                     data-form-type="other"
                     required
@@ -395,14 +395,14 @@ export default function ForumCategoriesAdmin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Slug
                   </label>
                   <input
                     type="text"
                     value={editFormData.slug}
                     onChange={(e) => setEditFormData({ ...editFormData, slug: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                     autoComplete="off"
                     data-form-type="other"
                     required
@@ -410,14 +410,14 @@ export default function ForumCategoriesAdmin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Icon (Emoji)
                   </label>
                   <input
                     type="text"
                     value={editFormData.icon}
                     onChange={(e) => setEditFormData({ ...editFormData, icon: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                     autoComplete="off"
                     data-form-type="other"
                     placeholder="📁"
@@ -425,26 +425,26 @@ export default function ForumCategoriesAdmin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Color
                   </label>
                   <input
                     type="color"
                     value={editFormData.color}
                     onChange={(e) => setEditFormData({ ...editFormData, color: e.target.value })}
-                    className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full h-10 px-3 py-2 border border-input rounded-lg"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Description
                 </label>
                 <textarea
                   value={editFormData.description}
                   onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-foreground"
                   autoComplete="off"
                   data-form-type="other"
                   rows={3}
@@ -457,9 +457,9 @@ export default function ForumCategoriesAdmin() {
                     type="checkbox"
                     checked={editFormData.isActive}
                     onChange={(e) => setEditFormData({ ...editFormData, isActive: e.target.checked })}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-input text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Active</span>
+                  <span className="ml-2 text-sm text-muted-foreground">Active</span>
                 </label>
               </div>
 
@@ -479,7 +479,7 @@ export default function ForumCategoriesAdmin() {
                       isActive: true
                     });
                   }}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-input rounded-lg text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
@@ -495,47 +495,47 @@ export default function ForumCategoriesAdmin() {
         )}
 
         {/* Categories List */}
-        <div className="bg-white rounded-lg border border-gray-200">
+        <div className="bg-white rounded-lg border border-border">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <tr className="border-b border-border bg-muted">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Slug
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Posts
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-border">
                 {categories.map((category) => (
-                  <tr key={category.id} className="hover:bg-gray-50">
+                  <tr key={category.id} className="hover:bg-muted">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
                         <span className="text-2xl">{category.icon}</span>
                         <div>
-                          <div className="font-medium text-gray-900">{category.name}</div>
-                          <div className="text-sm text-gray-500">{category.description}</div>
+                          <div className="font-medium text-foreground">{category.name}</div>
+                          <div className="text-sm text-muted-foreground">{category.description}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <code className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                      <code className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
                         {category.slug}
                       </code>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{category._count.ForumPost}</span>
+                      <span className="text-sm text-foreground">{category._count.ForumPost}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
@@ -575,7 +575,7 @@ export default function ForumCategoriesAdmin() {
 
           {categories.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500">No categories yet. Create your first category to get started.</p>
+              <p className="text-muted-foreground">No categories yet. Create your first category to get started.</p>
             </div>
           )}
         </div>
@@ -584,7 +584,7 @@ export default function ForumCategoriesAdmin() {
         <div className="mt-6">
           <a
             href="/admin"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
           >
             ← Back to Admin Dashboard
           </a>

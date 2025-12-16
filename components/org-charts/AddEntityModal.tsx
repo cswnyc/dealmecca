@@ -141,10 +141,10 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
       <DialogContent className="max-w-2xl p-0 gap-0">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-4">
-          <h2 className="text-2xl font-semibold text-gray-900">{getModalTitle()}</h2>
+          <h2 className="text-2xl font-semibold text-foreground">{getModalTitle()}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -155,7 +155,7 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
           {/* Prompt bullets */}
           <ul className="mb-6 space-y-2">
             {getPromptBullets().map((bullet, index) => (
-              <li key={index} className="text-base text-gray-900 flex items-start">
+              <li key={index} className="text-base text-foreground flex items-start">
                 <span className="mr-2">•</span>
                 <span>{bullet}</span>
               </li>
@@ -169,21 +169,21 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
               onChange={(e) => setContent(e.target.value)}
               placeholder={getPlaceholder()}
               rows={8}
-              className="w-full px-4 py-3 text-base text-gray-900 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none resize-none"
+              className="w-full px-4 py-3 text-base text-foreground placeholder-muted-foreground border-0 border-b-2 border-border focus:border-primary focus:outline-none resize-none"
               required
             />
           </div>
 
           {/* File upload */}
           <div className="mb-6">
-            <label className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 transition-colors">
-              <div className="flex items-center space-x-2 text-blue-600">
+            <label className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
+              <div className="flex items-center space-x-2 text-primary">
                 <Upload className="w-5 h-5" />
                 <span className="text-base font-medium">
-                  Add a file to this update <span className="text-gray-500">(optional)</span>
+                  Add a file to this update <span className="text-muted-foreground">(optional)</span>
                 </span>
               </div>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Supports docs, pdfs, images or excel, up to 15MB.
               </p>
               <input
@@ -194,12 +194,12 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
               />
             </label>
             {file && (
-              <div className="mt-2 flex items-center justify-between p-2 bg-gray-50 rounded">
-                <span className="text-sm text-gray-700">{file.name}</span>
+              <div className="mt-2 flex items-center justify-between p-2 bg-muted rounded">
+                <span className="text-sm text-foreground">{file.name}</span>
                 <button
                   type="button"
                   onClick={() => setFile(null)}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-destructive hover:text-destructive/80"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -216,7 +216,7 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
                   {getUserDisplayName().charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-base text-gray-600">{getUserDisplayName()}</span>
+              <span className="text-base text-muted-foreground">{getUserDisplayName()}</span>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -225,13 +225,13 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
                 id="hideUsername"
                 checked={hideUsername}
                 onChange={(e) => setHideUsername(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-primary border-border rounded focus:ring-ring"
               />
-              <label htmlFor="hideUsername" className="flex items-center text-base text-gray-700 cursor-pointer">
+              <label htmlFor="hideUsername" className="flex items-center text-base text-foreground cursor-pointer">
                 Hide my SC username
                 <button
                   type="button"
-                  className="ml-1 text-gray-400 hover:text-gray-600"
+                  className="ml-1 text-muted-foreground hover:text-foreground"
                   title="Your submission will be anonymous to other users"
                 >
                   <Info className="w-4 h-4" />
@@ -244,7 +244,7 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
           <button
             type="submit"
             disabled={loading || !content.trim()}
-            className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-lg font-medium rounded-full transition-colors"
+            className="w-full py-4 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed text-primary-foreground text-lg font-medium rounded-full transition-colors"
           >
             {loading ? 'Submitting...' : 'Submit'}
           </button>

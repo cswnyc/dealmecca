@@ -20,7 +20,7 @@ export default function AuthHeader() {
     loading = authContext.loading;
   } catch (error) {
     // If useAuth fails (e.g., during build), just use defaults
-    console.log('AuthHeader: Firebase context not available, using defaults');
+    console.warn('AuthHeader: Firebase context not available, using defaults');
   }
 
   const [showDropdown, setShowDropdown] = useState(false)
@@ -36,8 +36,8 @@ export default function AuthHeader() {
   if (!isClient) {
     return (
       <div className="flex items-center space-x-4">
-        <div className="animate-pulse bg-gray-200 rounded h-8 w-16"></div>
-        <div className="animate-pulse bg-gray-200 rounded h-8 w-20"></div>
+        <div className="animate-pulse bg-muted rounded h-8 w-16"></div>
+        <div className="animate-pulse bg-muted rounded h-8 w-20"></div>
       </div>
     )
   }
@@ -51,6 +51,7 @@ export default function AuthHeader() {
       pathname.startsWith('/people/') ||
       pathname === '/events' ||
       pathname.startsWith('/events/') ||
+      pathname.startsWith('/design-system') ||
       pathname === '/admin' ||
       pathname.startsWith('/admin/') ||
       pathname.startsWith('/auth/') ||
@@ -72,8 +73,8 @@ export default function AuthHeader() {
   if (loading) {
     return (
       <div className="flex items-center space-x-4">
-        <div className="animate-pulse bg-gray-200 rounded h-8 w-16"></div>
-        <div className="animate-pulse bg-gray-200 rounded h-8 w-20"></div>
+        <div className="animate-pulse bg-muted rounded h-8 w-16"></div>
+        <div className="animate-pulse bg-muted rounded h-8 w-20"></div>
       </div>
     )
   }
@@ -93,12 +94,12 @@ export default function AuthHeader() {
           </Button>
           
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
-              <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg shadow-lg border border-border z-50">
+              <Link href="/dashboard" className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted">
                 <BarChart3 className="w-4 h-4 inline mr-2" />
                 Dashboard
               </Link>
-              <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              <Link href="/settings" className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted">
                 <Settings className="w-4 h-4 inline mr-2" />
                 Settings
               </Link>
@@ -113,7 +114,7 @@ export default function AuthHeader() {
                     console.error('Error signing out:', error);
                   }
                 }}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:bg-muted"
               >
                 <LogOut className="w-4 h-4 inline mr-2" />
                 Sign Out
@@ -129,7 +130,7 @@ export default function AuthHeader() {
   return (
     <div className="flex items-center space-x-4">
       <Link href="/auth/signup">
-        <Button variant="ghost" className="text-gray-700 hover:text-primary font-medium">
+        <Button variant="ghost" className="text-muted-foreground hover:text-primary font-medium">
           Sign In
         </Button>
       </Link>

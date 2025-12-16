@@ -82,8 +82,8 @@ export default function FileUploader({
 
   if (!mounted) {
     return (
-      <div className="w-full border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <div className="text-gray-500">Loading file uploader...</div>
+      <div className="w-full border-2 border-dashed border-input rounded-lg p-8 text-center">
+        <div className="text-muted-foreground">Loading file uploader...</div>
       </div>
     );
   }
@@ -91,7 +91,7 @@ export default function FileUploader({
   return (
     <div className="w-full space-y-4">
       {/* Debug Info */}
-      <div className="text-xs text-gray-500 font-mono">
+      <div className="text-xs text-muted-foreground font-mono">
         Debug: mounted={mounted.toString()}, isDragActive={isDragActive.toString()}, isLoading={isLoading.toString()}
       </div>
       
@@ -104,7 +104,7 @@ export default function FileUploader({
               border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
               ${isDragActive || dragActive 
                 ? 'border-blue-500 bg-blue-50 scale-[1.02]' 
-                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                : 'border-input hover:border-input hover:bg-muted'
               }
               ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
             `}
@@ -114,19 +114,19 @@ export default function FileUploader({
             <div className="flex flex-col items-center space-y-4">
               <div className={`
                 p-4 rounded-full transition-colors
-                ${isDragActive || dragActive ? 'bg-blue-100' : 'bg-gray-100'}
+                ${isDragActive || dragActive ? 'bg-blue-100' : 'bg-muted'}
               `}>
                 <Upload className={`
                   w-8 h-8 transition-colors
-                  ${isDragActive || dragActive ? 'text-blue-500' : 'text-gray-400'}
+                  ${isDragActive || dragActive ? 'text-blue-500' : 'text-muted-foreground'}
                 `} />
               </div>
               
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-foreground">
                   {isLoading ? 'Processing File...' : isDragActive ? 'Drop your file here' : 'Upload Company & Contact Data'}
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {isDragActive 
                     ? 'Release to upload your file' 
                     : 'Drag & drop your file here, or click to browse'
@@ -134,7 +134,7 @@ export default function FileUploader({
                 </p>
               </div>
 
-              <div className="flex flex-wrap justify-center items-center gap-2 text-xs text-gray-400">
+              <div className="flex flex-wrap justify-center items-center gap-2 text-xs text-muted-foreground">
                 <File className="w-4 h-4" />
                 <span>CSV</span>
                 <span>•</span>
@@ -149,7 +149,7 @@ export default function FileUploader({
           
           {/* Fallback Button */}
           <div className="text-center">
-            <p className="text-sm text-gray-500 mb-2">Drag & drop not working?</p>
+            <p className="text-sm text-muted-foreground mb-2">Drag & drop not working?</p>
             <button
               type="button"
               onClick={open}

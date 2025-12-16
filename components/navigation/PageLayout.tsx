@@ -43,9 +43,9 @@ export default function PageLayout({
   }
 
   return (
-    <div className={cn('min-h-screen bg-gray-50 flex flex-col', className)}>
+    <div className={cn('min-h-screen bg-muted flex flex-col', className)}>
       {/* Header Section */}
-      <div className={cn('bg-white border-b border-gray-200', headerClassName)}>
+      <div className={cn('bg-card border-b border-border', headerClassName)}>
         <div className={cn('mx-auto px-4 sm:px-6 lg:px-8 py-4', maxWidthClasses[maxWidth])}>
           {/* Navigation Row */}
           <div className="flex items-center justify-between mb-4">
@@ -83,12 +83,12 @@ export default function PageLayout({
           {(title || description) && (
             <div className="space-y-2">
               {title && (
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
                   {title}
                 </h1>
               )}
               {description && (
-                <p className="text-gray-600 text-sm sm:text-base">
+                <p className="text-muted-foreground text-sm sm:text-base">
                   {description}
                 </p>
               )}
@@ -189,7 +189,7 @@ export function DashboardPageLayout(props: Omit<PageLayoutProps, 'breadcrumbItem
       {...props}
       showBackButton={false}
       showBreadcrumbs={false}
-      className="bg-gradient-to-br from-blue-50 via-white to-teal-50"
+      className="bg-gradient-to-br from-primary/5 via-background to-accent/5"
     />
   )
 } 

@@ -220,21 +220,21 @@ export default function SavedSearchesPanel({
       <CardContent>
         {loading && savedSearches.length === 0 ? (
           <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sky-600 mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600">Loading saved searches...</p>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-sm text-muted-foreground">Loading saved searches...</p>
           </div>
         ) : savedSearches.length === 0 ? (
           <div className="text-center py-8">
-            <Search className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600 mb-2">No saved searches yet</p>
-            <p className="text-sm text-gray-500">Save your current search to quickly access it later</p>
+            <Search className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+            <p className="text-muted-foreground mb-2">No saved searches yet</p>
+            <p className="text-sm text-muted-foreground/70">Save your current search to quickly access it later</p>
           </div>
         ) : (
           <div className="space-y-3">
             {savedSearches.map((search) => (
               <div
                 key={search.id}
-                className="border rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                className="border border-border rounded-lg p-3 hover:bg-muted transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
@@ -268,7 +268,7 @@ export default function SavedSearchesPanel({
                 </div>
 
                 {search.description && (
-                  <p className="text-xs text-gray-600 mb-2">{search.description}</p>
+                  <p className="text-xs text-muted-foreground mb-2">{search.description}</p>
                 )}
 
                 <div className="flex items-center justify-between">
@@ -276,7 +276,7 @@ export default function SavedSearchesPanel({
                     <Badge variant="outline" className="text-xs">
                       {search.resultCount ?? '?'} results
                     </Badge>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {formatLastRun(search.lastRun)}
                     </span>
@@ -299,8 +299,8 @@ export default function SavedSearchesPanel({
 
         {/* Save Dialog */}
         {showSaveDialog && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-card rounded-lg p-6 w-full max-w-md mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium">Save Current Search</h3>
                 <Button

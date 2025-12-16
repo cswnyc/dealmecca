@@ -59,7 +59,7 @@ export default function TestCheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-muted p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Stripe Checkout Test</h1>
 

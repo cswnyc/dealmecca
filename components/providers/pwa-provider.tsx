@@ -262,10 +262,10 @@ export default function PWAProvider({ children }: PWAProviderProps) {
                   <Download className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 mb-1">
+                  <h4 className="font-medium text-foreground mb-1">
                     Install DealMecca
                   </h4>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-muted-foreground mb-3">
                     Get quick access and work offline. Install our app for the best experience.
                   </p>
                   <div className="flex items-center gap-2">
@@ -299,8 +299,8 @@ export default function PWAProvider({ children }: PWAProviderProps) {
               <div className="flex items-center gap-3">
                 <WifiOff className="w-5 h-5 text-orange-600" />
                 <div>
-                  <h4 className="font-medium text-gray-900">You're offline</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-medium text-foreground">You're offline</h4>
+                  <p className="text-sm text-muted-foreground">
                     Some features are limited. Changes will sync when reconnected.
                   </p>
                 </div>

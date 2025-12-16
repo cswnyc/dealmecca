@@ -65,14 +65,14 @@ export default function EditContact() {
     return (
       <div className="container mx-auto py-6 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white rounded-lg border border-border p-6">
             <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-8 bg-muted rounded w-1/3"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
               <div className="space-y-3">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                <div className="h-4 bg-muted rounded"></div>
+                <div className="h-4 bg-muted rounded w-5/6"></div>
+                <div className="h-4 bg-muted rounded w-4/6"></div>
               </div>
             </div>
           </div>
@@ -85,8 +85,8 @@ export default function EditContact() {
     return (
       <div className="container mx-auto py-6 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-4">Contact Not Found</h1>
+          <div className="bg-white rounded-lg border border-border p-6">
+            <h1 className="text-2xl font-semibold text-foreground mb-4">Contact Not Found</h1>
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
               <p className="text-red-800">{error}</p>
             </div>

@@ -160,11 +160,11 @@ export function AnonymousHandleManager({ onHandleChange }: AnonymousHandleManage
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium text-gray-900">Anonymous Handle</h3>
+        <h3 className="text-lg font-medium text-foreground">Anonymous Handle</h3>
         {currentHandle && (
           <button
             onClick={() => setPreviewMode(!previewMode)}
-            className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-foreground"
           >
             {previewMode ? (
               <>
@@ -181,25 +181,25 @@ export function AnonymousHandleManager({ onHandleChange }: AnonymousHandleManage
         )}
       </div>
 
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-muted-foreground">
         Set an anonymous handle to post anonymously while maintaining consistency across your posts.
       </div>
 
       {previewMode && currentHandle && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <div className="text-sm font-medium text-blue-800 mb-1">Preview:</div>
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
+          <div className="text-sm font-medium text-primary mb-1">Preview:</div>
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-600">?</span>
+            <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium text-muted-foreground">?</span>
             </div>
-            <span className="font-medium text-gray-900">{currentHandle}</span>
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Anonymous</span>
+            <span className="font-medium text-foreground">{currentHandle}</span>
+            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">Anonymous</span>
           </div>
         </div>
       )}
 
       <div className="space-y-2">
-        <label htmlFor="anonymous-handle" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="anonymous-handle" className="block text-sm font-medium text-foreground">
           Handle
         </label>
         <div className="relative">
@@ -209,12 +209,12 @@ export function AnonymousHandleManager({ onHandleChange }: AnonymousHandleManage
             value={newHandle}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder="Enter your anonymous handle..."
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="block w-full rounded-md border-border shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
             maxLength={20}
           />
           {isValidating && (
             <div className="absolute right-3 top-2.5">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
             </div>
           )}
           {validation && !isValidating && (
@@ -236,13 +236,13 @@ export function AnonymousHandleManager({ onHandleChange }: AnonymousHandleManage
 
         {validation?.suggestions && validation.suggestions.length > 0 && (
           <div className="space-y-2">
-            <div className="text-sm text-gray-600">Suggestions:</div>
+            <div className="text-sm text-muted-foreground">Suggestions:</div>
             <div className="flex flex-wrap gap-2">
               {validation.suggestions.map((suggestion, index) => (
                 <button
                   key={index}
                   onClick={() => selectSuggestion(suggestion)}
-                  className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+                  className="px-3 py-1 text-sm bg-muted hover:bg-muted/80 text-foreground rounded-full transition-colors"
                 >
                   {suggestion}
                 </button>
@@ -256,7 +256,7 @@ export function AnonymousHandleManager({ onHandleChange }: AnonymousHandleManage
         <button
           onClick={saveHandle}
           disabled={!validation?.isValid || isLoading}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-md transition-colors"
+          className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed rounded-md transition-colors"
         >
           {isLoading ? 'Saving...' : currentHandle ? 'Update Handle' : 'Save Handle'}
         </button>
@@ -265,14 +265,14 @@ export function AnonymousHandleManager({ onHandleChange }: AnonymousHandleManage
           <button
             onClick={removeHandle}
             disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed rounded-md transition-colors"
+            className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border hover:bg-muted disabled:bg-muted disabled:cursor-not-allowed rounded-md transition-colors"
           >
             Remove Handle
           </button>
         )}
       </div>
 
-      <div className="text-xs text-gray-500">
+      <div className="text-xs text-muted-foreground">
         • Handle must be 3-20 characters
         • Only letters, numbers, underscores, and hyphens allowed
         • Must be unique across all users

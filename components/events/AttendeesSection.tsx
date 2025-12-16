@@ -146,10 +146,10 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'attending': return 'bg-green-100 text-green-800'
-      case 'registered': return 'bg-blue-100 text-blue-800'
+      case 'registered': return 'bg-primary/20 text-primary'
       case 'planning': return 'bg-yellow-100 text-yellow-800'
-      case 'interested': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'interested': return 'bg-muted text-foreground'
+      default: return 'bg-muted text-foreground'
     }
   }
 
@@ -157,8 +157,8 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
     switch (status) {
       case 'connected': return 'bg-green-100 text-green-800'
       case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'none': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'none': return 'bg-muted text-foreground'
+      default: return 'bg-muted text-foreground'
     }
   }
 
@@ -191,10 +191,10 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-foreground">
             DealMecca Users Attending
           </h2>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Connect with {filteredAttendees.length} other professionals attending this event
           </p>
         </div>
@@ -213,20 +213,20 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <input
             type="text"
             placeholder="Search attendees by name, company, or title..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             {filters.map(filter => (
               <option key={filter.value} value={filter.value}>
@@ -237,7 +237,7 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             {sortOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -251,16 +251,16 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
       {/* Attendees Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredAttendees.map(attendee => (
-          <div key={attendee.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div key={attendee.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
             {/* Profile Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-semibold">
                   {attendee.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{attendee.name}</h3>
-                  <p className="text-sm text-gray-600">{attendee.title}</p>
+                  <h3 className="font-semibold text-foreground">{attendee.name}</h3>
+                  <p className="text-sm text-muted-foreground">{attendee.title}</p>
                 </div>
               </div>
               <div className="flex flex-col gap-1">
@@ -277,15 +277,15 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
 
             {/* Company Info */}
             <div className="space-y-2 mb-3">
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <Building className="w-4 h-4 mr-2" />
                 <span>{attendee.company}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4 mr-2" />
                 <span>{attendee.location}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <User className="w-4 h-4 mr-2" />
                 <span>{attendee.industry} • {attendee.experience}</span>
               </div>
@@ -293,7 +293,7 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
 
             {/* Mutual Connections */}
             {attendee.mutualConnections && attendee.mutualConnections > 0 && (
-              <div className="flex items-center text-sm text-blue-600 mb-3">
+              <div className="flex items-center text-sm text-primary mb-3">
                 <UserPlus className="w-4 h-4 mr-2" />
                 <span>{attendee.mutualConnections} mutual connections</span>
               </div>
@@ -355,18 +355,18 @@ export default function AttendeesSection({ eventId, attendees = mockAttendees, c
       {/* Empty State */}
       {filteredAttendees.length === 0 && (
         <div className="text-center py-8">
-          <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No attendees found matching your criteria</p>
-          <p className="text-sm text-gray-400">Try adjusting your search or filters</p>
+          <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">No attendees found matching your criteria</p>
+          <p className="text-sm text-muted-foreground/70">Try adjusting your search or filters</p>
         </div>
       )}
 
       {/* Networking Tips */}
-      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-        <h3 className="font-semibold text-blue-900 mb-2">
+      <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
+        <h3 className="font-semibold text-primary mb-2">
           🤝 Networking Tips for This Event
         </h3>
-        <ul className="text-sm text-blue-800 space-y-1">
+        <ul className="text-sm text-primary/80 space-y-1">
           <li>• Connect with attendees before the event to plan meetups</li>
           <li>• Look for professionals with mutual connections for warm introductions</li>
           <li>• Join industry-specific discussions and share insights</li>

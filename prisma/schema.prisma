@@ -843,6 +843,7 @@ model User {
   Event                                                           Event[]
   EventAttendee                                                   EventAttendee[]
   EventRating                                                     EventRating[]
+  EventSuggestion                                                 EventSuggestion[]
   ForumBookmark                                                   ForumBookmark[]
   ForumComment                                                    ForumComment[]
   ForumCommentVote                                                ForumCommentVote[]
@@ -1780,4 +1781,30 @@ model TeamDuty {
   @@unique([teamId, dutyId])
   @@index([teamId])
   @@index([dutyId])
+}
+
+model EventSuggestion {
+  id           String                  @id @default(cuid())
+  eventName    String
+  eventUrl     String?
+  notes        String?
+  submitterEmail String?
+  submitterId  String?
+  status       EventSuggestionStatus   @default(PENDING)
+  adminNotes   String?
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  submitter    User?                   @relation(fields: [submitterId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([submitterId])
+}
+
+enum EventSuggestionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DUPLICATE
 }

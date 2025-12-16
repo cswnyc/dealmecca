@@ -311,19 +311,19 @@ export default function MobileSearch({
   return (
     <div className={`w-full ${className}`}>
       {/* Search Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
+      <div className="bg-card border-b border-border px-4 py-3">
         {/* Refresh Indicator */}
         {isRefreshing && (
           <div className="flex items-center justify-center py-2">
-            <RefreshCw className="w-4 h-4 animate-spin text-blue-600 mr-2" />
-            <span className="text-sm text-blue-600">Refreshing...</span>
+            <RefreshCw className="w-4 h-4 animate-spin text-primary mr-2" />
+            <span className="text-sm text-primary">Refreshing...</span>
           </div>
         )}
 
         {/* Search Input Container */}
         <div className="relative">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               ref={inputRef}
               type="text"
@@ -331,15 +331,15 @@ export default function MobileSearch({
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               placeholder={placeholder}
-              className="w-full pl-10 pr-20 py-3 text-16 text-gray-900 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-20 py-3 text-16 text-foreground bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               style={{ fontSize: '16px' }} // Prevent zoom on iOS
             />
-            
+
             {/* Clear button */}
             {query && (
               <button
                 onClick={clearQuery}
-                className="absolute right-12 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+                className="absolute right-12 top-1/2 transform -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -350,9 +350,9 @@ export default function MobileSearch({
               <button
                 onClick={isListening ? stopVoiceSearch : startVoiceSearch}
                 className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-colors ${
-                  isListening 
-                    ? 'text-white bg-red-600 hover:bg-red-700' 
-                    : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                  isListening
+                    ? 'text-destructive-foreground bg-destructive hover:bg-destructive/90'
+                    : 'text-muted-foreground hover:text-primary hover:bg-primary/10'
                 }`}
               >
                 {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
@@ -372,14 +372,14 @@ export default function MobileSearch({
 
         {/* Voice Search Feedback */}
         {isListening && (
-          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+          <div className="mt-3 p-3 bg-primary/10 rounded-lg">
             <div className="flex items-center gap-2">
               <div className="flex gap-1">
-                <div className="w-2 h-4 bg-blue-500 rounded animate-pulse"></div>
-                <div className="w-2 h-3 bg-blue-400 rounded animate-pulse delay-75"></div>
-                <div className="w-2 h-5 bg-blue-500 rounded animate-pulse delay-150"></div>
+                <div className="w-2 h-4 bg-primary rounded animate-pulse"></div>
+                <div className="w-2 h-3 bg-primary/80 rounded animate-pulse delay-75"></div>
+                <div className="w-2 h-5 bg-primary rounded animate-pulse delay-150"></div>
               </div>
-              <span className="text-sm text-blue-700">Listening... Speak now</span>
+              <span className="text-sm text-primary">Listening... Speak now</span>
             </div>
           </div>
         )}
@@ -400,7 +400,7 @@ export default function MobileSearch({
           <Button
             onClick={() => handleSearch()}
             disabled={!query.trim()}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
+            className="flex-1 bg-primary hover:bg-primary/90"
           >
             Search
           </Button>
@@ -408,7 +408,7 @@ export default function MobileSearch({
       </div>
 
       {/* Quick Filters */}
-      <div className="bg-white px-4 py-3 border-b border-gray-100">
+      <div className="bg-card px-4 py-3 border-b border-border">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {quickFilters.map((filter) => (
             <button
@@ -425,9 +425,9 @@ export default function MobileSearch({
 
       {/* Suggestions or Recent Searches */}
       {(suggestions.length > 0 || (!query && recentSearches.length > 0)) && (
-        <div className="bg-white border-b border-gray-100">
+        <div className="bg-card border-b border-border">
           <div className="px-4 py-3">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">
+            <h3 className="text-sm font-medium text-foreground mb-2">
               {suggestions.length > 0 ? 'Suggestions' : 'Recent Searches'}
             </h3>
             <div className="space-y-1">
@@ -438,14 +438,14 @@ export default function MobileSearch({
                     setQuery(item)
                     handleSearch(item)
                   }}
-                  className="flex items-center gap-3 w-full p-2 text-left hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-center gap-3 w-full p-2 text-left hover:bg-muted rounded-lg transition-colors"
                 >
                   {suggestions.length > 0 ? (
-                    <Search className="w-4 h-4 text-gray-400" />
+                    <Search className="w-4 h-4 text-muted-foreground" />
                   ) : (
-                    <Clock className="w-4 h-4 text-gray-400" />
+                    <Clock className="w-4 h-4 text-muted-foreground" />
                   )}
-                  <span className="text-sm text-gray-900">{item}</span>
+                  <span className="text-sm text-foreground">{item}</span>
                 </button>
               ))}
             </div>
@@ -455,14 +455,14 @@ export default function MobileSearch({
 
       {/* Filter Panel */}
       {showFilterPanel && (
-        <div className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="bg-card border-b border-border px-4 py-4">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Company Type</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Company Type</label>
               <select
                 value={filters.type}
                 onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               >
                 <option value="">All Types</option>
                 <option value="Agency">Agency</option>
@@ -471,13 +471,13 @@ export default function MobileSearch({
                 <option value="Technology">Technology</option>
               </select>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Industry</label>
               <select
                 value={filters.industry}
                 onChange={(e) => setFilters({ ...filters, industry: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               >
                 <option value="">All Industries</option>
                 <option value="Advertising">Advertising</option>
@@ -488,11 +488,11 @@ export default function MobileSearch({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Company Size</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Company Size</label>
               <select
                 value={filters.size}
                 onChange={(e) => setFilters({ ...filters, size: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               >
                 <option value="">All Sizes</option>
                 <option value="startup">Startup (1-50)</option>
@@ -508,9 +508,9 @@ export default function MobileSearch({
                 id="recentActivity"
                 checked={filters.recentActivity}
                 onChange={(e) => setFilters({ ...filters, recentActivity: e.target.checked })}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-primary border-border rounded focus:ring-ring"
               />
-              <label htmlFor="recentActivity" className="text-sm text-gray-700">
+              <label htmlFor="recentActivity" className="text-sm text-muted-foreground">
                 Recent activity only
               </label>
             </div>
@@ -533,7 +533,7 @@ export default function MobileSearch({
               </Button>
               <Button
                 onClick={() => setShowFilterPanel(false)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-primary hover:bg-primary/90"
               >
                 Apply
               </Button>
@@ -544,10 +544,10 @@ export default function MobileSearch({
 
       {/* Offline Notice */}
       {!isOnline && (
-        <div className="bg-orange-50 border-b border-orange-200 px-4 py-3">
+        <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-3">
           <div className="flex items-center gap-2">
-            <WifiOff className="w-4 h-4 text-orange-600" />
-            <span className="text-sm text-orange-800">
+            <WifiOff className="w-4 h-4 text-yellow-600" />
+            <span className="text-sm text-yellow-800">
               You're offline. Searches will sync when reconnected.
             </span>
           </div>

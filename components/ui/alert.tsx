@@ -8,10 +8,10 @@ const Alert = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & { variant?: "default" | "destructive" | "warning" | "info" }
 >(({ className, variant = "default", ...props }, ref) => {
   const variantStyles = {
-    default: "bg-gray-50 text-gray-900 border-gray-200",
-    destructive: "bg-red-50 text-red-900 border-red-200",
-    warning: "bg-yellow-50 text-yellow-900 border-yellow-200",
-    info: "bg-blue-50 text-blue-900 border-blue-200"
+    default: "bg-muted text-foreground border-border",
+    destructive: "bg-destructive/10 text-destructive border-destructive/30",
+    warning: "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/30 dark:text-amber-200 dark:border-amber-800",
+    info: "bg-primary/10 text-primary border-primary/30"
   }
 
   return (

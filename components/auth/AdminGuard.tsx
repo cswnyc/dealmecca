@@ -56,10 +56,10 @@ export function AdminGuard({ children, fallbackUrl = '/auth/signup' }: AdminGuar
   // Show loading state while checking
   if (isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verifying admin access...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verifying admin access...</p>
         </div>
       </div>
     );
@@ -68,10 +68,10 @@ export function AdminGuard({ children, fallbackUrl = '/auth/signup' }: AdminGuar
   // Show unauthorized message (this shouldn't normally be seen due to redirects)
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-red-600 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You don't have permission to access this area.</p>
+          <h2 className="text-xl font-semibold text-destructive mb-2">Access Denied</h2>
+          <p className="text-muted-foreground">You don't have permission to access this area.</p>
         </div>
       </div>
     );

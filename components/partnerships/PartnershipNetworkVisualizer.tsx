@@ -287,7 +287,7 @@ export function PartnershipNetworkVisualizer({
         <CardContent className="p-8">
           <div className="flex items-center justify-center space-x-2">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span className="text-gray-600">Loading partnership network...</span>
+            <span className="text-muted-foreground">Loading partnership network...</span>
           </div>
         </CardContent>
       </Card>
@@ -298,9 +298,9 @@ export function PartnershipNetworkVisualizer({
     return (
       <Card className={className}>
         <CardContent className="p-12 text-center">
-          <Network className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">No Partnership Network</h3>
-          <p className="text-gray-600 mb-6">
+          <Network className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Partnership Network</h3>
+          <p className="text-muted-foreground mb-6">
             {companyName} doesn't have any partnerships in our system yet.
           </p>
           <Button variant="outline">
@@ -387,7 +387,7 @@ export function PartnershipNetworkVisualizer({
                     >
                       <ZoomOut className="w-4 h-4" />
                     </Button>
-                    <span className="text-sm text-gray-600 min-w-[50px] text-center">
+                    <span className="text-sm text-muted-foreground min-w-[50px] text-center">
                       {Math.round(zoomLevel * 100)}%
                     </span>
                     <Button
@@ -410,7 +410,7 @@ export function PartnershipNetworkVisualizer({
                     ref={canvasRef}
                     width={600}
                     height={400}
-                    className="w-full border rounded-lg cursor-pointer bg-gradient-to-br from-gray-50 to-blue-50"
+                    className="w-full border rounded-lg cursor-pointer bg-gradient-to-br from-muted to-blue-50"
                     onClick={handleCanvasClick}
                     onMouseMove={(e) => {
                       // Add hover detection logic here if needed
@@ -477,7 +477,7 @@ export function PartnershipNetworkVisualizer({
                     </div>
 
                     {selectedNodeData.city && selectedNodeData.state && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                         <MapPin className="w-4 h-4" />
                         <span>{selectedNodeData.city}, {selectedNodeData.state}</span>
                       </div>
@@ -489,7 +489,7 @@ export function PartnershipNetworkVisualizer({
                         
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Relationship:</span>
+                            <span className="text-muted-foreground">Relationship:</span>
                             <Badge variant="outline">
                               {selectedPartnership.relationshipType.replace(/_/g, ' ')}
                             </Badge>
@@ -497,7 +497,7 @@ export function PartnershipNetworkVisualizer({
                           
                           {selectedPartnership.contractValue && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600">Contract Value:</span>
+                              <span className="text-muted-foreground">Contract Value:</span>
                               <span className="font-medium">
                                 {formatCurrency(selectedPartnership.contractValue)}
                               </span>
@@ -506,15 +506,15 @@ export function PartnershipNetworkVisualizer({
                           
                           {selectedPartnership.startDate && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600">Since:</span>
+                              <span className="text-muted-foreground">Since:</span>
                               <span>{new Date(selectedPartnership.startDate).toLocaleDateString()}</span>
                             </div>
                           )}
                           
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Strength:</span>
+                            <span className="text-muted-foreground">Strength:</span>
                             <div className="flex items-center space-x-2">
-                              <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                              <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-gradient-to-r from-green-400 to-blue-500 transition-all"
                                   style={{ width: `${selectedPartnership.strength * 100}%` }}
@@ -536,8 +536,8 @@ export function PartnershipNetworkVisualizer({
                     )}
                   </div>
                 ) : (
-                  <div className="text-center text-gray-500 py-8">
-                    <Target className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                  <div className="text-center text-muted-foreground py-8">
+                    <Target className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
                     <p className="text-sm">Click on a partner in the network to see details</p>
                   </div>
                 )}
@@ -601,7 +601,7 @@ export function PartnershipNetworkVisualizer({
                           </div>
                         )}
                         {partnership.startDate && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-muted-foreground">
                             Since {new Date(partnership.startDate).toLocaleDateString()}
                           </div>
                         )}

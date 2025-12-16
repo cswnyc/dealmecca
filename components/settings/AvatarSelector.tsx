@@ -20,7 +20,7 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
 
   const renderAvatar = (avatar: AvatarOption | undefined) => {
     if (!avatar) {
-      return <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs">?</div>;
+      return <div className="w-full h-full bg-muted rounded-full flex items-center justify-center text-muted-foreground text-xs">?</div>;
     }
     return (
       <div
@@ -37,10 +37,10 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-foreground mb-3">
           Change your avatar
         </label>
-        <p className="text-xs text-gray-500 mb-4">
+        <p className="text-xs text-muted-foreground mb-4">
           Choose an avatar that represents you. This will be displayed in your posts and comments.
         </p>
       </div>
@@ -58,11 +58,11 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
               className={`
                 relative w-16 h-16 rounded-full overflow-hidden border-2 transition-all duration-200
                 ${isSelected
-                  ? 'border-blue-500 ring-2 ring-blue-200 shadow-md'
-                  : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                  ? 'border-primary ring-2 ring-primary/20 shadow-md'
+                  : 'border-border hover:border-border/80 hover:shadow-sm'
                 }
                 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
               `}
               title={`${avatar.name} - ${avatar.description}`}
             >
@@ -70,7 +70,7 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
 
               {/* Selected indicator */}
               {isSelected && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
                   <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
@@ -87,16 +87,16 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
 
       {/* Current selection info */}
       {selectedId && (
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+        <div className="mt-4 p-3 bg-muted rounded-lg">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
+            <div className="w-8 h-8 rounded-full overflow-hidden border border-border flex-shrink-0">
               {renderAvatar(AVATAR_LIBRARY.find(a => a.id === selectedId))}
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-foreground">
                 {AVATAR_LIBRARY.find(a => a.id === selectedId)?.name}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 {AVATAR_LIBRARY.find(a => a.id === selectedId)?.description}
               </p>
             </div>

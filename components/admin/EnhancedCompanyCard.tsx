@@ -84,15 +84,15 @@ export function EnhancedCompanyCard({
     
     if (comp.logoUrl) {
       return (
-        <img 
-          src={comp.logoUrl} 
+        <img
+          src={comp.logoUrl}
           alt={`${comp.name} logo`}
-          className={`${sizeClasses[size]} rounded object-cover border border-gray-200`}
+          className={`${sizeClasses[size]} rounded object-cover border border-border`}
         />
       );
     }
-    
-    return <Building2 className={`${sizeClasses[size]} text-blue-600`} />;
+
+    return <Building2 className={`${sizeClasses[size]} text-primary`} />;
   };
 
   return (
@@ -103,7 +103,7 @@ export function EnhancedCompanyCard({
             <CompanyLogo company={company} size="md" />
             <div>
               <CardTitle className="text-lg">{company.name}</CardTitle>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {formatCompanyType(company.companyType)}
               </p>
             </div>
@@ -119,7 +119,7 @@ export function EnhancedCompanyCard({
       <CardContent>
         <div className="space-y-4">
           {/* Company Info */}
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
               <span>{company.city}, {company.state}</span>
@@ -135,7 +135,7 @@ export function EnhancedCompanyCard({
           {allPartnerships.length > 0 && (
             <div className="border-t pt-4">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-gray-700">Partners</h4>
+                <h4 className="text-sm font-medium text-foreground">Partners</h4>
                 {totalPartners > 3 && (
                   <Button
                     variant="ghost"
@@ -163,7 +163,7 @@ export function EnhancedCompanyCard({
                   <div key={partnership.id} className="flex items-center space-x-2 text-sm">
                     <span className="text-xs">{getPartnershipIcon(partnership)}</span>
                     <CompanyLogo company={partnership.partner} size="xs" />
-                    <span className="text-gray-700 font-medium">{partnership.partner.name}</span>
+                    <span className="text-foreground font-medium">{partnership.partner.name}</span>
                     <Badge variant="outline" className="text-xs">
                       {partnership.partner.city}
                     </Badge>
@@ -174,7 +174,7 @@ export function EnhancedCompanyCard({
                 ))}
                 
                 {!showAllPartners && remainingCount > 0 && (
-                  <div className="text-xs text-blue-600 font-medium">
+                  <div className="text-xs text-primary font-medium">
                     +{remainingCount} teams
                   </div>
                 )}

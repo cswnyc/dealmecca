@@ -120,12 +120,12 @@ export function TeamCard({
         <img
           src={logoUrl}
           alt={`${name} logo`}
-          className={`${sizeClasses} rounded-lg object-cover border border-gray-200`}
+          className={`${sizeClasses} rounded-lg object-cover border border-border`}
         />
       );
     }
     return (
-      <div className={`${sizeClasses} bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center`}>
+      <div className={`${sizeClasses} bg-gradient-to-br from-muted-foreground to-foreground rounded-lg flex items-center justify-center`}>
         <Building2 className={`${iconSize} text-white`} />
       </div>
     );
@@ -158,7 +158,7 @@ export function TeamCard({
     }
 
     return (
-      <div className={`${sizeClasses} bg-gradient-to-br from-gray-500 to-gray-700 rounded-full flex items-center justify-center text-white font-medium`}>
+      <div className={`${sizeClasses} bg-gradient-to-br from-muted-foreground to-foreground rounded-full flex items-center justify-center text-white font-medium`}>
         {getInitials()}
       </div>
     );
@@ -182,7 +182,7 @@ export function TeamCard({
           {displayCompany ? (
             <CompanyLogo logoUrl={displayCompany.logoUrl} name={displayCompany.name} />
           ) : (
-            <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-muted-foreground to-foreground rounded-lg flex items-center justify-center">
               <span className="text-white text-xs font-bold">{team.name.substring(0, 2).toUpperCase()}</span>
             </div>
           )}
@@ -193,7 +193,7 @@ export function TeamCard({
             <div className="flex items-center gap-2 mb-1">
               <Link
                 href={displayCompany ? `/companies/${displayCompany.id}` : '#'}
-                className="font-semibold text-gray-900 hover:text-blue-600"
+                className="font-semibold text-foreground hover:text-primary"
               >
                 {displayCompany?.name || team.name}
               </Link>
@@ -207,7 +207,7 @@ export function TeamCard({
 
             {/* Team Members Inline */}
             {loadingMembers ? (
-              <p className="text-sm text-gray-500">Loading...</p>
+              <p className="text-sm text-muted-foreground">Loading...</p>
             ) : teamMembers.length > 0 ? (
               <div className="flex flex-wrap items-center gap-x-1 gap-y-1 mb-2 text-sm">
                 {visibleContacts.map((contact, index) => (
@@ -215,11 +215,11 @@ export function TeamCard({
                     <ContactAvatar contact={contact} size="sm" />
                     <Link
                       href={`/people/${contact.id}`}
-                      className="ml-1 text-gray-700 hover:text-blue-600"
+                      className="ml-1 text-foreground hover:text-primary"
                     >
                       {contact.fullName}
                     </Link>
-                    {index < visibleContacts.length - 1 && <span className="text-gray-400">,</span>}
+                    {index < visibleContacts.length - 1 && <span className="text-muted-foreground">,</span>}
                   </span>
                 ))}
                 {hiddenContactCount > 0 && !showAllPeople && (
@@ -228,7 +228,7 @@ export function TeamCard({
                       e.stopPropagation();
                       setShowAllPeople(true);
                     }}
-                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium ml-1"
                   >
                     +{hiddenContactCount} {hiddenContactCount === 1 ? 'person' : 'people'}
                   </button>
@@ -239,7 +239,7 @@ export function TeamCard({
                       e.stopPropagation();
                       setShowAllPeople(false);
                     }}
-                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium ml-1"
                   >
                     Hide people
                   </button>
@@ -249,9 +249,9 @@ export function TeamCard({
 
             {/* Handles/Duties Inline */}
             {loadingDuties ? (
-              <p className="text-sm text-gray-500">Loading duties...</p>
+              <p className="text-sm text-muted-foreground">Loading duties...</p>
             ) : teamDuties.length > 0 && (
-              <div className="text-sm text-gray-600 mb-2">
+              <div className="text-sm text-muted-foreground mb-2">
                 <span className="font-medium">Handles:</span>{' '}
                 {visibleDuties.map((duty, index) => (
                   <span key={duty.id}>
@@ -265,7 +265,7 @@ export function TeamCard({
                       e.stopPropagation();
                       setShowAllDuties(true);
                     }}
-                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium ml-1"
                   >
                     +{hiddenDutyCount} {hiddenDutyCount === 1 ? 'duty' : 'duties'}
                   </button>
@@ -276,7 +276,7 @@ export function TeamCard({
                       e.stopPropagation();
                       setShowAllDuties(false);
                     }}
-                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium ml-1"
                   >
                     Show less
                   </button>
@@ -285,22 +285,22 @@ export function TeamCard({
             )}
 
             {/* Last Activity */}
-            <p className="text-xs text-gray-500">Last activity: 3 days</p>
+            <p className="text-xs text-muted-foreground">Last activity: 3 days</p>
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-2 text-gray-400">
-            <button className="hover:text-gray-600">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <button className="hover:text-foreground">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </button>
-            <button className="hover:text-gray-600">
+            <button className="hover:text-foreground">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
             </button>
-            <button className="hover:text-gray-600">
+            <button className="hover:text-foreground">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>

@@ -247,7 +247,7 @@ export default function DevAuthPage() {
 
           {/* Quick Auth Buttons */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-700">Quick Test Accounts:</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground">Quick Test Accounts:</h3>
 
             <Button
               onClick={() => handleQuickAuth('admin')}
@@ -288,10 +288,10 @@ export default function DevAuthPage() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or sign in with</span>
+              <span className="px-2 bg-white text-muted-foreground">Or sign in with</span>
             </div>
           </div>
 
@@ -335,10 +335,10 @@ export default function DevAuthPage() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or use email</span>
+              <span className="px-2 bg-white text-muted-foreground">Or use email</span>
             </div>
           </div>
 
@@ -377,7 +377,7 @@ export default function DevAuthPage() {
           </form>
 
           <div className="pt-4 border-t">
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               Development authentication page • Not for production use
             </p>
           </div>

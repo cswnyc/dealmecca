@@ -48,7 +48,7 @@ export function CompanyLogo({
         className={cn(
           sizeClass,
           roundedClass,
-          'object-cover border border-gray-200',
+          'object-cover border border-border',
           className
         )}
       />

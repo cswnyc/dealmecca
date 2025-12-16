@@ -121,9 +121,9 @@ export default function EnhancedBulkImport() {
                 accept=".csv"
                 onChange={handleFileUpload}
                 disabled={isUploading}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
               />
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Expected columns: companyName, firstName, lastName, title, email, domain, industry, department, seniority
               </p>
             </div>
@@ -132,7 +132,7 @@ export default function EnhancedBulkImport() {
             {isUploading && (
               <div className="space-y-2">
                 <Progress value={progress} className="w-full" />
-                <p className="text-sm text-center text-gray-600">
+                <p className="text-sm text-center text-muted-foreground">
                   {progress < 25 ? 'Processing file...' :
                    progress < 75 ? 'Importing data...' :
                    progress < 100 ? 'Finalizing...' : 'Complete!'}
@@ -142,9 +142,9 @@ export default function EnhancedBulkImport() {
 
             {/* Error Display */}
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4 flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-red-500" />
-                <span className="text-red-700">{error}</span>
+              <div className="bg-destructive/10 border border-destructive/20 rounded-md p-4 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-destructive" />
+                <span className="text-destructive">{error}</span>
               </div>
             )}
 
@@ -164,25 +164,25 @@ export default function EnhancedBulkImport() {
                   <Card>
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-green-600">{results.companiesCreated}</div>
-                      <div className="text-sm text-gray-600">Companies Created</div>
+                      <div className="text-sm text-muted-foreground">Companies Created</div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-600">{results.companiesUpdated}</div>
-                      <div className="text-sm text-gray-600">Companies Updated</div>
+                      <div className="text-2xl font-bold text-primary">{results.companiesUpdated}</div>
+                      <div className="text-sm text-muted-foreground">Companies Updated</div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-green-600">{results.contactsCreated}</div>
-                      <div className="text-sm text-gray-600">Contacts Created</div>
+                      <div className="text-sm text-muted-foreground">Contacts Created</div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-600">{results.contactsUpdated}</div>
-                      <div className="text-sm text-gray-600">Contacts Updated</div>
+                      <div className="text-2xl font-bold text-primary">{results.contactsUpdated}</div>
+                      <div className="text-sm text-muted-foreground">Contacts Updated</div>
                     </CardContent>
                   </Card>
                 </div>
@@ -199,15 +199,15 @@ export default function EnhancedBulkImport() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div>
                         <div className="text-lg font-semibold">{summary.duplicatesHandled}</div>
-                        <div className="text-sm text-gray-600">Duplicates Found</div>
+                        <div className="text-sm text-muted-foreground">Duplicates Found</div>
                       </div>
                       <div>
                         <div className="text-lg font-semibold">{summary.dataMerged}</div>
-                        <div className="text-sm text-gray-600">Records Merged</div>
+                        <div className="text-sm text-muted-foreground">Records Merged</div>
                       </div>
                       <div>
                         <div className="text-lg font-semibold">{results.executionTime}ms</div>
-                        <div className="text-sm text-gray-600">Processing Time</div>
+                        <div className="text-sm text-muted-foreground">Processing Time</div>
                       </div>
                     </div>
                   </CardContent>
@@ -228,7 +228,7 @@ export default function EnhancedBulkImport() {
                               <li key={index} className="text-red-600">• {error}</li>
                             ))}
                             {results.errors.length > 10 && (
-                              <li className="text-gray-500">... and {results.errors.length - 10} more</li>
+                              <li className="text-muted-foreground">... and {results.errors.length - 10} more</li>
                             )}
                           </ul>
                         </div>
@@ -242,7 +242,7 @@ export default function EnhancedBulkImport() {
                               <li key={index} className="text-yellow-600">• {warning}</li>
                             ))}
                             {results.warnings.length > 10 && (
-                              <li className="text-gray-500">... and {results.warnings.length - 10} more</li>
+                              <li className="text-muted-foreground">... and {results.warnings.length - 10} more</li>
                             )}
                           </ul>
                         </div>

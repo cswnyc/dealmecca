@@ -190,13 +190,13 @@ export function EnhancedMentionTextarea({
   const getMentionIcon = (type: string) => {
     switch (type) {
       case 'company':
-        return <Building2 className="w-4 h-4 text-blue-600" />;
+        return <Building2 className="w-4 h-4 text-primary" />;
       case 'contact':
         return <User className="w-4 h-4 text-green-600" />;
       case 'topic':
         return <Hash className="w-4 h-4 text-purple-600" />;
       default:
-        return <Hash className="w-4 h-4 text-gray-600" />;
+        return <Hash className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -204,13 +204,13 @@ export function EnhancedMentionTextarea({
   const getMentionBgColor = (type: string) => {
     switch (type) {
       case 'company':
-        return 'bg-blue-100';
+        return 'bg-primary/10';
       case 'contact':
         return 'bg-green-100';
       case 'topic':
         return 'bg-purple-100';
       default:
-        return 'bg-gray-100';
+        return 'bg-muted';
     }
   };
 
@@ -225,14 +225,14 @@ export function EnhancedMentionTextarea({
         placeholder={placeholder}
         rows={rows}
         disabled={disabled}
-        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white text-gray-900 placeholder:text-gray-400 ${className}`}
+        className={`w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent resize-none bg-background text-foreground placeholder:text-muted-foreground ${className}`}
       />
 
       {/* Mention help text */}
-      <div className="mt-2 text-xs text-gray-500 space-y-1">
+      <div className="mt-2 text-xs text-muted-foreground space-y-1">
         <div>💡 Use @ mentions to tag:</div>
         <div className="flex flex-wrap gap-2">
-          <span className="font-mono bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">
+          <span className="font-mono bg-primary/10 text-primary px-2 py-1 rounded text-xs">
             @company [name]
           </span>
           <span className="font-mono bg-green-50 text-green-700 px-2 py-1 rounded text-xs">
@@ -247,14 +247,14 @@ export function EnhancedMentionTextarea({
       {/* Suggestions Dropdown */}
       {showSuggestions && (
         <div
-          className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto w-80 max-w-[calc(100vw-16px)] sm:max-w-sm md:max-w-md"
+          className="fixed z-50 bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto w-80 max-w-[calc(100vw-16px)] sm:max-w-sm md:max-w-md"
           style={{
             top: dropdownPosition.top,
             left: Math.max(8, Math.min(dropdownPosition.left, (typeof window !== 'undefined' ? window.innerWidth : 800) - 320))
           }}
         >
           {isLoading ? (
-            <div className="p-3 text-center text-gray-500">
+            <div className="p-3 text-center text-muted-foreground">
               <Search className="w-4 h-4 animate-spin mx-auto mb-1" />
               <span className="text-sm">Searching...</span>
             </div>
@@ -264,8 +264,8 @@ export function EnhancedMentionTextarea({
                 <button
                   key={`${suggestion.type}-${suggestion.id}`}
                   onClick={() => handleSuggestionClick(index)}
-                  className={`w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 ${
-                    index === selectedIndex ? 'bg-blue-50 border-r-2 border-blue-500' : ''
+                  className={`w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3 ${
+                    index === selectedIndex ? 'bg-primary/10 border-r-2 border-primary' : ''
                   }`}
                 >
                   {/* Icon */}
@@ -276,20 +276,20 @@ export function EnhancedMentionTextarea({
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-900 truncate">
+                      <span className="font-medium text-foreground truncate">
                         {suggestion.name}
                       </span>
                       {suggestion.verified && (
-                        <span className="text-blue-500 text-xs">✓</span>
+                        <span className="text-primary text-xs">✓</span>
                       )}
                     </div>
                     {suggestion.description && (
-                      <div className="text-sm text-gray-500 truncate">
+                      <div className="text-sm text-muted-foreground truncate">
                         {suggestion.description}
                       </div>
                     )}
                     {suggestion.company && (
-                      <div className="text-xs text-gray-400 truncate">
+                      <div className="text-xs text-muted-foreground truncate">
                         {suggestion.title && `${suggestion.title} at `}{suggestion.company.name}
                       </div>
                     )}
@@ -297,7 +297,7 @@ export function EnhancedMentionTextarea({
 
                   {/* Selected indicator */}
                   {index === selectedIndex && (
-                    <div className="text-blue-500">
+                    <div className="text-primary">
                       <Check className="w-4 h-4" />
                     </div>
                   )}
@@ -305,7 +305,7 @@ export function EnhancedMentionTextarea({
               ))}
             </div>
           ) : currentTrigger && currentTrigger.query.length >= 2 ? (
-            <div className="p-3 text-center text-gray-500">
+            <div className="p-3 text-center text-muted-foreground">
               <span className="text-sm">No {currentTrigger.type}s found</span>
             </div>
           ) : null}

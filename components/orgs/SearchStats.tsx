@@ -32,8 +32,8 @@ export function SearchStats({
         <CardContent className="p-4">
           <div className="flex items-center space-x-4">
             <div className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-48 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-32"></div>
+              <div className="h-4 bg-muted rounded w-48 mb-2"></div>
+              <div className="h-3 bg-muted rounded w-32"></div>
             </div>
           </div>
         </CardContent>
@@ -42,7 +42,7 @@ export function SearchStats({
   }
 
   const getResultQuality = (count: number) => {
-    if (count === 0) return { text: 'No results', color: 'text-gray-500' };
+    if (count === 0) return { text: 'No results', color: 'text-muted-foreground' };
     if (count < 10) return { text: 'Limited results', color: 'text-yellow-600' };
     if (count < 50) return { text: 'Good results', color: 'text-blue-600' };
     return { text: 'Excellent results', color: 'text-green-600' };
@@ -57,9 +57,9 @@ export function SearchStats({
           <div className="flex items-center space-x-4">
             {/* Main Search Info */}
             <div className="flex items-center space-x-2">
-              <Search className="w-4 h-4 text-gray-500" />
+              <Search className="w-4 h-4 text-muted-foreground" />
               <div className="flex flex-col">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   {query ? (
                     <>
                       <span className="font-medium">{totalResults.toLocaleString()}</span> {activeTab} found for 
@@ -75,7 +75,7 @@ export function SearchStats({
                 {/* Search Performance & Quality */}
                 <div className="flex items-center space-x-3 mt-1">
                   {searchTime && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       <Clock className="w-3 h-3 inline mr-1" />
                       {searchTime}ms
                     </span>
@@ -132,7 +132,7 @@ export function SearchStats({
               </Button>
             )}
             
-            <div className="flex items-center text-xs text-gray-500 ml-2">
+            <div className="flex items-center text-xs text-muted-foreground ml-2">
               <Clock className="w-3 h-3 mr-1" />
               <span>Real-time</span>
             </div>

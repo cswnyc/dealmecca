@@ -41,13 +41,13 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Roles & Services */}
         {roles.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Roles & Services</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Roles & Services</h3>
             <div className="flex flex-wrap gap-2">
               {roles.map((role) => (
                 <Badge
                   key={role}
                   variant="outline"
-                  className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                  className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
                 >
                   {role}
                 </Badge>
@@ -59,13 +59,13 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Media Expertise */}
         {mediaTypes.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Media Types</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Media Types</h3>
             <div className="flex flex-wrap gap-2">
               {mediaTypes.map((media) => (
                 <Badge
                   key={media}
                   variant="outline"
-                  className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
+                  className="bg-accent/10 text-accent-foreground border-accent/20 hover:bg-accent/20"
                 >
                   {media}
                 </Badge>
@@ -77,7 +77,7 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Goals & Focus Areas */}
         {goals.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Focus Areas</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Focus Areas</h3>
             <div className="flex flex-wrap gap-2">
               {goals.map((goal) => (
                 <Badge
@@ -95,7 +95,7 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Empty state */}
         {roles.length === 0 && mediaTypes.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500 text-sm">
+            <p className="text-muted-foreground text-sm">
               No capability information available yet. Check back as we add more team members.
             </p>
           </div>
@@ -113,7 +113,7 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Industry */}
         {capabilities.industry && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Industry</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Industry</h3>
             <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
               {capabilities.industry}
             </Badge>
@@ -123,7 +123,7 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Advertising Model */}
         {capabilities.advertisingModel && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Advertising Approach</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Advertising Approach</h3>
             <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
               {capabilities.advertisingModel}
             </Badge>
@@ -133,13 +133,13 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Team Structure */}
         {capabilities.teamStructure.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Team Structure</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Team Structure</h3>
             <div className="flex flex-wrap gap-2">
               {capabilities.teamStructure.map((dept) => (
                 <Badge
                   key={dept}
                   variant="outline"
-                  className="bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+                  className="bg-accent/10 text-accent-foreground border-accent/20 hover:bg-accent/20"
                 >
                   {dept}
                 </Badge>
@@ -151,7 +151,7 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {/* Empty state */}
         {!capabilities.industry && !capabilities.advertisingModel && capabilities.teamStructure.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500 text-sm">
+            <p className="text-muted-foreground text-sm">
               No company information available yet.
             </p>
           </div>
@@ -163,7 +163,7 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
   // For other company types (vendors, publishers, etc.)
   return (
     <div className="text-center py-8">
-      <p className="text-gray-500 text-sm">
+      <p className="text-muted-foreground text-sm">
         Company capabilities coming soon for this company type.
       </p>
     </div>

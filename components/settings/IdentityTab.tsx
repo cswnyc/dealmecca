@@ -187,8 +187,8 @@ export default function IdentityTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
-        <span className="text-gray-600">Loading identity settings...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
+        <span className="text-muted-foreground">Loading identity settings...</span>
       </div>
     );
   }
@@ -196,10 +196,10 @@ export default function IdentityTab() {
   if (error && !identityData) {
     return (
       <div className="p-6 text-center">
-        <div className="text-red-600 mb-4">{error}</div>
+        <div className="text-destructive mb-4">{error}</div>
         <button
           onClick={fetchIdentityData}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
         >
           Try Again
         </button>
@@ -210,20 +210,20 @@ export default function IdentityTab() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="pb-4 border-b border-gray-200">
+      <div className="pb-4 border-b border-border">
         <div className="flex items-center space-x-2 mb-2">
-          <User className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Anonymous Identity</h2>
+          <User className="w-5 h-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold text-foreground">Anonymous Identity</h2>
         </div>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Customize how you appear to others when posting anonymously. Your changes will be visible in all your forum posts and comments.
         </p>
       </div>
 
       {/* Error message */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <p className="text-sm text-destructive">{error}</p>
         </div>
       )}
 
@@ -247,7 +247,7 @@ export default function IdentityTab() {
       )}
 
       {/* Save Actions */}
-      <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+      <div className="flex items-center justify-between pt-6 border-t border-border">
         <div className="flex items-center space-x-4">
           {saved && (
             <span className="text-green-600 text-sm font-medium">
@@ -266,7 +266,7 @@ export default function IdentityTab() {
             <button
               onClick={handleReset}
               disabled={saving}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted disabled:opacity-50"
             >
               Reset
             </button>
@@ -275,7 +275,7 @@ export default function IdentityTab() {
           <button
             onClick={handleSave}
             disabled={!hasChanges || saving}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -284,8 +284,8 @@ export default function IdentityTab() {
 
       {/* Preview section */}
       {(selectedUsername || selectedAvatarId) && (
-        <div className="bg-gray-50 rounded-lg p-4 border">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Preview</h3>
+        <div className="bg-muted rounded-lg p-4 border">
+          <h3 className="text-sm font-medium text-foreground mb-3">Preview</h3>
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
               {selectedAvatarId ? (
@@ -299,16 +299,16 @@ export default function IdentityTab() {
                   }}
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm">
+                <div className="w-full h-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-primary-foreground text-sm">
                   {selectedUsername.charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-foreground">
                 {selectedUsername || 'Anonymous User'}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 This is how you'll appear in forum discussions
               </p>
             </div>

@@ -1,0 +1,106 @@
+/*
+  Flokana-inspired token scope.
+  Wrap a subtree in `.flk` and use Tailwind utilities like:
+  - bg-flk-bg, bg-flk-surface, text-flk-text-primary, border-flk-border-subtle
+  - shadow-flk-card (and dark:shadow-flk-card-dark)
+
+  Note: This file intentionally does NOT use `@layer` so it can be imported
+  route-locally in Next.js without requiring `@tailwind base/components/utilities`
+  directives in the same file.
+*/
+
+.flk {
+  --flk-bg: 247 249 252;
+  --flk-surface: 255 255 255;
+  --flk-surface-subtle: 243 246 251;
+
+  --flk-text-primary: 11 18 32;
+  --flk-text-secondary: 51 65 85;
+  --flk-text-muted: 100 116 139;
+  --flk-text-inverse: 255 255 255;
+
+  --flk-border-subtle: 230 234 242;
+  --flk-border-strong: 215 222 234;
+
+  --flk-primary: 37 117 252;
+  --flk-primary-hover: 30 99 216;
+  --flk-primary-active: 24 79 176;
+  --flk-primary-soft-bg: 234 241 255;
+  --flk-primary-soft-text: 30 99 216;
+
+  --flk-accent-violet: 139 92 246;
+  --flk-accent-pink: 236 72 153;
+
+  --flk-status-success: 22 163 74;
+  --flk-status-warning: 245 158 11;
+  --flk-status-danger: 239 68 68;
+  --flk-status-info: 37 99 235;
+
+  --flk-brand-ink: 22 43 84;
+
+  font-family: 'Helvetica Neue', 'Inter', 'DM Sans', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+}
+
+.dark .flk {
+  --flk-bg: 11 18 32;
+  --flk-surface: 15 26 46;
+  --flk-surface-subtle: 16 30 56;
+
+  --flk-text-primary: 234 240 255;
+  --flk-text-secondary: 199 210 254;
+  --flk-text-muted: 154 167 194;
+  --flk-text-inverse: 11 18 32;
+
+  --flk-border-subtle: 34 48 74;
+  --flk-border-strong: 44 60 92;
+
+  --flk-primary: 91 141 255;
+  --flk-primary-hover: 77 125 255;
+  --flk-primary-active: 59 104 240;
+  --flk-primary-soft-bg: 22 36 73;
+  --flk-primary-soft-text: 199 210 254;
+
+  --flk-accent-violet: 167 139 250;
+  --flk-accent-pink: 244 114 182;
+
+  --flk-status-success: 34 197 94;
+  --flk-status-warning: 251 191 36;
+  --flk-status-danger: 248 113 113;
+  --flk-status-info: 96 165 250;
+
+  --flk-brand-ink: 22 43 84;
+}
+
+/* Override DealMecca's global input text forcing (scoped) */
+.flk input[type='text'],
+.flk input[type='email'],
+.flk input[type='password'],
+.flk input[type='search'],
+.flk input[type='url'],
+.flk input[type='tel'],
+.flk input[type='number'],
+.flk textarea,
+.flk select {
+  color: rgb(var(--flk-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--flk-text-primary)) !important;
+}
+
+.dark .flk input[type='text'],
+.dark .flk input[type='email'],
+.dark .flk input[type='password'],
+.dark .flk input[type='search'],
+.dark .flk input[type='url'],
+.dark .flk input[type='tel'],
+.dark .flk input[type='number'],
+.dark .flk textarea,
+.dark .flk select {
+  color: rgb(var(--flk-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--flk-text-primary)) !important;
+}
+
+.flk-text-gradient {
+  background-image: linear-gradient(90deg, rgb(236 72 153) 0%, rgb(139 92 246) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

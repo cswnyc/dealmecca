@@ -205,14 +205,14 @@ export default function TeamsAdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Teams Management</h1>
-              <p className="text-gray-600 mt-1">Create and manage teams across organizations</p>
+              <h1 className="text-3xl font-bold text-foreground">Teams Management</h1>
+              <p className="text-muted-foreground mt-1">Create and manage teams across organizations</p>
             </div>
             <Button onClick={() => setShowCreateForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
@@ -221,9 +221,9 @@ export default function TeamsAdminPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex items-center gap-4 bg-white p-4 rounded-lg border border-gray-200">
+          <div className="flex items-center gap-4 bg-white p-4 rounded-lg border border-border">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search teams or companies..."
                 value={searchTerm}
@@ -277,7 +277,7 @@ export default function TeamsAdminPage() {
                   <div className="md:col-span-2">
                     <Label htmlFor="companySearch">Search Company *</Label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="companySearch"
                         value={companySearchTerm}
@@ -296,12 +296,12 @@ export default function TeamsAdminPage() {
                                 setFormData({...formData, companyId: company.id});
                                 setCompanySearchTerm(company.name);
                               }}
-                              className={`p-3 cursor-pointer hover:bg-gray-100 border-b last:border-b-0 ${
+                              className={`p-3 cursor-pointer hover:bg-muted border-b last:border-b-0 ${
                                 formData.companyId === company.id ? 'bg-blue-50' : ''
                               }`}
                             >
                               <p className="font-medium text-sm">{company.name}</p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-muted-foreground">
                                 {company.city && company.state
                                   ? `${company.city}, ${company.state}`
                                   : company.city || company.state || 'Location not specified'}
@@ -309,12 +309,12 @@ export default function TeamsAdminPage() {
                             </div>
                           ))
                         ) : (
-                          <p className="p-3 text-sm text-gray-500">No companies found</p>
+                          <p className="p-3 text-sm text-muted-foreground">No companies found</p>
                         )}
                       </div>
                     )}
                     {!companySearchTerm && formData.companyId && (
-                      <p className="mt-2 text-sm text-gray-600">
+                      <p className="mt-2 text-sm text-muted-foreground">
                         Selected: {companies.find(c => c.id === formData.companyId)?.name}
                       </p>
                     )}
@@ -367,12 +367,12 @@ export default function TeamsAdminPage() {
         {/* Teams List */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-600">Loading teams...</p>
+            <p className="text-muted-foreground">Loading teams...</p>
           </div>
         ) : filteredTeams.length === 0 ? (
           <div className="text-center py-12">
-            <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-600">No teams found</p>
+            <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No teams found</p>
             {!showCreateForm && (
               <Button onClick={() => setShowCreateForm(true)} className="mt-4">
                 <Plus className="h-4 w-4 mr-2" />
@@ -381,30 +381,30 @@ export default function TeamsAdminPage() {
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="bg-white rounded-lg border border-border overflow-x-auto">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-16">
                     Actions
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Team Name
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Company
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                  <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-20">
                     Members
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-border">
                 {filteredTeams.map(team => (
-                  <tr key={team.id} className="hover:bg-gray-50">
+                  <tr key={team.id} className="hover:bg-muted">
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center gap-1">
                         <Button
@@ -428,9 +428,9 @@ export default function TeamsAdminPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{team.name}</div>
+                      <div className="text-sm font-medium text-foreground">{team.name}</div>
                       {team.description && (
-                        <div className="text-xs text-gray-500 truncate max-w-xs" title={team.description}>
+                        <div className="text-xs text-muted-foreground truncate max-w-xs" title={team.description}>
                           {team.description}
                         </div>
                       )}
@@ -438,7 +438,7 @@ export default function TeamsAdminPage() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       <Link
                         href={`/companies/${team.company.id}`}
-                        className="text-sm text-gray-600 hover:text-blue-600"
+                        className="text-sm text-muted-foreground hover:text-blue-600"
                       >
                         {team.company.name}
                       </Link>
@@ -449,7 +449,7 @@ export default function TeamsAdminPage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                      <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
                         <Users className="h-4 w-4" />
                         <span>{team._count.ContactTeam}</span>
                       </div>

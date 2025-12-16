@@ -162,8 +162,8 @@ export default function CompanyViewPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -196,11 +196,11 @@ export default function CompanyViewPage() {
               <img
                 src={company.logoUrl}
                 alt={company.name}
-                className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                className="w-16 h-16 rounded-lg object-cover border border-border"
               />
             )}
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
                 {company.name}
                 {company.verified && (
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
@@ -208,7 +208,7 @@ export default function CompanyViewPage() {
                   </span>
                 )}
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 {company.companyType.replace(/_/g, ' ')}
                 {company.industry && ` • ${company.industry}`}
               </p>
@@ -247,14 +247,14 @@ export default function CompanyViewPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-border mb-6">
         <nav className="-mb-px flex gap-8">
           <button
             onClick={() => setActiveTab('overview')}
             className={`py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'overview'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
             }`}
           >
             Overview
@@ -264,7 +264,7 @@ export default function CompanyViewPage() {
             className={`py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'people'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
             }`}
           >
             People ({company._count.contacts})
@@ -274,7 +274,7 @@ export default function CompanyViewPage() {
             className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
               activeTab === 'teams'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
             }`}
             title="Company teams"
           >
@@ -286,7 +286,7 @@ export default function CompanyViewPage() {
             className={`py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'duties'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
             }`}
           >
             Duties ({company.duties?.length || 0})
@@ -296,7 +296,7 @@ export default function CompanyViewPage() {
             className={`py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'partnerships'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
             }`}
           >
             Partnerships ({company._count.partnerships})
@@ -309,7 +309,7 @@ export default function CompanyViewPage() {
               className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
                 activeTab === 'subsidiaries'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
               }`}
               title="Companies owned by this organization (corporate hierarchy)"
             >
@@ -327,35 +327,35 @@ export default function CompanyViewPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Description */}
             {company.description && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-2">Description</h2>
-                <p className="text-gray-700 whitespace-pre-wrap">{company.description}</p>
+              <div className="bg-white rounded-lg border border-border p-6">
+                <h2 className="text-lg font-semibold text-foreground mb-4 mt-2">Description</h2>
+                <p className="text-muted-foreground whitespace-pre-wrap">{company.description}</p>
               </div>
             )}
 
             {/* Stats */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Company Stats</h2>
+            <div className="bg-white rounded-lg border border-border p-6">
+              <h2 className="text-lg font-semibold text-foreground mb-4">Company Stats</h2>
               <dl className="grid grid-cols-2 gap-4">
                 {company.employeeCount && (
                   <div>
-                    <dt className="text-sm text-gray-500">Employees</dt>
-                    <dd className="text-lg font-semibold text-gray-900">{company.employeeCount}</dd>
+                    <dt className="text-sm text-muted-foreground">Employees</dt>
+                    <dd className="text-lg font-semibold text-foreground">{company.employeeCount}</dd>
                   </div>
                 )}
                 {company.revenue && (
                   <div>
-                    <dt className="text-sm text-gray-500">Revenue</dt>
-                    <dd className="text-lg font-semibold text-gray-900">{company.revenue}</dd>
+                    <dt className="text-sm text-muted-foreground">Revenue</dt>
+                    <dd className="text-lg font-semibold text-foreground">{company.revenue}</dd>
                   </div>
                 )}
                 <div>
-                  <dt className="text-sm text-gray-500">Contacts</dt>
-                  <dd className="text-lg font-semibold text-gray-900">{company._count.contacts}</dd>
+                  <dt className="text-sm text-muted-foreground">Contacts</dt>
+                  <dd className="text-lg font-semibold text-foreground">{company._count.contacts}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-gray-500">Partnerships</dt>
-                  <dd className="text-lg font-semibold text-gray-900">{company._count.partnerships}</dd>
+                  <dt className="text-sm text-muted-foreground">Partnerships</dt>
+                  <dd className="text-lg font-semibold text-foreground">{company._count.partnerships}</dd>
                 </div>
               </dl>
             </div>
@@ -364,28 +364,28 @@ export default function CompanyViewPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Location */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">Location</h2>
+            <div className="bg-white rounded-lg border border-border p-6">
+              <h2 className="text-lg font-semibold text-foreground mb-3">Location</h2>
               <div className="space-y-2 text-sm">
                 {company.city && (
-                  <p className="text-gray-700">{company.city}{company.state && `, ${company.state}`}</p>
+                  <p className="text-muted-foreground">{company.city}{company.state && `, ${company.state}`}</p>
                 )}
                 {company.country && (
-                  <p className="text-gray-700">{company.country}</p>
+                  <p className="text-muted-foreground">{company.country}</p>
                 )}
               </div>
             </div>
 
             {/* Parent Company */}
             {company.parentCompany && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">Parent Company</h2>
-                <Link href={`/admin/orgs/companies/${company.parentCompany.id}`} className="flex items-center gap-3 hover:bg-gray-50 p-2 -m-2 rounded-lg">
+              <div className="bg-white rounded-lg border border-border p-6">
+                <h2 className="text-lg font-semibold text-foreground mb-3">Parent Company</h2>
+                <Link href={`/admin/orgs/companies/${company.parentCompany.id}`} className="flex items-center gap-3 hover:bg-muted p-2 -m-2 rounded-lg">
                   {company.parentCompany.logoUrl && (
                     <img
                       src={company.parentCompany.logoUrl}
                       alt={company.parentCompany.name}
-                      className="w-10 h-10 rounded object-cover border border-gray-200"
+                      className="w-10 h-10 rounded object-cover border border-border"
                     />
                   )}
                   <span className="text-blue-600 hover:text-blue-700 font-medium">
@@ -397,8 +397,8 @@ export default function CompanyViewPage() {
 
             {/* Data Quality */}
             {company.dataQuality && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">Data Quality</h2>
+              <div className="bg-white rounded-lg border border-border p-6">
+                <h2 className="text-lg font-semibold text-foreground mb-3">Data Quality</h2>
                 <div className="flex items-center gap-2">
                   <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                     company.dataQuality === 'PREMIUM' ? 'bg-purple-100 text-purple-800' :
@@ -416,10 +416,10 @@ export default function CompanyViewPage() {
       )}
 
       {activeTab === 'teams' && (
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white rounded-lg border border-border">
+          <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-gray-900">Teams</h2>
+              <h2 className="text-lg font-semibold text-foreground">Teams</h2>
               <Link
                 href={`/admin/orgs/companies/${company.id}/edit#teams`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
@@ -427,13 +427,13 @@ export default function CompanyViewPage() {
                 Manage Teams
               </Link>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Teams within this company. Manage team structure, members, and responsibilities.
             </p>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-border">
             {company.teams.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
+              <div className="p-6 text-center text-muted-foreground">
                 No teams yet. <Link href={`/admin/orgs/companies/${company.id}/edit#teams`} className="text-blue-600 hover:text-blue-700">Create a team</Link> to get started.
               </div>
             ) : (
@@ -445,16 +445,16 @@ export default function CompanyViewPage() {
                 const relationshipLabel = team.agencyCompany ? 'Partner Agency' : team.clientCompany ? 'Agency Client' : null;
 
                 return (
-                  <div key={team.id} className="p-6 hover:bg-gray-50">
+                  <div key={team.id} className="p-6 hover:bg-muted">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold text-gray-900">{displayName}</h3>
+                          <h3 className="font-semibold text-foreground">{displayName}</h3>
                           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
                             {team.type?.replace(/_/g, ' ')}
                           </span>
                           {relationshipLabel && (
-                            <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
+                            <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
                               {relationshipLabel}
                             </span>
                           )}
@@ -465,9 +465,9 @@ export default function CompanyViewPage() {
                           )}
                         </div>
                         {team.description && (
-                          <p className="text-sm text-gray-600 mb-2">{team.description}</p>
+                          <p className="text-sm text-muted-foreground mb-2">{team.description}</p>
                         )}
-                        <div className="flex gap-4 text-xs text-gray-500">
+                        <div className="flex gap-4 text-xs text-muted-foreground">
                           <span>{team._count.ContactTeam} member{team._count.ContactTeam !== 1 ? 's' : ''}</span>
                           {team._count.PartnershipTeam > 0 && (
                             <span>{team._count.PartnershipTeam} client{team._count.PartnershipTeam !== 1 ? 's' : ''}</span>
@@ -492,9 +492,9 @@ export default function CompanyViewPage() {
       )}
 
       {activeTab === 'people' && (
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Contacts</h2>
+        <div className="bg-white rounded-lg border border-border">
+          <div className="p-6 border-b border-border flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Contacts</h2>
             <Link
               href={`/admin/orgs/contacts/create?companyId=${company.id}`}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
@@ -502,18 +502,18 @@ export default function CompanyViewPage() {
               Add Contact
             </Link>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-border">
             {company.contacts.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
+              <div className="p-6 text-center text-muted-foreground">
                 No contacts yet
               </div>
             ) : (
               company.contacts.map((contact) => (
-                <div key={contact.id} className="p-6 hover:bg-gray-50">
+                <div key={contact.id} className="p-6 hover:bg-muted">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-gray-900">{contact.fullName}</h3>
+                        <h3 className="font-semibold text-foreground">{contact.fullName}</h3>
                         {contact.verified && (
                           <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
                             Verified
@@ -521,9 +521,9 @@ export default function CompanyViewPage() {
                         )}
                       </div>
                       {contact.title && (
-                        <p className="text-sm text-gray-600 mb-1">{contact.title}</p>
+                        <p className="text-sm text-muted-foreground mb-1">{contact.title}</p>
                       )}
-                      <div className="flex gap-3 text-sm text-gray-500">
+                      <div className="flex gap-3 text-sm text-muted-foreground">
                         <span>{contact.seniority}</span>
                         {contact.email && <span>{contact.email}</span>}
                       </div>
@@ -543,11 +543,11 @@ export default function CompanyViewPage() {
       )}
 
       {activeTab === 'duties' && (
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="bg-white rounded-lg border border-border">
+          <div className="p-6 border-b border-border flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Duties</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <h2 className="text-lg font-semibold text-foreground">Duties</h2>
+              <p className="text-sm text-muted-foreground mt-1">
                 Manage duties for this company. Duties define the services and capabilities this company provides.
               </p>
             </div>
@@ -561,7 +561,7 @@ export default function CompanyViewPage() {
           <div className="p-6">
             {!company.duties || company.duties.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">No duties assigned yet</p>
+                <p className="text-muted-foreground mb-4">No duties assigned yet</p>
                 <Link
                   href={`/admin/orgs/companies/${company.id}/edit`}
                   className="text-blue-600 hover:text-blue-700 text-sm font-medium"
@@ -574,13 +574,13 @@ export default function CompanyViewPage() {
                 {company.duties.map((duty) => (
                   <div
                     key={duty.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
                   >
                     <div>
-                      <h4 className="font-semibold text-gray-900">{duty.name}</h4>
-                      <p className="text-xs text-gray-500 mt-1">{duty.category}</p>
+                      <h4 className="font-semibold text-foreground">{duty.name}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{duty.category}</p>
                       {duty.description && (
-                        <p className="text-sm text-gray-600 mt-2">{duty.description}</p>
+                        <p className="text-sm text-muted-foreground mt-2">{duty.description}</p>
                       )}
                     </div>
                   </div>
@@ -592,22 +592,22 @@ export default function CompanyViewPage() {
       )}
 
       {activeTab === 'partnerships' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Partnerships</h2>
+        <div className="bg-white rounded-lg border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Partnerships</h2>
           <div className="text-center py-12">
-            <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">Partnerships will be available for DSP/SSP, AdTech, and Publishers</p>
-            <p className="text-sm text-gray-500 mt-2">Coming soon</p>
+            <Network className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Partnerships will be available for DSP/SSP, AdTech, and Publishers</p>
+            <p className="text-sm text-muted-foreground mt-2">Coming soon</p>
           </div>
         </div>
       )}
 
       {activeTab === 'subsidiaries' && (
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200 flex items-start justify-between">
+        <div className="bg-white rounded-lg border border-border">
+          <div className="p-6 border-b border-border flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Subsidiaries</h2>
-              <p className="text-sm text-gray-600">
+              <h2 className="text-lg font-semibold text-foreground mb-2">Subsidiaries</h2>
+              <p className="text-sm text-muted-foreground">
                 Companies owned by this organization in the corporate hierarchy. For example, WPP owns GroupM, which owns Mindshare.
               </p>
             </div>
@@ -621,9 +621,9 @@ export default function CompanyViewPage() {
           </div>
           {company.subsidiaries.length === 0 ? (
             <div className="p-12 text-center">
-              <Network className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No subsidiaries yet</h3>
-              <p className="text-gray-600 mb-6">
+              <Network className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No subsidiaries yet</h3>
+              <p className="text-muted-foreground mb-6">
                 Add regional offices, agency brands, or other subsidiary companies to build out your corporate hierarchy.
               </p>
               <Link
@@ -635,21 +635,21 @@ export default function CompanyViewPage() {
               </Link>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-border">
               {company.subsidiaries.map((subsidiary) => (
-                <div key={subsidiary.id} className="p-6 hover:bg-gray-50">
+                <div key={subsidiary.id} className="p-6 hover:bg-muted">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       {subsidiary.logoUrl && (
                         <img
                           src={subsidiary.logoUrl}
                           alt={subsidiary.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                          className="w-12 h-12 rounded-lg object-cover border border-border"
                         />
                       )}
                       <div>
-                        <h3 className="font-semibold text-gray-900">{subsidiary.name}</h3>
-                        <p className="text-sm text-gray-600">{subsidiary.companyType.replace(/_/g, ' ')}</p>
+                        <h3 className="font-semibold text-foreground">{subsidiary.name}</h3>
+                        <p className="text-sm text-muted-foreground">{subsidiary.companyType.replace(/_/g, ' ')}</p>
                       </div>
                     </div>
                     <Link

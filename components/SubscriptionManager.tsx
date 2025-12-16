@@ -124,9 +124,9 @@ export default function SubscriptionManager() {
       <Card>
         <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-1/4"></div>
+            <div className="h-8 bg-muted rounded w-1/2"></div>
+            <div className="h-4 bg-muted rounded w-3/4"></div>
           </div>
         </CardContent>
       </Card>
@@ -137,7 +137,7 @@ export default function SubscriptionManager() {
     return (
       <Card>
         <CardContent className="p-6">
-          <p className="text-gray-500">Unable to load subscription data</p>
+          <p className="text-muted-foreground">Unable to load subscription data</p>
         </CardContent>
       </Card>
     )
@@ -234,8 +234,8 @@ export default function SubscriptionManager() {
           {/* Search Usage */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">Company Searches</span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm font-medium text-foreground">Company Searches</span>
+              <span className="text-sm text-muted-foreground">
                 {searchUsage.unlimited 
                   ? `${searchUsage.used} searches (unlimited)` 
                   : `${searchUsage.used} / ${searchUsage.limit} searches`
@@ -244,7 +244,7 @@ export default function SubscriptionManager() {
             </div>
             {!searchUsage.unlimited && (
               <>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full" 
                     style={{ width: `${searchPercentage}%` }}
@@ -260,7 +260,7 @@ export default function SubscriptionManager() {
           </div>
 
           {/* Reset Date */}
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             {searchUsage.unlimited 
               ? 'No search limits on your current plan'
               : `Search limit resets on ${new Date(searchUsage.resetDate).toLocaleDateString()}`
@@ -280,9 +280,9 @@ export default function SubscriptionManager() {
               {subscriptionData.usage.features.canExportData ? (
                 <CheckCircle className="h-4 w-4 text-green-500" />
               ) : (
-                <div className="h-4 w-4 rounded-full border-2 border-gray-300" />
+                <div className="h-4 w-4 rounded-full border-2 border-border" />
               )}
-              <span className={`text-sm ${subscriptionData.usage.features.canExportData ? 'text-gray-900' : 'text-gray-400'}`}>
+              <span className={`text-sm ${subscriptionData.usage.features.canExportData ? 'text-foreground' : 'text-muted-foreground'}`}>
                 Data Export
               </span>
             </div>
@@ -291,9 +291,9 @@ export default function SubscriptionManager() {
               {subscriptionData.usage.features.canAccessPremiumForum ? (
                 <CheckCircle className="h-4 w-4 text-green-500" />
               ) : (
-                <div className="h-4 w-4 rounded-full border-2 border-gray-300" />
+                <div className="h-4 w-4 rounded-full border-2 border-border" />
               )}
-              <span className={`text-sm ${subscriptionData.usage.features.canAccessPremiumForum ? 'text-gray-900' : 'text-gray-400'}`}>
+              <span className={`text-sm ${subscriptionData.usage.features.canAccessPremiumForum ? 'text-foreground' : 'text-muted-foreground'}`}>
                 Premium Forums
               </span>
             </div>
@@ -302,9 +302,9 @@ export default function SubscriptionManager() {
               {subscriptionData.usage.features.canDirectMessage ? (
                 <CheckCircle className="h-4 w-4 text-green-500" />
               ) : (
-                <div className="h-4 w-4 rounded-full border-2 border-gray-300" />
+                <div className="h-4 w-4 rounded-full border-2 border-border" />
               )}
-              <span className={`text-sm ${subscriptionData.usage.features.canDirectMessage ? 'text-gray-900' : 'text-gray-400'}`}>
+              <span className={`text-sm ${subscriptionData.usage.features.canDirectMessage ? 'text-foreground' : 'text-muted-foreground'}`}>
                 Direct Messaging
               </span>
             </div>
@@ -313,9 +313,9 @@ export default function SubscriptionManager() {
               {subscriptionData.usage.features.prioritySupport ? (
                 <CheckCircle className="h-4 w-4 text-green-500" />
               ) : (
-                <div className="h-4 w-4 rounded-full border-2 border-gray-300" />
+                <div className="h-4 w-4 rounded-full border-2 border-border" />
               )}
-              <span className={`text-sm ${subscriptionData.usage.features.prioritySupport ? 'text-gray-900' : 'text-gray-400'}`}>
+              <span className={`text-sm ${subscriptionData.usage.features.prioritySupport ? 'text-foreground' : 'text-muted-foreground'}`}>
                 Priority Support
               </span>
             </div>
@@ -332,10 +332,10 @@ export default function SubscriptionManager() {
                 <Crown className="h-6 w-6 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-semibold text-foreground mb-2">
                   Unlock the Full Power of DealMecca
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Get unlimited searches, advanced ROI tracking, premium forum access, 
                   and priority support for just $99/month.
                 </p>

@@ -93,30 +93,30 @@ export function ComprehensiveFilterPanel({
   const audiences = ['Holiday', 'Multicultural', 'Hispanic', 'Female', 'Back-to-School', 'Male', 'Millennials', 'Generation Z', 'Local', 'Moms'];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl mb-6 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-900">Filter</h3>
+    <div className="bg-card border border-border rounded-xl mb-6 shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-border bg-muted">
+        <h3 className="text-lg font-semibold text-foreground">Filter</h3>
       </div>
 
       <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
         {/* By Agency Type - COLLAPSIBLE */}
-        <div className="space-y-3 border-b border-gray-200 pb-4">
+        <div className="space-y-3 border-b border-border pb-4">
           <button
             onClick={() => setIsAgencyTypeOpen(!isAgencyTypeOpen)}
             className="w-full flex items-center justify-between hover:opacity-70 transition-opacity"
           >
-            <label className="text-sm font-semibold text-gray-900 cursor-pointer">By Agency Type</label>
+            <label className="text-sm font-semibold text-foreground cursor-pointer">By Agency Type</label>
             {isAgencyTypeOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
 
           {isAgencyTypeOpen && (
             <>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   type="text"
                   placeholder="Find partner..."
@@ -127,7 +127,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Holding/Parent Co.</p>
+                <p className="text-xs font-bold text-foreground mb-2">Holding/Parent Co.</p>
                 <div className="flex flex-wrap gap-2">
                   {holdingCompanies
                     .filter(hc => hc.toLowerCase().includes(agencySearchQuery.toLowerCase()))
@@ -137,8 +137,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('holdingCompany', company)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.holdingCompany.includes(company)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {company}
@@ -151,23 +151,23 @@ export function ComprehensiveFilterPanel({
         </div>
 
         {/* By Geography - COLLAPSIBLE */}
-        <div className="space-y-3 border-b border-gray-200 pb-4">
+        <div className="space-y-3 border-b border-border pb-4">
           <button
             onClick={() => setIsGeographyOpen(!isGeographyOpen)}
             className="w-full flex items-center justify-between hover:opacity-70 transition-opacity"
           >
-            <label className="text-sm font-semibold text-gray-900 cursor-pointer">By Geography</label>
+            <label className="text-sm font-semibold text-foreground cursor-pointer">By Geography</label>
             {isGeographyOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
 
           {isGeographyOpen && (
             <>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   type="text"
                   placeholder="Find any region, state, or city..."
@@ -178,7 +178,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Regions</p>
+                <p className="text-xs font-bold text-foreground mb-2">Regions</p>
                 <div className="flex flex-wrap gap-2">
                   {regions
                     .filter(r => r.toLowerCase().includes(geographySearchQuery.toLowerCase()))
@@ -188,8 +188,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('regions', region)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.regions.includes(region)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {region}
@@ -199,7 +199,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">States</p>
+                <p className="text-xs font-bold text-foreground mb-2">States</p>
                 <div className="flex flex-wrap gap-2">
                   {states
                     .filter(s => s.toLowerCase().includes(geographySearchQuery.toLowerCase()))
@@ -209,8 +209,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('states', state)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.states.includes(state)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {state}
@@ -220,7 +220,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Cities</p>
+                <p className="text-xs font-bold text-foreground mb-2">Cities</p>
                 <div className="flex flex-wrap gap-2">
                   {cities
                     .filter(c => c.toLowerCase().includes(geographySearchQuery.toLowerCase()))
@@ -230,8 +230,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('cities', city)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.cities.includes(city)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {city}
@@ -244,22 +244,22 @@ export function ComprehensiveFilterPanel({
         </div>
 
         {/* By Client - COLLAPSIBLE */}
-        <div className="space-y-3 border-b border-gray-200 pb-4">
+        <div className="space-y-3 border-b border-border pb-4">
           <button
             onClick={() => setIsClientOpen(!isClientOpen)}
             className="w-full flex items-center justify-between hover:opacity-70 transition-opacity"
           >
-            <label className="text-sm font-semibold text-gray-900 cursor-pointer">By Client</label>
+            <label className="text-sm font-semibold text-foreground cursor-pointer">By Client</label>
             {isClientOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
 
           {isClientOpen && (
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 type="text"
                 placeholder="Find client..."
@@ -272,23 +272,23 @@ export function ComprehensiveFilterPanel({
         </div>
 
         {/* By Client Industry - COLLAPSIBLE */}
-        <div className="space-y-3 border-b border-gray-200 pb-4">
+        <div className="space-y-3 border-b border-border pb-4">
           <button
             onClick={() => setIsClientIndustryOpen(!isClientIndustryOpen)}
             className="w-full flex items-center justify-between hover:opacity-70 transition-opacity"
           >
-            <label className="text-sm font-semibold text-gray-900 cursor-pointer">By Client Industry</label>
+            <label className="text-sm font-semibold text-foreground cursor-pointer">By Client Industry</label>
             {isClientIndustryOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
 
           {isClientIndustryOpen && (
             <>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   type="text"
                   placeholder="Find industry..."
@@ -307,8 +307,8 @@ export function ComprehensiveFilterPanel({
                       onClick={() => toggleFilter('clientIndustry', industry)}
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                         filterState.clientIndustry.includes(industry)
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground hover:bg-muted/80'
                       }`}
                     >
                       {industry}
@@ -325,18 +325,18 @@ export function ComprehensiveFilterPanel({
             onClick={() => setIsDutyOpen(!isDutyOpen)}
             className="w-full flex items-center justify-between hover:opacity-70 transition-opacity"
           >
-            <label className="text-sm font-semibold text-gray-900 cursor-pointer">By Duty</label>
+            <label className="text-sm font-semibold text-foreground cursor-pointer">By Duty</label>
             {isDutyOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
 
           {isDutyOpen && (
             <>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   type="text"
                   placeholder="Find duty..."
@@ -347,7 +347,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Role</p>
+                <p className="text-xs font-bold text-foreground mb-2">Role</p>
                 <div className="flex flex-wrap gap-2">
                   {roles
                     .filter(r => r.toLowerCase().includes(dutySearchQuery.toLowerCase()))
@@ -357,8 +357,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('role', role)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.role.includes(role)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {role}
@@ -368,7 +368,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Media Types</p>
+                <p className="text-xs font-bold text-foreground mb-2">Media Types</p>
                 <div className="flex flex-wrap gap-2">
                   {mediaTypes
                     .filter(mt => mt.toLowerCase().includes(dutySearchQuery.toLowerCase()))
@@ -378,8 +378,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('mediaTypes', mediaType)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.mediaTypes.includes(mediaType)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {mediaType}
@@ -389,7 +389,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Goals</p>
+                <p className="text-xs font-bold text-foreground mb-2">Goals</p>
                 <div className="flex flex-wrap gap-2">
                   {goals
                     .filter(g => g.toLowerCase().includes(dutySearchQuery.toLowerCase()))
@@ -399,8 +399,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('goals', goal)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.goals.includes(goal)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {goal}
@@ -410,7 +410,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Geographies</p>
+                <p className="text-xs font-bold text-foreground mb-2">Geographies</p>
                 <div className="flex flex-wrap gap-2">
                   {geographies
                     .filter(g => g.toLowerCase().includes(dutySearchQuery.toLowerCase()))
@@ -421,8 +421,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('regions', geo)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.regions.includes(geo)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {geo}
@@ -432,7 +432,7 @@ export function ComprehensiveFilterPanel({
               </div>
 
               <div>
-                <p className="text-xs font-bold text-gray-900 mb-2">Audiences</p>
+                <p className="text-xs font-bold text-foreground mb-2">Audiences</p>
                 <div className="flex flex-wrap gap-2">
                   {audiences
                     .filter(a => a.toLowerCase().includes(dutySearchQuery.toLowerCase()))
@@ -442,8 +442,8 @@ export function ComprehensiveFilterPanel({
                         onClick={() => toggleFilter('audiences', audience)}
                         className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           filterState.audiences.includes(audience)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       >
                         {audience}
@@ -457,8 +457,8 @@ export function ComprehensiveFilterPanel({
       </div>
 
       {/* Filter Actions */}
-      <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200">
-        <div className="text-sm text-gray-600">
+      <div className="flex items-center justify-between px-6 py-4 bg-muted border-t border-border">
+        <div className="text-sm text-muted-foreground">
           Showing {filteredCount} of {totalCount} agencies
         </div>
         <div className="flex items-center space-x-3">
@@ -482,13 +482,13 @@ export function ComprehensiveFilterPanel({
               department: [],
               industry: []
             })}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors"
           >
             Clear All
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary border border-transparent rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors"
           >
             Apply Filters
           </button>

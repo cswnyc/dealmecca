@@ -139,7 +139,7 @@ export default function ContactActions({
             title={`Email ${contact.email}`}
           >
             {actionLoading === 'email' ? (
-              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600"></div>
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-foreground"></div>
             ) : (
               <Mail className="h-4 w-4" />
             )}
@@ -156,7 +156,7 @@ export default function ContactActions({
             title={`Call ${contact.phone}`}
           >
             {actionLoading === 'phone' ? (
-              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600"></div>
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-foreground"></div>
             ) : (
               <Phone className="h-4 w-4" />
             )}
@@ -173,7 +173,7 @@ export default function ContactActions({
             title="View LinkedIn Profile"
           >
             {actionLoading === 'linkedin' ? (
-              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600"></div>
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-foreground"></div>
             ) : (
               <ExternalLink className="h-4 w-4" />
             )}
@@ -188,8 +188,8 @@ export default function ContactActions({
       {/* Contact Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{displayName}</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text-lg font-semibold text-foreground">{displayName}</h3>
+          <p className="text-sm text-muted-foreground">
             {contact.title} • {contact.company.name}
           </p>
           <div className="flex items-center gap-2 mt-2">
@@ -251,7 +251,7 @@ export default function ContactActions({
             className="flex items-center justify-center gap-2"
           >
             {actionLoading === 'phone' ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
             ) : (
               <Phone className="h-4 w-4" />
             )}
@@ -267,7 +267,7 @@ export default function ContactActions({
             className="flex items-center justify-center gap-2"
           >
             {actionLoading === 'linkedin' ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
             ) : (
               <ExternalLink className="h-4 w-4" />
             )}
@@ -309,32 +309,32 @@ export default function ContactActions({
       </div>
 
       {/* Contact Information */}
-      <div className="bg-gray-50 rounded-lg p-3">
-        <h4 className="text-sm font-medium text-gray-900 mb-2">Contact Information</h4>
+      <div className="bg-muted rounded-lg p-3">
+        <h4 className="text-sm font-medium text-foreground mb-2">Contact Information</h4>
         <div className="space-y-1 text-sm">
           {contact.email && (
             <div className="flex items-center gap-2">
-              <Mail className="h-3 w-3 text-gray-400" />
-              <span className="text-gray-600">{contact.email}</span>
+              <Mail className="h-3 w-3 text-muted-foreground" />
+              <span className="text-muted-foreground">{contact.email}</span>
             </div>
           )}
           {contact.phone && (
             <div className="flex items-center gap-2">
-              <Phone className="h-3 w-3 text-gray-400" />
-              <span className="text-gray-600">{contact.phone}</span>
+              <Phone className="h-3 w-3 text-muted-foreground" />
+              <span className="text-muted-foreground">{contact.phone}</span>
             </div>
           )}
           {contact.linkedinUrl && (
             <div className="flex items-center gap-2">
-              <ExternalLink className="h-3 w-3 text-gray-400" />
-              <span className="text-gray-600">LinkedIn Profile</span>
+              <ExternalLink className="h-3 w-3 text-muted-foreground" />
+              <span className="text-muted-foreground">LinkedIn Profile</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Action Status Indicators */}
-      <div className="flex items-center gap-4 text-xs text-gray-500">
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <CheckCircle className="h-3 w-3 text-green-500" />
           <span>Contact available</span>

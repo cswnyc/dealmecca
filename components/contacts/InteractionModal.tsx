@@ -174,7 +174,7 @@ export default function InteractionModal({
       case 'voicemail':
         return 'text-yellow-600 bg-yellow-50'
       default:
-        return 'text-gray-600 bg-gray-50'
+        return 'text-muted-foreground bg-muted'
     }
   }
 
@@ -182,12 +182,12 @@ export default function InteractionModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4">
+      <div className="bg-card rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div>
             <h2 className="text-lg font-semibold">Contact Interactions</h2>
-            <p className="text-sm text-gray-600">{contactName}</p>
+            <p className="text-sm text-muted-foreground">{contactName}</p>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -209,7 +209,7 @@ export default function InteractionModal({
 
           {/* New Interaction Form */}
           {showNewForm && (
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="bg-muted rounded-lg p-4 mb-6">
               <h3 className="font-medium mb-4">Record New Interaction</h3>
               
               <div className="space-y-4">
@@ -269,7 +269,7 @@ export default function InteractionModal({
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     placeholder="Add notes about this interaction..."
-                    className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                    className="w-full h-20 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
                   />
                 </div>
 
@@ -341,13 +341,13 @@ export default function InteractionModal({
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto mb-2"></div>
-              <p className="text-gray-600">Loading interactions...</p>
+              <p className="text-muted-foreground">Loading interactions...</p>
             </div>
           ) : interactions.length === 0 ? (
             <div className="text-center py-8">
-              <MessageSquare className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No interactions recorded yet</p>
-              <p className="text-sm text-gray-500">Record your first interaction to start tracking engagement</p>
+              <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-muted-foreground">No interactions recorded yet</p>
+              <p className="text-sm text-muted-foreground">Record your first interaction to start tracking engagement</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -361,7 +361,7 @@ export default function InteractionModal({
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <IconComponent className="h-4 w-4 text-gray-600" />
+                        <IconComponent className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">
                           {INTERACTION_TYPES.find(t => t.value === interaction.type)?.label || interaction.type}
                         </span>
@@ -374,17 +374,17 @@ export default function InteractionModal({
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
                         {formatDate(interaction.createdAt)}
                       </div>
                     </div>
 
                     {interaction.notes && (
-                      <p className="text-sm text-gray-700 mb-2">{interaction.notes}</p>
+                      <p className="text-sm text-foreground mb-2">{interaction.notes}</p>
                     )}
 
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       {interaction.followUpAt && (
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />

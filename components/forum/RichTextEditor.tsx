@@ -62,7 +62,7 @@ export function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 hover:text-blue-800 underline cursor-pointer'
+          class: 'text-primary hover:text-primary/80 underline cursor-pointer'
         }
       }),
       Image.configure({
@@ -207,8 +207,8 @@ export function RichTextEditor({
       <Card className={`border-0 shadow-sm ${className}`}>
         <CardContent className="p-4">
           <div className="animate-pulse">
-            <div className="h-10 bg-gray-200 rounded mb-4"></div>
-            <div className="h-48 bg-gray-200 rounded"></div>
+            <div className="h-10 bg-muted rounded mb-4"></div>
+            <div className="h-48 bg-muted rounded"></div>
           </div>
         </CardContent>
       </Card>
@@ -224,9 +224,9 @@ export function RichTextEditor({
     <Card className={`border-0 shadow-sm ${className}`}>
       <CardContent className="p-0">
         {/* Toolbar */}
-        <div className="border-b border-gray-200 p-3 flex items-center gap-1 flex-wrap">
+        <div className="border-b border-border p-3 flex items-center gap-1 flex-wrap">
           {/* Text Formatting */}
-          <div className="flex items-center gap-1 border-r border-gray-200 pr-3 mr-3">
+          <div className="flex items-center gap-1 border-r border-border pr-3 mr-3">
             <Button
               variant={editor.isActive('bold') ? 'default' : 'ghost'}
               size="sm"
@@ -254,7 +254,7 @@ export function RichTextEditor({
           </div>
 
           {/* Headings */}
-          <div className="flex items-center gap-1 border-r border-gray-200 pr-3 mr-3">
+          <div className="flex items-center gap-1 border-r border-border pr-3 mr-3">
             <Button
               variant={editor.isActive('heading', { level: 1 }) ? 'default' : 'ghost'}
               size="sm"
@@ -290,7 +290,7 @@ export function RichTextEditor({
           </div>
 
           {/* Lists */}
-          <div className="flex items-center gap-1 border-r border-gray-200 pr-3 mr-3">
+          <div className="flex items-center gap-1 border-r border-border pr-3 mr-3">
             <Button
               variant={editor.isActive('bulletList') ? 'default' : 'ghost'}
               size="sm"
@@ -310,7 +310,7 @@ export function RichTextEditor({
           </div>
 
           {/* Link */}
-          <div className="flex items-center gap-1 border-r border-gray-200 pr-3 mr-3">
+          <div className="flex items-center gap-1 border-r border-border pr-3 mr-3">
             <Button
               variant={editor.isActive('link') ? 'default' : 'ghost'}
               size="sm"
@@ -343,7 +343,7 @@ export function RichTextEditor({
 
         {/* Link Dialog */}
         {showLinkDialog && (
-          <div className="border-b border-gray-200 p-3 bg-gray-50">
+          <div className="border-b border-border p-3 bg-muted">
             <div className="flex items-center gap-2">
               <Input
                 type="url"
@@ -379,17 +379,17 @@ export function RichTextEditor({
         )}
 
         {/* Editor Content */}
-        <div 
-          className={`relative ${isDragOver ? 'bg-blue-50 border-blue-200' : ''}`}
+        <div
+          className={`relative ${isDragOver ? 'bg-primary/10 border-primary/30' : ''}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           {isDragOver && (
-            <div className="absolute inset-0 flex items-center justify-center bg-blue-50/90 z-10 border-2 border-dashed border-blue-300 rounded-lg">
+            <div className="absolute inset-0 flex items-center justify-center bg-primary/10 z-10 border-2 border-dashed border-primary/50 rounded-lg">
               <div className="text-center">
-                <Upload className="h-12 w-12 text-blue-500 mx-auto mb-2" />
-                <p className="text-blue-700 font-medium">Drop your image here</p>
+                <Upload className="h-12 w-12 text-primary mx-auto mb-2" />
+                <p className="text-primary font-medium">Drop your image here</p>
               </div>
             </div>
           )}
@@ -397,11 +397,11 @@ export function RichTextEditor({
         </div>
 
         {/* Character Counter */}
-        <div className="border-t border-gray-200 px-4 py-2 flex justify-between items-center text-sm">
-          <div className="text-gray-500">
+        <div className="border-t border-border px-4 py-2 flex justify-between items-center text-sm">
+          <div className="text-muted-foreground">
             {autoSave && <span className="mr-4">Auto-save enabled</span>}
           </div>
-          <div className={`${isNearLimit ? (isAtLimit ? 'text-red-600' : 'text-orange-600') : 'text-gray-500'}`}>
+          <div className={`${isNearLimit ? (isAtLimit ? 'text-destructive' : 'text-orange-600') : 'text-muted-foreground'}`}>
             {characterCount} / {characterLimit} characters
           </div>
         </div>

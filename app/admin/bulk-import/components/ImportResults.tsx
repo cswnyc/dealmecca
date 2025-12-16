@@ -103,7 +103,7 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
           ({summary.successRate}% success rate)
         </p>
         
-        <p className="text-sm text-gray-600 mt-2">
+        <p className="text-sm text-muted-foreground mt-2">
           Completed in {summary.executionTimeFormatted} • {new Date(importResults.processedAt).toLocaleString()}
         </p>
       </div>
@@ -114,11 +114,11 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
           <div className="flex items-center space-x-3">
             <Building className="w-8 h-8 text-blue-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{totalCompanies}</p>
-              <p className="text-sm text-gray-500">Companies Processed</p>
+              <p className="text-2xl font-bold text-foreground">{totalCompanies}</p>
+              <p className="text-sm text-muted-foreground">Companies Processed</p>
             </div>
           </div>
-          <div className="mt-2 text-xs text-gray-600">
+          <div className="mt-2 text-xs text-muted-foreground">
             {importResults.companiesCreated} new • {importResults.companiesUpdated} updated
           </div>
         </div>
@@ -127,11 +127,11 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
           <div className="flex items-center space-x-3">
             <Users className="w-8 h-8 text-green-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{totalContacts}</p>
-              <p className="text-sm text-gray-500">Contacts Processed</p>
+              <p className="text-2xl font-bold text-foreground">{totalContacts}</p>
+              <p className="text-sm text-muted-foreground">Contacts Processed</p>
             </div>
           </div>
-          <div className="mt-2 text-xs text-gray-600">
+          <div className="mt-2 text-xs text-muted-foreground">
             {importResults.contactsCreated} new • {importResults.contactsUpdated} updated
           </div>
         </div>
@@ -144,8 +144,8 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
               successLevel === 'fair' ? 'text-yellow-500' : 'text-red-500'
             }`} />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{summary.successRate}%</p>
-              <p className="text-sm text-gray-500">Success Rate</p>
+              <p className="text-2xl font-bold text-foreground">{summary.successRate}%</p>
+              <p className="text-sm text-muted-foreground">Success Rate</p>
             </div>
           </div>
           <div className={`mt-2 text-xs ${
@@ -164,11 +164,11 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
           <div className="flex items-center space-x-3">
             <BarChart3 className="w-8 h-8 text-purple-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{summary.failedOperations}</p>
-              <p className="text-sm text-gray-500">Issues</p>
+              <p className="text-2xl font-bold text-foreground">{summary.failedOperations}</p>
+              <p className="text-sm text-muted-foreground">Issues</p>
             </div>
           </div>
-          <div className="mt-2 text-xs text-gray-600">
+          <div className="mt-2 text-xs text-muted-foreground">
             {importResults.errors.length} errors • {importResults.warnings.length} warnings
           </div>
         </div>
@@ -176,12 +176,12 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
 
       {/* Detailed Breakdown */}
       <div className="bg-white border rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Import Breakdown</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">📊 Import Breakdown</h3>
         
         <div className="grid md:grid-cols-2 gap-6">
           {/* Companies */}
           <div>
-            <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
+            <h4 className="font-medium text-foreground mb-3 flex items-center space-x-2">
               <Building className="w-5 h-5 text-blue-500" />
               <span>Companies ({totalCompanies})</span>
             </h4>
@@ -195,16 +195,16 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
                 <span className="text-sm text-blue-900">🔄 Updated</span>
                 <span className="font-medium text-blue-900">{importResults.companiesUpdated}</span>
               </div>
-              <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                <span className="text-sm text-gray-900">⏭️ Skipped</span>
-                <span className="font-medium text-gray-900">{importResults.companiesSkipped}</span>
+              <div className="flex justify-between items-center p-2 bg-muted rounded">
+                <span className="text-sm text-foreground">⏭️ Skipped</span>
+                <span className="font-medium text-foreground">{importResults.companiesSkipped}</span>
               </div>
             </div>
           </div>
 
           {/* Contacts */}
           <div>
-            <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
+            <h4 className="font-medium text-foreground mb-3 flex items-center space-x-2">
               <Users className="w-5 h-5 text-green-500" />
               <span>Contacts ({totalContacts})</span>
             </h4>
@@ -218,9 +218,9 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
                 <span className="text-sm text-blue-900">🔄 Updated</span>
                 <span className="font-medium text-blue-900">{importResults.contactsUpdated}</span>
               </div>
-              <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                <span className="text-sm text-gray-900">⏭️ Skipped</span>
-                <span className="font-medium text-gray-900">{importResults.contactsSkipped}</span>
+              <div className="flex justify-between items-center p-2 bg-muted rounded">
+                <span className="text-sm text-foreground">⏭️ Skipped</span>
+                <span className="font-medium text-foreground">{importResults.contactsSkipped}</span>
               </div>
             </div>
           </div>
@@ -232,13 +232,13 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
         <div className="bg-white border rounded-lg">
           <button
             onClick={() => setShowErrors(!showErrors)}
-            className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between p-6 text-left hover:bg-muted transition-colors"
           >
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+            <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
               <AlertTriangle className="w-5 h-5 text-red-500" />
               <span>❌ Errors ({importResults.errors.length})</span>
             </h3>
-            <span className="text-gray-400">
+            <span className="text-muted-foreground">
               {showErrors ? '−' : '+'}
             </span>
           </button>
@@ -260,13 +260,13 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
         <div className="bg-white border rounded-lg">
           <button
             onClick={() => setShowWarnings(!showWarnings)}
-            className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between p-6 text-left hover:bg-muted transition-colors"
           >
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+            <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
               <AlertTriangle className="w-5 h-5 text-yellow-500" />
               <span>⚠️ Warnings ({importResults.warnings.length})</span>
             </h3>
-            <span className="text-gray-400">
+            <span className="text-muted-foreground">
               {showWarnings ? '−' : '+'}
             </span>
           </button>
@@ -285,15 +285,15 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
 
       {/* Next Steps */}
       <div className="bg-white border rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">🚀 Next Steps</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">🚀 Next Steps</h3>
         
         <div className="grid md:grid-cols-2 gap-4">
           <button
             onClick={onStartNewImport}
-            className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
+            className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-input rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
           >
-            <RefreshCw className="w-5 h-5 text-gray-400 group-hover:text-blue-500" />
-            <span className="font-medium text-gray-700 group-hover:text-blue-900">
+            <RefreshCw className="w-5 h-5 text-muted-foreground group-hover:text-blue-500" />
+            <span className="font-medium text-muted-foreground group-hover:text-blue-900">
               Import More Data
             </span>
           </button>
@@ -309,9 +309,9 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
           )}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <h4 className="font-medium text-gray-900 mb-2">Recommended Actions:</h4>
-          <ul className="text-sm text-gray-600 space-y-1">
+        <div className="mt-4 pt-4 border-t border-border">
+          <h4 className="font-medium text-foreground mb-2">Recommended Actions:</h4>
+          <ul className="text-sm text-muted-foreground space-y-1">
             {isSuccess ? (
               <>
                 <li>✅ Review newly imported contacts for outreach opportunities</li>
@@ -332,11 +332,11 @@ export default function ImportResults({ results, onStartNewImport, onViewData }:
       </div>
 
       {/* Import Summary Footer */}
-      <div className="bg-gray-50 rounded-lg p-4 text-center">
-        <p className="text-sm text-gray-600">
+      <div className="bg-muted rounded-lg p-4 text-center">
+        <p className="text-sm text-muted-foreground">
           Import ID: <code className="bg-white px-2 py-1 rounded text-xs">{importResults.uploadId}</code>
         </p>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Keep this ID for support reference if needed
         </p>
       </div>

@@ -10,7 +10,7 @@ export default function AdminLayout({
 }) {
   return (
     // <AdminGuard> {/* Disabled for development */}
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         <AdminSidebar />
         <main className="lg:pl-64">
           <div className="py-6">

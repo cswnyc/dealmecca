@@ -212,13 +212,13 @@ export default function ConnectionMap({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-gray-200 mb-6">
+        <div className="flex border-b border-border mb-6">
           <button
             onClick={() => setActiveTab('connections')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'connections'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Mutual Connections
@@ -228,7 +228,7 @@ export default function ConnectionMap({
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'events'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Shared Events
@@ -238,7 +238,7 @@ export default function ConnectionMap({
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'forum'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Forum Activity
@@ -250,9 +250,9 @@ export default function ConnectionMap({
           <div className="space-y-4">
             {sortedConnections.length === 0 ? (
               <div className="text-center py-8">
-                <Network className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No mutual connections found</h3>
-                <p className="text-gray-600">Try attending industry events or connecting on LinkedIn to build your network.</p>
+                <Network className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No mutual connections found</h3>
+                <p className="text-muted-foreground">Try attending industry events or connecting on LinkedIn to build your network.</p>
               </div>
             ) : (
               sortedConnections.map((connection) => {
@@ -265,7 +265,7 @@ export default function ConnectionMap({
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4 flex-1">
                           {/* Profile Image */}
-                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
                             {connection.contact.profileImageUrl ? (
                               <img
                                 src={connection.contact.profileImageUrl}
@@ -273,14 +273,14 @@ export default function ConnectionMap({
                                 className="w-12 h-12 rounded-full object-cover"
                               />
                             ) : (
-                              <Users className="w-6 h-6 text-gray-400" />
+                              <Users className="w-6 h-6 text-muted-foreground" />
                             )}
                           </div>
                           
                           {/* Connection Info */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-medium text-gray-900">{connection.contact.name}</h4>
+                              <h4 className="font-medium text-foreground">{connection.contact.name}</h4>
                               {connection.contact.isDecisionMaker && (
                                 <Badge variant="destructive" className="text-xs">
                                   Decision Maker
@@ -291,11 +291,11 @@ export default function ConnectionMap({
                               </Badge>
                             </div>
                             
-                            <div className="text-sm text-gray-600 mb-2">
+                            <div className="text-sm text-muted-foreground mb-2">
                               {connection.contact.title} at {connection.contact.company.name}
                             </div>
                             
-                            <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
                               <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${getRelationshipColor(connection.relationship)}`}>
                                 {getRelationshipIcon(connection.relationship)}
                                 <span>{connection.relationship.replace('_', ' ')}</span>
@@ -325,22 +325,22 @@ export default function ConnectionMap({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   {/* Contact Methods */}
                                   <div>
-                                    <h5 className="font-medium text-gray-900 mb-2">Contact Methods</h5>
+                                    <h5 className="font-medium text-foreground mb-2">Contact Methods</h5>
                                     <div className="space-y-1">
                                       {connection.contact.email && (
-                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                           <Mail className="w-3 h-3" />
                                           <span>{connection.contact.email}</span>
                                         </div>
                                       )}
                                       {connection.contact.phone && (
-                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                           <Phone className="w-3 h-3" />
                                           <span>{connection.contact.phone}</span>
                                         </div>
                                       )}
                                       {connection.contact.linkedinUrl && (
-                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                           <Linkedin className="w-3 h-3" />
                                           <span>LinkedIn Profile</span>
                                         </div>
@@ -350,8 +350,8 @@ export default function ConnectionMap({
                                   
                                   {/* Introduction Notes */}
                                   <div>
-                                    <h5 className="font-medium text-gray-900 mb-2">Introduction Notes</h5>
-                                    <p className="text-sm text-gray-600">
+                                    <h5 className="font-medium text-foreground mb-2">Introduction Notes</h5>
+                                    <p className="text-sm text-muted-foreground">
                                       {connection.notes || 'Consider mentioning your shared interest in media innovation and recent industry trends.'}
                                     </p>
                                   </div>
@@ -395,9 +395,9 @@ export default function ConnectionMap({
           <div className="space-y-4">
             {sharedEvents.length === 0 ? (
               <div className="text-center py-8">
-                <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No shared events found</h3>
-                <p className="text-gray-600">Attend industry conferences and networking events to build connections.</p>
+                <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No shared events found</h3>
+                <p className="text-muted-foreground">Attend industry conferences and networking events to build connections.</p>
               </div>
             ) : (
               sharedEvents.map((event) => (
@@ -409,8 +409,8 @@ export default function ConnectionMap({
                           <Calendar className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900">{event.name}</h4>
-                          <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                          <h4 className="font-medium text-foreground">{event.name}</h4>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                             <div className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               <span>{event.date}</span>
@@ -449,8 +449,8 @@ export default function ConnectionMap({
                 <div className="flex items-center gap-3 mb-4">
                   <MessageCircle className="w-8 h-8 text-orange-600" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Forum Activity</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-medium text-foreground">Forum Activity</h4>
+                    <p className="text-sm text-muted-foreground">
                       {targetCompany.name} has been mentioned in {forumMentions} recent forum discussions
                     </p>
                   </div>
@@ -458,11 +458,11 @@ export default function ConnectionMap({
                 
                 {forumMentions > 0 ? (
                   <div className="space-y-3">
-                    <div className="bg-gray-50 p-3 rounded-lg">
+                    <div className="bg-muted p-3 rounded-lg">
                       <div className="flex items-start justify-between">
                         <div>
-                          <h5 className="font-medium text-gray-900">Media Strategy Discussion</h5>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <h5 className="font-medium text-foreground">Media Strategy Discussion</h5>
+                          <p className="text-sm text-muted-foreground mt-1">
                             Community members discussing {targetCompany.name}'s recent campaign performance and media mix optimization.
                           </p>
                         </div>
@@ -472,11 +472,11 @@ export default function ConnectionMap({
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 p-3 rounded-lg">
+                    <div className="bg-muted p-3 rounded-lg">
                       <div className="flex items-start justify-between">
                         <div>
-                          <h5 className="font-medium text-gray-900">Budget Allocation Trends</h5>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <h5 className="font-medium text-foreground">Budget Allocation Trends</h5>
+                          <p className="text-sm text-muted-foreground mt-1">
                             Industry analysis including {targetCompany.name}'s shift towards programmatic advertising.
                           </p>
                         </div>
@@ -487,7 +487,7 @@ export default function ConnectionMap({
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-600">No recent forum mentions found.</p>
+                  <p className="text-muted-foreground">No recent forum mentions found.</p>
                 )}
               </CardContent>
             </Card>
@@ -496,7 +496,7 @@ export default function ConnectionMap({
 
         {/* Action Section */}
         <div className="border-t pt-6 mt-6">
-          <h3 className="font-medium text-gray-900 mb-3">Recommended Actions</h3>
+          <h3 className="font-medium text-foreground mb-3">Recommended Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Button variant="outline" className="justify-start">
               <Calendar className="w-4 h-4 mr-2" />

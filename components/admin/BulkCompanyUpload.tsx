@@ -164,16 +164,16 @@ export function BulkCompanyUpload() {
             <Upload className="w-5 h-5 mr-2" />
             Bulk Company Upload
           </CardTitle>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Upload thousands of companies with automatic validation and duplicate detection
           </p>
         </CardHeader>
         <CardContent>
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
-              dragActive 
-                ? 'border-blue-500 bg-blue-50 scale-105' 
-                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+              dragActive
+                ? 'border-primary bg-primary/10 scale-105'
+                : 'border-border hover:border-border hover:bg-muted'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -188,15 +188,15 @@ export function BulkCompanyUpload() {
               id="file-upload"
             />
             <label htmlFor="file-upload" className="cursor-pointer">
-              <FileSpreadsheet className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <FileSpreadsheet className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               {dragActive ? (
-                <p className="text-blue-600 font-medium text-lg">Drop the file here...</p>
+                <p className="text-primary font-medium text-lg">Drop the file here...</p>
               ) : (
                 <div>
-                  <p className="text-gray-600 mb-2 text-lg font-medium">
+                  <p className="text-muted-foreground mb-2 text-lg font-medium">
                     Drag & drop your file here, or click to browse
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Supports CSV, XLS, XLSX files up to 50MB • Up to 100,000 records
                   </p>
                 </div>
@@ -227,20 +227,20 @@ export function BulkCompanyUpload() {
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <span>File: {preview.fileName}</span>
               <Badge variant="outline">{preview.totalRows.toLocaleString()} rows</Badge>
             </div>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto mb-4">
-              <table className="w-full border-collapse border border-gray-200 text-sm">
+              <table className="w-full border-collapse border border-border text-sm">
                 <thead>
-                  <tr className="bg-gray-50">
+                  <tr className="bg-muted">
                     {preview.headers.map((header, index) => (
-                      <th 
-                        key={index} 
-                        className="border border-gray-200 px-3 py-2 text-left font-medium"
+                      <th
+                        key={index}
+                        className="border border-border px-3 py-2 text-left font-medium"
                       >
                         {header}
                       </th>
@@ -249,13 +249,13 @@ export function BulkCompanyUpload() {
                 </thead>
                 <tbody>
                   {preview.rows.map((row, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
+                    <tr key={index} className="hover:bg-muted">
                       {row.map((cell, cellIndex) => (
-                        <td 
-                          key={cellIndex} 
-                          className="border border-gray-200 px-3 py-2"
+                        <td
+                          key={cellIndex}
+                          className="border border-border px-3 py-2"
                         >
-                          {cell || <span className="text-gray-400">—</span>}
+                          {cell || <span className="text-muted-foreground">—</span>}
                         </td>
                       ))}
                     </tr>
@@ -265,7 +265,7 @@ export function BulkCompanyUpload() {
             </div>
             
             <div className="flex justify-between items-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Showing first 5 rows of {preview.totalRows.toLocaleString()} total rows
               </p>
               <Button onClick={handleUpload} disabled={isUploading}>
@@ -290,10 +290,10 @@ export function BulkCompanyUpload() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Processing Upload</span>
-                <span className="text-sm text-gray-600">{Math.round(uploadProgress)}%</span>
+                <span className="text-sm text-muted-foreground">{Math.round(uploadProgress)}%</span>
               </div>
               <Progress value={uploadProgress} className="h-3" />
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className="text-sm text-muted-foreground space-y-1">
                 <p>• Validating data format and required fields</p>
                 <p>• Checking for duplicates against existing database</p>
                 <p>• Processing company information and contacts</p>
@@ -315,27 +315,27 @@ export function BulkCompanyUpload() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-3xl font-bold text-blue-600">{results.total.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Total Records</div>
+              <div className="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="text-3xl font-bold text-primary">{results.total.toLocaleString()}</div>
+                <div className="text-sm text-muted-foreground mt-1">Total Records</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
                 <div className="text-3xl font-bold text-green-600">{results.successful.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Successfully Added</div>
+                <div className="text-sm text-muted-foreground mt-1">Successfully Added</div>
               </div>
               <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                 <div className="text-3xl font-bold text-yellow-600">{results.duplicates.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Duplicates Skipped</div>
+                <div className="text-sm text-muted-foreground mt-1">Duplicates Skipped</div>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
                 <div className="text-3xl font-bold text-red-600">{results.failed.toLocaleString()}</div>
-                <div className="text-sm text-gray-600 mt-1">Failed Validation</div>
+                <div className="text-sm text-muted-foreground mt-1">Failed Validation</div>
               </div>
             </div>
 
             {results.errors.length > 0 && (
               <div className="space-y-3 mb-6">
-                <h4 className="font-medium text-gray-900 flex items-center">
+                <h4 className="font-medium text-foreground flex items-center">
                   <AlertCircle className="w-4 h-4 mr-2 text-orange-500" />
                   Issues Detected ({results.errors.length})
                 </h4>

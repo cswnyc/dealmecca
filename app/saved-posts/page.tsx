@@ -109,10 +109,10 @@ export default function SavedPostsPage() {
       <ForumLayout>
         <div className="max-w-4xl mx-auto p-6">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded mb-6 w-1/3"></div>
+            <div className="h-8 bg-muted rounded mb-6 w-1/3"></div>
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-32 bg-gray-200 rounded"></div>
+                <div key={i} className="h-32 bg-muted rounded"></div>
               ))}
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function SavedPostsPage() {
         <div className="max-w-4xl mx-auto p-6">
           <div className="flex items-center space-x-3 mb-6">
             <BookmarkIcon className="w-6 h-6 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Saved Posts</h1>
+            <h1 className="text-2xl font-bold text-foreground">Saved Posts</h1>
             <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
               {savedPosts.length}
             </span>
@@ -141,9 +141,9 @@ export default function SavedPostsPage() {
 
           {savedPosts.length === 0 ? (
             <div className="text-center py-12">
-              <BookmarkIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No saved posts yet</h3>
-              <p className="text-gray-600 mb-6">
+              <BookmarkIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No saved posts yet</h3>
+              <p className="text-muted-foreground mb-6">
                 Save interesting posts to easily find them later.
               </p>
               <button

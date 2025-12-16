@@ -138,21 +138,21 @@ export function LogoUpload({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex flex-col space-y-3">
-        <label className="text-sm font-medium text-gray-700">
+        <label className="text-sm font-medium text-foreground">
           {entityType === 'company' ? 'Company Logo' : 'Contact Photo'}
         </label>
-        
+
         {/* Logo Display */}
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50">
+          <div className="w-16 h-16 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted">
             {logoUrl ? (
-              <img 
-                src={logoUrl} 
+              <img
+                src={logoUrl}
                 alt={`${entityType} logo`}
                 className="w-full h-full object-cover rounded-lg"
               />
             ) : (
-              <PhotoIcon className="w-8 h-8 text-gray-400" />
+              <PhotoIcon className="w-8 h-8 text-muted-foreground" />
             )}
           </div>
 
@@ -171,13 +171,13 @@ export function LogoUpload({
               </Button>
               
               {logoUrl && (
-                <Button 
+                <Button
                   type="button"
                   onClick={handleRemoveLogo}
                   disabled={uploading}
                   variant="outline"
                   size="sm"
-                  className="flex items-center space-x-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="flex items-center space-x-1 text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
                   <XMarkIcon className="w-4 h-4" />
                   <span>Remove</span>
@@ -201,9 +201,9 @@ export function LogoUpload({
             )}
 
             {uploading && (
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                   <span>Uploading...</span>
                 </div>
               </div>
@@ -221,7 +221,7 @@ export function LogoUpload({
         />
 
         {/* Helper Text */}
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           Supported formats: JPEG, PNG, WebP, GIF. Maximum size: 5MB.
         </p>
       </div>

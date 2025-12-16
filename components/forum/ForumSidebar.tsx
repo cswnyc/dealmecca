@@ -287,9 +287,9 @@ export function ForumSidebar() {
         <Card>
           <CardContent className="p-4">
             <div className="animate-pulse space-y-3">
-              <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
-              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded"></div>
-              <div className="h-3 bg-gray-200 dark:bg-slate-700 rounded w-1/2"></div>
+              <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-6 bg-muted rounded"></div>
+              <div className="h-3 bg-muted rounded w-1/2"></div>
             </div>
           </CardContent>
         </Card>
@@ -300,9 +300,9 @@ export function ForumSidebar() {
   return (
     <div className="space-y-4">
       {/* Quick Actions */}
-      <Card className="border-0 shadow-sm bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
+      <Card className="border-0 shadow-sm bg-card/60 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Quick Actions</CardTitle>
+          <CardTitle className="text-sm font-medium text-foreground">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <Button
@@ -332,10 +332,10 @@ export function ForumSidebar() {
       </Card>
 
       {/* Community Stats */}
-      <Card className="border-0 shadow-sm bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
+      <Card className="border-0 shadow-sm bg-card/60 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900 dark:text-white">
-            <TrendingUp className="w-4 h-4 text-blue-500" />
+          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-foreground">
+            <TrendingUp className="w-4 h-4 text-primary" />
             <span>Community Activity</span>
           </CardTitle>
         </CardHeader>
@@ -344,9 +344,9 @@ export function ForumSidebar() {
             <div key={index} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className={stat.color}>{stat.icon}</div>
-                <span className="text-sm text-gray-600 dark:text-slate-400">{stat.label}</span>
+                <span className="text-sm text-muted-foreground">{stat.label}</span>
               </div>
-              <span className="font-semibold text-gray-900 dark:text-white">{stat.value}</span>
+              <span className="font-semibold text-foreground">{stat.value}</span>
             </div>
           ))}
         </CardContent>
@@ -354,14 +354,14 @@ export function ForumSidebar() {
 
       {/* User Stats Card */}
       {firebaseUser && userStats && (
-        <Card className="border-0 shadow-sm bg-gray-100/80 dark:bg-slate-900/60 backdrop-blur-sm opacity-60">
+        <Card className="border-0 shadow-sm bg-muted/80 backdrop-blur-sm opacity-60">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center justify-between text-gray-700 dark:text-white">
+            <CardTitle className="text-sm font-medium flex items-center justify-between text-foreground">
               <div className="flex items-center space-x-2">
-                <Trophy className="w-4 h-4 text-gray-400 dark:text-slate-400" />
+                <Trophy className="w-4 h-4 text-muted-foreground" />
                 <span>Your Progress</span>
               </div>
-              <span className="text-sm px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold shadow-lg animate-pulse">
+              <span className="text-sm px-3 py-1 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full font-semibold shadow-lg animate-pulse">
                 Coming Soon
               </span>
             </CardTitle>
@@ -373,15 +373,15 @@ export function ForumSidebar() {
                 {userStats.tier} TIER
               </div>
               <div className="flex items-center space-x-1 opacity-50">
-                <Gift className="w-4 h-4 text-gray-500 dark:text-slate-400" />
-                <span className="font-bold text-gray-600 dark:text-white">{userStats.gems}</span>
-                <span className="text-xs text-gray-400 dark:text-slate-400">gems</span>
+                <Gift className="w-4 h-4 text-muted-foreground" />
+                <span className="font-bold text-foreground">{userStats.gems}</span>
+                <span className="text-xs text-muted-foreground">gems</span>
               </div>
             </div>
 
             {/* Progress to Next Tier */}
             <div className="opacity-50">
-              <div className="flex justify-between text-xs text-gray-500 dark:text-slate-400 mb-1">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
                 <span>Progress to next tier</span>
                 <span>{userStats.gems}/{userStats.nextTierGems}</span>
               </div>
@@ -393,13 +393,13 @@ export function ForumSidebar() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-2 text-xs opacity-50">
-              <div className="text-center p-2 bg-gray-200 dark:bg-slate-800 rounded">
-                <div className="font-semibold text-gray-600 dark:text-white">#{userStats.rank}</div>
-                <div className="text-gray-500 dark:text-slate-400">Rank</div>
+              <div className="text-center p-2 bg-muted rounded">
+                <div className="font-semibold text-foreground">#{userStats.rank}</div>
+                <div className="text-muted-foreground">Rank</div>
               </div>
-              <div className="text-center p-2 bg-gray-200 dark:bg-slate-800 rounded">
-                <div className="font-semibold text-gray-600 dark:text-white">{userStats.streak}</div>
-                <div className="text-gray-500 dark:text-slate-400">Day Streak</div>
+              <div className="text-center p-2 bg-muted rounded">
+                <div className="font-semibold text-foreground">{userStats.streak}</div>
+                <div className="text-muted-foreground">Day Streak</div>
               </div>
             </div>
           </CardContent>
@@ -407,9 +407,9 @@ export function ForumSidebar() {
       )}
 
       {/* Top Contributors Mini Leaderboard */}
-      <Card className="border-0 shadow-sm bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
+      <Card className="border-0 shadow-sm bg-card/60 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-gray-900 dark:text-white">
+          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-foreground">
             <Star className="w-4 h-4 text-yellow-500" />
             <span>Top Contributors</span>
           </CardTitle>
@@ -419,14 +419,14 @@ export function ForumSidebar() {
             <div key={index} className="flex items-center space-x-2">
               <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold ${
                 index === 0 ? 'bg-yellow-500 text-white' :
-                index === 1 ? 'bg-gray-400 text-white' :
+                index === 1 ? 'bg-muted-foreground text-white' :
                 'bg-orange-600 text-white'
               }`}>
                 {user.rank}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-1">
-                  <span className="text-sm font-medium truncate text-gray-900 dark:text-white">{user.name}</span>
+                  <span className="text-sm font-medium truncate text-foreground">{user.name}</span>
                   {user.isVIP && <Crown className="w-3 h-3 text-yellow-500 flex-shrink-0" />}
                 </div>
               </div>
@@ -436,11 +436,11 @@ export function ForumSidebar() {
               </div>
             </div>
           )) : (
-            <div className="text-center py-4 text-sm text-gray-500 dark:text-slate-400">
+            <div className="text-center py-4 text-sm text-muted-foreground">
               No contributors yet
             </div>
           )}
-          <Button variant="ghost" size="sm" className="w-full text-xs text-gray-700 dark:text-slate-200">
+          <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground">
             View Leaderboard
           </Button>
         </CardContent>

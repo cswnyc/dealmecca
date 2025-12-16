@@ -141,13 +141,13 @@ export default function LinkedInSuccessPage() {
               <Loader2 className="w-6 h-6 animate-spin text-blue-600 absolute -top-1 -right-1" />
             </div>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+          <h1 className="text-xl font-semibold text-foreground mb-2">
             Completing LinkedIn Sign-In
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Please wait while we set up your account...
           </p>
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+          <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
             <span>Authenticating with LinkedIn</span>
           </div>
@@ -166,10 +166,10 @@ export default function LinkedInSuccessPage() {
               <Linkedin className="w-6 h-6 text-blue-600 absolute -bottom-1 -right-1 bg-white rounded-full" />
             </div>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+          <h1 className="text-xl font-semibold text-foreground mb-2">
             Welcome to DealMecca!
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             Your LinkedIn account has been successfully connected. Redirecting you to the community...
           </p>
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
@@ -191,11 +191,11 @@ export default function LinkedInSuccessPage() {
               >
                 Continue to Forum →
               </button>
-              <p className="text-sm text-gray-500 mt-2">{error}</p>
+              <p className="text-sm text-muted-foreground mt-2">{error}</p>
             </div>
           )}
 
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-muted-foreground">
             If you're not redirected automatically, <a
               href="/forum"
               className="text-blue-600 hover:text-blue-700 underline"
@@ -220,10 +220,10 @@ export default function LinkedInSuccessPage() {
           <div className="flex items-center justify-center mb-6">
             <AlertCircle className="w-12 h-12 text-red-600" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+          <h1 className="text-xl font-semibold text-foreground mb-2">
             Authentication Failed
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             We couldn't complete your LinkedIn sign-in.
           </p>
           {error && (
@@ -231,7 +231,7 @@ export default function LinkedInSuccessPage() {
               <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Redirecting you back to the sign-in page...
           </p>
         </div>

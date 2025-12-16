@@ -81,17 +81,17 @@ const departments = [
 const seniorityLevels = [
   { value: 'C_LEVEL', label: 'C-Level', icon: '🏆', color: 'bg-purple-100 text-purple-800' },
   { value: 'FOUNDER_OWNER', label: 'Founder/Owner', icon: '👤', color: 'bg-purple-100 text-purple-800' },
-  { value: 'VP', label: 'Vice President', icon: '👑', color: 'bg-blue-100 text-blue-800' },
-  { value: 'SVP', label: 'Senior Vice President', icon: '👑', color: 'bg-blue-100 text-blue-800' },
-  { value: 'EVP', label: 'Executive Vice President', icon: '👑', color: 'bg-blue-100 text-blue-800' },
+  { value: 'VP', label: 'Vice President', icon: '👑', color: 'bg-primary/20 text-primary' },
+  { value: 'SVP', label: 'Senior Vice President', icon: '👑', color: 'bg-primary/20 text-primary' },
+  { value: 'EVP', label: 'Executive Vice President', icon: '👑', color: 'bg-primary/20 text-primary' },
   { value: 'DIRECTOR', label: 'Director', icon: '⭐', color: 'bg-green-100 text-green-800' },
   { value: 'SENIOR_DIRECTOR', label: 'Senior Director', icon: '⭐', color: 'bg-green-100 text-green-800' },
   { value: 'MANAGER', label: 'Manager', icon: '📊', color: 'bg-yellow-100 text-yellow-800' },
   { value: 'SENIOR_MANAGER', label: 'Senior Manager', icon: '📊', color: 'bg-yellow-100 text-yellow-800' },
   { value: 'SENIOR_SPECIALIST', label: 'Senior Specialist', icon: '🌟', color: 'bg-orange-100 text-orange-800' },
-  { value: 'SPECIALIST', label: 'Specialist', icon: '🔧', color: 'bg-gray-100 text-gray-800' },
-  { value: 'COORDINATOR', label: 'Coordinator', icon: '📋', color: 'bg-gray-100 text-gray-800' },
-  { value: 'INTERN', label: 'Intern', icon: '🎓', color: 'bg-gray-100 text-gray-800' }
+  { value: 'SPECIALIST', label: 'Specialist', icon: '🔧', color: 'bg-muted text-muted-foreground' },
+  { value: 'COORDINATOR', label: 'Coordinator', icon: '📋', color: 'bg-muted text-muted-foreground' },
+  { value: 'INTERN', label: 'Intern', icon: '🎓', color: 'bg-muted text-muted-foreground' }
 ];
 
 const contactMethods = [
@@ -555,10 +555,10 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-foreground">
               {mode === 'create' ? 'Add New Contact' : `Edit ${contact?.fullName}`}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {mode === 'create' 
                 ? 'Create a new professional contact profile' 
                 : 'Update contact information and settings'
@@ -572,7 +572,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                 {!contact.isActive && (
                   <Badge variant="destructive">Inactive</Badge>
                 )}
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   Created {new Date(contact.createdAt).toLocaleDateString()}
                 </span>
               </div>
@@ -715,7 +715,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
               </Label>
               <div className="space-y-2">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     placeholder="Search companies..."
                     value={companySearchTerm}
@@ -745,10 +745,10 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                   </SelectContent>
                 </Select>
                 {getSelectedCompany() && (
-                  <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                  <div className="p-2 bg-primary/10 rounded border border-primary/20">
                     <div className="flex items-center space-x-2">
-                      <Building2 className="w-4 h-4 text-blue-600" />
-                      <span className="font-medium text-blue-900">{getSelectedCompany()?.name}</span>
+                      <Building2 className="w-4 h-4 text-primary" />
+                      <span className="font-medium text-primary">{getSelectedCompany()?.name}</span>
                       <Badge variant="outline">{getSelectedCompany()?.companyType.replace(/_/g, ' ')}</Badge>
                     </div>
                   </div>
@@ -944,7 +944,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
 
             <div>
               <Label htmlFor="duties">Duties/Handles</Label>
-              <div className="border border-gray-300 rounded-md p-3 min-h-[80px] bg-white">
+              <div className="border border-border rounded-md p-3 min-h-[80px] bg-card">
                 {/* Selected duties display */}
                 {selectedDuties.length > 0 ? (
                   <div className="flex flex-wrap gap-2 mb-2">
@@ -955,7 +955,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                         <Badge
                           key={dutyId}
                           variant="secondary"
-                          className="flex items-center space-x-1 cursor-pointer hover:bg-gray-200"
+                          className="flex items-center space-x-1 cursor-pointer hover:bg-muted"
                           onClick={() => handleDutyToggle(dutyId)}
                         >
                           <span>{duty.name}</span>
@@ -965,7 +965,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                     })}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500 mb-2">No duties selected</p>
+                  <p className="text-sm text-muted-foreground mb-2">No duties selected</p>
                 )}
 
                 {/* Add duty button */}
@@ -985,7 +985,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                 <Card className="mt-2 max-h-96 overflow-y-auto">
                   <CardContent className="p-4">
                     {availableDuties.length === 0 ? (
-                      <p className="text-sm text-gray-500">Loading duties...</p>
+                      <p className="text-sm text-muted-foreground">Loading duties...</p>
                     ) : (
                       <div className="space-y-4">
                         {/* Group duties by category */}
@@ -995,7 +995,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
 
                           return (
                             <div key={category}>
-                              <h4 className="text-sm font-semibold text-gray-700 mb-2 border-b pb-1">
+                              <h4 className="text-sm font-semibold text-foreground mb-2 border-b pb-1">
                                 {category.replace(/_/g, ' ')}
                               </h4>
                               <div className="grid grid-cols-2 gap-2">
@@ -1005,8 +1005,8 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                                     onClick={() => handleDutyToggle(duty.id)}
                                     className={`flex items-center space-x-2 p-2 rounded cursor-pointer transition-colors ${
                                       selectedDuties.includes(duty.id)
-                                        ? 'bg-blue-100 border border-blue-300'
-                                        : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                        ? 'bg-primary/10 border border-primary/30'
+                                        : 'bg-muted hover:bg-muted/80 border border-border'
                                     }`}
                                   >
                                     <Checkbox
@@ -1014,9 +1014,9 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                                       readOnly
                                     />
                                     <div className="flex-1">
-                                      <div className="text-sm font-medium text-gray-900">{duty.name}</div>
+                                      <div className="text-sm font-medium text-foreground">{duty.name}</div>
                                       {duty.description && (
-                                        <div className="text-xs text-gray-500">{duty.description}</div>
+                                        <div className="text-xs text-muted-foreground">{duty.description}</div>
                                       )}
                                     </div>
                                   </div>
@@ -1031,7 +1031,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                 </Card>
               )}
 
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Select duties and responsibilities this person handles
               </p>
             </div>
@@ -1040,7 +1040,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
             {formData.companyId && (
               <div>
                 <Label htmlFor="teams">Teams</Label>
-                <div className="border border-gray-300 rounded-md p-3 min-h-[80px] bg-white">
+                <div className="border border-border rounded-md p-3 min-h-[80px] bg-card">
                   {/* Selected teams display */}
                   {selectedTeams.length > 0 ? (
                     <div className="flex flex-wrap gap-2 mb-2">
@@ -1055,7 +1055,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                           >
                             <span>{team.name}</span>
                             {selectedTeam.isPrimary && (
-                              <span className="text-xs bg-blue-500 text-white px-1 rounded">Primary</span>
+                              <span className="text-xs bg-primary text-primary-foreground px-1 rounded">Primary</span>
                             )}
                             <X
                               className="w-3 h-3 cursor-pointer hover:text-red-600"
@@ -1066,7 +1066,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                       })}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 mb-2">No teams selected</p>
+                    <p className="text-sm text-muted-foreground mb-2">No teams selected</p>
                   )}
 
                   {/* Add team button */}
@@ -1086,7 +1086,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                   <Card className="mt-2 max-h-96 overflow-y-auto">
                     <CardContent className="p-4">
                       {availableTeams.length === 0 ? (
-                        <p className="text-sm text-gray-500">No teams available for this company. Create teams first.</p>
+                        <p className="text-sm text-muted-foreground">No teams available for this company. Create teams first.</p>
                       ) : (
                         <div className="space-y-2">
                           {availableTeams.map((team) => (
@@ -1095,8 +1095,8 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                               onClick={() => handleTeamToggle(team.id)}
                               className={`flex items-center justify-between p-3 rounded cursor-pointer transition-colors ${
                                 selectedTeams.find(t => t.teamId === team.id)
-                                  ? 'bg-blue-100 border border-blue-300'
-                                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                  ? 'bg-primary/10 border border-primary/30'
+                                  : 'bg-muted hover:bg-muted/80 border border-border'
                               }`}
                             >
                               <div className="flex items-center space-x-3">
@@ -1105,8 +1105,8 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                                   readOnly
                                 />
                                 <div>
-                                  <div className="text-sm font-medium text-gray-900">{team.name}</div>
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-sm font-medium text-foreground">{team.name}</div>
+                                  <div className="text-xs text-muted-foreground">
                                     {team.type.replace(/_/g, ' ')}
                                     {team.description && ` • ${team.description}`}
                                   </div>
@@ -1133,7 +1133,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
                   </Card>
                 )}
 
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Assign this person to teams within their company
                 </p>
               </div>
@@ -1190,7 +1190,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
               </div>
               
               {mode === 'edit' && contact && (
-                <div className="space-y-2 text-sm text-gray-600">
+                <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4" />
                     <span>Created: {new Date(contact.createdAt).toLocaleDateString()}</span>

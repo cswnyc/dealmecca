@@ -94,14 +94,14 @@ export function EditablePostCard({ post, onUpdate, onCancel }: EditablePostCardP
   };
 
   return (
-    <div className="p-6 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+    <div className="p-6 bg-primary/10 border-l-4 border-primary rounded-lg">
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <span>Editing post by</span>
           {!post.isAnonymous && post.author.company ? (
-            <Link 
+            <Link
               href={`/orgs/companies/${post.author.company.id}`}
-              className="font-medium hover:text-blue-600 flex items-center space-x-1"
+              className="font-medium hover:text-primary flex items-center space-x-1"
             >
               <span>{post.author.company.name}</span>
             </Link>
@@ -125,7 +125,7 @@ export function EditablePostCard({ post, onUpdate, onCancel }: EditablePostCardP
           </button>
           <button
             onClick={onCancel}
-            className="inline-flex items-center space-x-1 px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
+            className="inline-flex items-center space-x-1 px-3 py-1 bg-muted text-muted-foreground text-sm rounded hover:bg-muted/80"
           >
             <XMarkIcon className="w-4 h-4" />
             <span>Cancel</span>
@@ -136,23 +136,23 @@ export function EditablePostCard({ post, onUpdate, onCancel }: EditablePostCardP
       {/* Content Editor */}
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Content</label>
           <textarea
             value={editData.content}
             onChange={(e) => setEditData(prev => ({ ...prev, content: e.target.value }))}
             rows={6}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="Enter post content..."
           />
         </div>
 
         {/* Category Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Category</label>
           <select
             value={editData.categoryId}
             onChange={(e) => setEditData(prev => ({ ...prev, categoryId: e.target.value }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -164,17 +164,17 @@ export function EditablePostCard({ post, onUpdate, onCancel }: EditablePostCardP
 
         {/* Tags */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Tags</label>
           <input
             type="text"
             value={editData.tags.join(', ')}
             onChange={(e) => handleTagChange(e.target.value)}
             placeholder="Enter tags separated by commas"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           <div className="mt-1 flex flex-wrap gap-1">
             {editData.tags.map((tag, index) => (
-              <span key={index} className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+              <span key={index} className="inline-flex items-center px-2 py-1 bg-muted text-foreground text-xs rounded-full">
                 {tag}
               </span>
             ))}
@@ -183,7 +183,7 @@ export function EditablePostCard({ post, onUpdate, onCancel }: EditablePostCardP
 
         {/* Company Mentions */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Company Mentions</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Company Mentions</label>
           <AdminMentionPicker
             type="companies"
             selected={editData.companyMentions}
@@ -194,7 +194,7 @@ export function EditablePostCard({ post, onUpdate, onCancel }: EditablePostCardP
 
         {/* Contact Mentions */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Contact Mentions</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Contact Mentions</label>
           <AdminMentionPicker
             type="contacts"
             selected={editData.contactMentions}
@@ -210,36 +210,36 @@ export function EditablePostCard({ post, onUpdate, onCancel }: EditablePostCardP
               type="checkbox"
               checked={editData.isPinned}
               onChange={(e) => setEditData(prev => ({ ...prev, isPinned: e.target.checked }))}
-              className="rounded border-gray-300 focus:ring-blue-500"
+              className="rounded border-border focus:ring-primary"
             />
-            <span className="ml-2 text-sm text-gray-700">Pinned</span>
+            <span className="ml-2 text-sm text-foreground">Pinned</span>
           </label>
-          
+
           <label className="inline-flex items-center">
             <input
               type="checkbox"
               checked={editData.isFeatured}
               onChange={(e) => setEditData(prev => ({ ...prev, isFeatured: e.target.checked }))}
-              className="rounded border-gray-300 focus:ring-blue-500"
+              className="rounded border-border focus:ring-primary"
             />
-            <span className="ml-2 text-sm text-gray-700">Featured</span>
+            <span className="ml-2 text-sm text-foreground">Featured</span>
           </label>
-          
+
           <label className="inline-flex items-center">
             <input
               type="checkbox"
               checked={editData.isLocked}
               onChange={(e) => setEditData(prev => ({ ...prev, isLocked: e.target.checked }))}
-              className="rounded border-gray-300 focus:ring-blue-500"
+              className="rounded border-border focus:ring-primary"
             />
-            <span className="ml-2 text-sm text-gray-700">Locked</span>
+            <span className="ml-2 text-sm text-foreground">Locked</span>
           </label>
         </div>
 
         {/* Current Mentions Preview */}
         {(editData.companyMentions.length > 0 || editData.contactMentions.length > 0) && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Current Mentions</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Current Mentions</label>
             <div className="flex flex-wrap gap-2">
               {editData.companyMentions.map((company: any) => (
                 <div key={company.id} className="inline-flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">

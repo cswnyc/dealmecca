@@ -34,8 +34,8 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
         disabled={disabled}
         onClick={handleClick}
         className={cn(
-          "peer h-4 w-4 shrink-0 rounded-sm border border-gray-300 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-          (checked || indeterminate) ? "bg-blue-600 border-blue-600 text-white" : "bg-white",
+          "peer h-4 w-4 shrink-0 rounded-sm border border-input ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          (checked || indeterminate) ? "bg-primary border-primary text-primary-foreground" : "bg-background",
           className
         )}
         {...props}

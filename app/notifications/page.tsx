@@ -120,7 +120,7 @@ export default function NotificationsPage() {
       case 'mention':
         return <ExclamationCircleIcon className="w-5 h-5 text-orange-500" />;
       default:
-        return <BellIcon className="w-5 h-5 text-gray-500" />;
+        return <BellIcon className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
@@ -141,10 +141,10 @@ export default function NotificationsPage() {
       <ForumLayout>
         <div className="max-w-4xl mx-auto p-6">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded mb-6 w-1/3"></div>
+            <div className="h-8 bg-muted rounded mb-6 w-1/3"></div>
             <div className="space-y-4">
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="h-20 bg-gray-200 rounded"></div>
+                <div key={i} className="h-20 bg-muted rounded"></div>
               ))}
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function NotificationsPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <BellIcon className="w-6 h-6 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+              <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
               {unreadCount > 0 && (
                 <span className="bg-red-100 text-red-800 text-sm font-medium px-2.5 py-0.5 rounded">
                   {unreadCount} unread
@@ -188,9 +188,9 @@ export default function NotificationsPage() {
 
           {notifications.length === 0 ? (
             <div className="text-center py-12">
-              <BellIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications yet</h3>
-              <p className="text-gray-600 mb-6">
+              <BellIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No notifications yet</h3>
+              <p className="text-muted-foreground mb-6">
                 You'll see notifications here when people interact with your posts or mention you.
               </p>
               <button
@@ -207,7 +207,7 @@ export default function NotificationsPage() {
                   key={notification.id}
                   className={`p-4 rounded-lg border transition-colors cursor-pointer ${
                     notification.read
-                      ? 'bg-white border-gray-200'
+                      ? 'bg-white border-border'
                       : 'bg-blue-50 border-blue-200'
                   }`}
                   onClick={() => {
@@ -237,17 +237,17 @@ export default function NotificationsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <p className={`text-sm font-medium ${
-                          notification.read ? 'text-gray-700' : 'text-gray-900'
+                          notification.read ? 'text-muted-foreground' : 'text-foreground'
                         }`}>
                           {notification.title}
                         </p>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {formatTimeAgo(notification.createdAt)}
                         </span>
                       </div>
 
                       <p className={`text-sm mt-1 ${
-                        notification.read ? 'text-gray-500' : 'text-gray-700'
+                        notification.read ? 'text-muted-foreground' : 'text-muted-foreground'
                       }`}>
                         {notification.message}
                       </p>

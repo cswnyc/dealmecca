@@ -74,8 +74,8 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
   }
 
   const getEventFormat = () => {
-    if (event.isVirtual) return { label: 'Virtual', color: 'bg-purple-100 text-purple-700' }
-    if (event.isHybrid) return { label: 'Hybrid', color: 'bg-blue-100 text-blue-700' }
+    if (event.isVirtual) return { label: 'Virtual', color: 'bg-accent/20 text-accent-foreground' }
+    if (event.isHybrid) return { label: 'Hybrid', color: 'bg-primary/20 text-primary' }
     return { label: 'In-Person', color: 'bg-green-100 text-green-700' }
   }
 
@@ -85,51 +85,51 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
     <div className="space-y-6">
       {/* Event Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg border">
+        <div className="bg-card p-4 rounded-lg border">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Event Format</span>
+            <span className="text-sm font-medium text-muted-foreground">Event Format</span>
             <span className={`text-xs px-2 py-1 rounded-full ${eventFormat.color}`}>
               {eventFormat.label}
             </span>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-muted-foreground">
               <Calendar className="w-4 h-4 mr-2" />
               <span>{formatDate(event.startDate)} - {formatDate(event.endDate)}</span>
             </div>
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-muted-foreground">
               <MapPin className="w-4 h-4 mr-2" />
               <span>{event.location}</span>
             </div>
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-muted-foreground">
               <Building className="w-4 h-4 mr-2" />
               <span>{event.venue}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border">
+        <div className="bg-card p-4 rounded-lg border">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Attendees</span>
-            <Users className="w-5 h-5 text-blue-500" />
+            <span className="text-sm font-medium text-muted-foreground">Attendees</span>
+            <Users className="w-5 h-5 text-primary" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">{event._count.attendees}</div>
-          <div className="text-sm text-gray-600">DealMecca users</div>
+          <div className="text-2xl font-bold text-foreground">{event._count.attendees}</div>
+          <div className="text-sm text-muted-foreground">DealMecca users</div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border">
+        <div className="bg-card p-4 rounded-lg border">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Reviews</span>
+            <span className="text-sm font-medium text-muted-foreground">Reviews</span>
             <MessageSquare className="w-5 h-5 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">{event._count.ratings}</div>
-          <div className="text-sm text-gray-600">User ratings</div>
+          <div className="text-2xl font-bold text-foreground">{event._count.ratings}</div>
+          <div className="text-sm text-muted-foreground">User ratings</div>
         </div>
       </div>
 
       {/* Ratings Breakdown */}
-      <div className="bg-white p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Ratings Breakdown</h3>
+      <div className="bg-card p-6 rounded-lg border">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Ratings Breakdown</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className={`p-4 rounded-lg text-center ${getRatingBg(avgRatings.overall)}`}>
             <div className="flex items-center justify-center mb-2">
@@ -138,8 +138,8 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
                 {avgRatings.overall.toFixed(1)}
               </span>
             </div>
-            <div className="text-sm font-medium text-gray-700">Overall</div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-sm font-medium text-foreground">Overall</div>
+            <div className="text-xs text-muted-foreground mt-1">
               {avgRatings.overall >= 4.5 ? 'Excellent' : 
                avgRatings.overall >= 4.0 ? 'Very Good' : 
                avgRatings.overall >= 3.5 ? 'Good' : 
@@ -154,8 +154,8 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
                 {avgRatings.networking.toFixed(1)}
               </span>
             </div>
-            <div className="text-sm font-medium text-gray-700">Networking</div>
-            <div className="text-xs text-gray-500 mt-1">Opportunities</div>
+            <div className="text-sm font-medium text-foreground">Networking</div>
+            <div className="text-xs text-muted-foreground mt-1">Opportunities</div>
           </div>
 
           <div className={`p-4 rounded-lg text-center ${getRatingBg(avgRatings.content)}`}>
@@ -165,8 +165,8 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
                 {avgRatings.content.toFixed(1)}
               </span>
             </div>
-            <div className="text-sm font-medium text-gray-700">Content</div>
-            <div className="text-xs text-gray-500 mt-1">Quality</div>
+            <div className="text-sm font-medium text-foreground">Content</div>
+            <div className="text-xs text-muted-foreground mt-1">Quality</div>
           </div>
 
           <div className={`p-4 rounded-lg text-center ${getRatingBg(avgRatings.roi)}`}>
@@ -176,73 +176,73 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
                 {avgRatings.roi.toFixed(1)}
               </span>
             </div>
-            <div className="text-sm font-medium text-gray-700">ROI</div>
-            <div className="text-xs text-gray-500 mt-1">Value</div>
+            <div className="text-sm font-medium text-foreground">ROI</div>
+            <div className="text-xs text-muted-foreground mt-1">Value</div>
           </div>
         </div>
       </div>
 
       {/* Cost Analysis */}
-      <div className="bg-white p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Cost Analysis</h3>
+      <div className="bg-card p-6 rounded-lg border">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Cost Analysis</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium text-gray-700 mb-3">Average Costs</h4>
+            <h4 className="font-medium text-foreground mb-3">Average Costs</h4>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Registration</span>
+                <span className="text-sm text-muted-foreground">Registration</span>
                 <span className="font-medium">{formatCurrency(avgCosts.registration)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Travel</span>
+                <span className="text-sm text-muted-foreground">Travel</span>
                 <span className="font-medium">{formatCurrency(avgCosts.travel)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Accommodation</span>
+                <span className="text-sm text-muted-foreground">Accommodation</span>
                 <span className="font-medium">{formatCurrency(avgCosts.accommodation)}</span>
               </div>
               <div className="border-t pt-3">
                 <div className="flex justify-between items-center font-semibold">
                   <span>Total Average</span>
-                  <span className="text-lg text-blue-600">{formatCurrency(avgCosts.total)}</span>
+                  <span className="text-lg text-primary">{formatCurrency(avgCosts.total)}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium text-gray-700 mb-3">Cost Breakdown</h4>
+            <h4 className="font-medium text-foreground mb-3">Cost Breakdown</h4>
             <div className="space-y-3">
               <div className="flex items-center">
-                <div className="w-full bg-gray-200 rounded-full h-2 mr-3">
-                  <div 
-                    className="bg-blue-500 h-2 rounded-full" 
+                <div className="w-full bg-muted rounded-full h-2 mr-3">
+                  <div
+                    className="bg-primary h-2 rounded-full"
                     style={{ width: `${(avgCosts.registration / avgCosts.total) * 100}%` }}
                   />
                 </div>
-                <span className="text-sm text-gray-600 min-w-0">
+                <span className="text-sm text-muted-foreground min-w-0">
                   {((avgCosts.registration / avgCosts.total) * 100).toFixed(0)}%
                 </span>
               </div>
               <div className="flex items-center">
-                <div className="w-full bg-gray-200 rounded-full h-2 mr-3">
-                  <div 
-                    className="bg-green-500 h-2 rounded-full" 
+                <div className="w-full bg-muted rounded-full h-2 mr-3">
+                  <div
+                    className="bg-green-500 h-2 rounded-full"
                     style={{ width: `${(avgCosts.travel / avgCosts.total) * 100}%` }}
                   />
                 </div>
-                <span className="text-sm text-gray-600 min-w-0">
+                <span className="text-sm text-muted-foreground min-w-0">
                   {((avgCosts.travel / avgCosts.total) * 100).toFixed(0)}%
                 </span>
               </div>
               <div className="flex items-center">
-                <div className="w-full bg-gray-200 rounded-full h-2 mr-3">
-                  <div 
-                    className="bg-yellow-500 h-2 rounded-full" 
+                <div className="w-full bg-muted rounded-full h-2 mr-3">
+                  <div
+                    className="bg-yellow-500 h-2 rounded-full"
                     style={{ width: `${(avgCosts.accommodation / avgCosts.total) * 100}%` }}
                   />
                 </div>
-                <span className="text-sm text-gray-600 min-w-0">
+                <span className="text-sm text-muted-foreground min-w-0">
                   {((avgCosts.accommodation / avgCosts.total) * 100).toFixed(0)}%
                 </span>
               </div>
@@ -252,44 +252,44 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
       </div>
 
       {/* ROI Statistics */}
-      <div className="bg-white p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">ROI Statistics</h3>
+      <div className="bg-card p-6 rounded-lg border">
+        <h3 className="text-lg font-semibold text-foreground mb-4">ROI Statistics</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <DollarSign className="w-8 h-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-green-600">{formatCurrency(roiStats.avgRevenue)}</div>
-            <div className="text-sm text-gray-600">Avg Revenue Generated</div>
-            <div className="text-xs text-gray-500 mt-1">Per attendee</div>
+            <div className="text-sm text-muted-foreground">Avg Revenue Generated</div>
+            <div className="text-xs text-muted-foreground/70 mt-1">Per attendee</div>
           </div>
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-blue-600">{roiStats.avgConnections}</div>
-            <div className="text-sm text-gray-600">Avg New Connections</div>
-            <div className="text-xs text-gray-500 mt-1">Quality contacts</div>
+          <div className="text-center p-4 bg-primary/10 rounded-lg">
+            <Users className="w-8 h-8 text-primary mx-auto mb-2" />
+            <div className="text-2xl font-bold text-primary">{roiStats.avgConnections}</div>
+            <div className="text-sm text-muted-foreground">Avg New Connections</div>
+            <div className="text-xs text-muted-foreground/70 mt-1">Quality contacts</div>
           </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <Target className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-purple-600">{roiStats.avgDeals}</div>
-            <div className="text-sm text-gray-600">Avg Deals Closed</div>
-            <div className="text-xs text-gray-500 mt-1">Within 6 months</div>
+          <div className="text-center p-4 bg-accent/10 rounded-lg">
+            <Target className="w-8 h-8 text-accent-foreground mx-auto mb-2" />
+            <div className="text-2xl font-bold text-accent-foreground">{roiStats.avgDeals}</div>
+            <div className="text-sm text-muted-foreground">Avg Deals Closed</div>
+            <div className="text-xs text-muted-foreground/70 mt-1">Within 6 months</div>
           </div>
         </div>
         
         {/* ROI Calculation */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium text-gray-700 mb-2">ROI Calculation</h4>
+        <div className="mt-6 p-4 bg-muted rounded-lg">
+          <h4 className="font-medium text-foreground mb-2">ROI Calculation</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <span className="text-gray-600">Investment:</span>
+              <span className="text-muted-foreground">Investment:</span>
               <span className="font-medium ml-2">{formatCurrency(avgCosts.total)}</span>
             </div>
             <div>
-              <span className="text-gray-600">Return:</span>
+              <span className="text-muted-foreground">Return:</span>
               <span className="font-medium ml-2">{formatCurrency(roiStats.avgRevenue)}</span>
             </div>
             <div>
-              <span className="text-gray-600">ROI:</span>
-              <span className={`font-bold ml-2 ${roiStats.avgRevenue > avgCosts.total ? 'text-green-600' : 'text-red-700'}`}>
+              <span className="text-muted-foreground">ROI:</span>
+              <span className={`font-bold ml-2 ${roiStats.avgRevenue > avgCosts.total ? 'text-green-600' : 'text-destructive'}`}>
                 {(((roiStats.avgRevenue - avgCosts.total) / avgCosts.total) * 100).toFixed(0)}%
               </span>
             </div>
@@ -298,31 +298,31 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
       </div>
 
       {/* Attendee Demographics */}
-      <div className="bg-white p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Attendee Insights</h3>
+      <div className="bg-card p-6 rounded-lg border">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Attendee Insights</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium text-gray-700 mb-3">Industry Focus</h4>
+            <h4 className="font-medium text-foreground mb-3">Industry Focus</h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">{event.industry}</span>
+                <span className="text-sm text-muted-foreground">{event.industry}</span>
                 <span className="text-sm font-medium">Primary</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">{event.category}</span>
+                <span className="text-sm text-muted-foreground">{event.category}</span>
                 <span className="text-sm font-medium">Event Type</span>
               </div>
             </div>
           </div>
           <div>
-            <h4 className="font-medium text-gray-700 mb-3">Networking Potential</h4>
+            <h4 className="font-medium text-foreground mb-3">Networking Potential</h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Active Users</span>
+                <span className="text-sm text-muted-foreground">Active Users</span>
                 <span className="text-sm font-medium">{event._count.attendees}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Avg Connections</span>
+                <span className="text-sm text-muted-foreground">Avg Connections</span>
                 <span className="text-sm font-medium">{roiStats.avgConnections}</span>
               </div>
             </div>

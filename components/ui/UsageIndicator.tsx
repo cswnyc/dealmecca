@@ -112,7 +112,7 @@ export function UsageIndicator({
 
   if (loading) {
     return (
-      <div className={`animate-pulse bg-gray-200 h-4 rounded ${className}`} />
+      <div className={`animate-pulse bg-muted h-4 rounded ${className}`} />
     );
   }
 

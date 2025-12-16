@@ -205,10 +205,10 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   // Firebase authentication
   const { user: firebaseUser, idToken, loading: authLoading, refreshToken } = useFirebaseAuth();
   const urgencyColors = {
-    LOW: 'text-gray-500',
-    MEDIUM: 'text-blue-500', 
+    LOW: 'text-muted-foreground',
+    MEDIUM: 'text-primary',
     HIGH: 'text-orange-500',
-    URGENT: 'text-red-700'
+    URGENT: 'text-destructive'
   };
 
   // Auto-load comments when expandable
@@ -703,26 +703,26 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 hover:-translate-y-0.5 group">
+    <div className="bg-card rounded-lg shadow-sm border border-border p-6 hover:shadow-lg hover:border-border/80 transition-all duration-300 hover:-translate-y-0.5 group">
       {/* Header */}
       <div className="flex items-start space-x-3 mb-4">
         {/* Company Logo as Main Avatar */}
         {!post.isAnonymous && post.author.company ? (
           <Link href={`/orgs/companies/${post.author.company.id}`} className="flex-shrink-0">
             {post.author.company.logoUrl ? (
-              <img 
-                src={post.author.company.logoUrl} 
+              <img
+                src={post.author.company.logoUrl}
                 alt={post.author.company.name}
-                className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                className="w-12 h-12 rounded-lg object-cover border border-border"
               />
             ) : (
-              <div className="w-12 h-12 rounded-lg bg-blue-100 border border-gray-200 flex items-center justify-center">
-                <BuildingOfficeIcon className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 rounded-lg bg-primary/10 border border-border flex items-center justify-center">
+                <BuildingOfficeIcon className="w-6 h-6 text-primary" />
               </div>
             )}
           </Link>
         ) : (
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-100 to-blue-100 border border-gray-200 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 border border-border flex items-center justify-center">
             <span className="text-xl">
               {['🎯', '💡', '🚀', '🎨', '📊', '🔥', '⭐', '💎'][Math.floor(Math.random() * 8)]}
                 </span>
@@ -735,7 +735,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             <div className="flex items-center space-x-2 flex-1 min-w-0">
               {post.postType === 'poll' ? (
                 /* For polls, always show "Polls" as the main topic */
-                <span className="font-semibold text-gray-900 dark:text-white text-lg">Polls</span>
+                <span className="font-semibold text-foreground text-lg">Polls</span>
               ) : post.primaryTopic ? (
                 // Display primary topic prominently - works for both anonymous and non-anonymous posts
                 <div className="flex items-center space-x-1">
@@ -751,11 +751,11 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                       post.primaryTopicType === 'contact' ? `/people/${post.primaryTopicId}` :
                       `/topics/${post.primaryTopicId}`
                     }
-                    className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center space-x-1"
+                    className="font-semibold text-foreground text-lg hover:text-primary transition-colors flex items-center space-x-1"
                   >
                     <span>{post.primaryTopic.name}</span>
                     {post.primaryTopic.verified && (
-                      <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                      <CheckBadgeIcon className="w-4 h-4 text-primary" />
                     )}
                   </Link>
                   {/* Show expandable additional topics if there are company/contact mentions */}
@@ -782,24 +782,24 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                     <div className="flex items-center space-x-2">
                       <Link
                         href={`/orgs/companies/${post.author.company.id}`}
-                        className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center space-x-1"
+                        className="font-semibold text-foreground text-lg hover:text-primary transition-colors flex items-center space-x-1"
                       >
                         <span>{post.author.company.name}</span>
                         {post.author.company.verified && (
-                          <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                          <CheckBadgeIcon className="w-4 h-4 text-primary" />
                         )}
                       </Link>
                       {/* Show Company @ Agency format if there are company mentions */}
                       {post.companyMentions && post.companyMentions.length > 0 && (
                         <>
-                          <span className="text-gray-400 text-lg">@</span>
+                          <span className="text-muted-foreground text-lg">@</span>
                           <Link
                             href={`/orgs/companies/${post.companyMentions[0].company.id}`}
-                            className="font-medium text-gray-700 hover:text-blue-600 transition-colors flex items-center space-x-1"
+                            className="font-medium text-foreground hover:text-primary transition-colors flex items-center space-x-1"
                           >
                             <span>{post.companyMentions[0].company.name}</span>
                             {post.companyMentions[0].company.verified && (
-                              <CheckBadgeIcon className="w-3 h-3 text-blue-500" />
+                              <CheckBadgeIcon className="w-3 h-3 text-primary" />
                             )}
                           </Link>
                         </>
@@ -809,7 +809,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                     // Fallback to category when no company - NEVER show username as main header
                     <Link
                       href={`/forum?category=${post.category.slug}`}
-                      className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors no-underline"
+                      className="font-semibold text-foreground text-lg hover:text-primary transition-colors no-underline"
                     >
                       {post.category.name}
                     </Link>
@@ -819,18 +819,18 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 // Anonymous posts without primary topic - show category
                 <Link
                   href={`/forum?category=${post.category.slug}`}
-                  className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors no-underline"
+                  className="font-semibold text-foreground text-lg hover:text-primary transition-colors no-underline"
                 >
                   {post.category.name}
                 </Link>
               )}
             </div>
-            <button 
+            <button
               onClick={handleFollow}
               className={`px-3 py-1 text-sm rounded-full transition-colors flex items-center space-x-1 ${
-                isFollowing 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                  : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                isFollowing
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'text-muted-foreground bg-muted hover:bg-muted/80'
               }`}
             >
               {isFollowing ? (
@@ -852,9 +852,9 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           </div>
           
           {/* Category Only - Clean display */}
-          <div className="flex items-center space-x-2 text-sm text-gray-700 dark:text-slate-400 mb-2">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
             <span>in</span>
-            <span className="text-gray-900 dark:text-white font-medium">{post.category.name}</span>
+            <span className="text-foreground font-medium">{post.category.name}</span>
           </div>
         </div>
           </div>
@@ -864,47 +864,47 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         <div className="flex items-center space-x-2">
           {/* Trending indicator */}
           {post.views > 100 && (
-            <div className="flex items-center space-x-1 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
+            <div className="flex items-center space-x-1 text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
               <span>🔥</span>
               <span>Hot</span>
             </div>
           )}
           {/* New indicator */}
           {new Date(post.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000) && (
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
           )}
         </div>
       </div>
         
       {/* Content preview with mentions - Dynamic based on post type */}
-      <div className="text-gray-700 dark:text-slate-300 mb-4">
+      <div className="text-foreground mb-4">
         {post.postType === 'list' && listItemsArray.length > 0 ? (
-          <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 space-y-3">
+          <div className="bg-muted rounded-lg p-4 space-y-3">
             {/* Sort dropdown */}
             <div className="flex justify-end mb-2">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 Sort by: <span className="font-medium">Chronological ▾</span>
               </div>
             </div>
 
             {/* List items with actions */}
             {listItemsArray.map((item, index) => (
-              <div key={index} className="bg-white dark:bg-slate-900 rounded-lg p-4 flex items-center justify-between group hover:shadow-sm transition-shadow">
+              <div key={index} className="bg-card rounded-lg p-4 flex items-center justify-between group hover:shadow-sm transition-shadow">
                 <div className="flex items-center space-x-3 flex-1">
-                  <span className="text-gray-900 dark:text-white font-medium">{item}</span>
-                  <span className="text-gray-400 dark:text-slate-500">·</span>
-                  <span className="text-sm text-gray-500 dark:text-slate-400">10 mins</span>
+                  <span className="text-foreground font-medium">{item}</span>
+                  <span className="text-muted-foreground">·</span>
+                  <span className="text-sm text-muted-foreground">10 mins</span>
                 </div>
                 <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <button className="p-2 hover:bg-muted rounded-lg transition-colors">
+                    <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                   </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <ChevronUpIcon className="w-4 h-4 text-gray-600" />
+                  <button className="p-2 hover:bg-muted rounded-lg transition-colors">
+                    <ChevronUpIcon className="w-4 h-4 text-muted-foreground" />
                   </button>
-                  <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium text-gray-700 transition-colors">
+                  <button className="px-4 py-2 bg-muted hover:bg-muted/80 rounded-full text-sm font-medium text-foreground transition-colors">
                     Comment
                   </button>
                 </div>
@@ -912,7 +912,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             ))}
 
             {/* Add another */}
-            <div className="text-gray-400 text-sm pt-2">
+            <div className="text-muted-foreground text-sm pt-2">
               Add another...
             </div>
           </div>
@@ -920,7 +920,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           <div className="space-y-3">
             {/* Poll Question */}
             {post.content && (
-              <div className="text-gray-900 dark:text-white font-medium text-lg mb-4">
+              <div className="text-foreground font-medium text-lg mb-4">
                 {post.content}
               </div>
             )}
@@ -928,7 +928,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             {/* Loading state */}
             {pollLoading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : (
               <>
@@ -953,7 +953,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                       {/* Background bar */}
                       <div
                         className={`absolute inset-0 rounded-lg transition-all ${
-                          isUserVote ? 'bg-blue-200' : 'bg-blue-100'
+                          isUserVote ? 'bg-primary/30' : 'bg-primary/15'
                         }`}
                         style={{ width: `${percentage}%` }}
                       ></div>
@@ -961,16 +961,16 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                       {/* Content */}
                       <div className="relative flex items-center justify-between px-4 py-3">
                         <div className="flex items-center space-x-2">
-                          <span className="text-gray-900 dark:text-white font-medium">{choice}</span>
+                          <span className="text-foreground font-medium">{choice}</span>
                           {isUserVote && (
-                            <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
                           )}
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-blue-600 font-semibold text-lg">{percentage}%</span>
-                          <span className="text-gray-500 dark:text-slate-400 text-sm">({voteCount})</span>
+                          <span className="text-primary font-semibold text-lg">{percentage}%</span>
+                          <span className="text-muted-foreground text-sm">({voteCount})</span>
                         </div>
                       </div>
                     </button>
@@ -978,7 +978,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 })}
 
                 {/* Poll metadata */}
-                <div className="text-sm text-gray-600 dark:text-slate-400 pt-2">
+                <div className="text-sm text-muted-foreground pt-2">
                   {pollResults?.hasEnded ? (
                     <>
                       <span className="font-medium">Final results</span>
@@ -1020,22 +1020,22 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
 
       {/* User Attribution & Actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-slate-700">
+      <div className="flex items-center justify-between pt-4 border-t border-border">
         <div className="flex items-center space-x-3">
           {/* User Avatar who posted */}
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center border">
+            <div className="w-6 h-6 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full flex items-center justify-center border border-border">
               <span className="text-xs">
                 {['🎭', '👤', '🕶️', '🎪', '🎨', '🔮'][Math.floor(Math.random() * 6)]}
               </span>
             </div>
-            <span className="text-sm text-gray-700 dark:text-slate-200">
+            <span className="text-sm text-foreground">
               {post.isAnonymous
                 ? (post.anonymousHandle || 'Anonymous')
                 : (post.author.anonymousUsername || post.author.publicHandle || post.author.name)}
             </span>
-            <span className="text-sm text-gray-600 dark:text-slate-400">•</span>
-            <span className="text-sm text-gray-700 dark:text-slate-200">
+            <span className="text-sm text-muted-foreground">•</span>
+            <span className="text-sm text-foreground">
               {formatDistanceToNow(new Date(post.createdAt))} ago
             </span>
           </div>
@@ -1046,7 +1046,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             className={`flex items-center space-x-1 transition-colors ${
               isBookmarked
                 ? 'text-yellow-600 hover:text-yellow-700'
-                : 'text-gray-700 dark:text-slate-200 hover:text-yellow-600'
+                : 'text-foreground hover:text-yellow-600'
             }`}
             title={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
           >
@@ -1058,7 +1058,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           <div className="relative">
             <button
               onClick={() => setShowShareMenu(!showShareMenu)}
-              className="flex items-center space-x-1 text-gray-700 dark:text-slate-200 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="flex items-center space-x-1 text-foreground hover:text-foreground/80 transition-colors"
               title="Share post"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1069,10 +1069,10 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             
             {/* Share Menu */}
             {showShareMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[140px]">
+              <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[140px]">
                 <button
                   onClick={() => handleShare('copy')}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center space-x-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -1081,7 +1081,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 </button>
                 <button
                   onClick={() => handleShare('twitter')}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center space-x-2"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
@@ -1090,7 +1090,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 </button>
                 <button
                   onClick={() => handleShare('linkedin')}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center space-x-2"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -1104,7 +1104,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
       </div>
 
       {/* Enhanced Comment Box */}
-      <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700">
+      <div className="mt-4 pt-4 border-t border-border">
         <div>
           {/* Enhanced Comment Input */}
           <div>
@@ -1151,7 +1151,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                   }
                 }}
                 placeholder="Add a comment... Use @topic to mention categories"
-                className="w-full p-3 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-gray-900 dark:text-white dark:bg-slate-800 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 dark:hover:border-slate-600"
+                className="w-full p-3 border border-border rounded-lg text-sm text-foreground bg-background resize-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 hover:border-border/80"
                 rows={2}
                 disabled={submittingComment}
                 style={{ minHeight: '60px', maxHeight: '150px' }}
@@ -1159,7 +1159,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               
               {/* Topic Mention Suggestions */}
               {showMentions && mentionSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
                   {mentionSuggestions.map((topic, index) => (
                     <button
                       key={index}
@@ -1169,14 +1169,14 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                         setCommentText(words.join(' ') + ' ');
                         setShowMentions(false);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-100 flex items-center space-x-2"
+                      className="w-full text-left px-3 py-2 hover:bg-muted flex items-center space-x-2"
                     >
-                      <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
-                        <TagIcon className="w-3 h-3 text-purple-600" />
+                      <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center">
+                        <TagIcon className="w-3 h-3 text-accent-foreground" />
                       </div>
                       <div>
                         <div className="font-medium text-sm">{topic.name}</div>
-                        <div className="text-xs text-gray-500">{topic.description}</div>
+                        <div className="text-xs text-muted-foreground">{topic.description}</div>
                       </div>
                     </button>
                   ))}
@@ -1201,25 +1201,25 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             
             <div className="flex justify-between items-center mt-2">
               <div className="flex items-center space-x-4">
-                <label className="flex items-center text-xs text-gray-700 dark:text-slate-200">
+                <label className="flex items-center text-xs text-foreground">
                   <input
                     type="checkbox"
-                    className="mr-2 w-4 h-4 rounded border-gray-300 dark:border-slate-600 focus:ring-blue-500"
+                    className="mr-2 w-4 h-4 rounded border-border focus:ring-ring"
                     checked={commentAnonymous}
                     onChange={(e) => setCommentAnonymous(e.target.checked)}
                     disabled={submittingComment}
                   />
                   Anonymous
                 </label>
-                <span className="text-xs text-gray-600 dark:text-slate-400">
+                <span className="text-xs text-muted-foreground">
                   {commentText.length}/500
                 </span>
               </div>
-              
-              <button 
+
+              <button
                 onClick={handleSubmitComment}
                 disabled={!commentText.trim() || submittingComment || commentText.length > 500}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 hover:shadow-md"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 hover:shadow-md"
               >
                 {submittingComment ? (
                   <>
@@ -1242,9 +1242,9 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
       {/* Expanded Comments Section */}
       {expandable && expanded && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="mt-4 pt-4 border-t border-border">
           <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-3">
+            <h4 className="text-sm font-medium text-foreground mb-3">
               Discussion ({post._count.comments})
             </h4>
             
@@ -1252,10 +1252,10 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               <div className="space-y-3">
                 {[...Array(2)].map((_, i) => (
                   <div key={i} className="animate-pulse flex space-x-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                    <div className="w-8 h-8 bg-muted rounded-full"></div>
                     <div className="flex-1 space-y-2">
-                      <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                      <div className="h-3 bg-gray-100 rounded w-full"></div>
+                      <div className="h-3 bg-muted rounded w-1/4"></div>
+                      <div className="h-3 bg-muted/50 rounded w-full"></div>
                     </div>
                   </div>
                 ))}
@@ -1266,7 +1266,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 {comments.length > 1 && !showAllComments && (
                   <button
                     onClick={() => setShowAllComments(true)}
-                    className="flex items-center space-x-2 text-sm text-blue-700 hover:text-blue-900 font-medium mb-4 font-medium transition-colors"
+                    className="flex items-center space-x-2 text-sm text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -1279,7 +1279,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 {showAllComments && (
                   <button
                     onClick={() => setShowAllComments(false)}
-                    className="flex items-center space-x-2 text-sm text-blue-700 hover:text-blue-900 font-medium mb-4 font-medium transition-colors"
+                    className="flex items-center space-x-2 text-sm text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -1306,36 +1306,36 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                           size={32}
                         />
                       ) : (
-                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                          <UserIcon className="w-4 h-4 text-gray-600" />
+                        <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                          <UserIcon className="w-4 h-4 text-muted-foreground" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
+                      <div className="bg-muted rounded-lg p-3 hover:bg-muted/80 transition-colors">
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium text-gray-900">
+                            <span className="text-sm font-medium text-foreground">
                               {comment.isAnonymous
                                 ? 'Anonymous'
                                 : (comment.author.anonymousUsername || comment.author.publicHandle || 'User')
                               }
                             </span>
-                            <span className="text-xs text-gray-700">
+                            <span className="text-xs text-muted-foreground">
                               {formatDistanceToNow(new Date(comment.createdAt))} ago
                             </span>
                           </div>
                         </div>
-                        <div className="text-sm text-gray-800">
+                        <div className="text-sm text-foreground">
                           {comment.content}
                         </div>
 
                         {/* Comment Actions */}
-                        <div className="flex items-center space-x-4 mt-2 pt-2 border-t border-gray-200">
+                        <div className="flex items-center space-x-4 mt-2 pt-2 border-t border-border">
                           {/* Reply button */}
                           <button
                             onClick={() => handleReply(comment.id, comment.isAnonymous ? comment.anonymousHandle : comment.author.anonymousUsername)}
-                            className="text-xs text-gray-700 hover:text-blue-600 transition-colors"
+                            className="text-xs text-muted-foreground hover:text-primary transition-colors"
                           >
                             Reply
                           </button>
@@ -1344,26 +1344,26 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
                       {/* Reply Form */}
                       {replyingTo === comment.id && (
-                        <div className="mt-3 ml-6 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-200">
+                        <div className="mt-3 ml-6 p-3 bg-primary/10 rounded-lg border-l-4 border-primary/30">
                           <div className="flex space-x-2">
                             <textarea
                               value={replyText}
                               onChange={(e) => setReplyText(e.target.value)}
                               placeholder="Write your reply..."
-                              className="flex-1 p-2 border border-gray-200 rounded text-sm resize-none text-gray-900"
+                              className="flex-1 p-2 border border-border rounded text-sm resize-none text-foreground bg-background"
                               rows={2}
                             />
                           </div>
                           <div className="flex justify-end space-x-2 mt-2">
                             <button
                               onClick={() => setReplyingTo(null)}
-                              className="px-3 py-1 text-xs text-gray-700 hover:text-gray-900"
+                              className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
                             >
                               Cancel
                             </button>
         <button
                               onClick={handleSubmitReply}
-                              className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                              className="px-3 py-1 bg-primary text-primary-foreground text-xs rounded hover:bg-primary/90"
         >
                               Reply
         </button>
@@ -1376,7 +1376,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               </div>
               </>
             ) : (
-              <p className="text-sm text-gray-700 italic">No comments yet. Be the first to comment!</p>
+              <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to comment!</p>
             )}
           </div>
 
@@ -1410,7 +1410,7 @@ function MultiTopicDisplay({
         {/* Primary Topic Name - Large, Clickable, Clean */}
         <Link
           href={`/forum?topic=${encodeURIComponent(primaryTopic.topic.name)}`}
-          className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 no-underline"
+          className="text-lg font-semibold text-foreground hover:text-primary transition-colors duration-200 no-underline"
         >
           {primaryTopic.topic.name}
         </Link>
@@ -1419,7 +1419,7 @@ function MultiTopicDisplay({
         {hasMultipleTopics && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 font-medium"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium"
           >
             +{remainingTopics.length} more
           </button>
@@ -1433,7 +1433,7 @@ function MultiTopicDisplay({
             <div key={tm.topic.id}>
               <Link
                 href={`/forum?topic=${encodeURIComponent(tm.topic.name)}`}
-                className="text-blue-700 hover:text-blue-900 font-medium transition-colors duration-200 no-underline font-medium"
+                className="text-primary hover:text-primary/80 font-medium transition-colors duration-200 no-underline"
               >
                 {tm.topic.name}
               </Link>
@@ -1484,20 +1484,20 @@ function AdditionalMentionsDisplay({
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Hover trigger */}
-      <span className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 font-medium cursor-default">
+      <span className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium cursor-default">
         +{allMentions.length} more
       </span>
 
       {/* Expanded list as popup/dropdown - shows on hover */}
       {isHovered && (
-        <div className="absolute z-10 top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] max-w-[300px]">
+        <div className="absolute z-10 top-full left-0 mt-1 bg-card border border-border rounded-lg shadow-lg p-3 min-w-[200px] max-w-[300px]">
           <div className="space-y-2">
             {allMentions.map((mention, index) => (
               <div key={`${mention.type}-${mention.id}`} className="flex items-center space-x-2">
                 {mention.type === 'company' ? (
-                  <BuildingOfficeIcon className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                  <BuildingOfficeIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 ) : (
-                  <UserIcon className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                  <UserIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 )}
                 <Link
                   href={
@@ -1505,12 +1505,12 @@ function AdditionalMentionsDisplay({
                       ? `/orgs/companies/${mention.id}`
                       : `/contacts/${mention.id}`
                   }
-                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 no-underline text-sm"
+                  className="text-primary hover:text-primary/80 font-medium transition-colors duration-200 no-underline text-sm"
                 >
                   {mention.name}
                 </Link>
                 {mention.verified && (
-                  <CheckBadgeIcon className="w-3 h-3 text-blue-500 flex-shrink-0" />
+                  <CheckBadgeIcon className="w-3 h-3 text-primary flex-shrink-0" />
                 )}
               </div>
             ))}

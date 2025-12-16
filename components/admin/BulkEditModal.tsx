@@ -149,13 +149,13 @@ export default function BulkEditModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <Card className="border-0 shadow-none">
           <CardHeader className="border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Settings className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <CardTitle className="text-xl">Bulk Edit Contacts</CardTitle>
@@ -172,13 +172,13 @@ export default function BulkEditModal({
 
           <CardContent className="pt-6">
             {loading && (
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mb-6 p-4 bg-primary/10 rounded-lg">
                 <div className="flex items-center space-x-3 mb-2">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
                   <span className="font-medium">Updating contacts...</span>
                 </div>
                 <Progress value={progress} className="w-full" />
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Processing {selectedContacts.length} contacts
                 </p>
               </div>
@@ -187,7 +187,7 @@ export default function BulkEditModal({
             {/* Selected Contacts Preview */}
             <div className="mb-6">
               <Label className="text-sm font-medium mb-2 block">Selected Contacts</Label>
-              <div className="max-h-32 overflow-y-auto border rounded-lg p-3 bg-gray-50">
+              <div className="max-h-32 overflow-y-auto border rounded-lg p-3 bg-muted">
                 <div className="flex flex-wrap gap-2">
                   {selectedContacts.slice(0, 10).map((contact) => (
                     <Badge key={contact.id} variant="secondary" className="text-xs">
@@ -211,7 +211,7 @@ export default function BulkEditModal({
                     checked={fieldUpdates.department.enabled}
                     onCheckedChange={(checked) => handleFieldToggle('department', checked as boolean)}
                   />
-                  <Building2 className="w-4 h-4 text-gray-600" />
+                  <Building2 className="w-4 h-4 text-muted-foreground" />
                   <Label className="font-medium">Update Department</Label>
                 </div>
                 {fieldUpdates.department.enabled && (
@@ -240,7 +240,7 @@ export default function BulkEditModal({
                     checked={fieldUpdates.seniority.enabled}
                     onCheckedChange={(checked) => handleFieldToggle('seniority', checked as boolean)}
                   />
-                  <Users className="w-4 h-4 text-gray-600" />
+                  <Users className="w-4 h-4 text-muted-foreground" />
                   <Label className="font-medium">Update Seniority Level</Label>
                 </div>
                 {fieldUpdates.seniority.enabled && (
@@ -269,7 +269,7 @@ export default function BulkEditModal({
                     checked={fieldUpdates.verified.enabled}
                     onCheckedChange={(checked) => handleFieldToggle('verified', checked as boolean)}
                   />
-                  <Shield className="w-4 h-4 text-gray-600" />
+                  <Shield className="w-4 h-4 text-muted-foreground" />
                   <Label className="font-medium">Update Verification Status</Label>
                 </div>
                 {fieldUpdates.verified.enabled && (
@@ -278,9 +278,9 @@ export default function BulkEditModal({
                       type="button"
                       onClick={() => handleFieldValueChange('verified', true)}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
-                        fieldUpdates.verified.value 
-                          ? 'bg-green-50 border-green-200 text-green-700' 
-                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        fieldUpdates.verified.value
+                          ? 'bg-green-50 border-green-200 text-green-700'
+                          : 'bg-muted border-border text-muted-foreground hover:bg-muted/80'
                       }`}
                     >
                       <CheckCircle className="w-4 h-4" />
@@ -290,9 +290,9 @@ export default function BulkEditModal({
                       type="button"
                       onClick={() => handleFieldValueChange('verified', false)}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
-                        !fieldUpdates.verified.value 
-                          ? 'bg-red-50 border-red-200 text-red-700' 
-                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        !fieldUpdates.verified.value
+                          ? 'bg-red-50 border-red-200 text-red-700'
+                          : 'bg-muted border-border text-muted-foreground hover:bg-muted/80'
                       }`}
                     >
                       <XCircle className="w-4 h-4" />
@@ -309,7 +309,7 @@ export default function BulkEditModal({
                     checked={fieldUpdates.isActive.enabled}
                     onCheckedChange={(checked) => handleFieldToggle('isActive', checked as boolean)}
                   />
-                  <UserCheck className="w-4 h-4 text-gray-600" />
+                  <UserCheck className="w-4 h-4 text-muted-foreground" />
                   <Label className="font-medium">Update Active Status</Label>
                 </div>
                 {fieldUpdates.isActive.enabled && (
@@ -318,9 +318,9 @@ export default function BulkEditModal({
                       type="button"
                       onClick={() => handleFieldValueChange('isActive', true)}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
-                        fieldUpdates.isActive.value 
-                          ? 'bg-green-50 border-green-200 text-green-700' 
-                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        fieldUpdates.isActive.value
+                          ? 'bg-green-50 border-green-200 text-green-700'
+                          : 'bg-muted border-border text-muted-foreground hover:bg-muted/80'
                       }`}
                     >
                       <CheckCircle className="w-4 h-4" />
@@ -330,9 +330,9 @@ export default function BulkEditModal({
                       type="button"
                       onClick={() => handleFieldValueChange('isActive', false)}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
-                        !fieldUpdates.isActive.value 
-                          ? 'bg-red-50 border-red-200 text-red-700' 
-                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        !fieldUpdates.isActive.value
+                          ? 'bg-red-50 border-red-200 text-red-700'
+                          : 'bg-muted border-border text-muted-foreground hover:bg-muted/80'
                       }`}
                     >
                       <XCircle className="w-4 h-4" />

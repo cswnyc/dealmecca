@@ -186,7 +186,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
       <CardHeader className="border-b">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
-            <Users className="w-5 h-5 text-blue-600" />
+            <Users className="w-5 h-5 text-primary" />
             <span>Share Intelligence</span>
           </CardTitle>
           {onClose && (
@@ -195,7 +195,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
             </Button>
           )}
         </div>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Help the community by sharing prospect intelligence and contact details
         </p>
       </CardHeader>
@@ -218,8 +218,8 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
               {formData.isAnonymous ? 'Make Public' : 'Make Anonymous'}
             </Button>
           </div>
-          <p className="text-xs text-gray-600 mt-2">
-            {formData.isAnonymous 
+          <p className="text-xs text-muted-foreground mt-2">
+            {formData.isAnonymous
               ? 'Your identity will be hidden. You\'ll appear as "Anonymous" with a random ID.'
               : 'Your name and profile will be visible with this intelligence.'
             }
@@ -229,7 +229,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
         {/* Basic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Opportunity Title *
             </label>
             <Input
@@ -240,7 +240,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Company/Brand *
             </label>
             <Input
@@ -255,13 +255,13 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
         {/* Budget and Timeline */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Budget Range
             </label>
             <select
               value={formData.budgetRange}
               onChange={(e) => setFormData(prev => ({ ...prev, budgetRange: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring"
             >
               <option value="">Select budget range</option>
               {BUDGET_RANGES.map(range => (
@@ -270,13 +270,13 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Timeline
             </label>
             <select
               value={formData.timeline}
               onChange={(e) => setFormData(prev => ({ ...prev, timeline: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background focus:ring-2 focus:ring-ring"
             >
               <option value="">Select timeline</option>
               {TIMELINE_OPTIONS.map(time => (
@@ -285,7 +285,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Location
             </label>
             <Input
@@ -299,7 +299,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
 
         {/* Media Channels */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Media Channels
           </label>
           <div className="flex flex-wrap gap-2">
@@ -310,8 +310,8 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
                 onClick={() => toggleMediaChannel(channel)}
                 className={`px-3 py-1 rounded-full text-sm transition-colors ${
                   formData.mediaChannels.includes(channel)
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
                 }`}
               >
                 {channel}
@@ -323,7 +323,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
         {/* Contacts */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-foreground">
               Key Contacts
             </label>
             <Button variant="outline" size="sm" onClick={addContact}>
@@ -332,7 +332,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
           </div>
           <div className="space-y-3">
             {formData.contacts.map((contact, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
+              <div key={index} className="border border-border rounded-lg p-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <Input
                     value={contact.name}
@@ -354,7 +354,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
                     <select
                       value={contact.role}
                       onChange={(e) => updateContact(index, 'role', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg text-sm text-foreground bg-background"
                     >
                       <option value="DECISION_MAKER">Decision Maker</option>
                       <option value="INFLUENCER">Influencer</option>
@@ -379,7 +379,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
 
         {/* Intelligence Notes */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Intelligence Notes
           </label>
           <Textarea
@@ -401,10 +401,10 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
 
         {/* File Attachments */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Attachments (Optional)
           </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+          <div className="border-2 border-dashed border-border rounded-lg p-4">
             <input
               type="file"
               multiple
@@ -415,8 +415,8 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
             />
             <label htmlFor="file-upload" className="cursor-pointer">
               <div className="text-center">
-                <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                <p className="text-sm text-gray-600">
+                <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
                   Click to upload files (PDFs, docs, images up to 15MB each)
                 </p>
               </div>
@@ -424,7 +424,7 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
             {formData.attachments.length > 0 && (
               <div className="mt-3 space-y-2">
                 {formData.attachments.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                  <div key={index} className="flex items-center justify-between bg-muted p-2 rounded">
                     <div className="flex items-center space-x-2">
                       <FileText className="w-4 h-4" />
                       <span className="text-sm">{file.name}</span>
@@ -445,8 +445,8 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
 
         {/* AI Suggestions Display */}
         {aiSuggestions && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-900 mb-2">AI Suggestions</h4>
+          <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+            <h4 className="font-medium text-foreground mb-2">AI Suggestions</h4>
             <div className="space-y-2">
               {aiSuggestions.tags && (
                 <div>
@@ -470,20 +470,20 @@ export function IntelligenceSharing({ onSubmit, onClose }: IntelligenceSharingPr
 
         {/* Submit Buttons */}
         <div className="flex items-center justify-between pt-4 border-t">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             Intelligence will be reviewed and gems awarded for quality contributions
           </div>
           <div className="flex space-x-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowPreview(!showPreview)}
             >
               {showPreview ? 'Edit' : 'Preview'}
             </Button>
-            <Button 
-              onClick={handleSubmit} 
+            <Button
+              onClick={handleSubmit}
               disabled={isSubmitting || !formData.title || !formData.company}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-primary hover:bg-primary/90"
             >
               {isSubmitting ? 'Sharing...' : 'Share Intelligence'}
             </Button>

@@ -88,60 +88,60 @@ export function LiveActivityFeed() {
   }, []);
 
   const getActivityIcon = (type: string, urgency?: string) => {
-    if (urgency === 'URGENT') return <FireIcon className="w-4 h-4 text-red-700" />;
-    
+    if (urgency === 'URGENT') return <FireIcon className="w-4 h-4 text-destructive" />;
+
     switch (type) {
       case 'new_post':
-        return <DocumentTextIcon className="w-4 h-4 text-blue-500" />;
+        return <DocumentTextIcon className="w-4 h-4 text-primary" />;
       case 'new_comment':
         return <ChatBubbleLeftIcon className="w-4 h-4 text-green-500" />;
       case 'urgent_alert':
-        return <BellIcon className="w-4 h-4 text-red-700" />;
+        return <BellIcon className="w-4 h-4 text-destructive" />;
       default:
-        return <DocumentTextIcon className="w-4 h-4 text-gray-500" />;
+        return <DocumentTextIcon className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+    <div className="bg-card rounded-lg border border-border p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900">Live Activity</h3>
+        <h3 className="font-semibold text-foreground">Live Activity</h3>
         <div className="flex items-center space-x-2">
           <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {isConnected ? 'Connected' : 'Connecting...'}
           </span>
         </div>
       </div>
 
       {activities.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <DocumentTextIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+        <div className="text-center py-8 text-muted-foreground">
+          <DocumentTextIcon className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
           <p className="text-sm">No recent activity</p>
         </div>
       ) : (
         <div className="space-y-3">
           {activities.map((activity) => (
-            <div 
+            <div
               key={activity.id}
-              className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-start space-x-3 p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
             >
               <div className="flex-shrink-0 mt-0.5">
                 {getActivityIcon(activity.type, activity.urgency)}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium text-gray-900 truncate">
+                <h4 className="text-sm font-medium text-foreground truncate">
                   {activity.title}
                 </h4>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {activity.description}
                 </p>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                   </span>
                   {activity.urgency === 'URGENT' && (
-                    <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
+                    <span className="px-2 py-1 bg-destructive/20 text-destructive text-xs rounded-full">
                       URGENT
                     </span>
                   )}

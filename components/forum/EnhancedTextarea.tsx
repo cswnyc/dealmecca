@@ -185,9 +185,9 @@ export function EnhancedTextarea({
   const remainingChars = maxLength - characterCount;
 
   return (
-    <div className={`relative border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent bg-white ${className}`}>
+    <div className={`relative border border-border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:border-transparent bg-background ${className}`}>
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted">
         <div className="flex items-center space-x-1">
           {/* Bold Button */}
           <Button
@@ -196,7 +196,7 @@ export function EnhancedTextarea({
             size="sm"
             onClick={makeBold}
             disabled={disabled}
-            className="h-8 w-8 p-0 hover:bg-gray-200"
+            className="h-8 w-8 p-0 hover:bg-muted-foreground/20"
             title="Bold (Cmd+B)"
           >
             <Bold className="h-4 w-4" />
@@ -209,7 +209,7 @@ export function EnhancedTextarea({
             size="sm"
             onClick={makeItalic}
             disabled={disabled}
-            className="h-8 w-8 p-0 hover:bg-gray-200"
+            className="h-8 w-8 p-0 hover:bg-muted-foreground/20"
             title="Italic (Cmd+I)"
           >
             <Italic className="h-4 w-4" />
@@ -222,13 +222,13 @@ export function EnhancedTextarea({
             size="sm"
             onClick={() => setShowLinkDialog(true)}
             disabled={disabled}
-            className="h-8 w-8 p-0 hover:bg-gray-200"
+            className="h-8 w-8 p-0 hover:bg-muted-foreground/20"
             title="Add Link"
           >
             <LinkIcon className="h-4 w-4" />
           </Button>
 
-          <div className="w-px h-6 bg-gray-200 mx-1" />
+          <div className="w-px h-6 bg-border mx-1" />
 
           {/* Emoji Button */}
           <div className="relative">
@@ -238,7 +238,7 @@ export function EnhancedTextarea({
               size="sm"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               disabled={disabled}
-              className="h-8 w-8 p-0 hover:bg-gray-200"
+              className="h-8 w-8 p-0 hover:bg-muted-foreground/20"
               title="Add Emoji"
             >
               <Smile className="h-4 w-4" />
@@ -248,7 +248,7 @@ export function EnhancedTextarea({
             {showEmojiPicker && (
               <div
                 ref={emojiPickerRef}
-                className="absolute top-10 left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-64"
+                className="absolute top-10 left-0 z-50 bg-card border border-border rounded-lg shadow-lg p-3 w-64"
               >
                 <div className="grid grid-cols-10 gap-1">
                   {EMOJI_OPTIONS.map((emoji, index) => (
@@ -256,7 +256,7 @@ export function EnhancedTextarea({
                       key={index}
                       type="button"
                       onClick={() => insertEmoji(emoji)}
-                      className="w-6 h-6 text-lg hover:bg-gray-100 rounded transition-colors flex items-center justify-center"
+                      className="w-6 h-6 text-lg hover:bg-muted rounded transition-colors flex items-center justify-center"
                     >
                       {emoji}
                     </button>
@@ -268,7 +268,7 @@ export function EnhancedTextarea({
         </div>
 
         {/* Character Counter */}
-        <div className={`text-xs ${isNearLimit ? (isAtLimit ? 'text-red-600' : 'text-orange-600') : 'text-gray-500'}`}>
+        <div className={`text-xs ${isNearLimit ? (isAtLimit ? 'text-destructive' : 'text-orange-600') : 'text-muted-foreground'}`}>
           {remainingChars < 0 ? `${Math.abs(remainingChars)} over limit` : `${remainingChars} characters left`}
         </div>
       </div>
@@ -283,7 +283,7 @@ export function EnhancedTextarea({
         placeholder={placeholder}
         disabled={disabled}
         maxLength={maxLength}
-        className="w-full px-4 py-3 resize-none border-0 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-500"
+        className="w-full px-4 py-3 resize-none border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground bg-background"
         style={{
           minHeight: `${minRows * 1.5}rem`,
           maxHeight: `${maxRows * 1.5}rem`,
@@ -293,20 +293,20 @@ export function EnhancedTextarea({
 
       {/* Link Dialog */}
       {showLinkDialog && (
-        <div className="absolute inset-0 bg-white border border-gray-200 rounded-lg z-40 p-4">
+        <div className="absolute inset-0 bg-card border border-border rounded-lg z-40 p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Add Link</h3>
+            <h3 className="text-lg font-medium text-foreground">Add Link</h3>
             <button
               onClick={() => setShowLinkDialog(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground hover:text-foreground"
             >
               ✕
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 URL
               </label>
               <Input
@@ -324,9 +324,9 @@ export function EnhancedTextarea({
                 autoFocus
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Link Text (optional)
               </label>
               <Input
@@ -343,7 +343,7 @@ export function EnhancedTextarea({
                 }}
               />
             </div>
-            
+
             <div className="flex justify-end space-x-2">
               <Button
                 type="button"

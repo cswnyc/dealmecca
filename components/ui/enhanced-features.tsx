@@ -35,7 +35,7 @@ function FeatureCard({ icon: Icon, title, description, gradient, delay }: Featur
   return (
     <motion.div
       ref={ref}
-      className="group relative bg-white dark:bg-slate-950 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300"
+      className="group relative bg-card rounded-2xl p-8 shadow-lg border border-border hover:shadow-xl transition-all duration-300"
       initial={{ opacity: 0, y: reducedMotion ? 0 : 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: reducedMotion ? 0 : 30 }}
       transition={{ duration: reducedMotion ? 0 : 0.6, delay: reducedMotion ? 0 : delay, ease: "easeOut" }}
@@ -57,7 +57,7 @@ function FeatureCard({ icon: Icon, title, description, gradient, delay }: Featur
 
       {/* Content */}
       <motion.h3
-        className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4"
+        className="text-xl font-bold text-foreground mb-4"
         {...motionVariants.fadeIn}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.2 }}
@@ -66,7 +66,7 @@ function FeatureCard({ icon: Icon, title, description, gradient, delay }: Featur
       </motion.h3>
 
       <motion.p
-        className="text-slate-600 dark:text-slate-300 leading-relaxed"
+        className="text-muted-foreground leading-relaxed"
         {...motionVariants.fadeIn}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay + 0.3 }}
@@ -111,7 +111,7 @@ export function EnhancedFeatures() {
   ];
 
   return (
-    <section ref={ref} className="py-24 bg-slate-50 dark:bg-slate-950" id="features">
+    <section ref={ref} className="py-24 bg-muted" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -121,7 +121,7 @@ export function EnhancedFeatures() {
           transition={{ duration: 0.6 }}
         >
           <motion.h2
-            className="heading-section text-slate-900 dark:text-slate-100 mb-6"
+            className="heading-section text-foreground mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -132,7 +132,7 @@ export function EnhancedFeatures() {
             </span>
           </motion.h2>
           <motion.p
-            className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto"
+            className="text-xl text-muted-foreground max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -165,7 +165,7 @@ export function HighlightedFeatures() {
   const isInView = useInView(ref, { once: true, amount: 0.1 });
 
   return (
-    <section ref={ref} className="py-20 bg-slate-50 dark:bg-slate-950">
+    <section ref={ref} className="py-20 bg-muted">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -175,7 +175,7 @@ export function HighlightedFeatures() {
           transition={{ duration: 0.6 }}
         >
           <motion.h2
-            className="heading-section text-slate-900 dark:text-slate-100 mb-4"
+            className="heading-section text-foreground mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -186,7 +186,7 @@ export function HighlightedFeatures() {
             </span>
           </motion.h2>
           <motion.p
-            className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto"
+            className="text-xl text-muted-foreground max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -198,7 +198,7 @@ export function HighlightedFeatures() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Forum Feature */}
           <motion.div
-            className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-600 hover:shadow-xl transition-all duration-300 group"
+            className="bg-card rounded-2xl p-8 shadow-lg border border-border hover:shadow-xl transition-all duration-300 group"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -215,13 +215,13 @@ export function HighlightedFeatures() {
                 <MessageSquare className="w-7 h-7 text-white" />
               </motion.div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">Media Industry Forum</h3>
+                <h3 className="text-xl font-bold text-foreground mb-1">Media Industry Forum</h3>
                 <span className="bg-orange-100 dark:bg-orange-800 text-orange-800 dark:text-orange-200 text-xs font-medium px-3 py-1 rounded-full">
                   Active
                 </span>
               </div>
             </div>
-            <p className="text-slate-600 dark:text-slate-300 mb-6 text-lg leading-relaxed">
+            <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
               Connect with media professionals, share hot opportunities, and get industry insights.
               Real-time discussions about deals, RFPs, and account intelligence.
             </p>
@@ -241,7 +241,7 @@ export function HighlightedFeatures() {
                   →
                 </motion.div>
               </motion.a>
-              <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <Users className="w-4 h-4 mr-1" />
                 <span>11 active discussions • 7 categories</span>
               </div>
@@ -250,7 +250,7 @@ export function HighlightedFeatures() {
 
           {/* Org Charts Feature */}
           <motion.div
-            className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-600 hover:shadow-xl transition-all duration-300 group"
+            className="bg-card rounded-2xl p-8 shadow-lg border border-border hover:shadow-xl transition-all duration-300 group"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -267,13 +267,13 @@ export function HighlightedFeatures() {
                 <Building2 className="w-7 h-7 text-white" />
               </motion.div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">Organization Directory</h3>
+                <h3 className="text-xl font-bold text-foreground mb-1">Organization Directory</h3>
                 <span className="bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-xs font-medium px-3 py-1 rounded-full">
                   New
                 </span>
               </div>
             </div>
-            <p className="text-slate-600 dark:text-slate-300 mb-6 text-lg leading-relaxed">
+            <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
               Access comprehensive org charts for major media agencies and holding companies.
               Find the right contacts with verified professional information and company hierarchies.
             </p>
@@ -293,7 +293,7 @@ export function HighlightedFeatures() {
                   →
                 </motion.div>
               </motion.a>
-              <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <Building2 className="w-4 h-4 mr-1" />
                 <span>9 companies • 8 verified contacts</span>
               </div>

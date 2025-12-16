@@ -130,7 +130,7 @@ export function NetworkingActivityWidget({
       case 'NETWORKING_EVENT_JOINED':
         return 'text-orange-600 bg-orange-50';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-muted-foreground bg-muted';
     }
   };
 
@@ -174,10 +174,10 @@ export function NetworkingActivityWidget({
           <div className="space-y-4 animate-pulse">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                <div className="w-8 h-8 bg-muted rounded-full"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -200,7 +200,7 @@ export function NetworkingActivityWidget({
         )}
         <CardContent>
           <div className="text-center py-6">
-            <p className="text-red-600 text-sm">{error}</p>
+            <p className="text-destructive text-sm">{error}</p>
             <Button 
               variant="outline" 
               size="sm" 
@@ -226,7 +226,7 @@ export function NetworkingActivityWidget({
               <Activity className="w-5 h-5" />
               <span>Networking Activity</span>
             </div>
-            <Link href="/dashboard/networking" className="text-blue-600 hover:text-blue-800">
+            <Link href="/dashboard/networking" className="text-primary hover:text-primary/80">
               <ExternalLink className="w-4 h-4" />
             </Link>
           </CardTitle>
@@ -244,43 +244,43 @@ export function NetworkingActivityWidget({
             {activities.length > 0 ? (
               <div className="space-y-3">
                 {activities.slice(0, 5).map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-muted rounded-lg">
                     <div className={`p-2 rounded-full ${getActivityColor(activity.interactionType)}`}>
                       {getActivityIcon(activity.interactionType)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-foreground truncate">
                           {formatActivityType(activity.interactionType)}
                         </p>
-                        <span className="text-xs text-gray-500 flex items-center space-x-1">
+                        <span className="text-xs text-muted-foreground flex items-center space-x-1">
                           <Clock className="w-3 h-3" />
                           <span>{formatDistanceToNow(new Date(activity.createdAt))} ago</span>
                         </span>
                       </div>
-                      
+
                       {activity.company && (
                         <div className="flex items-center space-x-2 mt-1">
                           {activity.company.logoUrl ? (
-                            <img 
-                              src={activity.company.logoUrl} 
+                            <img
+                              src={activity.company.logoUrl}
                               alt={activity.company.name}
                               className="w-4 h-4 rounded-sm object-cover"
                             />
                           ) : (
-                            <Building2 className="w-4 h-4 text-gray-400" />
+                            <Building2 className="w-4 h-4 text-muted-foreground" />
                           )}
-                          <span className="text-xs text-gray-600 font-medium">
+                          <span className="text-xs text-muted-foreground font-medium">
                             {activity.company.name}
                           </span>
                           {activity.company.verified && (
-                            <CheckCircle2 className="w-3 h-3 text-blue-500" />
+                            <CheckCircle2 className="w-3 h-3 text-primary" />
                           )}
                         </div>
                       )}
-                      
+
                       {activity.metadata && (
-                        <p className="text-xs text-gray-500 mt-1 truncate">
+                        <p className="text-xs text-muted-foreground mt-1 truncate">
                           {activity.metadata.eventName || activity.metadata.postTitle || activity.metadata.contactName || ''}
                         </p>
                       )}
@@ -300,9 +300,9 @@ export function NetworkingActivityWidget({
               </div>
             ) : (
               <div className="text-center py-8">
-                <Activity className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600 text-sm">No networking activities yet</p>
-                <p className="text-gray-500 text-xs mt-1">
+                <Activity className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                <p className="text-muted-foreground text-sm">No networking activities yet</p>
+                <p className="text-muted-foreground/80 text-xs mt-1">
                   Start by viewing company profiles or joining discussions
                 </p>
               </div>
@@ -312,10 +312,10 @@ export function NetworkingActivityWidget({
           <TabsContent value="stats" className="space-y-4">
             {summary && (
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg text-center">
-                  <TrendingUp className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-blue-900">{summary.thisMonthActivities}</div>
-                  <div className="text-xs text-blue-600">This Month</div>
+                <div className="bg-primary/10 p-4 rounded-lg text-center">
+                  <TrendingUp className="w-6 h-6 text-primary mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-foreground">{summary.thisMonthActivities}</div>
+                  <div className="text-xs text-primary">This Month</div>
                 </div>
                 
                 <div className="bg-green-50 p-4 rounded-lg text-center">
@@ -328,10 +328,10 @@ export function NetworkingActivityWidget({
             
             {summary?.activityBreakdown && summary.activityBreakdown.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-700">Activity Breakdown</h4>
+                <h4 className="text-sm font-semibold text-foreground">Activity Breakdown</h4>
                 {summary.activityBreakdown.slice(0, 4).map((item) => (
                   <div key={item.type} className="flex items-center justify-between">
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-muted-foreground">
                       {formatActivityType(item.type)}
                     </span>
                     <Badge variant="secondary" className="text-xs">
@@ -348,20 +348,20 @@ export function NetworkingActivityWidget({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
-                    <Target className="w-4 h-4 text-blue-600" />
+                    <Target className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium">Annual Networking Goal</span>
                   </div>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {summary?.uniqueCompanies || 0} / {goalProgress.goal}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
                     style={{ width: `${goalProgress.percentage}%` }}
                   ></div>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {goalProgress.percentage.toFixed(0)}% complete
                 </p>
               </div>
@@ -378,8 +378,8 @@ export function NetworkingActivityWidget({
                 </div>
               )}
 
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Quick Actions</h4>
+              <div className="bg-muted p-3 rounded-lg">
+                <h4 className="text-sm font-medium text-foreground mb-2">Quick Actions</h4>
                 <div className="space-y-2">
                   <Link href="/organizations" className="block">
                     <Button variant="outline" size="sm" className="w-full justify-start">

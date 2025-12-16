@@ -842,10 +842,10 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-foreground">
               {mode === 'create' ? 'Add New Company' : `Edit ${company?.name}`}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {mode === 'create'
                 ? 'Create a new company profile with hierarchy support'
                 : 'Update company information and settings'
@@ -856,7 +856,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                 <Badge variant={company.verified ? "default" : "secondary"}>
                   {company.verified ? "Verified" : "Unverified"}
                 </Badge>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   Created {new Date(company.createdAt).toLocaleDateString()}
                 </span>
               </div>
@@ -935,17 +935,17 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
             <div>
               <Label htmlFor="name" className="flex items-center space-x-1">
                 <span>Company Name</span>
-                <span className="text-red-500">*</span>
+                <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => updateFormData('name', e.target.value)}
                 placeholder="e.g., Acme Agency"
-                className={errors.name ? 'border-red-500' : ''}
+                className={errors.name ? 'border-destructive' : ''}
               />
               {errors.name && (
-                <p className="text-sm text-red-500 mt-1 flex items-center">
+                <p className="text-sm text-destructive mt-1 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
                   {errors.name}
                 </p>
@@ -955,13 +955,13 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
             <div>
               <Label htmlFor="companyType" className="flex items-center space-x-1">
                 <span>Company Type</span>
-                <span className="text-red-500">*</span>
+                <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={formData.companyType}
                 onValueChange={(value) => updateFormData('companyType', value)}
               >
-                <SelectTrigger className={errors.companyType ? 'border-red-500' : ''}>
+                <SelectTrigger className={errors.companyType ? 'border-destructive' : ''}>
                   <SelectValue placeholder="Select company type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -973,10 +973,10 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                 </SelectContent>
               </Select>
               {formData.companyType && (
-                <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+                <div className="mt-2 p-2 bg-primary/10 rounded border border-primary/20">
                   <div className="flex items-center space-x-2 text-sm">
-                    <Info className="w-4 h-4 text-blue-600" />
-                    <span className="text-blue-900">
+                    <Info className="w-4 h-4 text-primary" />
+                    <span className="text-foreground">
                       {getHierarchyLevel() === 1 && "This is a Level 1 (Holding Company) - can have agency brands below"}
                       {getHierarchyLevel() === 2 && "This is a Level 2 (Agency Brand) - can have regional offices below"}
                       {getHierarchyLevel() === 0 && "This is a standalone entity"}
@@ -985,7 +985,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                 </div>
               )}
               {errors.companyType && (
-                <p className="text-sm text-red-500 mt-1 flex items-center">
+                <p className="text-sm text-destructive mt-1 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
                   {errors.companyType}
                 </p>
@@ -1001,10 +1001,10 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                   value={formData.website}
                   onChange={(e) => updateFormData('website', e.target.value)}
                   placeholder="https://example.com"
-                  className={errors.website ? 'border-red-500' : ''}
+                  className={errors.website ? 'border-destructive' : ''}
                 />
                 {errors.website && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                  <p className="text-sm text-destructive mt-1 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.website}
                   </p>
@@ -1049,13 +1049,13 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
               <div>
                 <Label htmlFor="agencyType" className="flex items-center space-x-1">
                   <span>Agency Type / Practice Area</span>
-                  <span className="text-red-500">*</span>
+                  <span className="text-destructive">*</span>
                 </Label>
                 <Select
                   value={formData.agencyType}
                   onValueChange={(value) => updateFormData('agencyType', value)}
                 >
-                  <SelectTrigger className={errors.agencyType ? 'border-red-500' : ''}>
+                  <SelectTrigger className={errors.agencyType ? 'border-destructive' : ''}>
                     <SelectValue placeholder="Select agency type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1067,7 +1067,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                   </SelectContent>
                 </Select>
                 {errors.agencyType && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                  <p className="text-sm text-destructive mt-1 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.agencyType}
                   </p>
@@ -1087,10 +1087,10 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-4">
+              <div className="p-3 bg-primary/10 rounded-lg border border-primary/20 mb-4">
                 <div className="flex items-start space-x-2">
-                  <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-900">
+                  <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-foreground">
                     <strong>Advertiser companies</strong> are brands, publishers, or organizations that advertise products/services. They work with agencies for marketing services.
                   </p>
                 </div>
@@ -1098,13 +1098,13 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
               <div>
                 <Label htmlFor="advertisingModel" className="flex items-center space-x-1">
                   <span>Advertising Model</span>
-                  <span className="text-red-500">*</span>
+                  <span className="text-destructive">*</span>
                 </Label>
                 <Select
                   value={formData.advertisingModel}
                   onValueChange={(value) => updateFormData('advertisingModel', value)}
                 >
-                  <SelectTrigger className={errors.advertisingModel ? 'border-red-500' : ''}>
+                  <SelectTrigger className={errors.advertisingModel ? 'border-destructive' : ''}>
                     <SelectValue placeholder="Select advertising model" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1116,7 +1116,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                   </SelectContent>
                 </Select>
                 {errors.advertisingModel && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center">
+                  <p className="text-sm text-destructive mt-1 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.advertisingModel}
                   </p>
@@ -1401,7 +1401,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                   ) : (
                     <>
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
                           placeholder="Search parent companies..."
                           value={companySearchTerm}
@@ -1426,10 +1426,10 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                         </SelectContent>
                       </Select>
                       {getSelectedParentCompany() && (
-                        <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                        <div className="p-2 bg-primary/10 rounded border border-primary/20">
                           <div className="flex items-center space-x-2">
-                            <Building2 className="w-4 h-4 text-blue-600" />
-                            <span className="font-medium text-blue-900">{getSelectedParentCompany()?.name}</span>
+                            <Building2 className="w-4 h-4 text-primary" />
+                            <span className="font-medium text-foreground">{getSelectedParentCompany()?.name}</span>
                             <Badge variant="outline">{getSelectedParentCompany()?.companyType.replace(/_/g, ' ')}</Badge>
                           </div>
                         </div>
@@ -1485,20 +1485,20 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
           </CardHeader>
           <CardContent className="space-y-4">
             {showDutyPicker && (
-              <div className="space-y-3 mb-4 max-h-96 overflow-y-auto border rounded-lg p-4 bg-gray-50">
+              <div className="space-y-3 mb-4 max-h-96 overflow-y-auto border rounded-lg p-4 bg-muted">
                 {['ROLE', 'MEDIA_TYPE', 'BRAND', 'BUSINESS_LINE', 'GOAL', 'AUDIENCE', 'GEOGRAPHY'].map(category => {
                   const categoryDuties = availableDuties.filter(d => d.category === category);
                   if (categoryDuties.length === 0) return null;
 
                   return (
                     <div key={category} className="space-y-2">
-                      <h4 className="font-semibold text-sm text-gray-700">{category.replace(/_/g, ' ')}</h4>
+                      <h4 className="font-semibold text-sm text-foreground">{category.replace(/_/g, ' ')}</h4>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {categoryDuties.map(duty => (
                           <div
                             key={duty.id}
                             onClick={() => handleDutyToggle(duty.id)}
-                            className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors"
+                            className="flex items-center space-x-2 p-2 rounded hover:bg-muted/80 cursor-pointer transition-colors"
                           >
                             <Checkbox
                               checked={selectedDuties.includes(duty.id)}
@@ -1518,7 +1518,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
 
             {selectedDuties.length > 0 && (
               <div>
-                <Label className="text-sm text-gray-600 mb-2 block">Selected Duties ({selectedDuties.length})</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">Selected Duties ({selectedDuties.length})</Label>
                 <div className="flex flex-wrap gap-2">
                   {selectedDuties.map(dutyId => {
                     const duty = availableDuties.find(d => d.id === dutyId);
@@ -1527,7 +1527,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                       <Badge
                         key={duty.id}
                         variant="outline"
-                        className="bg-blue-50 text-blue-700 border-blue-200 cursor-pointer hover:bg-blue-100"
+                        className="bg-primary/10 text-primary border-primary/20 cursor-pointer hover:bg-primary/20"
                         onClick={() => handleDutyToggle(duty.id)}
                       >
                         {duty.name}
@@ -1540,7 +1540,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
             )}
 
             {selectedDuties.length === 0 && (
-              <p className="text-sm text-gray-500 italic">No duties selected. Click "Select Duties" to add duties to this company.</p>
+              <p className="text-sm text-muted-foreground italic">No duties selected. Click "Select Duties" to add duties to this company.</p>
             )}
           </CardContent>
         </Card>
@@ -1567,7 +1567,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                 <div className="md:col-span-2">
                   <Label htmlFor="advertiserSearch">Search Client/Advertiser *</Label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="advertiserSearch"
                       value={advertiserSearchTerm}
@@ -1586,12 +1586,12 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                               setSelectedAdvertiserId(advertiser.id);
                               setAdvertiserSearchTerm(advertiser.name);
                             }}
-                            className={`p-3 cursor-pointer hover:bg-gray-100 border-b last:border-b-0 ${
-                              selectedAdvertiserId === advertiser.id ? 'bg-blue-50' : ''
+                            className={`p-3 cursor-pointer hover:bg-muted border-b last:border-b-0 ${
+                              selectedAdvertiserId === advertiser.id ? 'bg-primary/10' : ''
                             }`}
                           >
                             <p className="font-medium text-sm">{advertiser.name}</p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               {advertiser.city && advertiser.state
                                 ? `${advertiser.city}, ${advertiser.state}`
                                 : advertiser.city || advertiser.state || 'Location not specified'}
@@ -1599,12 +1599,12 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                           </div>
                         ))
                       ) : (
-                        <p className="p-3 text-sm text-gray-500">No advertisers found</p>
+                        <p className="p-3 text-sm text-muted-foreground">No advertisers found</p>
                       )}
                     </div>
                   )}
                   {!advertiserSearchTerm && selectedAdvertiserId && (
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-sm text-muted-foreground">
                       Selected: {companies.find(c => c.id === selectedAdvertiserId)?.name}
                     </p>
                   )}
@@ -1671,7 +1671,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
 
               {teams.length > 0 && (
                 <div className="space-y-2 mt-6">
-                  <Label className="text-sm text-gray-600">Existing Teams ({teams.length})</Label>
+                  <Label className="text-sm text-muted-foreground">Existing Teams ({teams.length})</Label>
                   <div className="space-y-3">
                     {teams.map((team) => {
                       const isExpanded = expandedTeams.has(team.id);
@@ -1681,10 +1681,10 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                       return (
                         <div
                           key={team.id}
-                          className="bg-white rounded-lg border border-gray-300 overflow-hidden"
+                          className="bg-card rounded-lg border border-border overflow-hidden"
                         >
                           {/* Team Header */}
-                          <div className="flex items-center justify-between p-4 bg-gray-50 border-b">
+                          <div className="flex items-center justify-between p-4 bg-muted border-b">
                             <div className="flex-1 cursor-pointer" onClick={() => toggleTeamExpanded(team.id)}>
                               <div className="flex items-center gap-2">
                                 <p className="font-semibold text-sm">{team.name}</p>
@@ -1694,15 +1694,15 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                   {team.type === 'INTERNAL_TEAM' && 'Internal'}
                                   {team.type === 'PROJECT_TEAM' && 'Project'}
                                 </Badge>
-                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                                <Badge variant="secondary" className="text-xs bg-primary/20 text-primary">
                                   {members.length} member{members.length !== 1 ? 's' : ''}
                                 </Badge>
-                                <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                                <Badge variant="secondary" className="text-xs bg-accent/20 text-accent-foreground">
                                   {duties.length} {duties.length !== 1 ? 'duties' : 'duty'}
                                 </Badge>
                               </div>
                               {team.clientCompany && (
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                   Client: {team.clientCompany.name}
                                 </p>
                               )}
@@ -1721,7 +1721,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleRemoveTeam(team.id)}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -1741,7 +1741,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                     {members.map((member: any) => (
                                       <div
                                         key={member.id}
-                                        className="flex items-center justify-between p-2 bg-gray-50 rounded border"
+                                        className="flex items-center justify-between p-2 bg-muted rounded border"
                                       >
                                         <div className="flex-1">
                                           <div className="text-sm font-medium">
@@ -1750,9 +1750,9 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                               <Badge variant="default" className="ml-2 text-xs">Primary</Badge>
                                             )}
                                           </div>
-                                          <p className="text-xs text-gray-500">{member.contact.title}</p>
+                                          <p className="text-xs text-muted-foreground">{member.contact.title}</p>
                                           {member.role && (
-                                            <p className="text-xs text-gray-400">Role: {member.role}</p>
+                                            <p className="text-xs text-muted-foreground/70">Role: {member.role}</p>
                                           )}
                                         </div>
                                         <Button
@@ -1760,7 +1760,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                           variant="ghost"
                                           size="sm"
                                           onClick={() => handleRemoveContactFromTeam(team.id, member.contact.id)}
-                                          className="text-red-600"
+                                          className="text-destructive"
                                         >
                                           <X className="w-3 h-3" />
                                         </Button>
@@ -1768,7 +1768,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                     ))}
                                   </div>
                                 ) : (
-                                  <p className="text-xs text-gray-500 italic mb-3">No members yet</p>
+                                  <p className="text-xs text-muted-foreground italic mb-3">No members yet</p>
                                 )}
 
                                 {/* Add Member Form */}
@@ -1834,14 +1834,14 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
                                       >
                                         {teamDuty.duty.name}
                                         <X
-                                          className="w-3 h-3 cursor-pointer hover:text-red-600"
+                                          className="w-3 h-3 cursor-pointer hover:text-destructive"
                                           onClick={() => handleRemoveDutyFromTeam(team.id, teamDuty.duty.id)}
                                         />
                                       </Badge>
                                     ))}
                                   </div>
                                 ) : (
-                                  <p className="text-xs text-gray-500 italic mb-3">No duties assigned</p>
+                                  <p className="text-xs text-muted-foreground italic mb-3">No duties assigned</p>
                                 )}
 
                                 {/* Add Duties */}
@@ -1884,7 +1884,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
               )}
 
               {teams.length === 0 && (
-                <p className="text-sm text-gray-500 italic text-center py-4">
+                <p className="text-sm text-muted-foreground italic text-center py-4">
                   No teams created yet. Create a team by filling in the form above.
                 </p>
               )}

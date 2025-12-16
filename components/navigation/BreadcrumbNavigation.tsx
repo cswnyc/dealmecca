@@ -32,12 +32,12 @@ export default function BreadcrumbNavigation({
   // Auto-generate breadcrumbs from pathname if no items provided
   const breadcrumbItems = items || generateBreadcrumbsFromPath(pathname)
 
-  const defaultSeparator = separator || <ChevronRight className="w-4 h-4 text-gray-400" />
+  const defaultSeparator = separator || <ChevronRight className="w-4 h-4 text-muted-foreground" />
 
   return (
     <nav
       className={cn(
-        'flex items-center space-x-2 text-sm text-gray-600',
+        'flex items-center space-x-2 text-sm text-muted-foreground',
         className
       )}
       aria-label="Breadcrumb"
@@ -47,7 +47,7 @@ export default function BreadcrumbNavigation({
         <li>
           <Link
             href={homeHref}
-            className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+            className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
             {showHomeIcon && <Home className="w-4 h-4" />}
             <span>Dashboard</span>
@@ -59,13 +59,13 @@ export default function BreadcrumbNavigation({
             <li className="flex items-center space-x-2">
               {defaultSeparator}
               {item.current ? (
-                <span className="font-medium text-gray-900" aria-current="page">
+                <span className="font-medium text-foreground" aria-current="page">
                   {item.label}
                 </span>
               ) : (
                 <Link
                   href={item.href}
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-foreground transition-colors"
                 >
                   {item.label}
                 </Link>

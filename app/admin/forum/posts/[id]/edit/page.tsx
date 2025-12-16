@@ -603,11 +603,11 @@ export default function EditForumPost() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
           <div className="space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-muted rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-1/2"></div>
+            <div className="h-32 bg-muted rounded"></div>
           </div>
         </div>
       </div>
@@ -618,8 +618,8 @@ export default function EditForumPost() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Post Not Found</h1>
-          <p className="text-gray-600 mb-4">The forum post you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Post Not Found</h1>
+          <p className="text-muted-foreground mb-4">The forum post you're looking for doesn't exist.</p>
           <button
             onClick={() => router.push('/admin/forum/posts')}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
@@ -634,11 +634,11 @@ export default function EditForumPost() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Edit Forum Post</h1>
+        <h1 className="text-2xl font-bold text-foreground">Edit Forum Post</h1>
         <div className="flex space-x-3">
           <button
             onClick={() => router.push('/admin/forum/posts')}
-            className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+            className="bg-muted-foreground text-white px-4 py-2 rounded-md hover:bg-muted-foreground/80"
           >
             Cancel
           </button>
@@ -663,7 +663,7 @@ export default function EditForumPost() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Content *
               </label>
               <MentionEditor
@@ -677,9 +677,9 @@ export default function EditForumPost() {
 
             {/* Primary Topic Section */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Primary Topic
-                <span className="text-sm text-gray-500 ml-2">(Company, Agency, Person, Industry, etc.)</span>
+                <span className="text-sm text-muted-foreground ml-2">(Company, Agency, Person, Industry, etc.)</span>
               </label>
 
               <div className="relative">
@@ -691,14 +691,14 @@ export default function EditForumPost() {
                     searchPrimaryTopics(e.target.value);
                   }}
                   placeholder="Search for companies, agencies, people, industries..."
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
+                  className="w-full border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-foreground placeholder:text-muted-foreground"
                 />
 
                 {/* Search Results Dropdown */}
                 {entitySuggestions.length > 0 && (
-                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                  <div className="absolute z-10 mt-1 w-full bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto">
                     {searchingEntities && (
-                      <div className="px-4 py-3 text-sm text-gray-500">
+                      <div className="px-4 py-3 text-sm text-muted-foreground">
                         Searching...
                       </div>
                     )}
@@ -707,7 +707,7 @@ export default function EditForumPost() {
                         key={entity.id}
                         type="button"
                         onClick={() => handlePrimaryTopicSelect(entity)}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 border-b border-gray-100 last:border-b-0"
+                        className="w-full px-4 py-3 text-left hover:bg-muted flex items-center space-x-3 border-b border-border last:border-b-0"
                       >
                         <div className="flex-shrink-0">
                           {entity.type === 'contact' && <span className="text-xl">👤</span>}
@@ -720,7 +720,7 @@ export default function EditForumPost() {
                           {entity.type === 'company' && <span className="text-xl">🏢</span>}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{entity.name}</p>
+                          <p className="text-sm font-medium text-foreground truncate">{entity.name}</p>
                           <div className="flex items-center space-x-2">
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
                               {entity.type === 'contact' && 'Person'}
@@ -733,7 +733,7 @@ export default function EditForumPost() {
                               {entity.type === 'company' && 'Company'}
                             </span>
                             {entity.description && (
-                              <span className="text-xs text-gray-500 truncate">{entity.description}</span>
+                              <span className="text-xs text-muted-foreground truncate">{entity.description}</span>
                             )}
                           </div>
                         </div>
@@ -779,13 +779,13 @@ export default function EditForumPost() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Category
               </label>
               <select
                 value={formData.categoryId}
                 onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                className="w-full border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-foreground"
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
@@ -798,14 +798,14 @@ export default function EditForumPost() {
 
             {formData.isAnonymous && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Anonymous Handle
                 </label>
                 <input
                   type="text"
                   value={formData.anonymousHandle}
                   onChange={(e) => setFormData({ ...formData, anonymousHandle: e.target.value })}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
+                  className="w-full border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-foreground placeholder:text-muted-foreground"
                   placeholder="Anonymous user handle"
                 />
               </div>
@@ -816,7 +816,7 @@ export default function EditForumPost() {
           <div className="border-t pt-6">
             <div className="mb-4">
               <div className="flex items-center justify-between mb-3">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-muted-foreground">
                   Additional Topics (Companies, Industries, DSPs/SSPs, Advertisers, etc.)
                 </label>
                 <button
@@ -849,14 +849,14 @@ export default function EditForumPost() {
                         }
                       }}
                       placeholder="Search companies, contacts, topics... (e.g., Nike, John Smith, Programmatic)"
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
+                      className="w-full border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-foreground placeholder:text-muted-foreground"
                     />
 
                     {/* Entity Suggestions Dropdown */}
                     {showEntityDropdown && (
-                      <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-y-auto">
                         {searchingEntities ? (
-                          <div className="p-3 text-center text-gray-500">
+                          <div className="p-3 text-center text-muted-foreground">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mx-auto mb-1"></div>
                             Searching database...
                           </div>
@@ -865,13 +865,13 @@ export default function EditForumPost() {
                             {entitySuggestions.map((entity, index) => (
                               <div
                                 key={`${entity.type}-${entity.id}-${index}`}
-                                className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                                className="p-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
                                 onClick={() => selectEntitySuggestion(entity)}
                               >
                                 <div className="flex items-center justify-between">
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2">
-                                      <span className="font-medium text-gray-900">{entity.name}</span>
+                                      <span className="font-medium text-foreground">{entity.name}</span>
                                       <span className={`px-2 py-0.5 text-xs rounded-full ${
                                         entity.type === 'company' ? 'bg-blue-100 text-blue-800' :
                                         entity.type === 'contact' ? 'bg-green-100 text-green-800' :
@@ -887,10 +887,10 @@ export default function EditForumPost() {
                                       )}
                                     </div>
                                     {entity.description && (
-                                      <p className="text-sm text-gray-600 mt-1">{entity.description}</p>
+                                      <p className="text-sm text-muted-foreground mt-1">{entity.description}</p>
                                     )}
                                     {entity.metadata && (
-                                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                                         {entity.metadata.industry && (
                                           <span>{entity.metadata.industry}</span>
                                         )}
@@ -903,7 +903,7 @@ export default function EditForumPost() {
                                       </div>
                                     )}
                                   </div>
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-muted-foreground">
                                     {Math.round(entity.confidence * 100)}%
                                   </div>
                                 </div>
@@ -911,7 +911,7 @@ export default function EditForumPost() {
                             ))}
                           </>
                         ) : manualTopicInput.trim().length >= 2 ? (
-                          <div className="p-3 text-center text-gray-500">
+                          <div className="p-3 text-center text-muted-foreground">
                             No matching entities found. Press Enter to add as custom topic.
                           </div>
                         ) : null}
@@ -930,7 +930,7 @@ export default function EditForumPost() {
                     Add
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Type to search existing companies, contacts, topics, or add custom topics. Press Enter or click Add.
                 </p>
               </div>
@@ -938,7 +938,7 @@ export default function EditForumPost() {
               {/* Selected Topics with Additional Companies Count */}
               {selectedTopics.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-xs text-gray-600 mb-2">
+                  <p className="text-xs text-muted-foreground mb-2">
                     Selected Topics:
                     {selectedTopics.filter(t => t.startsWith('entity-company-')).length > 1 && (
                       <span className="ml-2 text-blue-600 font-medium">
@@ -961,7 +961,7 @@ export default function EditForumPost() {
                           <button
                             type="button"
                             onClick={() => removeSelectedTopic(topicId)}
-                            className={isCompany ? 'text-blue-600 hover:text-blue-800' : 'text-gray-600 hover:text-gray-800'}
+                            className={isCompany ? 'text-blue-600 hover:text-blue-800' : 'text-muted-foreground hover:text-foreground'}
                           >
                             ×
                           </button>
@@ -974,11 +974,11 @@ export default function EditForumPost() {
 
               {/* Topic Suggestions */}
               {showTopicSuggestions && (
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                <div className="border border-border rounded-lg p-4 bg-muted">
+                  <h4 className="text-sm font-medium text-foreground mb-3">
                     Suggested Topics
                     {loadingSuggestions && (
-                      <span className="ml-2 text-xs text-gray-500 animate-pulse">Analyzing content...</span>
+                      <span className="ml-2 text-xs text-muted-foreground animate-pulse">Analyzing content...</span>
                     )}
                   </h4>
 
@@ -990,13 +990,13 @@ export default function EditForumPost() {
                           className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                             selectedTopics.includes(suggestion.id)
                               ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-100'
+                              : 'border-border hover:border-input hover:bg-muted'
                           }`}
                           onClick={() => toggleTopicSelection(suggestion.id)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-gray-900 flex items-center">
+                              <p className="text-sm font-medium text-foreground flex items-center">
                                 {suggestion.name}
                                 {suggestion.isExisting && (
                                   <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-100 text-green-800 rounded">
@@ -1010,16 +1010,16 @@ export default function EditForumPost() {
                                 )}
                               </p>
                               {suggestion.description && (
-                                <p className="text-xs text-gray-600 mt-1">{suggestion.description}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{suggestion.description}</p>
                               )}
                               <div className="flex items-center mt-1">
-                                <div className="flex-1 bg-gray-200 rounded-full h-1">
+                                <div className="flex-1 bg-muted rounded-full h-1">
                                   <div
                                     className="bg-blue-600 h-1 rounded-full"
                                     style={{ width: `${suggestion.confidence * 100}%` }}
                                   ></div>
                                 </div>
-                                <span className="ml-2 text-xs text-gray-500">
+                                <span className="ml-2 text-xs text-muted-foreground">
                                   {Math.round(suggestion.confidence * 100)}%
                                 </span>
                               </div>
@@ -1028,14 +1028,14 @@ export default function EditForumPost() {
                               type="checkbox"
                               checked={selectedTopics.includes(suggestion.id)}
                               onChange={() => toggleTopicSelection(suggestion.id)}
-                              className="ml-3 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                              className="ml-3 rounded border-input text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                             />
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-4 text-gray-500">
+                    <div className="text-center py-4 text-muted-foreground">
                       {loadingSuggestions ? (
                         <div className="flex items-center justify-center">
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
@@ -1057,13 +1057,13 @@ export default function EditForumPost() {
 
           <div className="border-t pt-6">
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Post Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full md:w-1/2 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                className="w-full md:w-1/2 border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-foreground"
               >
                 <option value="PENDING">Pending Review</option>
                 <option value="APPROVED">Approved</option>
@@ -1093,9 +1093,9 @@ export default function EditForumPost() {
                   type="checkbox"
                   checked={formData.isFeatured}
                   onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-input text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Featured</span>
+                <span className="ml-2 text-sm text-muted-foreground">Featured</span>
               </label>
 
               <label className="flex items-center">
@@ -1103,9 +1103,9 @@ export default function EditForumPost() {
                   type="checkbox"
                   checked={formData.isPinned}
                   onChange={(e) => setFormData({ ...formData, isPinned: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-input text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Pinned</span>
+                <span className="ml-2 text-sm text-muted-foreground">Pinned</span>
               </label>
 
               <label className="flex items-center">
@@ -1113,9 +1113,9 @@ export default function EditForumPost() {
                   type="checkbox"
                   checked={formData.isLocked}
                   onChange={(e) => setFormData({ ...formData, isLocked: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-input text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Locked</span>
+                <span className="ml-2 text-sm text-muted-foreground">Locked</span>
               </label>
 
               <label className="flex items-center">
@@ -1123,9 +1123,9 @@ export default function EditForumPost() {
                   type="checkbox"
                   checked={formData.isAnonymous}
                   onChange={(e) => setFormData({ ...formData, isAnonymous: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-input text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Anonymous</span>
+                <span className="ml-2 text-sm text-muted-foreground">Anonymous</span>
               </label>
             </div>
           </div>
@@ -1135,7 +1135,7 @@ export default function EditForumPost() {
               <button
                 type="button"
                 onClick={() => router.push('/admin/forum/posts')}
-                className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600"
+                className="bg-muted-foreground text-white px-6 py-2 rounded-md hover:bg-muted-foreground/80"
               >
                 Cancel
               </button>
@@ -1152,42 +1152,42 @@ export default function EditForumPost() {
       </div>
 
       {post && (
-        <div className="mt-6 bg-gray-50 rounded-lg p-4">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Post Information</h3>
+        <div className="mt-6 bg-muted rounded-lg p-4">
+          <h3 className="text-lg font-medium text-foreground mb-2">Post Information</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <span className="font-medium text-gray-700">Author:</span>
-              <p className="text-gray-600">{post.author?.name || 'Unknown'}</p>
+              <span className="font-medium text-muted-foreground">Author:</span>
+              <p className="text-muted-foreground">{post.author?.name || 'Unknown'}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-700">Views:</span>
-              <p className="text-gray-600">{post.views}</p>
+              <span className="font-medium text-muted-foreground">Views:</span>
+              <p className="text-muted-foreground">{post.views}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-700">Comments:</span>
-              <p className="text-gray-600">{post._count.comments}</p>
+              <span className="font-medium text-muted-foreground">Comments:</span>
+              <p className="text-muted-foreground">{post._count.comments}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-700">Created:</span>
-              <p className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</p>
+              <span className="font-medium text-muted-foreground">Created:</span>
+              <p className="text-muted-foreground">{new Date(post.createdAt).toLocaleDateString()}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-700">Updated:</span>
-              <p className="text-gray-600">{new Date(post.updatedAt).toLocaleDateString()}</p>
+              <span className="font-medium text-muted-foreground">Updated:</span>
+              <p className="text-muted-foreground">{new Date(post.updatedAt).toLocaleDateString()}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-700">Slug:</span>
-              <p className="text-gray-600 font-mono">{post.slug}</p>
+              <span className="font-medium text-muted-foreground">Slug:</span>
+              <p className="text-muted-foreground font-mono">{post.slug}</p>
             </div>
           </div>
         </div>
       )}
 
       {/* Comments Section */}
-      <div className="mt-6 bg-white rounded-lg border border-gray-200">
-        <div className="p-4 border-b border-gray-200">
+      <div className="mt-6 bg-white rounded-lg border border-border">
+        <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 className="text-lg font-medium text-foreground">
               Comments ({comments.length})
             </h3>
             <button
@@ -1202,7 +1202,7 @@ export default function EditForumPost() {
         {showComments && (
           <div className="p-4">
             {comments.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>No comments yet.</p>
               </div>
             ) : (

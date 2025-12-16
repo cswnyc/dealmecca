@@ -141,9 +141,9 @@ export function VIPIndicator({ level, contributions, tier, className }: VIPIndic
             </Badge>
           )}
         </div>
-        <p className="text-sm text-gray-600">{config.description}</p>
+        <p className="text-sm text-muted-foreground">{config.description}</p>
         {contributions && (
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {contributions} contributions
           </p>
         )}

@@ -209,11 +209,11 @@ export default function SearchResults({
           <Card key={i} className="animate-pulse">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
+                <div className="w-16 h-16 bg-muted rounded-lg"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-6 bg-muted rounded w-1/3"></div>
+                  <div className="h-4 bg-muted rounded w-2/3"></div>
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
                 </div>
               </div>
             </CardContent>
@@ -227,9 +227,9 @@ export default function SearchResults({
     return (
       <Card>
         <CardContent className="text-center py-12">
-          <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No companies found</h3>
-          <p className="text-gray-600">Try adjusting your search criteria or filters</p>
+          <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">No companies found</h3>
+          <p className="text-muted-foreground">Try adjusting your search criteria or filters</p>
         </CardContent>
       </Card>
     )
@@ -238,14 +238,14 @@ export default function SearchResults({
   return (
     <div className="space-y-6">
       {/* Results summary */}
-      <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+      <div className="flex items-center justify-between bg-muted p-4 rounded-lg">
         <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-gray-600" />
-          <span className="text-sm text-gray-600">
+          <Building2 className="w-5 h-5 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">
             Showing {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} companies
           </span>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Brain className="w-4 h-4" />
           <span>AI-powered insights included</span>
         </div>
@@ -262,15 +262,15 @@ export default function SearchResults({
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   {/* Company logo */}
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
                     {company.logoUrl ? (
-                      <img 
-                        src={company.logoUrl} 
-                        alt={company.name} 
+                      <img
+                        src={company.logoUrl}
+                        alt={company.name}
                         className="w-12 h-12 object-contain rounded"
                       />
                     ) : (
-                      <Building2 className="w-8 h-8 text-gray-400" />
+                      <Building2 className="w-8 h-8 text-muted-foreground" />
                     )}
                   </div>
 
@@ -278,15 +278,15 @@ export default function SearchResults({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                        <h3 className="text-xl font-semibold text-foreground mb-1">
                           {company.name}
                           {company.stockSymbol && (
-                            <span className="ml-2 text-sm text-gray-500">
+                            <span className="ml-2 text-sm text-muted-foreground">
                               ({company.stockSymbol})
                             </span>
                           )}
                         </h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           {company.type && <Badge variant="secondary">{company.type.replace('_', ' ')}</Badge>}
                           {company.industry && <span>{company.industry}</span>}
                           {company.headquarters && (
@@ -305,7 +305,7 @@ export default function SearchResults({
                           variant="ghost"
                           size="sm"
                           onClick={() => onSaveCompany(company.id)}
-                          className={`p-2 ${isFavorite ? 'text-red-700 bg-red-50 hover:bg-red-100' : 'text-gray-400'}`}
+                          className={`p-2 ${isFavorite ? 'text-red-700 bg-red-50 hover:bg-red-100' : 'text-muted-foreground'}`}
                         >
                           <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
                         </Button>
@@ -322,7 +322,7 @@ export default function SearchResults({
                     </div>
 
                     {/* Company metrics */}
-                    <div className="flex items-center gap-6 text-sm text-gray-600 mb-3">
+                    <div className="flex items-center gap-6 text-sm text-muted-foreground mb-3">
                       <div className="flex items-center gap-1">
                         <Users className="w-4 h-4" />
                         <span>{formatEmployeeCount(company.employeeCount)} employees</span>
@@ -409,13 +409,13 @@ export default function SearchResults({
                       {company.keyContacts.slice(0, 4).map((contact) => (
                         <div
                           key={contact.id}
-                          className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                          className="bg-muted p-3 rounded-lg hover:bg-muted/80 transition-colors cursor-pointer"
                           onClick={() => onContactClick(contact)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-900">{contact.name}</span>
+                                <span className="font-medium text-foreground">{contact.name}</span>
                                 {contact.isDecisionMaker && (
                                   <Badge variant="destructive" className="text-xs">
                                     Decision Maker
@@ -434,15 +434,15 @@ export default function SearchResults({
                                   </Badge>
                                 )}
                               </div>
-                              <div className="text-sm text-gray-600 truncate">{contact.title}</div>
-                              <div className="text-xs text-gray-500">{contact.department}</div>
+                              <div className="text-sm text-muted-foreground truncate">{contact.title}</div>
+                              <div className="text-xs text-muted-foreground">{contact.department}</div>
                             </div>
                             <div className="flex items-center gap-1">
                               {contact.email && (
-                                <Mail className="w-3 h-3 text-gray-400" />
+                                <Mail className="w-3 h-3 text-muted-foreground" />
                               )}
                               {contact.phone && (
-                                <Phone className="w-3 h-3 text-gray-400" />
+                                <Phone className="w-3 h-3 text-muted-foreground" />
                               )}
                             </div>
                           </div>
@@ -460,11 +460,11 @@ export default function SearchResults({
                       <div className="border-t pt-4 space-y-4">
                         {/* Media Strategy */}
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Media Strategy</h4>
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <h4 className="font-medium text-foreground mb-2">Media Strategy</h4>
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
-                                <div className="text-sm font-medium text-gray-700 mb-1">Primary Channels</div>
+                                <div className="text-sm font-medium text-foreground mb-1">Primary Channels</div>
                                 <div className="flex flex-wrap gap-1">
                                   {company.mediaStrategy.primaryChannels.map((channel) => (
                                     <Badge key={channel} variant="outline" className="text-xs">
@@ -474,8 +474,8 @@ export default function SearchResults({
                                 </div>
                               </div>
                               <div>
-                                <div className="text-sm font-medium text-gray-700 mb-1">Estimated Budget</div>
-                                <div className="text-sm text-gray-600">{company.mediaStrategy.estimatedBudget}</div>
+                                <div className="text-sm font-medium text-foreground mb-1">Estimated Budget</div>
+                                <div className="text-sm text-muted-foreground">{company.mediaStrategy.estimatedBudget}</div>
                               </div>
                             </div>
                           </div>
@@ -483,18 +483,18 @@ export default function SearchResults({
 
                         {/* Competitive Analysis */}
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Competitive Analysis</h4>
-                          <div className="bg-gray-50 p-3 rounded-lg">
+                          <h4 className="font-medium text-foreground mb-2">Competitive Analysis</h4>
+                          <div className="bg-muted p-3 rounded-lg">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
-                                <div className="text-sm font-medium text-gray-700 mb-1">Main Competitors</div>
-                                <div className="text-sm text-gray-600">
+                                <div className="text-sm font-medium text-foreground mb-1">Main Competitors</div>
+                                <div className="text-sm text-muted-foreground">
                                   {company.competitorAnalysis.mainCompetitors.join(', ')}
                                 </div>
                               </div>
                               <div>
-                                <div className="text-sm font-medium text-gray-700 mb-1">Market Position</div>
-                                <div className="text-sm text-gray-600">{company.competitorAnalysis.marketPosition}</div>
+                                <div className="text-sm font-medium text-foreground mb-1">Market Position</div>
+                                <div className="text-sm text-muted-foreground">{company.competitorAnalysis.marketPosition}</div>
                               </div>
                             </div>
                           </div>
@@ -502,18 +502,18 @@ export default function SearchResults({
 
                         {/* All insights */}
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">All Insights</h4>
+                          <h4 className="font-medium text-foreground mb-2">All Insights</h4>
                           <div className="space-y-2">
                             {company.insights.map((insight) => (
-                              <div key={insight.id} className="bg-gray-50 p-3 rounded-lg">
+                              <div key={insight.id} className="bg-muted p-3 rounded-lg">
                                 <div className="flex items-start gap-2">
                                   <div className={`p-1 rounded ${getInsightColor(insight.type)}`}>
                                     {getInsightIcon(insight.type)}
                                   </div>
                                   <div className="flex-1">
-                                    <div className="font-medium text-gray-900">{insight.title}</div>
-                                    <div className="text-sm text-gray-600 mt-1">{insight.content}</div>
-                                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                    <div className="font-medium text-foreground">{insight.title}</div>
+                                    <div className="text-sm text-muted-foreground mt-1">{insight.content}</div>
+                                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                                       <Clock className="w-3 h-3" />
                                       <span>{insight.createdAt}</span>
                                       {insight.sourceUrl && (
@@ -572,7 +572,7 @@ export default function SearchResults({
       {/* Pagination */}
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             Page {pagination.page} of {pagination.totalPages}
           </div>
           <div className="flex items-center gap-2">

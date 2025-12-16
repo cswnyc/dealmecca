@@ -252,17 +252,17 @@ export default function BillingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/forum" className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/forum" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back
               </Link>
               <div className="flex items-center space-x-2">
                 <Receipt className="w-6 h-6 text-purple-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Billing & Plans</h1>
+                <h1 className="text-xl font-semibold text-foreground">Billing & Plans</h1>
               </div>
             </div>
           </div>
@@ -273,10 +273,10 @@ export default function BillingPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-5xl font-bold text-foreground mb-4">
             Choose the right plan for your media needs
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Join 2,500+ media professionals who trust GetMecca
           </p>
 
@@ -286,8 +286,8 @@ export default function BillingPage() {
               onClick={() => setBillingInterval('monthly')}
               className={`px-6 py-2 rounded-lg font-medium transition-all ${
                 billingInterval === 'monthly'
-                  ? 'bg-gray-900 text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  ? 'bg-foreground text-white shadow-md'
+                  : 'bg-white text-muted-foreground hover:bg-muted'
               }`}
             >
               Monthly billing
@@ -296,8 +296,8 @@ export default function BillingPage() {
               onClick={() => setBillingInterval('yearly')}
               className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center space-x-2 ${
                 billingInterval === 'yearly'
-                  ? 'bg-gray-900 text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  ? 'bg-foreground text-white shadow-md'
+                  : 'bg-white text-muted-foreground hover:bg-muted'
               }`}
             >
               <span>Yearly billing</span>
@@ -311,31 +311,31 @@ export default function BillingPage() {
         {/* Pricing Cards - 3 Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
           {/* Free Plan */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">{freePlan.name}</h3>
-              <p className="text-sm text-gray-600">{freePlan.description}</p>
+              <h3 className="text-2xl font-bold text-foreground mb-1">{freePlan.name}</h3>
+              <p className="text-sm text-muted-foreground">{freePlan.description}</p>
             </div>
 
             <div className="mb-6">
               <div className="flex items-baseline">
-                <span className="text-4xl font-bold text-gray-900">${getPrice(freePlan)}</span>
-                <span className="text-gray-600 ml-2">/month</span>
+                <span className="text-4xl font-bold text-foreground">${getPrice(freePlan)}</span>
+                <span className="text-muted-foreground ml-2">/month</span>
               </div>
             </div>
 
             <button
-              className="w-full bg-gray-100 text-gray-900 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors mb-6"
+              className="w-full bg-muted text-foreground py-3 rounded-lg font-semibold hover:bg-muted/80 transition-colors mb-6"
               disabled={subscription?.tier === 'FREE'}
             >
               {subscription?.tier === 'FREE' ? 'Current Plan' : 'Get Started'}
             </button>
 
-            <div className="border-t border-gray-100 pt-4">
-              <p className="text-sm font-semibold text-gray-900 mb-3">What's included</p>
+            <div className="border-t border-border/50 pt-4">
+              <p className="text-sm font-semibold text-foreground mb-3">What's included</p>
               <ul className="space-y-2.5">
                 {freePlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm text-gray-700">
+                  <li key={index} className="flex items-start text-sm text-foreground">
                     <CheckCircle className="w-4 h-4 text-green-600 mr-2.5 mt-0.5 flex-shrink-0" />
                     <span>{feature}</span>
                   </li>
@@ -353,14 +353,14 @@ export default function BillingPage() {
             </div>
 
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">{proPlan.name}</h3>
-              <p className="text-sm text-gray-600">{proPlan.description}</p>
+              <h3 className="text-2xl font-bold text-foreground mb-1">{proPlan.name}</h3>
+              <p className="text-sm text-muted-foreground">{proPlan.description}</p>
             </div>
 
             <div className="mb-6">
               <div className="flex items-baseline">
-                <span className="text-4xl font-bold text-gray-900">${getPrice(proPlan)}</span>
-                <span className="text-gray-600 ml-2">
+                <span className="text-4xl font-bold text-foreground">${getPrice(proPlan)}</span>
+                <span className="text-muted-foreground ml-2">
                   /{billingInterval === 'yearly' ? 'year' : 'month'}
                 </span>
               </div>
@@ -380,11 +380,11 @@ export default function BillingPage() {
               )}
             </button>
 
-            <div className="border-t border-gray-100 pt-4">
-              <p className="text-sm font-semibold text-gray-900 mb-3">All Free features, plus</p>
+            <div className="border-t border-border/50 pt-4">
+              <p className="text-sm font-semibold text-foreground mb-3">All Free features, plus</p>
               <ul className="space-y-2.5">
                 {proPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm text-gray-700">
+                  <li key={index} className="flex items-start text-sm text-foreground">
                     <CheckCircle className="w-4 h-4 text-green-600 mr-2.5 mt-0.5 flex-shrink-0" />
                     <span>{feature}</span>
                   </li>
@@ -394,16 +394,16 @@ export default function BillingPage() {
           </div>
 
           {/* Team Plan */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">{teamPlan.name}</h3>
-              <p className="text-sm text-gray-600">{teamPlan.description}</p>
+              <h3 className="text-2xl font-bold text-foreground mb-1">{teamPlan.name}</h3>
+              <p className="text-sm text-muted-foreground">{teamPlan.description}</p>
             </div>
 
             <div className="mb-6">
               <div className="flex items-baseline">
-                <span className="text-4xl font-bold text-gray-900">${getPrice(teamPlan)}</span>
-                <span className="text-gray-600 ml-2">
+                <span className="text-4xl font-bold text-foreground">${getPrice(teamPlan)}</span>
+                <span className="text-muted-foreground ml-2">
                   /{billingInterval === 'yearly' ? 'year' : 'month'}
                 </span>
               </div>
@@ -412,7 +412,7 @@ export default function BillingPage() {
             <button
               onClick={() => createCheckoutSession('TEAM', billingInterval === 'yearly' ? 'annual' : 'monthly')}
               disabled={upgradeLoading === `TEAM_${billingInterval}` || subscription?.tier === 'TEAM'}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 transition-colors mb-6"
+              className="w-full bg-foreground text-white py-3 rounded-lg font-semibold hover:bg-foreground/90 disabled:opacity-50 transition-colors mb-6"
             >
               {upgradeLoading === `TEAM_${billingInterval}` ? (
                 <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -423,11 +423,11 @@ export default function BillingPage() {
               )}
             </button>
 
-            <div className="border-t border-gray-100 pt-4">
-              <p className="text-sm font-semibold text-gray-900 mb-3">All Pro features, plus</p>
+            <div className="border-t border-border/50 pt-4">
+              <p className="text-sm font-semibold text-foreground mb-3">All Pro features, plus</p>
               <ul className="space-y-2.5">
                 {teamPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm text-gray-700">
+                  <li key={index} className="flex items-start text-sm text-foreground">
                     <CheckCircle className="w-4 h-4 text-green-600 mr-2.5 mt-0.5 flex-shrink-0" />
                     <span>{feature}</span>
                   </li>
@@ -439,16 +439,16 @@ export default function BillingPage() {
 
         {/* Current Plan - Only show for subscribed users */}
         {subscription?.tier !== 'FREE' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-12">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <div className="bg-white rounded-lg border border-border p-6 mb-12">
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
               Your Current Plan
             </h2>
 
             <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">{currentPlan.name}</h3>
-                <p className="text-gray-600 text-sm">{currentPlan.description}</p>
+                <h3 className="text-xl font-bold text-foreground">{currentPlan.name}</h3>
+                <p className="text-muted-foreground text-sm">{currentPlan.description}</p>
                 {subscription?.status === 'PAST_DUE' && (
                   <div className="flex items-center mt-2 text-red-600">
                     <AlertCircle className="w-4 h-4 mr-1" />
@@ -463,12 +463,12 @@ export default function BillingPage() {
                 )}
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold text-gray-900">
+                <div className="text-3xl font-bold text-foreground">
                   ${currentPlan.monthlyPrice}
                 </div>
-                <div className="text-sm text-gray-600">/month</div>
+                <div className="text-sm text-muted-foreground">/month</div>
                 {subscription?.currentPeriodEnd && (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-muted-foreground mt-1">
                     Renews {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                   </div>
                 )}
@@ -480,7 +480,7 @@ export default function BillingPage() {
                 <button
                   onClick={openCustomerPortal}
                   disabled={portalLoading}
-                  className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-foreground text-white rounded-lg hover:bg-foreground/90 disabled:opacity-50 transition-colors"
                 >
                   {portalLoading ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -497,15 +497,15 @@ export default function BillingPage() {
         {/* Social Proof & Testimonials - Simplified */}
         <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-8 mb-12">
           <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Trusted by media professionals</h3>
-            <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
+            <h3 className="text-2xl font-bold text-foreground mb-2">Trusted by media professionals</h3>
+            <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
               <div className="flex items-center">
                 <span className="font-semibold text-purple-600 text-lg mr-1">4.9/5</span>
                 <div className="flex text-yellow-400 text-lg">★★★★★</div>
               </div>
-              <div className="text-gray-400">•</div>
+              <div className="text-muted-foreground/50">•</div>
               <div>
-                <span className="font-semibold text-gray-900">2,500+</span> active users
+                <span className="font-semibold text-foreground">2,500+</span> active users
               </div>
             </div>
           </div>
@@ -515,11 +515,11 @@ export default function BillingPage() {
               <div className="flex items-center mb-2">
                 <div className="w-9 h-9 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">SM</div>
                 <div className="ml-2.5">
-                  <div className="font-semibold text-gray-900 text-sm">Sarah M.</div>
-                  <div className="text-xs text-gray-600">Media Buyer, Agency</div>
+                  <div className="font-semibold text-foreground text-sm">Sarah M.</div>
+                  <div className="text-xs text-muted-foreground">Media Buyer, Agency</div>
                 </div>
               </div>
-              <p className="text-gray-700 text-sm leading-relaxed">
+              <p className="text-foreground text-sm leading-relaxed">
                 "GetMecca saved us hours of research. The contact database is incredibly accurate."
               </p>
               <div className="flex text-yellow-400 text-xs mt-1.5">★★★★★</div>
@@ -529,11 +529,11 @@ export default function BillingPage() {
               <div className="flex items-center mb-2">
                 <div className="w-9 h-9 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">JD</div>
                 <div className="ml-2.5">
-                  <div className="font-semibold text-gray-900 text-sm">James D.</div>
-                  <div className="text-xs text-gray-600">Director, Publisher</div>
+                  <div className="font-semibold text-foreground text-sm">James D.</div>
+                  <div className="text-xs text-muted-foreground">Director, Publisher</div>
                 </div>
               </div>
-              <p className="text-gray-700 text-sm leading-relaxed">
+              <p className="text-foreground text-sm leading-relaxed">
                 "Best investment for our media partnerships. The forum alone is worth the subscription."
               </p>
               <div className="flex text-yellow-400 text-xs mt-1.5">★★★★★</div>
@@ -543,32 +543,32 @@ export default function BillingPage() {
 
         {/* Billing Information - Only for subscribed users */}
         {subscription?.tier !== 'FREE' && subscription?.currentPeriodEnd && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Information</h3>
+          <div className="bg-white rounded-lg border border-border p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Billing Information</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-center p-4 bg-muted rounded-lg">
                 <DollarSign className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900 mb-1">
+                <div className="text-2xl font-bold text-foreground mb-1">
                   ${currentPlan.monthlyPrice}
                 </div>
-                <div className="text-sm text-gray-600">Monthly</div>
+                <div className="text-sm text-muted-foreground">Monthly</div>
               </div>
 
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-center p-4 bg-muted rounded-lg">
                 <Calendar className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-lg font-semibold text-gray-900 mb-1">
+                <div className="text-lg font-semibold text-foreground mb-1">
                   {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                 </div>
-                <div className="text-sm text-gray-600">Next Billing</div>
+                <div className="text-sm text-muted-foreground">Next Billing</div>
               </div>
 
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-center p-4 bg-muted rounded-lg">
                 <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                <div className="text-lg font-semibold text-gray-900 mb-1">
+                <div className="text-lg font-semibold text-foreground mb-1">
                   {subscription.status === 'ACTIVE' ? 'Active' : subscription.status}
                 </div>
-                <div className="text-sm text-gray-600">Status</div>
+                <div className="text-sm text-muted-foreground">Status</div>
               </div>
             </div>
           </div>

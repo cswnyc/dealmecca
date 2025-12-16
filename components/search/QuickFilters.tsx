@@ -174,13 +174,13 @@ export function QuickFilters({ activeTab, onApplyFilter }: QuickFiltersProps) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+    <div className="bg-card border border-border rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-900 flex items-center">
+        <h3 className="text-sm font-semibold text-foreground flex items-center">
           <Sparkles className="h-4 w-4 mr-2 text-yellow-500" />
           Quick Filters
         </h3>
-        <span className="text-xs text-gray-500">Popular searches</span>
+        <span className="text-xs text-muted-foreground">Popular searches</span>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -189,7 +189,7 @@ export function QuickFilters({ activeTab, onApplyFilter }: QuickFiltersProps) {
             key={filter.id}
             onClick={() => onApplyFilter(filter)}
             className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all hover:shadow-md hover:scale-105 ${
-              filter.color || 'bg-gray-50 text-gray-700 border-gray-200'
+              filter.color || 'bg-muted text-foreground border-border'
             }`}
             title={filter.description}
           >
@@ -199,7 +199,7 @@ export function QuickFilters({ activeTab, onApplyFilter }: QuickFiltersProps) {
         ))}
       </div>
 
-      <p className="text-xs text-gray-500 mt-3">
+      <p className="text-xs text-muted-foreground mt-3">
         Click a quick filter to instantly apply common search criteria
       </p>
     </div>

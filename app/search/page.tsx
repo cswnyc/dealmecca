@@ -14,11 +14,11 @@ export default function SearchPage() {
 
   // Show loading state while redirecting
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-muted flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-        <p className="text-gray-600 text-lg">Redirecting to Organizations...</p>
-        <p className="text-gray-500 text-sm mt-2">Search functionality is now part of the Organizations section</p>
+        <p className="text-muted-foreground text-lg">Redirecting to Organizations...</p>
+        <p className="text-muted-foreground text-sm mt-2">Search functionality is now part of the Organizations section</p>
       </div>
     </div>
   )

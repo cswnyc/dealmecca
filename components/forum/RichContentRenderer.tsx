@@ -70,8 +70,8 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
 
   if (loading) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 animate-pulse">
-        <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+      <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground animate-pulse">
+        <div className="w-3 h-3 bg-muted-foreground rounded-full"></div>
         @{name}
       </span>
     );
@@ -82,7 +82,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
     return (
       <Link
         href={resolved.type === 'company' ? `/orgs/companies/${resolved.id}` : `/contacts/${resolved.id}`}
-        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors no-underline"
+        className="text-primary hover:text-primary/80 font-medium hover:underline transition-colors no-underline"
         title={`${resolved.displayName} (${Math.round(resolved.confidence * 100)}% match)`}
       >
         {name}
@@ -95,7 +95,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
     return (
       <Link
         href={`/orgs/companies/${id}`}
-        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors no-underline"
+        className="text-primary hover:text-primary/80 font-medium hover:underline transition-colors no-underline"
       >
         @{company.name}
       </Link>
@@ -107,7 +107,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
     return (
       <Link
         href={`/contacts/${id}`}
-        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors no-underline"
+        className="text-primary hover:text-primary/80 font-medium hover:underline transition-colors no-underline"
       >
         @{contact.fullName}
       </Link>
@@ -116,7 +116,7 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
 
   // Fallback for unrecognized or failed mentions
   return (
-    <span className="text-blue-700 hover:text-blue-900 hover:underline transition-colors cursor-pointer font-medium">
+    <span className="text-primary hover:text-primary/80 hover:underline transition-colors cursor-pointer font-medium">
       @{name}
     </span>
   );
@@ -150,7 +150,7 @@ function processTextForEmails(text: string): React.ReactNode[] {
       <a
         key={`email-${match.index}`}
         href={`mailto:${email}`}
-        className="text-blue-700 hover:text-blue-900 font-medium hover:underline transition-colors"
+        className="text-primary hover:text-primary/80 font-medium hover:underline transition-colors"
       >
         {email}
       </a>
@@ -373,7 +373,7 @@ export function RichContentRenderer({
             finalSegments.push(
               <span
                 key={`unresolved-mention-${segment.start}-${plainMatch.index}`}
-                className={mentionsResolved ? "text-gray-600" : "text-blue-700 animate-pulse font-medium"}
+                className={mentionsResolved ? "text-muted-foreground" : "text-primary animate-pulse font-medium"}
                 title={mentionsResolved ? "Unknown mention" : "Resolving mention..."}
               >
                 {fullMatch}
@@ -400,7 +400,7 @@ export function RichContentRenderer({
   };
 
   return (
-    <div className={`rich-content-renderer text-gray-900 ${className}`}>
+    <div className={`rich-content-renderer text-foreground ${className}`}>
       {parseContentWithMentions(content)}
     </div>
   );

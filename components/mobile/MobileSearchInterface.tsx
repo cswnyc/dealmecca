@@ -112,37 +112,37 @@ export default function MobileSearchInterface({
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-card min-h-screen">
       {/* Fixed Header */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3 safe-area-top">
+      <div className="sticky top-0 z-40 bg-card border-b border-border px-4 py-3 safe-area-top">
         {/* Search Bar */}
         <div className="flex items-center space-x-3 mb-3">
           <div className="flex-1 relative">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             <Input
               ref={searchInputRef}
               type="text"
               placeholder="Search contacts, companies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-3 text-base border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 pr-4 py-3 text-base border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent"
               style={{ fontSize: '16px' }} // Prevent zoom on iOS
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
             )}
           </div>
-          
+
           <Button
             variant="outline"
             size="lg"
             onClick={handleFilterToggle}
-            className="min-h-[48px] min-w-[48px] rounded-xl border-gray-300"
+            className="min-h-[48px] min-w-[48px] rounded-xl border-border"
           >
             <Filter className="w-5 h-5" />
             {appliedFilters.length > 0 && (
@@ -169,7 +169,7 @@ export default function MobileSearchInterface({
                   {filter.label}
                   <button
                     onClick={() => onRemoveFilter(filter)}
-                    className="ml-1 hover:bg-gray-200 rounded-full p-0.5"
+                    className="ml-1 hover:bg-muted rounded-full p-0.5"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -179,7 +179,7 @@ export default function MobileSearchInterface({
                 variant="ghost"
                 size="sm"
                 onClick={clearAllFilters}
-                className="text-gray-500 text-sm"
+                className="text-muted-foreground text-sm"
               >
                 Clear All
               </Button>
@@ -189,7 +189,7 @@ export default function MobileSearchInterface({
       </div>
 
       {/* Quick Filters Row */}
-      <div className="px-4 py-3 border-b border-gray-100">
+      <div className="px-4 py-3 border-b border-border/50">
         <div className="flex gap-2 overflow-x-auto pb-2">
           <div className="flex gap-2 min-w-max">
             {quickFilters.slice(0, 6).map((filter) => {
@@ -200,7 +200,7 @@ export default function MobileSearchInterface({
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickFilterApply(filter)}
-                  className="flex items-center gap-2 whitespace-nowrap py-2 px-3 rounded-full border-gray-200 hover:bg-blue-50 hover:border-blue-300"
+                  className="flex items-center gap-2 whitespace-nowrap py-2 px-3 rounded-full border-border hover:bg-primary/10 hover:border-primary/30"
                 >
                   <IconComponent className="w-4 h-4" />
                   <span className="text-sm">{filter.label}</span>
@@ -215,14 +215,14 @@ export default function MobileSearchInterface({
       <div className="flex-1 px-4 py-4">
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Searching...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Searching...</p>
           </div>
         ) : results.length === 0 ? (
           <div className="text-center py-12">
-            <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
-            <p className="text-gray-500 mb-4">Try adjusting your search criteria</p>
+            <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">No results found</h3>
+            <p className="text-muted-foreground mb-4">Try adjusting your search criteria</p>
             {appliedFilters.length > 0 && (
               <Button
                 variant="outline"
@@ -252,15 +252,15 @@ export default function MobileSearchInterface({
           />
           
           {/* Sheet */}
-          <div 
+          <div
             ref={filterSheetRef}
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl transform transition-transform duration-300 ease-out max-h-[85vh] overflow-hidden"
+            className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl shadow-2xl transform transition-transform duration-300 ease-out max-h-[85vh] overflow-hidden"
             style={{
               transform: filterSheet ? 'translateY(0)' : 'translateY(100%)'
             }}
           >
             {/* Sheet Header */}
-            <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-200">
+            <div className="sticky top-0 bg-card px-6 py-4 border-b border-border">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Filters</h3>
                 <Button
@@ -274,14 +274,14 @@ export default function MobileSearchInterface({
               </div>
               
               {/* Handle indicator */}
-              <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-300 rounded-full" />
+              <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-border rounded-full" />
             </div>
 
             {/* Sheet Content */}
             <div className="overflow-y-auto px-6 py-4" style={{ maxHeight: 'calc(85vh - 80px)' }}>
               {/* Quick Filters */}
               <div className="mb-6">
-                <h4 className="text-base font-medium text-gray-900 mb-3">Quick Filters</h4>
+                <h4 className="text-base font-medium text-foreground mb-3">Quick Filters</h4>
                 <div className="grid grid-cols-2 gap-3">
                   {quickFilters.map((filter) => {
                     const IconComponent = getIconComponent(filter.icon)
@@ -290,12 +290,12 @@ export default function MobileSearchInterface({
                         key={filter.id}
                         variant="outline"
                         onClick={() => handleQuickFilterApply(filter)}
-                        className="h-auto p-4 flex flex-col items-center space-y-2 rounded-xl border-gray-200 hover:bg-blue-50 hover:border-blue-300"
+                        className="h-auto p-4 flex flex-col items-center space-y-2 rounded-xl border-border hover:bg-primary/10 hover:border-primary/30"
                       >
-                        <IconComponent className="w-6 h-6 text-blue-600" />
+                        <IconComponent className="w-6 h-6 text-primary" />
                         <div className="text-center">
                           <div className="font-medium text-sm">{filter.label}</div>
-                          <div className="text-xs text-gray-500 mt-1">{filter.description}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{filter.description}</div>
                         </div>
                       </Button>
                     )
@@ -306,7 +306,7 @@ export default function MobileSearchInterface({
               {/* Decision Makers Toggle */}
               <div className="mb-6">
                 <label className="flex items-center justify-between py-3">
-                  <span className="text-base font-medium text-gray-900">Decision Makers Only</span>
+                  <span className="text-base font-medium text-foreground">Decision Makers Only</span>
                   <input
                     type="checkbox"
                     checked={selectedFilters.isDecisionMaker}
@@ -314,13 +314,13 @@ export default function MobileSearchInterface({
                       ...selectedFilters,
                       isDecisionMaker: e.target.checked
                     })}
-                    className="w-6 h-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-6 h-6 text-primary border-border rounded focus:ring-ring"
                   />
                 </label>
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border">
                 <Button
                   variant="outline"
                   onClick={clearAllFilters}
@@ -330,7 +330,7 @@ export default function MobileSearchInterface({
                 </Button>
                 <Button
                   onClick={() => setFilterSheet(false)}
-                  className="h-12 rounded-xl bg-blue-600 hover:bg-blue-700"
+                  className="h-12 rounded-xl bg-primary hover:bg-primary/90"
                 >
                   Apply Filters
                 </Button>
@@ -344,7 +344,7 @@ export default function MobileSearchInterface({
       <div className="fixed bottom-6 right-6 z-40">
         <Button
           onClick={onSaveSearch}
-          className="h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg"
+          className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg"
         >
           <Plus className="w-6 h-6" />
         </Button>
@@ -416,20 +416,20 @@ function MobileContactCard({ contact }: { contact: any }) {
       {/* Action Backgrounds */}
       <div className="absolute inset-0 flex">
         {/* Email background (right swipe) */}
-        <div 
-          className="flex-1 bg-green-500 flex items-center justify-start pl-6"
-          style={{ 
+        <div
+          className="flex-1 bg-green-600 flex items-center justify-start pl-6"
+          style={{
             transform: `translateX(${Math.min(0, swipeOffset - 80)}px)`,
             opacity: swipeOffset > 0 ? Math.min(1, swipeOffset / 40) : 0
           }}
         >
           <Mail className="w-6 h-6 text-white" />
         </div>
-        
+
         {/* Call background (left swipe) */}
-        <div 
-          className="flex-1 bg-blue-500 flex items-center justify-end pr-6"
-          style={{ 
+        <div
+          className="flex-1 bg-primary flex items-center justify-end pr-6"
+          style={{
             transform: `translateX(${Math.max(0, swipeOffset + 80)}px)`,
             opacity: swipeOffset < 0 ? Math.min(1, Math.abs(swipeOffset) / 40) : 0
           }}
@@ -441,8 +441,8 @@ function MobileContactCard({ contact }: { contact: any }) {
       {/* Contact Card */}
       <div
         ref={cardRef}
-        className="bg-white border border-gray-200 rounded-xl p-4 relative z-10 transition-transform duration-150 active:scale-[0.98]"
-        style={{ 
+        className="bg-card border border-border rounded-xl p-4 relative z-10 transition-transform duration-150 active:scale-[0.98]"
+        style={{
           transform: `translateX(${swipeOffset}px)`,
           transition: isDragging ? 'none' : 'transform 0.3s ease-out'
         }}
@@ -452,10 +452,10 @@ function MobileContactCard({ contact }: { contact: any }) {
       >
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 truncate text-base">
+            <h3 className="font-semibold text-foreground truncate text-base">
               {displayName}
             </h3>
-            <p className="text-sm text-gray-600 truncate">
+            <p className="text-sm text-muted-foreground truncate">
               {contact.title} • {contact.company?.name}
             </p>
             

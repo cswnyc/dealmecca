@@ -40,7 +40,7 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
       <div className="flex items-center space-x-2">
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10 pointer-events-none" />
           <input
             ref={inputRef}
             type="text"
@@ -51,7 +51,7 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
-            className="w-full h-10 pl-10 pr-10 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors"
+            className="w-full h-10 pl-10 pr-10 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring hover:border-border/80 transition-colors"
             style={{
               fontSize: '16px', // Prevents zoom on mobile
               touchAction: 'manipulation'
@@ -61,7 +61,7 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
             <button
               onClick={clearSearch}
               type="button"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10 p-1"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground z-10 p-1"
             >
               <X className="w-4 h-4" />
             </button>
@@ -72,7 +72,7 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
         <button
           type="button"
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center space-x-1 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex items-center space-x-1 px-3 py-2 text-sm border border-border rounded-md bg-background hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
         >
           <Filter className="w-4 h-4" />
           <span className="hidden sm:inline">Filters</span>
@@ -82,24 +82,24 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
       {/* Active Filters */}
       {Object.keys(activeFilters).length > 0 && (
         <div className="flex items-center space-x-2 mt-2">
-          <span className="text-sm text-gray-500">Filters:</span>
+          <span className="text-sm text-muted-foreground">Filters:</span>
           {activeFilters.category && (
-            <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">
+            <span className="inline-flex items-center px-2 py-1 text-xs bg-muted text-foreground rounded">
               Category: {activeFilters.category}
               <button
                 onClick={() => setActiveFilters(prev => ({ ...prev, category: undefined }))}
-                className="ml-1 text-gray-500 hover:text-red-500"
+                className="ml-1 text-muted-foreground hover:text-destructive"
               >
                 <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {activeFilters.author && (
-            <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">
+            <span className="inline-flex items-center px-2 py-1 text-xs bg-muted text-foreground rounded">
               Author: {activeFilters.author}
               <button
                 onClick={() => setActiveFilters(prev => ({ ...prev, author: undefined }))}
-                className="ml-1 text-gray-500 hover:text-red-500"
+                className="ml-1 text-muted-foreground hover:text-destructive"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -107,7 +107,7 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
           )}
           <button
             onClick={() => setActiveFilters({})}
-            className="text-xs text-gray-500 hover:text-red-500 px-2 py-1"
+            className="text-xs text-muted-foreground hover:text-destructive px-2 py-1"
           >
             Clear all
           </button>
@@ -116,12 +116,12 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
 
       {/* Advanced Filters Panel */}
       {showFilters && (
-        <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-4 mt-1 z-50">
+        <div className="absolute top-full left-0 right-0 bg-card border border-border rounded-lg shadow-lg p-4 mt-1 z-50">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select 
-                className="w-full text-sm border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-foreground mb-1">Category</label>
+              <select
+                className="w-full text-sm border border-border rounded px-3 py-2 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 value={activeFilters.category || ''}
                 onChange={(e) => setActiveFilters(prev => ({ ...prev, category: e.target.value || undefined }))}
               >
@@ -136,9 +136,9 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-              <select 
-                className="w-full text-sm border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-foreground mb-1">Sort By</label>
+              <select
+                className="w-full text-sm border border-border rounded px-3 py-2 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 value={activeFilters.sortBy || 'newest'}
                 onChange={(e) => setActiveFilters(prev => ({ ...prev, sortBy: e.target.value }))}
               >
@@ -150,9 +150,9 @@ export function ForumSearch({ onSearch, className }: ForumSearchProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Time Range</label>
-              <select 
-                className="w-full text-sm border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-foreground mb-1">Time Range</label>
+              <select
+                className="w-full text-sm border border-border rounded px-3 py-2 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 value={activeFilters.dateRange || ''}
                 onChange={(e) => setActiveFilters(prev => ({ ...prev, dateRange: e.target.value || undefined }))}
               >

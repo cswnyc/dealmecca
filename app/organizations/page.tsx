@@ -393,7 +393,7 @@ const INDUSTRY_COLORS: Record<string, string> = {
   'TELECOMMUNICATIONS': 'bg-violet-100 text-violet-800',
   'BEAUTY': 'bg-pink-100 text-pink-800',
   'GAMING': 'bg-purple-100 text-purple-800',
-  'MEDIA': 'bg-gray-100 text-gray-800'
+  'MEDIA': 'bg-muted text-muted-foreground'
 }
 
 export default function OrganizationsPage() {
@@ -485,7 +485,7 @@ export default function OrganizationsPage() {
       case 'HOLDING_COMPANY_AGENCY': return 'bg-blue-100 text-blue-800';
       case 'INDEPENDENT_AGENCY': return 'bg-green-100 text-green-800';
       case 'NETWORK_AGENCY': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -890,10 +890,10 @@ export default function OrganizationsPage() {
   if (authLoading) {
     return (
       <MainLayout>
-        <div className="min-h-full bg-gray-50 flex items-center justify-center">
+        <div className="min-h-full bg-muted flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading...</p>
+            <p className="text-muted-foreground text-lg">Loading...</p>
           </div>
         </div>
       </MainLayout>
@@ -903,18 +903,18 @@ export default function OrganizationsPage() {
   return (
     <AuthGuard>
       <MainLayout>
-      <div className="min-h-full bg-gray-50">
+      <div className="min-h-full bg-muted">
         {/* Header */}
-        <div className="bg-white shadow-sm border-b">
+        <div className="bg-card shadow-sm border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="py-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                  <h1 className="text-3xl font-bold text-foreground flex items-center">
                     <Building2 className="h-8 w-8 mr-3 text-sky-600" />
                     Organizations
                   </h1>
-                  <p className="mt-1 text-gray-600">
+                  <p className="mt-1 text-muted-foreground">
                     Explore deal connections and partnership opportunities
                   </p>
                 </div>
@@ -926,10 +926,10 @@ export default function OrganizationsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="space-y-6">
             {/* Sticky Header */}
-            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 pb-6 mb-6">
+            <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border pb-6 mb-6">
               {/* Tab Navigation */}
               <div className="flex items-center justify-between mb-4">
-                <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                <div className="flex space-x-1 bg-muted p-1 rounded-lg">
                   {[
                     { id: 'agencies', label: 'Agencies', icon: Building2 },
                     { id: 'advertisers', label: 'Advertisers', icon: Globe },
@@ -946,8 +946,8 @@ export default function OrganizationsPage() {
                         onClick={() => handleTabChange(tab.id)}
                         className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                           activeTab === tab.id
-                            ? 'bg-white text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                            ? 'bg-card text-primary shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                         }`}
                       >
                         <IconComponent className="h-4 w-4" />
@@ -961,7 +961,7 @@ export default function OrganizationsPage() {
               {/* Search Bar and Action Buttons */}
               <div className="flex items-center justify-between space-x-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
                     type="text"
                     placeholder={
@@ -975,12 +975,12 @@ export default function OrganizationsPage() {
                     }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-10 h-11 bg-white shadow-sm"
+                    className="pl-10 pr-10 h-11 bg-card shadow-sm"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -1052,7 +1052,7 @@ export default function OrganizationsPage() {
             {activeTab === 'agencies' && (
               <div className="w-full">
                 {/* Modern Stats Bar */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
                       <div className="flex items-center space-x-3">
@@ -1060,8 +1060,8 @@ export default function OrganizationsPage() {
                           <Building2 className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Total Agencies</p>
-                          <p className="text-2xl font-bold text-gray-900">{filteredAgencies.length}</p>
+                          <p className="text-sm font-medium text-muted-foreground">Total Agencies</p>
+                          <p className="text-2xl font-bold text-foreground">{filteredAgencies.length}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -1069,8 +1069,8 @@ export default function OrganizationsPage() {
                           <Users className="h-5 w-5 text-green-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Team Members</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-sm font-medium text-muted-foreground">Team Members</p>
+                          <p className="text-2xl font-bold text-foreground">
                             {filteredAgencies.reduce((total, agency) => total + agency.teamCount, 0)}
                           </p>
                         </div>
@@ -1080,8 +1080,8 @@ export default function OrganizationsPage() {
                           <CheckCircle className="h-5 w-5 text-purple-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Verified Rate</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-sm font-medium text-muted-foreground">Verified Rate</p>
+                          <p className="text-2xl font-bold text-foreground">
                             {filteredAgencies.length > 0
                               ? Math.round((filteredAgencies.filter(a => a.verified).length / filteredAgencies.length) * 100)
                               : 0}%
@@ -1093,11 +1093,11 @@ export default function OrganizationsPage() {
                     {/* Filter Toggle */}
                     <button
                       onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200"
+                      className="flex items-center space-x-2 px-4 py-2 bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors duration-200"
                     >
-                      <Filter className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700">Filters</span>
-                      <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                      <Filter className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">Filters</span>
+                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
                 </div>
@@ -1114,19 +1114,19 @@ export default function OrganizationsPage() {
                 )}
 
                 {/* Agencies List */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {searchQuery ? `Search Results (${filteredAgencies.length})` : 'Agency Directory'}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {searchQuery ? `Found ${filteredAgencies.length} agencies matching your search` : 'Discover and connect with leading agencies'}
                     </p>
                   </div>
                   <div className="p-6">
                     <div className="grid gap-4">
                       {filteredAgencies.map((agency) => (
-                        <div key={agency.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div key={agency.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-4 flex-1">
                               <CompanyLogo
@@ -1139,7 +1139,7 @@ export default function OrganizationsPage() {
                                 <div className="flex items-start justify-between mb-2">
                                   <div>
                                     <Link href={`/companies/${agency.id}`} className="group">
-                                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                      <h3 className="text-lg font-semibold text-foreground group-hover:text-blue-600 transition-colors">
                                         <SearchHighlight
                                           text={agency.name}
                                           searchTerm={searchQuery}
@@ -1152,7 +1152,7 @@ export default function OrganizationsPage() {
                                         {getAgencyTypeLabel(agency.type)}
                                       </span>
                                       {(agency.city || agency.state) && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
                                           <MapPin className="w-3 h-3 mr-1" />
                                           <SearchHighlight
                                             text={`${agency.city || ''}, ${agency.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
@@ -1173,7 +1173,7 @@ export default function OrganizationsPage() {
                                       )}
                                     </div>
                                   </div>
-                                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                                     <Users className="w-4 h-4" />
                                     <span>{agency.teamCount} people</span>
                                   </div>
@@ -1189,7 +1189,7 @@ export default function OrganizationsPage() {
                                           size="sm"
                                           className="rounded-full"
                                         />
-                                        <span className="text-sm font-medium text-gray-900">
+                                        <span className="text-sm font-medium text-foreground">
                                           <SearchHighlight
                                             text={client.name}
                                             searchTerm={searchQuery}
@@ -1197,7 +1197,7 @@ export default function OrganizationsPage() {
                                           />
                                         </span>
                                         {index < (expandedCompanies.has(agency.id) ? agency.clients.length - 1 : Math.min(2, agency.clients.length - 1)) && (
-                                          <span className="text-gray-400">,</span>
+                                          <span className="text-muted-foreground">,</span>
                                         )}
                                       </div>
                                     ))}
@@ -1229,7 +1229,7 @@ export default function OrganizationsPage() {
             {activeTab === 'advertisers' && (
               <div className="w-full">
                 {/* Stats Bar */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
                       <div className="flex items-center space-x-3">
@@ -1237,8 +1237,8 @@ export default function OrganizationsPage() {
                           <Globe className="h-5 w-5 text-green-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Total Advertisers</p>
-                          <p className="text-2xl font-bold text-gray-900">{filteredAdvertisers.length}</p>
+                          <p className="text-sm font-medium text-muted-foreground">Total Advertisers</p>
+                          <p className="text-2xl font-bold text-foreground">{filteredAdvertisers.length}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -1246,8 +1246,8 @@ export default function OrganizationsPage() {
                           <Users className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Team Members</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-sm font-medium text-muted-foreground">Team Members</p>
+                          <p className="text-2xl font-bold text-foreground">
                             {filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0)}
                           </p>
                         </div>
@@ -1257,8 +1257,8 @@ export default function OrganizationsPage() {
                           <CheckCircle className="h-5 w-5 text-purple-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Verified Rate</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-sm font-medium text-muted-foreground">Verified Rate</p>
+                          <p className="text-2xl font-bold text-foreground">
                             {filteredAdvertisers.length > 0
                               ? Math.round((filteredAdvertisers.filter(a => a.verified).length / filteredAdvertisers.length) * 100)
                               : 0}%
@@ -1270,11 +1270,11 @@ export default function OrganizationsPage() {
                     {/* Filter Toggle */}
                     <button
                       onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200"
+                      className="flex items-center space-x-2 px-4 py-2 bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors duration-200"
                     >
-                      <Filter className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700">Filters</span>
-                      <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                      <Filter className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">Filters</span>
+                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
                 </div>
@@ -1291,16 +1291,16 @@ export default function OrganizationsPage() {
                 )}
 
                 {/* Advertisers List */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {searchQuery ? `Search Results (${filteredAdvertisers.length})` : 'Advertiser Directory'}
                     </h3>
                   </div>
                   <div className="p-6">
                     <div className="grid gap-4">
                       {filteredAdvertisers.map((advertiser) => (
-                        <div key={advertiser.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div key={advertiser.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-4 flex-1">
                               <CompanyLogo
@@ -1313,16 +1313,16 @@ export default function OrganizationsPage() {
                                 <div className="flex items-start justify-between mb-2">
                                   <div>
                                     <Link href={`/companies/${advertiser.id}`} className="group">
-                                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                                      <h3 className="text-lg font-semibold text-foreground group-hover:text-green-600 transition-colors">
                                         {advertiser.name}
                                       </h3>
                                     </Link>
                                     <div className="flex items-center space-x-2 mt-1">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${INDUSTRY_COLORS[advertiser.industry] || 'bg-gray-100 text-gray-800'}`}>
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${INDUSTRY_COLORS[advertiser.industry] || 'bg-muted text-muted-foreground'}`}>
                                         {advertiser.industry}
                                       </span>
                                       {(advertiser.city || advertiser.state) && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
                                           <MapPin className="w-3 h-3 mr-1" />
                                           {`${advertiser.city || ''}, ${advertiser.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
                                         </span>
@@ -1335,7 +1335,7 @@ export default function OrganizationsPage() {
                                       )}
                                     </div>
                                   </div>
-                                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                                     <Users className="w-4 h-4" />
                                     <span>{advertiser.teamCount} people</span>
                                   </div>
@@ -1343,7 +1343,7 @@ export default function OrganizationsPage() {
                                 {/* Agency Partners */}
                                 {advertiser.agencies && advertiser.agencies.length > 0 && (
                                   <div className="mt-2">
-                                    <p className="text-xs font-medium text-gray-500 mb-1">Agency Partners:</p>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">Agency Partners:</p>
                                     <div className="flex flex-wrap gap-1">
                                       {advertiser.agencies.slice(0, expandedCompanies.has(advertiser.id) ? undefined : 3).map((agency, index) => (
                                         <span
@@ -1357,7 +1357,7 @@ export default function OrganizationsPage() {
                                       {advertiser.agencies.length > 3 && (
                                         <button
                                           onClick={() => toggleCompanyExpansion(advertiser.id)}
-                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground hover:bg-muted transition-colors"
                                         >
                                           {expandedCompanies.has(advertiser.id)
                                             ? 'Show less'
@@ -1383,7 +1383,7 @@ export default function OrganizationsPage() {
             {activeTab === 'people' && (
               <div className="w-full">
                 {/* Stats Bar */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
                       <div className="flex items-center space-x-3">
@@ -1391,8 +1391,8 @@ export default function OrganizationsPage() {
                           <User className="h-5 w-5 text-purple-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Total People</p>
-                          <p className="text-2xl font-bold text-gray-900">{filteredContacts.length}</p>
+                          <p className="text-sm font-medium text-muted-foreground">Total People</p>
+                          <p className="text-2xl font-bold text-foreground">{filteredContacts.length}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -1400,8 +1400,8 @@ export default function OrganizationsPage() {
                           <Building2 className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Companies</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-sm font-medium text-muted-foreground">Companies</p>
+                          <p className="text-2xl font-bold text-foreground">
                             {new Set(filteredContacts.map(c => c.company.id)).size}
                           </p>
                         </div>
@@ -1411,8 +1411,8 @@ export default function OrganizationsPage() {
                           <CheckCircle className="h-5 w-5 text-green-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500">Decision Makers</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-sm font-medium text-muted-foreground">Decision Makers</p>
+                          <p className="text-2xl font-bold text-foreground">
                             {filteredContacts.filter(c => c.isDecisionMaker).length}
                           </p>
                         </div>
@@ -1422,11 +1422,11 @@ export default function OrganizationsPage() {
                     {/* Filter Toggle */}
                     <button
                       onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200"
+                      className="flex items-center space-x-2 px-4 py-2 bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors duration-200"
                     >
-                      <Filter className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700">Filters</span>
-                      <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                      <Filter className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">Filters</span>
+                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
                 </div>
@@ -1443,16 +1443,16 @@ export default function OrganizationsPage() {
                 )}
 
                 {/* People List */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {searchQuery ? `Search Results (${filteredContacts.length})` : 'People Directory'}
                     </h3>
                   </div>
                   <div className="p-6">
                     <div className="grid gap-4">
                       {filteredContacts.map((contact) => (
-                        <div key={contact.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div key={contact.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-4 flex-1">
                               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
@@ -1462,11 +1462,11 @@ export default function OrganizationsPage() {
                                 <div className="flex items-start justify-between mb-2">
                                   <div>
                                     <Link href={`/people/${contact.id}`} className="group">
-                                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                                      <h3 className="text-lg font-semibold text-foreground group-hover:text-purple-600 transition-colors">
                                         {contact.fullName}
                                       </h3>
                                     </Link>
-                                    <p className="text-sm text-gray-600">{contact.title}</p>
+                                    <p className="text-sm text-muted-foreground">{contact.title}</p>
                                     <div className="flex items-center space-x-2 mt-1">
                                       <Link
                                         href={`/companies/${contact.company.id}`}
@@ -1476,7 +1476,7 @@ export default function OrganizationsPage() {
                                         {contact.company.name}
                                       </Link>
                                       {contact.seniority && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
                                           {contact.seniority}
                                         </span>
                                       )}
@@ -1488,7 +1488,7 @@ export default function OrganizationsPage() {
                                       )}
                                     </div>
                                   </div>
-                                  <div className="flex flex-col items-end space-y-1 text-xs text-gray-500">
+                                  <div className="flex flex-col items-end space-y-1 text-xs text-muted-foreground">
                                     <span className="flex items-center">
                                       <Network className="w-3 h-3 mr-1" />
                                       {contact.interactionCount} interactions
@@ -1508,12 +1508,12 @@ export default function OrganizationsPage() {
 
             {activeTab === 'industries' && (
               <div className="w-full">
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {INDUSTRIES_DATA.length} Industries
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       Browse industries and explore associated posts
                     </p>
                   </div>
@@ -1525,18 +1525,18 @@ export default function OrganizationsPage() {
                         <Link
                           key={industry.name}
                           href={`/industries/${encodeURIComponent(industry.name)}`}
-                          className="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200"
+                          className="group bg-white border border-border rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                              <h4 className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors truncate">
                                 {industry.name}
                               </h4>
-                              <p className="text-xs text-gray-500 mt-1">
+                              <p className="text-xs text-muted-foreground mt-1">
                                 {industry.posts.toLocaleString()} {industry.posts === 1 ? 'Post' : 'Posts'}
                               </p>
                             </div>
-                            <Briefcase className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors ml-2 flex-shrink-0" />
+                            <Briefcase className="h-5 w-5 text-muted-foreground group-hover:text-blue-500 transition-colors ml-2 flex-shrink-0" />
                           </div>
                         </Link>
                       ))}
@@ -1550,15 +1550,15 @@ export default function OrganizationsPage() {
             {activeTab === 'publisher' && (
               <div className="w-full">
                 {/* Stats Bar */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center justify-center w-10 h-10 bg-red-50 rounded-lg">
                         <Monitor className="h-5 w-5 text-red-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Total Publishers</p>
-                        <p className="text-2xl font-bold text-gray-900">{filteredPublishers.length}</p>
+                        <p className="text-sm font-medium text-muted-foreground">Total Publishers</p>
+                        <p className="text-2xl font-bold text-foreground">{filteredPublishers.length}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -1566,8 +1566,8 @@ export default function OrganizationsPage() {
                         <CheckCircle className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Verified</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-sm font-medium text-muted-foreground">Verified</p>
+                        <p className="text-2xl font-bold text-foreground">
                           {filteredPublishers.filter(p => p.verified).length}
                         </p>
                       </div>
@@ -1576,14 +1576,14 @@ export default function OrganizationsPage() {
                 </div>
 
                 {/* Publishers List */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-semibold text-gray-900">Publisher Directory</h3>
+                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">Publisher Directory</h3>
                   </div>
                   <div className="p-6">
                     <div className="grid gap-4">
                       {filteredPublishers.map((publisher) => (
-                        <div key={publisher.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div key={publisher.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
                           <div className="flex items-start space-x-4">
                             <CompanyLogo
                               logoUrl={publisher.logoUrl}
@@ -1593,13 +1593,13 @@ export default function OrganizationsPage() {
                             />
                             <div className="flex-1">
                               <Link href={`/companies/${publisher.id}`}>
-                                <h3 className="text-lg font-semibold text-gray-900 hover:text-red-600 transition-colors">
+                                <h3 className="text-lg font-semibold text-foreground hover:text-red-600 transition-colors">
                                   {publisher.name}
                                 </h3>
                               </Link>
                               <div className="flex items-center space-x-2 mt-1">
                                 {(publisher.city || publisher.state) && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
                                     <MapPin className="w-3 h-3 mr-1" />
                                     {`${publisher.city || ''}, ${publisher.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
                                   </span>
@@ -1625,15 +1625,15 @@ export default function OrganizationsPage() {
             {activeTab === 'dsp-ssp' && (
               <div className="w-full">
                 {/* Stats Bar */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center justify-center w-10 h-10 bg-indigo-50 rounded-lg">
                         <Satellite className="h-5 w-5 text-indigo-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Total Platforms</p>
-                        <p className="text-2xl font-bold text-gray-900">{filteredPlatforms.length}</p>
+                        <p className="text-sm font-medium text-muted-foreground">Total Platforms</p>
+                        <p className="text-2xl font-bold text-foreground">{filteredPlatforms.length}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -1641,8 +1641,8 @@ export default function OrganizationsPage() {
                         <Network className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Total Partnerships</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-sm font-medium text-muted-foreground">Total Partnerships</p>
+                        <p className="text-2xl font-bold text-foreground">
                           {filteredPlatforms.reduce((sum, p) => sum + p.partnerCount, 0)}
                         </p>
                       </div>
@@ -1652,8 +1652,8 @@ export default function OrganizationsPage() {
                         <CheckCircle className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Verified</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-sm font-medium text-muted-foreground">Verified</p>
+                        <p className="text-2xl font-bold text-foreground">
                           {filteredPlatforms.filter(p => p.verified).length}
                         </p>
                       </div>
@@ -1662,14 +1662,14 @@ export default function OrganizationsPage() {
                 </div>
 
                 {/* Platforms List */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-semibold text-gray-900">DSP/SSP Directory</h3>
+                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">DSP/SSP Directory</h3>
                   </div>
                   <div className="p-6">
                     <div className="grid gap-4">
                       {filteredPlatforms.map((platform) => (
-                        <div key={platform.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div key={platform.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
                           <div className="flex items-start space-x-4">
                             <CompanyLogo
                               logoUrl={platform.logoUrl}
@@ -1679,7 +1679,7 @@ export default function OrganizationsPage() {
                             />
                             <div className="flex-1">
                               <Link href={`/companies/${platform.id}`}>
-                                <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+                                <h3 className="text-lg font-semibold text-foreground hover:text-indigo-600 transition-colors">
                                   {platform.name}
                                 </h3>
                               </Link>
@@ -1688,7 +1688,7 @@ export default function OrganizationsPage() {
                                   {platform.type}
                                 </span>
                                 {(platform.city || platform.state) && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
                                     <MapPin className="w-3 h-3 mr-1" />
                                     {`${platform.city || ''}, ${platform.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
                                   </span>
@@ -1714,15 +1714,15 @@ export default function OrganizationsPage() {
             {activeTab === 'adtech' && (
               <div className="w-full">
                 {/* Stats Bar */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center justify-center w-10 h-10 bg-pink-50 rounded-lg">
                         <BarChart3 className="h-5 w-5 text-pink-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Total Adtech</p>
-                        <p className="text-2xl font-bold text-gray-900">{filteredAdtech.length}</p>
+                        <p className="text-sm font-medium text-muted-foreground">Total Adtech</p>
+                        <p className="text-2xl font-bold text-foreground">{filteredAdtech.length}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -1730,8 +1730,8 @@ export default function OrganizationsPage() {
                         <Network className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Total Partnerships</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-sm font-medium text-muted-foreground">Total Partnerships</p>
+                        <p className="text-2xl font-bold text-foreground">
                           {filteredAdtech.reduce((sum, c) => sum + c.partnerCount, 0)}
                         </p>
                       </div>
@@ -1741,8 +1741,8 @@ export default function OrganizationsPage() {
                         <CheckCircle className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Verified</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-sm font-medium text-muted-foreground">Verified</p>
+                        <p className="text-2xl font-bold text-foreground">
                           {filteredAdtech.filter(c => c.verified).length}
                         </p>
                       </div>
@@ -1751,14 +1751,14 @@ export default function OrganizationsPage() {
                 </div>
 
                 {/* Adtech List */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-lg font-semibold text-gray-900">Adtech Directory</h3>
+                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">Adtech Directory</h3>
                   </div>
                   <div className="p-6">
                     <div className="grid gap-4">
                       {filteredAdtech.map((company) => (
-                        <div key={company.id} className="group bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200">
+                        <div key={company.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
                           <div className="flex items-start space-x-4">
                             <CompanyLogo
                               logoUrl={company.logoUrl}
@@ -1768,13 +1768,13 @@ export default function OrganizationsPage() {
                             />
                             <div className="flex-1">
                               <Link href={`/companies/${company.id}`}>
-                                <h3 className="text-lg font-semibold text-gray-900 hover:text-pink-600 transition-colors">
+                                <h3 className="text-lg font-semibold text-foreground hover:text-pink-600 transition-colors">
                                   {company.name}
                                 </h3>
                               </Link>
                               <div className="flex items-center space-x-2 mt-1">
                                 {(company.city || company.state) && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
                                     <MapPin className="w-3 h-3 mr-1" />
                                     {`${company.city || ''}, ${company.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
                                   </span>

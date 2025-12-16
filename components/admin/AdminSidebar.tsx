@@ -173,20 +173,20 @@ export function AdminSidebar() {
   const NavContent = () => (
     <>
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
           <Link href="/admin" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
               <LayoutDashboard className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
-              <p className="text-xs text-gray-500">DealMecca</p>
+              <h2 className="text-lg font-bold text-foreground">Admin Panel</h2>
+              <p className="text-xs text-muted-foreground">DealMecca</p>
             </div>
           </Link>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="lg:hidden text-gray-500 hover:text-gray-700"
+            className="lg:hidden text-muted-foreground hover:text-foreground"
           >
             <X className="w-6 h-6" />
           </button>
@@ -209,8 +209,8 @@ export function AdminSidebar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                   isActive(item.href)
-                    ? 'bg-blue-50 text-blue-600 font-medium'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-foreground hover:bg-muted'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -224,7 +224,7 @@ export function AdminSidebar() {
             <div key={item.title}>
               <button
                 onClick={() => toggleSection(item.title)}
-                className="w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 text-foreground hover:bg-muted rounded-lg transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <Icon className="w-5 h-5" />
@@ -238,7 +238,7 @@ export function AdminSidebar() {
               </button>
 
               {isOpen && item.children && (
-                <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 pl-4">
+                <div className="ml-4 mt-1 space-y-1 border-l-2 border-border pl-4">
                   {item.children.map((child) => {
                     const ChildIcon = child.icon;
                     return (
@@ -248,8 +248,8 @@ export function AdminSidebar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                           isActive(child.href!)
-                            ? 'bg-blue-50 text-blue-600 font-medium'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                            ? 'bg-primary/10 text-primary font-medium'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         }`}
                       >
                         <ChildIcon className="w-4 h-4" />
@@ -265,10 +265,10 @@ export function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200 space-y-2">
+      <div className="p-4 border-t border-border space-y-2">
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="w-full flex items-center space-x-3 px-3 py-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
         >
           <LogOut className="w-5 h-5" />
           <span>Sign Out</span>
@@ -276,16 +276,16 @@ export function AdminSidebar() {
         <Link
           href="/"
           onClick={() => setIsMobileMenuOpen(false)}
-          className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 text-foreground hover:bg-muted rounded-lg transition-colors"
         >
           <Home className="w-5 h-5" />
           <span>Exit Admin</span>
         </Link>
-        <div className="px-3 py-2 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-600">
+        <div className="px-3 py-2 bg-muted rounded-lg">
+          <p className="text-xs text-muted-foreground">
             <span className="font-semibold">22</span> admin pages
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Phase 6 Consolidation Complete
           </p>
         </div>
@@ -298,9 +298,9 @@ export function AdminSidebar() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50"
+        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-background rounded-lg shadow-lg border border-border hover:bg-muted"
       >
-        <Menu className="w-6 h-6 text-gray-700" />
+        <Menu className="w-6 h-6 text-foreground" />
       </button>
 
       {/* Mobile Overlay */}
@@ -312,13 +312,13 @@ export function AdminSidebar() {
       )}
 
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200 z-30">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-background border-r border-border z-30">
         <NavContent />
       </aside>
 
       {/* Sidebar - Mobile */}
       <aside
-        className={`lg:hidden fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-200 ease-in-out ${
+        className={`lg:hidden fixed inset-y-0 left-0 w-64 bg-background border-r border-border z-50 transform transition-transform duration-200 ease-in-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } flex flex-col`}
       >

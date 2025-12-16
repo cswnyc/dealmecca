@@ -122,13 +122,13 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
     <div className="bg-white border rounded-lg p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+        <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
           <Activity className="w-5 h-5 text-blue-500" />
           <span>Import Progress</span>
         </h3>
         
         {isActive && (
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Timer className="w-4 h-4" />
               <span>{formatTime(elapsedTime)}</span>
@@ -146,7 +146,7 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
       {/* Overall Progress Bar */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-gray-700">
+          <span className="font-medium text-muted-foreground">
             {progress.status === 'completed' 
               ? 'Import Complete!' 
               : progress.status === 'failed'
@@ -154,12 +154,12 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
                 : progress.currentOperation || 'Processing...'
             }
           </span>
-          <span className="text-gray-600">
+          <span className="text-muted-foreground">
             {progress.processed} / {progress.total} ({getProgressPercentage()}%)
           </span>
         </div>
         
-        <div className="w-full bg-gray-200 rounded-full h-3">
+        <div className="w-full bg-muted rounded-full h-3">
           <div 
             className={`h-3 rounded-full transition-all duration-300 ${
               progress.status === 'failed' 
@@ -204,7 +204,7 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
 
       {/* Phase Progress */}
       <div className="space-y-3">
-        <h4 className="font-medium text-gray-900">Import Phases</h4>
+        <h4 className="font-medium text-foreground">Import Phases</h4>
         
         <div className="space-y-2">
           {phases.map((phase, index) => {
@@ -221,7 +221,7 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
                       ? 'bg-blue-500 text-white'
                       : status === 'failed'
                         ? 'bg-red-500 text-white'
-                        : 'bg-gray-200 text-gray-400'
+                        : 'bg-muted text-muted-foreground'
                   }
                 `}>
                   {status === 'completed' ? (
@@ -238,7 +238,7 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
                     <p className={`text-sm font-medium ${
                       status === 'active' ? 'text-blue-900' : 
                       status === 'completed' ? 'text-green-900' :
-                      status === 'failed' ? 'text-red-900' : 'text-gray-500'
+                      status === 'failed' ? 'text-red-900' : 'text-muted-foreground'
                     }`}>
                       {phase.name}
                     </p>
@@ -259,7 +259,7 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
                     )}
                   </div>
                   
-                  <p className="text-xs text-gray-500">{phase.description}</p>
+                  <p className="text-xs text-muted-foreground">{phase.description}</p>
                 </div>
               </div>
             );
@@ -325,7 +325,7 @@ export default function ProgressTracker({ progress, isActive = false }: Progress
             ? 'bg-red-100 text-red-800'
             : progress.status === 'processing'
               ? 'bg-blue-100 text-blue-800'
-              : 'bg-gray-100 text-gray-600'
+              : 'bg-muted text-muted-foreground'
         }
       `}>
         {progress.status === 'completed' && '🎉 Import completed successfully!'}

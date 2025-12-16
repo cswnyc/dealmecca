@@ -93,7 +93,7 @@ export function TopicChip({
     <div className={`inline-block ${className}`}>
       {/* Main Topic Display */}
       <div
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border-0 shadow-sm bg-gray-50 hover:bg-gray-100 hover:shadow-md transition-all duration-200"
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border-0 shadow-sm bg-muted hover:bg-muted/80 hover:shadow-md transition-all duration-200"
       >
         {/* Primary Company Logo */}
         {allItems.length > 0 && allItems[0].type === 'company' && (
@@ -102,11 +102,11 @@ export function TopicChip({
               <img
                 src={allItems[0].data.logoUrl}
                 alt={`${allItems[0].data.name} logo`}
-                className="w-5 h-5 rounded-full border-2 border-white object-cover"
+                className="w-5 h-5 rounded-full border-2 border-background object-cover"
               />
             ) : (
-              <div className="w-5 h-5 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center">
-                <span className="text-xs font-bold text-gray-600">
+              <div className="w-5 h-5 rounded-full border-2 border-background bg-muted flex items-center justify-center">
+                <span className="text-xs font-bold text-muted-foreground">
                   {allItems[0].data.name.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -119,11 +119,11 @@ export function TopicChip({
                   <img
                     src={allItems[1].data.logoUrl}
                     alt={`${allItems[1].data.name} logo`}
-                    className="w-5 h-5 rounded-full border-2 border-white object-cover"
+                    className="w-5 h-5 rounded-full border-2 border-background object-cover"
                   />
                 ) : (
-                  <div className="w-5 h-5 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-600">
+                  <div className="w-5 h-5 rounded-full border-2 border-background bg-muted flex items-center justify-center">
+                    <span className="text-xs font-bold text-muted-foreground">
                       {allItems[1].data.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -143,14 +143,14 @@ export function TopicChip({
         {/* Topic Name */}
         <Link
           href={`/forum?topic=${encodeURIComponent(topic.name)}`}
-          className="font-medium text-gray-700 hover:text-blue-600 transition-colors no-underline"
+          className="font-medium text-foreground hover:text-primary transition-colors no-underline"
         >
           {topic.name}
         </Link>
 
         {/* Verification Badge for Primary Company */}
         {allItems.length > 0 && allItems[0].type === 'company' && allItems[0].data.verified && (
-          <span className="text-blue-500" title="Verified company">
+          <span className="text-primary" title="Verified company">
             ✓
           </span>
         )}
@@ -158,7 +158,7 @@ export function TopicChip({
         {/* Expansion Button */}
         {showExpansion && (
           <div
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             onClick={() => setIsExpanded(!isExpanded)}
           >
             <span className="text-xs font-medium">
@@ -175,9 +175,9 @@ export function TopicChip({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="mt-3 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border shadow-sm animate-in slide-in-from-top-1 duration-200">
+        <div className="mt-3 p-4 bg-muted rounded-lg border border-border shadow-sm animate-in slide-in-from-top-1 duration-200">
           {topic.description && (
-            <p className="text-sm text-gray-600 mb-4 font-medium">{topic.description}</p>
+            <p className="text-sm text-muted-foreground mb-4 font-medium">{topic.description}</p>
           )}
 
           <div className="space-y-3">
@@ -201,10 +201,10 @@ export function TopicChip({
           </div>
 
           {topic.context && (
-            <div className="mt-4 pt-3 border-t border-gray-200">
+            <div className="mt-4 pt-3 border-t border-border">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 font-medium">Context:</span>
-                <span className="text-xs text-gray-700 bg-white px-2 py-1 rounded-full">{topic.context}</span>
+                <span className="text-xs text-muted-foreground font-medium">Context:</span>
+                <span className="text-xs text-foreground bg-background px-2 py-1 rounded-full">{topic.context}</span>
               </div>
             </div>
           )}
@@ -226,7 +226,7 @@ function CompanyItem({
   return (
     <Link
       href={`/companies/${company.id}`}
-      className="flex items-center gap-3 text-sm hover:bg-white rounded-lg px-3 py-2 transition-all duration-200 group shadow-sm hover:shadow-md"
+      className="flex items-center gap-3 text-sm hover:bg-background rounded-lg px-3 py-2 transition-all duration-200 group shadow-sm hover:shadow-md"
     >
       {/* Company Logo */}
       <div className="relative">
@@ -234,11 +234,11 @@ function CompanyItem({
           <img
             src={company.logoUrl}
             alt={`${company.name} logo`}
-            className="w-8 h-8 rounded-full object-cover ring-2 ring-white"
+            className="w-8 h-8 rounded-full object-cover ring-2 ring-background"
           />
         ) : (
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center ring-2 ring-white">
-            <span className="text-blue-600 text-sm font-bold">
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center ring-2 ring-background">
+            <span className="text-primary text-sm font-bold">
               {company.name.charAt(0).toUpperCase()}
             </span>
           </div>
@@ -246,8 +246,8 @@ function CompanyItem({
 
         {/* Verification Badge */}
         {company.verified && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-xs">✓</span>
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+            <span className="text-primary-foreground text-xs">✓</span>
           </div>
         )}
       </div>
@@ -255,23 +255,23 @@ function CompanyItem({
       {/* Company Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+          <span className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
             {company.name}
           </span>
           {company.companyType && (
-            <span className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">
+            <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
               {company.companyType.toLowerCase()}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {role && (
-            <span className="px-2 py-0.5 bg-gray-100 rounded-full text-gray-600 font-medium">
+            <span className="px-2 py-0.5 bg-muted rounded-full text-muted-foreground font-medium">
               {role}
             </span>
           )}
-          {context && <span className="text-gray-600">{context}</span>}
+          {context && <span className="text-muted-foreground">{context}</span>}
           {company.city && company.state && (
             <span className="flex items-center gap-1">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -285,7 +285,7 @@ function CompanyItem({
 
       {/* Industry Badge */}
       {company.industry && (
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-muted-foreground">
           {company.industry.replace(/_/g, ' ').toLowerCase()}
         </div>
       )}
@@ -305,12 +305,12 @@ function ContactItem({
   return (
     <Link
       href={`/contacts/${contact.id}`}
-      className="flex items-center gap-3 text-sm hover:bg-white rounded-lg px-3 py-2 transition-all duration-200 group shadow-sm hover:shadow-md"
+      className="flex items-center gap-3 text-sm hover:bg-background rounded-lg px-3 py-2 transition-all duration-200 group shadow-sm hover:shadow-md"
     >
       {/* Contact Avatar */}
       <div className="relative">
-        <div className="w-8 h-8 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center ring-2 ring-white">
-          <span className="text-gray-600 text-sm font-medium">
+        <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center ring-2 ring-background">
+          <span className="text-muted-foreground text-sm font-medium">
             {contact.fullName.split(' ').map(n => n.charAt(0)).join('').slice(0, 2).toUpperCase()}
           </span>
         </div>
@@ -319,7 +319,7 @@ function ContactItem({
       {/* Contact Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+          <span className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
             {contact.fullName}
           </span>
           {contact.title && (
@@ -329,9 +329,9 @@ function ContactItem({
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {role && (
-            <span className="px-2 py-0.5 bg-gray-100 rounded-full text-gray-600 font-medium">
+            <span className="px-2 py-0.5 bg-muted rounded-full text-muted-foreground font-medium">
               {role}
             </span>
           )}
@@ -343,7 +343,7 @@ function ContactItem({
               {contact.company.name}
             </span>
           )}
-          {context && <span className="text-gray-600">{context}</span>}
+          {context && <span className="text-muted-foreground">{context}</span>}
         </div>
       </div>
     </Link>

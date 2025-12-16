@@ -207,7 +207,7 @@ export default function UsersAdminPage() {
     switch (role) {
       case 'ADMIN': return <Crown className="w-4 h-4 text-yellow-600" />;
       case 'PREMIUM': return <Shield className="w-4 h-4 text-blue-600" />;
-      default: return <User className="w-4 h-4 text-gray-600" />;
+      default: return <User className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -241,13 +241,13 @@ export default function UsersAdminPage() {
     return (
       <div className="max-w-7xl mx-auto p-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+              <div key={i} className="h-24 bg-muted rounded"></div>
             ))}
           </div>
-          <div className="h-96 bg-gray-200 rounded"></div>
+          <div className="h-96 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -278,7 +278,7 @@ export default function UsersAdminPage() {
         transition={{ duration: reducedMotion ? 0 : 0.6 }}
       >
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+          <h1 className="text-3xl font-bold text-foreground">User Management</h1>
           <button
             onClick={exportCSV}
             className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
@@ -298,8 +298,8 @@ export default function UsersAdminPage() {
               <div className="flex items-center">
                 <Users className="w-8 h-8 text-emerald-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{data.stats.total}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Users</p>
+                  <p className="text-2xl font-bold text-foreground">{data.stats.total}</p>
                 </div>
               </div>
             </motion.div>
@@ -311,8 +311,8 @@ export default function UsersAdminPage() {
               <div className="flex items-center">
                 <CheckCircle className="w-8 h-8 text-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Verified Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{data.stats.verifiedUsers}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Verified Users</p>
+                  <p className="text-2xl font-bold text-foreground">{data.stats.verifiedUsers}</p>
                 </div>
               </div>
             </motion.div>
@@ -324,8 +324,8 @@ export default function UsersAdminPage() {
               <div className="flex items-center">
                 <Activity className="w-8 h-8 text-purple-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Active (30 days)</p>
-                  <p className="text-2xl font-bold text-gray-900">{data.stats.activeUsers}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Active (30 days)</p>
+                  <p className="text-2xl font-bold text-foreground">{data.stats.activeUsers}</p>
                 </div>
               </div>
             </motion.div>
@@ -337,8 +337,8 @@ export default function UsersAdminPage() {
               <div className="flex items-center">
                 <Gem className="w-8 h-8 text-amber-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Forum Gems</p>
-                  <p className="text-2xl font-bold text-gray-900">{data.stats.totalForumGems.toLocaleString()}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Forum Gems</p>
+                  <p className="text-2xl font-bold text-foreground">{data.stats.totalForumGems.toLocaleString()}</p>
                 </div>
               </div>
             </motion.div>
@@ -350,8 +350,8 @@ export default function UsersAdminPage() {
               <div className="flex items-center">
                 <Crown className="w-8 h-8 text-yellow-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Admin Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{data.stats.byRole.ADMIN || 0}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Admin Users</p>
+                  <p className="text-2xl font-bold text-foreground">{data.stats.byRole.ADMIN || 0}</p>
                 </div>
               </div>
             </motion.div>
@@ -362,20 +362,20 @@ export default function UsersAdminPage() {
         <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-3 py-2 w-full border border-gray-300 rounded-md text-sm text-gray-900"
+                className="pl-10 pr-3 py-2 w-full border border-input rounded-md text-sm text-foreground"
               />
             </div>
 
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900"
+              className="border border-input rounded-md px-3 py-2 text-sm text-foreground"
             >
               <option value="">All Roles</option>
               <option value="FREE">Free</option>
@@ -386,7 +386,7 @@ export default function UsersAdminPage() {
             <select
               value={subscriptionFilter}
               onChange={(e) => setSubscriptionFilter(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900"
+              className="border border-input rounded-md px-3 py-2 text-sm text-foreground"
             >
               <option value="">All Tiers</option>
               <option value="FREE">Free Tier</option>
@@ -397,7 +397,7 @@ export default function UsersAdminPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900"
+              className="border border-input rounded-md px-3 py-2 text-sm text-foreground"
             >
               <option value="">All Statuses</option>
               <option value="ACTIVE">Active</option>
@@ -413,7 +413,7 @@ export default function UsersAdminPage() {
                 setSubscriptionFilter('');
                 setStatusFilter('');
               }}
-              className="px-3 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-sm"
+              className="px-3 py-2 text-muted-foreground border border-input rounded-md hover:bg-muted text-sm"
             >
               Clear Filters
             </button>
@@ -423,42 +423,42 @@ export default function UsersAdminPage() {
         {/* Users Table */}
         <div className="bg-white rounded-lg shadow-sm border">
           <div className="px-6 py-4 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-foreground">
               Users ({data?.pagination.total || 0} total)
             </h2>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Verification
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Role & Tier
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Forum Gems
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Created
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-border">
                 {data?.users.map((user) => (
                   <motion.tr
                     key={user.id}
                     {...motionVariants.fadeIn}
                     transition={{ duration: reducedMotion ? 0 : 0.3 }}
-                    className="hover:bg-gray-50"
+                    className="hover:bg-muted"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -467,7 +467,7 @@ export default function UsersAdminPage() {
                         </div>
                         <div className="ml-4">
                           <div className="flex items-center space-x-2">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-foreground">
                               {user.name || user.email || 'Anonymous User'}
                             </div>
                             {!user.firebaseUid && (
@@ -479,14 +479,14 @@ export default function UsersAdminPage() {
                               </div>
                             )}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-muted-foreground">
                             {user.email || user.anonymousUsername || 'No email'}
                           </div>
                           {user.anonymousUsername && (
                             <div className="text-xs text-purple-600">@{user.anonymousUsername}</div>
                           )}
                           {user.company && (
-                            <div className="text-xs text-gray-500 mt-1">
+                            <div className="text-xs text-muted-foreground mt-1">
                               {user.company.name}
                             </div>
                           )}
@@ -503,8 +503,8 @@ export default function UsersAdminPage() {
                             </>
                           ) : (
                             <>
-                              <XCircle className="w-4 h-4 text-gray-400" />
-                              <span className="text-xs text-gray-500">No Email</span>
+                              <XCircle className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground">No Email</span>
                             </>
                           )}
                         </div>
@@ -516,8 +516,8 @@ export default function UsersAdminPage() {
                             </>
                           ) : (
                             <>
-                              <XCircle className="w-4 h-4 text-gray-400" />
-                              <span className="text-xs text-gray-500">No LinkedIn</span>
+                              <XCircle className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground">No LinkedIn</span>
                             </>
                           )}
                         </div>
@@ -529,8 +529,8 @@ export default function UsersAdminPage() {
                             </>
                           ) : (
                             <>
-                              <XCircle className="w-4 h-4 text-gray-400" />
-                              <span className="text-xs text-gray-500">Not Verified</span>
+                              <XCircle className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground">Not Verified</span>
                             </>
                           )}
                         </div>
@@ -541,7 +541,7 @@ export default function UsersAdminPage() {
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(user.role)}`}>
                           {user.role}
                         </span>
-                        <div className="text-xs text-gray-500">{user.subscriptionTier}</div>
+                        <div className="text-xs text-muted-foreground">{user.subscriptionTier}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -552,12 +552,12 @@ export default function UsersAdminPage() {
                             {user.forumGems || 0}
                           </span>
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted-foreground">
                           {user._count.ForumPost || 0} posts, {user._count.ForumComment || 0} comments
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       <div className="space-y-1">
                         <div>{formatDate(user.createdAt)}</div>
                         {user.lastDashboardVisit && (
@@ -581,7 +581,7 @@ export default function UsersAdminPage() {
 
             {data?.users.length === 0 && (
               <div className="px-6 py-12 text-center">
-                <p className="text-gray-500">No users found matching the current filters.</p>
+                <p className="text-muted-foreground">No users found matching the current filters.</p>
               </div>
             )}
           </div>
@@ -589,7 +589,7 @@ export default function UsersAdminPage() {
           {/* Pagination */}
           {data?.pagination && data.pagination.pages > 1 && (
             <div className="px-6 py-4 border-t flex items-center justify-between">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-muted-foreground">
                 Showing {((data.pagination.page - 1) * data.pagination.limit) + 1} to{' '}
                 {Math.min(data.pagination.page * data.pagination.limit, data.pagination.total)} of{' '}
                 {data.pagination.total} users

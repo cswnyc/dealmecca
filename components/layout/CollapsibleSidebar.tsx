@@ -108,10 +108,10 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
         width: isCollapsed ? '4rem' : '16rem',
       }}
       transition={reducedMotion ? { duration: 0 } : designTokens.transitions.spring}
-      className="hidden md:flex flex-col bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 h-screen overflow-hidden"
+      className="hidden md:flex flex-col bg-card border-r border-border h-screen overflow-hidden"
     >
       {/* Collapse Toggle Button */}
-      <div className="flex items-center justify-end p-3 border-b border-gray-200 dark:border-slate-700">
+      <div className="flex items-center justify-end p-3 border-b border-border">
         <AnimatedIconButton
           onClick={toggleCollapse}
           tooltip={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -151,15 +151,15 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
                 w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
                 transition-all duration-200
                 ${active
-                  ? 'bg-accent-50 text-accent-700 border-l-4 border-accent-500 dark:bg-accent/20 dark:text-accent-400 dark:border-accent'
-                  : 'text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
+                  ? 'bg-accent/10 text-accent border-l-4 border-accent'
+                  : 'text-foreground hover:bg-muted'
                 }
                 ${isCollapsed ? 'justify-center' : ''}
               `}
             >
               <Icon className={`
                 flex-shrink-0 w-5 h-5
-                ${active ? 'text-accent-600 dark:text-accent-400' : 'text-gray-600 dark:text-slate-400'}
+                ${active ? 'text-accent' : 'text-muted-foreground'}
               `} />
 
               <AnimatePresence mode="wait">
@@ -179,7 +179,7 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
       </nav>
 
       {/* Theme Toggle and User Profile Section */}
-      <div className="border-t border-gray-200 dark:border-slate-700 p-3 space-y-3">
+      <div className="border-t border-border p-3 space-y-3">
         {/* Theme Toggle */}
         <div className={`flex ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
           <ThemeToggle />

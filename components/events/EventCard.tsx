@@ -79,28 +79,28 @@ export default function EventCard({
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'CONFERENCE': 'bg-blue-100 text-blue-800',
+      'CONFERENCE': 'bg-primary/20 text-primary',
       'TRADE_SHOW': 'bg-green-100 text-green-800',
-      'SUMMIT': 'bg-purple-100 text-purple-800',
+      'SUMMIT': 'bg-accent/20 text-accent-foreground',
       'WORKSHOP': 'bg-orange-100 text-orange-800',
       'WEBINAR': 'bg-yellow-100 text-yellow-800',
       'MEETUP': 'bg-pink-600 text-white',
-      'NETWORKING': 'bg-indigo-100 text-indigo-800',
+      'NETWORKING': 'bg-primary/20 text-primary',
       'AWARDS': 'bg-red-600 text-white',
     }
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800'
+    return colors[category as keyof typeof colors] || 'bg-muted text-foreground'
   }
 
   const getStatusColor = (status: string) => {
     const colors = {
       'INTERESTED': 'bg-yellow-100 text-yellow-800',
-      'PLANNING_TO_ATTEND': 'bg-blue-100 text-blue-800',
+      'PLANNING_TO_ATTEND': 'bg-primary/20 text-primary',
       'REGISTERED': 'bg-green-100 text-green-800',
       'ATTENDING': 'bg-green-100 text-green-800',
-      'ATTENDED': 'bg-gray-100 text-gray-800',
-      'CANCELLED': 'bg-red-600 text-white'
+      'ATTENDED': 'bg-muted text-foreground',
+      'CANCELLED': 'bg-destructive text-destructive-foreground'
     }
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800'
+    return colors[status as keyof typeof colors] || 'bg-muted text-foreground'
   }
 
   const formatCost = (cost: number) => {
@@ -131,7 +131,7 @@ export default function EventCard({
       <Star
         key={i}
         className={`${size === 'sm' ? 'h-3 w-3' : 'h-4 w-4'} ${
-          i < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+          i < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-muted-foreground/40'
         }`}
       />
     ))
@@ -152,13 +152,13 @@ export default function EventCard({
                 {event.category.replace('_', ' ')}
               </Badge>
               {event.isVirtual && (
-                <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                <Badge variant="outline" className="bg-primary/10 text-primary">
                   <Globe className="w-3 h-3 mr-1" />
                   Virtual
                 </Badge>
               )}
               {event.isHybrid && (
-                <Badge variant="outline" className="bg-purple-50 text-purple-700">
+                <Badge variant="outline" className="bg-accent/10 text-accent-foreground">
                   Hybrid
                 </Badge>
               )}
@@ -166,7 +166,7 @@ export default function EventCard({
             <CardTitle className="text-lg leading-tight">
               {event.name}
             </CardTitle>
-            <div className="text-sm text-gray-600 mt-1">
+            <div className="text-sm text-muted-foreground mt-1">
               by {event.organizerName}
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function EventCard({
       <CardContent className="space-y-3">
         {/* Event Details */}
         <div className="grid grid-cols-1 gap-2 text-sm">
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="w-4 h-4" />
             <span>{formatDateRange(event.startDate, event.endDate)}</span>
             {eventPassed && (
@@ -193,27 +193,27 @@ export default function EventCard({
               <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">Live</Badge>
             )}
             {eventUpcoming && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">Upcoming</Badge>
+              <Badge variant="secondary" className="bg-primary/20 text-primary text-xs">Upcoming</Badge>
             )}
           </div>
           
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="w-4 h-4" />
             <span>{event.location}</span>
             {event.venue && (
-              <span className="text-gray-400">• {event.venue}</span>
+              <span className="text-muted-foreground/60">• {event.venue}</span>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Users className="w-4 h-4" />
             <span>{event.attendeeCount?.toLocaleString() || 'TBD'} attendees</span>
             {event.attendeesCount > 0 && (
-              <span className="text-blue-600">• {event.attendeesCount} DealMecca users</span>
+              <span className="text-primary">• {event.attendeesCount} DealMecca users</span>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <DollarSign className="w-4 h-4" />
             <span>Est. {formatCost(event.estimatedCost)}</span>
           </div>
@@ -221,7 +221,7 @@ export default function EventCard({
 
         {/* Description */}
         {!compact && event.description && (
-          <p className="text-sm text-gray-700 line-clamp-2">
+          <p className="text-sm text-foreground/80 line-clamp-2">
             {event.description}
           </p>
         )}
@@ -247,12 +247,12 @@ export default function EventCard({
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1">
               <StarRating rating={event.avgOverallRating} />
-              <span className="text-gray-600">
+              <span className="text-muted-foreground">
                 {event.avgOverallRating.toFixed(1)} ({event.totalRatings} reviews)
               </span>
             </div>
             {!compact && (
-              <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>Net: {event.avgNetworkingRating?.toFixed(1) || 'N/A'}</span>
                 <span>Content: {event.avgContentRating?.toFixed(1) || 'N/A'}</span>
                 <span>ROI: {event.avgROIRating?.toFixed(1) || 'N/A'}</span>
@@ -268,7 +268,7 @@ export default function EventCard({
               {userStatus.replace('_', ' ')}
             </Badge>
             {isGoing && (
-              <Badge variant="outline" className="bg-green-50 text-green-700">
+              <Badge variant="outline" className="bg-green-100 text-green-800">
                 Going
               </Badge>
             )}
@@ -318,7 +318,7 @@ export default function EventCard({
             variant="link"
             size="sm"
             onClick={() => window.open(event.registrationUrl, '_blank')}
-            className="text-blue-600 hover:text-blue-800 p-0 h-auto"
+            className="text-primary hover:text-primary/80 p-0 h-auto"
           >
             Register Now →
           </Button>

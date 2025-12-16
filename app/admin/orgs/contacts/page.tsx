@@ -266,11 +266,11 @@ export default function ContactsAdmin() {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+            <h1 className="text-3xl font-bold text-foreground flex items-center">
               <Users className="w-8 h-8 mr-3 text-blue-600" />
               Contacts Management
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-muted-foreground mt-2">
               Manage and organize contact profiles and relationships
             </p>
           </div>
@@ -286,68 +286,68 @@ export default function ContactsAdmin() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-border">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Users className="w-6 h-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Contacts</p>
-              <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+              <p className="text-sm font-medium text-muted-foreground">Total Contacts</p>
+              <p className="text-2xl font-bold text-foreground">{pagination.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-border">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-lg">
               <Verified className="w-6 h-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Verified</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-muted-foreground">Verified</p>
+              <p className="text-2xl font-bold text-foreground">
                 {adminStats?.verificationStats?.verified || 0}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-border">
           <div className="flex items-center">
             <div className="p-2 bg-purple-100 rounded-lg">
               <Building2 className="w-6 h-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Companies with Contacts</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-muted-foreground">Companies with Contacts</p>
+              <p className="text-2xl font-bold text-foreground">
                 {adminStats?.uniqueCompaniesCount || 0}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-border">
           <div className="flex items-center">
             <div className="p-2 bg-orange-100 rounded-lg">
               <Star className="w-6 h-6 text-orange-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Avg Score</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-muted-foreground">Avg Score</p>
+              <p className="text-2xl font-bold text-foreground">
                 {adminStats?.averageCommunityScore?.toFixed(1) || '0.0'}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-border">
           <div className="flex items-center">
             <div className="p-2 bg-indigo-100 rounded-lg">
               <TrendingUp className="w-6 h-6 text-indigo-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">This Month</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-muted-foreground">This Month</p>
+              <p className="text-2xl font-bold text-foreground">
                 {adminStats?.contactsThisMonth || 0}
               </p>
             </div>
@@ -356,7 +356,7 @@ export default function ContactsAdmin() {
       </div>
 
       {/* Filters & Bulk Actions */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200 mb-6">
+      <div className="bg-white p-6 rounded-lg border border-border mb-6">
         {/* Bulk Actions */}
         {selectedContacts.length > 0 && (
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -395,13 +395,13 @@ export default function ContactsAdmin() {
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <input
               type="text"
               placeholder="Search contacts..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -409,7 +409,7 @@ export default function ContactsAdmin() {
           <select
             value={selectedDepartment}
             onChange={(e) => handleFilterChange('department', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Departments</option>
             <option value="MEDIA_PLANNING">Media Planning</option>
@@ -438,7 +438,7 @@ export default function ContactsAdmin() {
           <select
             value={selectedSeniority}
             onChange={(e) => handleFilterChange('seniority', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Levels</option>
             <option value="INTERN">Intern</option>
@@ -460,7 +460,7 @@ export default function ContactsAdmin() {
           <select
             value={verifiedFilter}
             onChange={(e) => handleFilterChange('verified', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Status</option>
             <option value="true">Verified</option>
@@ -471,7 +471,7 @@ export default function ContactsAdmin() {
           <select
             value={activeFilter}
             onChange={(e) => handleFilterChange('active', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Contacts</option>
             <option value="true">Active</option>
@@ -482,7 +482,7 @@ export default function ContactsAdmin() {
           <select
             value={sortBy}
             onChange={(e) => handleFilterChange('sort', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="fullName">Name</option>
             <option value="title">Title</option>
@@ -507,61 +507,61 @@ export default function ContactsAdmin() {
       )}
 
       {/* Contacts Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-border overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-500 mt-2">Loading contacts...</p>
+            <p className="text-muted-foreground mt-2">Loading contacts...</p>
           </div>
         ) : contacts.length === 0 ? (
           <div className="p-8 text-center">
-            <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No contacts found</h3>
-            <p className="text-gray-500">Try adjusting your search criteria or add a new contact.</p>
+            <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">No contacts found</h3>
+            <p className="text-muted-foreground">Try adjusting your search criteria or add a new contact.</p>
           </div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-muted">
                   <tr>
                     <th className="px-6 py-3 text-left">
                       <input
                         type="checkbox"
                         checked={selectedContacts.length === contacts.length}
                         onChange={handleSelectAll}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="rounded border-input text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Contact
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Company & Role
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Contact Info
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Engagement
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-border">
                   {contacts.map((contact) => (
-                    <tr key={contact.id} className="hover:bg-gray-50">
+                    <tr key={contact.id} className="hover:bg-muted">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
                           checked={selectedContacts.includes(contact.id)}
                           onChange={() => handleContactSelect(contact.id)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="rounded border-input text-blue-600 focus:ring-blue-500"
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -574,24 +574,24 @@ export default function ContactsAdmin() {
                                 alt={contact.fullName}
                               />
                             ) : (
-                              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                <Users className="h-5 w-5 text-gray-500" />
+                              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                                <Users className="h-5 w-5 text-muted-foreground" />
                               </div>
                             )}
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-foreground">
                               {contact.fullName}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {contact.department} • {contact.seniority}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{contact.company.name}</div>
-                        <div className="text-sm text-gray-500">{contact.title}</div>
+                        <div className="text-sm text-foreground">{contact.company.name}</div>
+                        <div className="text-sm text-muted-foreground">{contact.title}</div>
                         {contact.isDecisionMaker && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                             Decision Maker
@@ -601,19 +601,19 @@ export default function ContactsAdmin() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="space-y-1">
                           {contact.email && (
-                            <div className="text-sm text-gray-900 flex items-center">
+                            <div className="text-sm text-foreground flex items-center">
                               <Mail className="w-3 h-3 mr-1" />
                               {contact.email}
                             </div>
                           )}
                           {contact.phone && (
-                            <div className="text-sm text-gray-500 flex items-center">
+                            <div className="text-sm text-muted-foreground flex items-center">
                               <Phone className="w-3 h-3 mr-1" />
                               {contact.phone}
                             </div>
                           )}
                           {contact.linkedinUrl && (
-                            <div className="text-sm text-gray-500 flex items-center">
+                            <div className="text-sm text-muted-foreground flex items-center">
                               <Linkedin className="w-3 h-3 mr-1" />
                               LinkedIn
                             </div>
@@ -621,9 +621,9 @@ export default function ContactsAdmin() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{contact._count.interactions} interactions</div>
-                        <div className="text-sm text-gray-500">{contact._count.notes} notes</div>
-                        <div className="text-xs text-gray-400">Score: {contact.communityScore || 0}</div>
+                        <div className="text-sm text-foreground">{contact._count.interactions} interactions</div>
+                        <div className="text-sm text-muted-foreground">{contact._count.notes} notes</div>
+                        <div className="text-xs text-muted-foreground">Score: {contact.communityScore || 0}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col space-y-1">
@@ -654,7 +654,7 @@ export default function ContactsAdmin() {
                           </Link>
                           <Link
                             href={`/admin/orgs/contacts/${contact.id}/edit`}
-                            className="text-gray-600 hover:text-gray-900"
+                            className="text-muted-foreground hover:text-foreground"
                           >
                             <Edit className="w-4 h-4" />
                           </Link>
@@ -663,7 +663,7 @@ export default function ContactsAdmin() {
                               href={contact.linkedinUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-gray-900"
+                              className="text-muted-foreground hover:text-foreground"
                             >
                               <ExternalLink className="w-4 h-4" />
                             </a>
@@ -684,26 +684,26 @@ export default function ContactsAdmin() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+              <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
                 <div className="flex-1 flex justify-between sm:hidden">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
                     disabled={pagination.page === 1}
-                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                    className="relative inline-flex items-center px-4 py-2 border border-input text-sm font-medium rounded-md text-muted-foreground bg-white hover:bg-muted disabled:opacity-50"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={pagination.page === pagination.pages}
-                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-input text-sm font-medium rounded-md text-muted-foreground bg-white hover:bg-muted disabled:opacity-50"
                   >
                     Next
                   </button>
                 </div>
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-muted-foreground">
                       Showing{' '}
                       <span className="font-medium">
                         {(pagination.page - 1) * pagination.limit + 1}
@@ -721,7 +721,7 @@ export default function ContactsAdmin() {
                       <button
                         onClick={() => handlePageChange(pagination.page - 1)}
                         disabled={pagination.page === 1}
-                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-input bg-white text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
                       >
                         Previous
                       </button>
@@ -734,7 +734,7 @@ export default function ContactsAdmin() {
                             className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                               pagination.page === page
                                 ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                : 'bg-white border-input text-muted-foreground hover:bg-muted'
                             }`}
                           >
                             {page}
@@ -744,7 +744,7 @@ export default function ContactsAdmin() {
                       <button
                         onClick={() => handlePageChange(pagination.page + 1)}
                         disabled={pagination.page === pagination.pages}
-                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-input bg-white text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
                       >
                         Next
                       </button>

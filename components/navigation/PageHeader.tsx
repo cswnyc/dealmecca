@@ -84,27 +84,27 @@ export function PageHeader({
   };
 
   return (
-    <header className={`bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-40 ${className}`}>
+    <header className={`bg-card/80 backdrop-blur-sm shadow-sm border-b border-border sticky top-0 z-40 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         {breadcrumbs.length > 0 && (
-          <div className="py-3 border-b border-gray-100">
-            <nav className="flex items-center space-x-2 text-sm text-gray-600">
-              <Link href={customHomePath || "/dashboard"} className="flex items-center hover:text-blue-600 transition-colors">
+          <div className="py-3 border-b border-border">
+            <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <Link href={customHomePath || "/dashboard"} className="flex items-center hover:text-primary transition-colors">
                 <Home className="w-4 h-4 mr-1" />
                 {customHomeLabel || "Dashboard"}
               </Link>
               
               {breadcrumbs.map((item, index) => (
                 <div key={index} className="flex items-center space-x-2">
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   {item.href ? (
-                    <Link href={item.href} className="hover:text-blue-600 transition-colors flex items-center">
+                    <Link href={item.href} className="hover:text-primary transition-colors flex items-center">
                       {item.icon && <item.icon className="w-4 h-4 mr-1" />}
                       {item.label}
                     </Link>
                   ) : (
-                    <span className={`flex items-center ${index === breadcrumbs.length - 1 ? 'font-medium text-gray-900' : ''}`}>
+                    <span className={`flex items-center ${index === breadcrumbs.length - 1 ? 'font-medium text-foreground' : ''}`}>
                       {item.icon && <item.icon className="w-4 h-4 mr-1" />}
                       {item.label}
                     </span>
@@ -124,7 +124,7 @@ export function PageHeader({
                 variant="outline"
                 size="sm"
                 onClick={handleBackClick}
-                className="flex items-center gap-2 hidden sm:flex hover:bg-gray-50"
+                className="flex items-center gap-2 hidden sm:flex hover:bg-muted"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {getBackLabel()}
@@ -132,11 +132,11 @@ export function PageHeader({
             )}
             
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-gray-600 mt-1">{subtitle}</p>
+                <p className="text-muted-foreground mt-1">{subtitle}</p>
               )}
             </div>
           </div>

@@ -153,10 +153,10 @@ export function EnhancedOrgTabs({
             </TabsList>
 
             {/* Sort Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 bg-gray-50 p-3 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 bg-muted p-3 rounded-lg">
               <div className="flex items-center justify-center sm:justify-start space-x-2">
-                <Filter className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">Sort by:</span>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-2">
@@ -203,7 +203,7 @@ export function EnhancedOrgTabs({
           {activeTab && (
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   {getTabDescription(activeTab, searchState.query)}
                 </div>
                 {searchState.query && (
@@ -214,7 +214,7 @@ export function EnhancedOrgTabs({
               </div>
               
               {analytics && (
-                <div className="flex items-center space-x-4 text-xs text-gray-500">
+                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                   <span>Updated {new Date().toLocaleDateString()}</span>
                   <span>•</span>
                   <span>{formatCount(searchState.results.totalCount)} total records</span>
@@ -230,7 +230,7 @@ export function EnhancedOrgTabs({
                 <CardTitle className="text-sm">Quick Filters</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Additional filtering options will be available here for {activeTab.label.toLowerCase()}.
                 </div>
               </CardContent>
@@ -251,7 +251,7 @@ export function EnhancedOrgTabs({
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowAdvancedSort(!showAdvancedSort)}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <Filter className="w-4 h-4 mr-2" />
                   {showAdvancedSort ? 'Hide' : 'Show'} Advanced Filters

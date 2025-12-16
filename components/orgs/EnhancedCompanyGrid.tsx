@@ -47,7 +47,7 @@ export function EnhancedCompanyGrid({ companies, loading = false, variant = 'com
       case 'enterprise': return 'bg-gradient-to-r from-purple-500 to-blue-600';
       case 'growth': return 'bg-gradient-to-r from-green-500 to-teal-600';
       case 'startup': return 'bg-gradient-to-r from-orange-500 to-red-600';
-      default: return 'bg-gradient-to-r from-gray-500 to-gray-600';
+      default: return 'bg-gradient-to-r from-muted-foreground to-muted-foreground/80';
     }
   };
 
@@ -84,25 +84,25 @@ export function EnhancedCompanyGrid({ companies, loading = false, variant = 'com
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
           <Card key={i} className="animate-pulse">
-            <div className="h-1 w-full bg-gray-200 rounded-t-lg" />
+            <div className="h-1 w-full bg-muted rounded-t-lg" />
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="w-12 h-12 bg-muted rounded-full"></div>
                   <div>
-                    <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-16"></div>
+                    <div className="h-4 bg-muted rounded w-24 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-16"></div>
                   </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="h-3 bg-gray-200 rounded w-full"></div>
-                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-3 bg-muted rounded w-full"></div>
+                <div className="h-3 bg-muted rounded w-2/3"></div>
                 <div className="flex space-x-2">
-                  <div className="h-8 bg-gray-200 rounded flex-1"></div>
-                  <div className="h-8 bg-gray-200 rounded w-10"></div>
+                  <div className="h-8 bg-muted rounded flex-1"></div>
+                  <div className="h-8 bg-muted rounded w-10"></div>
                 </div>
               </div>
             </CardContent>
@@ -115,9 +115,9 @@ export function EnhancedCompanyGrid({ companies, loading = false, variant = 'com
   if (companies.length === 0) {
     return (
       <div className="text-center py-12">
-        <Building2 className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No companies found</h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <Building2 className="mx-auto h-12 w-12 text-muted-foreground" />
+        <h3 className="mt-2 text-sm font-medium text-foreground">No companies found</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
           Try adjusting your search or filters to find the right companies.
         </p>
       </div>
@@ -151,10 +151,10 @@ export function EnhancedCompanyGrid({ companies, loading = false, variant = 'com
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                       {company.name}
                     </h3>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
+                    <div className="flex items-center text-sm text-muted-foreground mt-1">
                       <MapPin className="w-3 h-3 mr-1" />
                       {location}
                     </div>
@@ -172,8 +172,8 @@ export function EnhancedCompanyGrid({ companies, loading = false, variant = 'com
             <CardContent className="pt-0">
               {/* Company Stats */}
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center text-sm text-gray-600">
-                  <Users className="w-4 h-4 mr-1 text-blue-500" />
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Users className="w-4 h-4 mr-1 text-primary" />
                   <span className="font-medium">{teamCount}</span>
                   <span className="ml-1">contacts</span>
                 </div>
@@ -183,8 +183,8 @@ export function EnhancedCompanyGrid({ companies, loading = false, variant = 'com
               </div>
 
               {/* Recent Activity */}
-              <div className="flex items-center text-xs text-gray-500 mb-4">
-                <TrendingUp className="w-3 h-3 mr-1 text-green-500" />
+              <div className="flex items-center text-xs text-muted-foreground mb-4">
+                <TrendingUp className="w-3 h-3 mr-1 text-green-600" />
                 {recentActivity}
               </div>
 

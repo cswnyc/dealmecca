@@ -42,12 +42,12 @@ export function CommentForm({
 
   if (!isLoading && !isAuthenticated) {
     return (
-      <div className={`bg-gray-50 rounded-lg p-6 text-center ${className}`}>
-        <UserIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-        <p className="text-gray-600 mb-4">Please sign in to join the discussion</p>
+      <div className={`bg-muted rounded-lg p-6 text-center ${className}`}>
+        <UserIcon className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+        <p className="text-muted-foreground mb-4">Please sign in to join the discussion</p>
         <button
           onClick={() => window.location.href = '/auth/signin'}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           Sign In
         </button>
@@ -120,10 +120,10 @@ export function CommentForm({
   const isReply = Boolean(parentId);
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 ${className}`}>
+    <div className={`bg-card rounded-lg border border-border p-4 ${className}`}>
       {/* Reply Context */}
       {isReply && parentAuthor && (
-        <div className="mb-3 text-sm text-gray-600">
+        <div className="mb-3 text-sm text-muted-foreground">
           <span>Replying to <span className="font-medium">{parentAuthor}</span></span>
         </div>
       )}
@@ -142,7 +142,7 @@ export function CommentForm({
 
         {/* Error Message */}
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
+          <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg border border-destructive/30">
             {error}
           </div>
         )}
@@ -151,13 +151,13 @@ export function CommentForm({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             {/* Anonymous Toggle */}
-            <label className="flex items-center space-x-2 text-sm text-gray-600">
+            <label className="flex items-center space-x-2 text-sm text-muted-foreground">
               <input
                 type="checkbox"
                 checked={isAnonymous}
                 onChange={(e) => setIsAnonymous(e.target.checked)}
                 disabled={isSubmitting}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-border text-primary focus:ring-ring"
               />
               <EyeSlashIcon className="w-4 h-4" />
               <span>Post anonymously</span>
@@ -171,7 +171,7 @@ export function CommentForm({
                 type="button"
                 onClick={onCancel}
                 disabled={isSubmitting}
-                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50"
+                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -181,7 +181,7 @@ export function CommentForm({
             <button
               type="submit"
               disabled={!content.trim() || isSubmitting}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -195,9 +195,9 @@ export function CommentForm({
       </form>
 
       {/* Help Text */}
-      <div className="mt-3 text-xs text-gray-500">
+      <div className="mt-3 text-xs text-muted-foreground">
         <p>
-          Use @company or @contact to mention organizations or people. 
+          Use @company or @contact to mention organizations or people.
           {isAnonymous && ' Your identity will be hidden when posting anonymously.'}
         </p>
       </div>

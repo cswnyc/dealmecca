@@ -136,13 +136,13 @@ export function ContactIntelligenceCard({
   };
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+    <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12">
               <AvatarImage src={contact.avatarUrl} />
-              <AvatarFallback className="bg-blue-600 text-white font-semibold">
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                 {getInitials(contact.fullName)}
               </AvatarFallback>
             </Avatar>
@@ -158,17 +158,17 @@ export function ContactIntelligenceCard({
                   {contact.seniority.replace('_', ' ')}
                 </Badge>
               </div>
-              <p className="text-gray-600 text-sm">{contact.title}</p>
+              <p className="text-muted-foreground text-sm">{contact.title}</p>
               <div className="flex items-center space-x-2 mt-1">
                 <div className="flex items-center space-x-1">
                   {contact.company.logoUrl && (
-                    <img 
-                      src={contact.company.logoUrl} 
+                    <img
+                      src={contact.company.logoUrl}
                       alt={contact.company.name}
                       className="w-4 h-4"
                     />
                   )}
-                  <span className="text-sm text-gray-700">{contact.company.name}</span>
+                  <span className="text-sm text-foreground">{contact.company.name}</span>
                   {contact.company.verified && (
                     <CheckCircle className="w-3 h-3 text-green-600" />
                   )}
@@ -196,25 +196,25 @@ export function ContactIntelligenceCard({
 
         {/* Quick Intelligence Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-          <div className="text-center p-2 bg-gray-50 rounded">
+          <div className="text-center p-2 bg-muted rounded">
             <div className={`font-semibold ${DECISION_POWER_COLORS[contact.decisionMakingPower]}`}>
               {contact.decisionMakingPower}
             </div>
-            <div className="text-xs text-gray-600">Decision Power</div>
+            <div className="text-xs text-muted-foreground">Decision Power</div>
           </div>
-          <div className="text-center p-2 bg-gray-50 rounded">
+          <div className="text-center p-2 bg-muted rounded">
             <div className={`font-semibold ${getBudgetInfluenceColor(contact.intelligence.budgetInfluence)}`}>
               {contact.intelligence.budgetInfluence}/10
             </div>
-            <div className="text-xs text-gray-600">Budget Influence</div>
+            <div className="text-xs text-muted-foreground">Budget Influence</div>
           </div>
-          <div className="text-center p-2 bg-gray-50 rounded">
-            <div className="font-semibold text-blue-600">
+          <div className="text-center p-2 bg-muted rounded">
+            <div className="font-semibold text-primary">
               {contact.directReports}
             </div>
-            <div className="text-xs text-gray-600">Direct Reports</div>
+            <div className="text-xs text-muted-foreground">Direct Reports</div>
           </div>
-          <div className="text-center p-2 bg-gray-50 rounded">
+          <div className="text-center p-2 bg-muted rounded">
             <Badge 
               className={`${getConnectionStrengthBadge(contact.intelligence.connectionStrength).color} text-white text-xs`}
             >
@@ -229,14 +229,14 @@ export function ContactIntelligenceCard({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {contact.email && (
             <div className="flex items-center space-x-2 text-sm">
-              <Mail className="w-4 h-4 text-gray-500" />
+              <Mail className="w-4 h-4 text-muted-foreground" />
               <EmailCopy email={contact.email} variant="inline" />
             </div>
           )}
           {contact.phone && (
             <div className="flex items-center space-x-2 text-sm">
-              <Phone className="w-4 h-4 text-gray-500" />
-              <a href={`tel:${contact.phone}`} className="text-blue-600 hover:underline">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <a href={`tel:${contact.phone}`} className="text-primary hover:underline">
                 {contact.phone}
               </a>
             </div>
@@ -244,15 +244,15 @@ export function ContactIntelligenceCard({
           {contact.linkedinUrl && (
             <div className="flex items-center space-x-2 text-sm">
               <Linkedin className="w-4 h-4 text-blue-700" />
-              <a href={contact.linkedinUrl} target="_blank" className="text-blue-600 hover:underline">
+              <a href={contact.linkedinUrl} target="_blank" className="text-primary hover:underline">
                 LinkedIn Profile
               </a>
             </div>
           )}
           {contact.location && (
             <div className="flex items-center space-x-2 text-sm">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-700">{contact.location}</span>
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+              <span className="text-foreground">{contact.location}</span>
             </div>
           )}
         </div>
@@ -267,9 +267,9 @@ export function ContactIntelligenceCard({
                   <TrendingUp className="w-4 h-4 mr-1" />
                   Reports To
                 </h5>
-                <div className="bg-gray-50 rounded p-2">
+                <div className="bg-muted rounded p-2">
                   <div className="font-medium text-sm">{contact.reportsTo.name}</div>
-                  <div className="text-xs text-gray-600">{contact.reportsTo.title}</div>
+                  <div className="text-xs text-muted-foreground">{contact.reportsTo.title}</div>
                 </div>
               </div>
             )}
@@ -330,7 +330,7 @@ export function ContactIntelligenceCard({
               {contact.intelligence.lastContacted && (
                 <div>
                   <h5 className="font-medium text-sm mb-1">Last Contacted</h5>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     {new Date(contact.intelligence.lastContacted).toLocaleDateString()}
                   </div>
                 </div>
@@ -349,7 +349,7 @@ export function ContactIntelligenceCard({
         )}
 
         {/* Data Source & Contributor */}
-        <div className="flex items-center justify-between pt-3 border-t text-xs text-gray-500">
+        <div className="flex items-center justify-between pt-3 border-t text-xs text-muted-foreground">
           <div className="flex items-center space-x-2">
             <span>Source: {contact.verificationSource.replace('_', ' ')}</span>
             {contact.contributedBy && !contact.contributedBy.isAnonymous && (

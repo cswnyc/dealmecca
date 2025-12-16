@@ -105,9 +105,9 @@ export default function UpgradeButton({
   const getVariantClasses = () => {
     switch (variant) {
       case 'secondary':
-        return 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+        return 'bg-muted text-foreground hover:bg-muted/80 border border-border'
       case 'minimal':
-        return 'bg-transparent text-blue-600 hover:bg-blue-50 border border-blue-200 hover:border-blue-300'
+        return 'bg-transparent text-primary hover:bg-primary/10 border border-primary/20 hover:border-primary/40'
       default:
         if (tier === 'TEAM') {
           return 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg'

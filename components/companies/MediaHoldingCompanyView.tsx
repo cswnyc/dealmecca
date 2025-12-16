@@ -238,14 +238,14 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
     .slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             {/* Back Button & Breadcrumb */}
-            <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-              <Link href="/organizations" className="hover:text-gray-900">
+            <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <Link href="/organizations" className="hover:text-foreground">
                 Agencies
               </Link>
               {company.parentChain && company.parentChain.length > 0 && (
@@ -253,7 +253,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   {company.parentChain.map((parent) => (
                     <span key={parent.id} className="flex items-center gap-2">
                       <span>›</span>
-                      <Link href={`/companies/${parent.id}`} className="hover:text-gray-900">
+                      <Link href={`/companies/${parent.id}`} className="hover:text-foreground">
                         {parent.name}
                       </Link>
                     </span>
@@ -261,7 +261,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                 </>
               )}
               <span>›</span>
-              <span className="text-gray-900 font-medium">{company.name}</span>
+              <span className="text-foreground font-medium">{company.name}</span>
             </div>
 
             {/* Company Header */}
@@ -274,11 +274,11 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   className="flex-shrink-0"
                 />
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{company.name}</h1>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">{company.name}</h1>
                   {company.description && (
-                    <p className="text-gray-600 mb-3">{company.description}</p>
+                    <p className="text-muted-foreground mb-3">{company.description}</p>
                   )}
-                  <div className="flex items-center gap-6 text-sm text-gray-600">
+                  <div className="flex items-center gap-6 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Building2 className="h-4 w-4" />
                       <span>{company.subsidiaries.length} {company.subsidiaries.length === 1 ? 'agency' : 'agencies'}</span>
@@ -295,14 +295,14 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                 </div>
               </div>
               <div className="relative" ref={searchRef}>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search companies, people..."
                   value={globalSearchQuery}
                   onChange={(e) => setGlobalSearchQuery(e.target.value)}
                   onFocus={() => globalSearchQuery.length >= 2 && setShowSearchResults(true)}
-                  className="pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80"
+                  className="pl-10 pr-10 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent w-80"
                 />
                 {globalSearchQuery && (
                   <button
@@ -310,7 +310,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                       setGlobalSearchQuery('');
                       setShowSearchResults(false);
                     }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -318,10 +318,10 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
                 {/* Search Results Dropdown */}
                 {showSearchResults && (
-                  <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-2xl border border-gray-300 max-h-96 overflow-y-auto z-[100] backdrop-blur-sm">
+                  <div className="absolute top-full mt-2 w-full bg-card rounded-lg shadow-2xl border border-border max-h-96 overflow-y-auto z-[100] backdrop-blur-sm">
                     {searchLoading ? (
-                      <div className="p-4 text-center text-gray-500">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                      <div className="p-4 text-center text-muted-foreground">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
                       </div>
                     ) : searchSuggestions.length > 0 ? (
                       <div className="py-2">
@@ -329,9 +329,9 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                           <button
                             key={`${suggestion.type}-${suggestion.id}`}
                             onClick={() => handleSearchSuggestionClick(suggestion)}
-                            className="w-full px-4 py-3 hover:bg-gray-50 flex items-start gap-3 text-left transition-colors"
+                            className="w-full px-4 py-3 hover:bg-muted flex items-start gap-3 text-left transition-colors"
                           >
-                            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg text-lg overflow-hidden">
+                            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-muted rounded-lg text-lg overflow-hidden">
                               {suggestion.icon.startsWith('http') ? (
                                 <img
                                   src={suggestion.icon}
@@ -348,7 +348,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-900 truncate">
+                                <span className="font-medium text-foreground truncate">
                                   {suggestion.title}
                                 </span>
                                 {suggestion.metadata?.verified && (
@@ -358,16 +358,16 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                                 )}
                               </div>
                               <div className="flex items-center gap-2 mt-0.5">
-                                <span className="text-xs text-gray-500">{suggestion.category}</span>
+                                <span className="text-xs text-muted-foreground">{suggestion.category}</span>
                                 {suggestion.metadata?.location && (
                                   <>
-                                    <span className="text-gray-300">•</span>
-                                    <span className="text-xs text-gray-500">{suggestion.metadata.location}</span>
+                                    <span className="text-muted-foreground">•</span>
+                                    <span className="text-xs text-muted-foreground">{suggestion.metadata.location}</span>
                                   </>
                                 )}
                               </div>
                               {suggestion.metadata?.description && (
-                                <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
                                   {suggestion.metadata.description}
                                 </p>
                               )}
@@ -376,7 +376,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                         ))}
                       </div>
                     ) : globalSearchQuery.length >= 2 ? (
-                      <div className="p-4 text-center text-gray-500 text-sm">
+                      <div className="p-4 text-center text-muted-foreground text-sm">
                         No results found for "{globalSearchQuery}"
                       </div>
                     ) : null}
@@ -386,14 +386,14 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
             </div>
 
             {/* Tabs */}
-            <div className="border-t pt-4">
+            <div className="border-t border-border pt-4">
               <div className="flex gap-1">
                 <button
                   onClick={() => setActiveTab('agencies')}
                   className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
                     activeTab === 'agencies'
-                      ? 'bg-gray-50 text-blue-600 border-t-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-muted text-primary border-t-2 border-primary'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Agencies
@@ -402,8 +402,8 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   onClick={() => setActiveTab('intel')}
                   className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
                     activeTab === 'intel'
-                      ? 'bg-gray-50 text-blue-600 border-t-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-muted text-primary border-t-2 border-primary'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Intel
@@ -412,8 +412,8 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   onClick={() => setActiveTab('overview')}
                   className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
                     activeTab === 'overview'
-                      ? 'bg-gray-50 text-blue-600 border-t-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-muted text-primary border-t-2 border-primary'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Overview
@@ -434,7 +434,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                 {/* Agencies List */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-foreground">
                       All Agencies ({agencyNetworks.length})
                     </h2>
                   </div>
@@ -456,7 +456,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                       : branch.city || branch.state || '';
 
                     return (
-                      <div key={branch.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                      <div key={branch.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-sm transition-shadow">
                         <div className="flex items-start gap-3">
                           {/* Logo */}
                           <CompanyLogo
@@ -472,7 +472,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                             <div className="flex items-center gap-2 mb-2">
                               <Link
                                 href={`/companies/${branch.id}`}
-                                className="font-semibold text-gray-900 hover:text-blue-600"
+                                className="font-semibold text-foreground hover:text-primary"
                               >
                                 {branch.name}
                               </Link>
@@ -480,7 +480,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
                             {/* Clients */}
                             {clients.length > 0 && (
-                              <div className="text-sm text-gray-600 mb-2 flex flex-wrap items-center gap-1">
+                              <div className="text-sm text-muted-foreground mb-2 flex flex-wrap items-center gap-1">
                                 {(expandedTeams.has(branch.id) ? clients : visibleClients).map((client, index) => (
                                   <span key={client.id}>
                                     <CompanyLogo
@@ -491,7 +491,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                                     />
                                     <Link
                                       href={`/companies/${client.id}`}
-                                      className="hover:text-blue-600 hover:underline align-middle"
+                                      className="hover:text-primary hover:underline align-middle"
                                     >
                                       {client.name}
                                     </Link>
@@ -501,7 +501,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                                 {hiddenClientsCount > 0 && (
                                   <button
                                     onClick={() => toggleTeams(branch.id)}
-                                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                                    className="text-primary hover:text-primary/80 font-medium ml-1"
                                   >
                                     {expandedTeams.has(branch.id)
                                       ? 'Show fewer'
@@ -514,12 +514,12 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
                             {/* Duties */}
                             {duties.length > 0 && (
-                              <div className="text-sm text-gray-600 mb-2">
+                              <div className="text-sm text-muted-foreground mb-2">
                                 <span className="font-medium">Handles:</span> {(expandedDuties.has(branch.id) ? duties : visibleDuties).join(', ')}
                                 {hiddenDutiesCount > 0 && (
                                   <button
                                     onClick={() => toggleDuties(branch.id)}
-                                    className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                                    className="text-primary hover:text-primary/80 font-medium ml-1"
                                   >
                                     {expandedDuties.has(branch.id)
                                       ? 'Show fewer'
@@ -532,13 +532,13 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
                             {/* Location */}
                             {locationString && (
-                              <div className="text-sm text-gray-500 mb-1">
+                              <div className="text-sm text-muted-foreground mb-1">
                                 {locationString}
                               </div>
                             )}
 
                             {/* Last Activity */}
-                            <div className="text-xs text-gray-400">
+                            <div className="text-xs text-muted-foreground">
                               Last activity: 23 hrs
                             </div>
                           </div>
@@ -546,7 +546,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                           {/* Right side: People count and action icons */}
                           <div className="flex flex-col items-end gap-2 flex-shrink-0">
                             {contactCount > 0 && (
-                              <div className="text-sm text-gray-500 flex items-center gap-1">
+                              <div className="text-sm text-muted-foreground flex items-center gap-1">
                                 <Users className="h-4 w-4" />
                                 <span>{contactCount} {contactCount === 1 ? 'person' : 'people'}</span>
                               </div>
@@ -554,7 +554,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                             <div className="flex items-center gap-2">
                               <Link
                                 href={`/admin/orgs/companies/${branch.id}/edit`}
-                                className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-50"
+                                className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-muted"
                               >
                                 <Edit3 className="h-4 w-4" />
                               </Link>
@@ -568,7 +568,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                                   }
                                   setBookmarkedAgencies(newBookmarked);
                                 }}
-                                className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-50"
+                                className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-muted"
                               >
                                 {isBookmarked ? (
                                   <BookmarkCheck className="h-4 w-4 fill-current" />
@@ -584,9 +584,9 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   })}
 
                   {agencyNetworks.length === 0 && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-                      <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">No agencies found</p>
+                    <div className="bg-card border border-border rounded-lg p-12 text-center">
+                      <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">No agencies found</p>
                     </div>
                   )}
                 </div>
@@ -594,18 +594,18 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
             )}
 
             {activeTab === 'intel' && (
-              <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-                <Lightbulb className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Intel Coming Soon</h3>
-                <p className="text-gray-600">News and updates about {company.name} agencies will appear here</p>
+              <div className="bg-card border border-border rounded-lg p-12 text-center">
+                <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Intel Coming Soon</h3>
+                <p className="text-muted-foreground">News and updates about {company.name} agencies will appear here</p>
               </div>
             )}
 
             {activeTab === 'overview' && (
-              <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-                <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Overview Coming Soon</h3>
-                <p className="text-gray-600">Detailed overview of {company.name} will appear here</p>
+              <div className="bg-card border border-border rounded-lg p-12 text-center">
+                <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Overview Coming Soon</h3>
+                <p className="text-muted-foreground">Detailed overview of {company.name} will appear here</p>
               </div>
             )}
           </div>
@@ -613,24 +613,24 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
           {/* Right Sidebar */}
           <div className="w-80 flex-shrink-0 space-y-6">
             {/* Suggest Edit Panel */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg overflow-hidden">
+            <div className="bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-lg overflow-hidden">
               <div
-                className="flex items-center justify-between p-5 cursor-pointer hover:bg-white/50 transition-colors"
+                className="flex items-center justify-between p-5 cursor-pointer hover:bg-card/50 transition-colors"
                 onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex-shrink-0">
                     <Lightbulb className="h-6 w-6 text-yellow-500" />
                   </div>
-                  <h3 className="font-bold text-gray-900 text-lg">
+                  <h3 className="font-bold text-foreground text-lg">
                     Suggest an edit for this company
                   </h3>
                 </div>
-                <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform flex-shrink-0 ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform flex-shrink-0 ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
               </div>
 
               {!isSuggestEditExpanded && (
-                <p className="px-5 pb-5 text-sm text-gray-600">
+                <p className="px-5 pb-5 text-sm text-muted-foreground">
                   Click to expand
                 </p>
               )}
@@ -640,29 +640,29 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   <div className="space-y-2 mb-4">
                     <label className="flex items-start gap-2 text-sm">
                       <input type="checkbox" className="mt-0.5" />
-                      <span className="text-gray-700">Should we add or remove people?</span>
+                      <span className="text-foreground">Should we add or remove people?</span>
                     </label>
                     <label className="flex items-start gap-2 text-sm">
                       <input type="checkbox" className="mt-0.5" />
-                      <span className="text-gray-700">Are any teams no longer active?</span>
+                      <span className="text-foreground">Are any teams no longer active?</span>
                     </label>
                     <label className="flex items-start gap-2 text-sm">
                       <input type="checkbox" className="mt-0.5" />
-                      <span className="text-gray-700">Are there other agencies we should add?</span>
+                      <span className="text-foreground">Are there other agencies we should add?</span>
                     </label>
                   </div>
 
                   <textarea
                     placeholder="Write your suggestion here..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                     rows={3}
                   />
 
-                  <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium mb-3">
+                  <button className="w-full py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm font-medium mb-3">
                     Submit
                   </button>
 
-                  <p className="text-xs text-gray-600 text-center">
+                  <p className="text-xs text-muted-foreground text-center">
                     Share information with the community and obtain rewards when you do.
                   </p>
                 </div>
@@ -670,36 +670,36 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
             </div>
 
             {/* Company Stats */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Quick Stats</h3>
+            <div className="bg-card border border-border rounded-lg p-6">
+              <h3 className="font-semibold text-foreground mb-4">Quick Stats</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Total Agencies</span>
-                  <span className="font-semibold text-gray-900">{company.subsidiaries.length}</span>
+                  <span className="text-muted-foreground">Total Agencies</span>
+                  <span className="font-semibold text-foreground">{company.subsidiaries.length}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Total People</span>
-                  <span className="font-semibold text-gray-900">{subsidiaryStats.totalPeople}</span>
+                  <span className="text-muted-foreground">Total People</span>
+                  <span className="font-semibold text-foreground">{subsidiaryStats.totalPeople}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Locations</span>
-                  <span className="font-semibold text-gray-900">{topLocations.length}</span>
+                  <span className="text-muted-foreground">Locations</span>
+                  <span className="font-semibold text-foreground">{topLocations.length}</span>
                 </div>
               </div>
             </div>
 
             {/* Top Locations */}
             {topLocations.length > 0 && (
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Top Locations</h3>
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="font-semibold text-foreground mb-4">Top Locations</h3>
                 <div className="space-y-3">
                   {topLocations.map(([location, count]) => (
                     <div key={location} className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-900">{location}</span>
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-foreground">{location}</span>
                       </div>
-                      <span className="text-gray-600">{count} {count === 1 ? 'person' : 'people'}</span>
+                      <span className="text-muted-foreground">{count} {count === 1 ? 'person' : 'people'}</span>
                     </div>
                   ))}
                 </div>

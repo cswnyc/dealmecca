@@ -16,15 +16,15 @@ function AuthErrorContent() {
   const error = searchParams.get('error') as keyof typeof errorMessages || 'Default'
   
   return (
-    <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 p-6">
+    <div className="w-full max-w-md bg-white rounded-lg border border-border p-6">
       <div className="text-center">
         <div className="mx-auto mb-4 p-3 bg-red-100 rounded-full w-fit">
           <div className="h-8 w-8 text-red-700">⚠️</div>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl font-bold text-foreground mb-2">
           Authentication Error
         </h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground mb-6">
           {errorMessages[error]}
         </p>
       </div>
@@ -51,7 +51,7 @@ function AuthErrorContent() {
           Try Again
         </Link>
         
-        <Link href="/" className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+        <Link href="/" className="w-full inline-flex items-center justify-center px-4 py-2 border border-input text-muted-foreground rounded-md hover:bg-muted">
           Return to Home
         </Link>
       </div>
@@ -63,12 +63,12 @@ export default function AuthErrorPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 to-teal-50 flex items-center justify-center p-4">
       <Suspense fallback={
-        <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 p-6">
+        <div className="w-full max-w-md bg-white rounded-lg border border-border p-6">
           <div className="text-center">
             <div className="mx-auto mb-4 p-3 bg-red-100 rounded-full w-fit">
               <div className="h-8 w-8 text-red-700">⚠️</div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-foreground">
               Loading...
             </h1>
           </div>

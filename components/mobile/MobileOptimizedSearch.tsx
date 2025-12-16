@@ -157,17 +157,17 @@ export default function MobileOptimizedSearch({
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+            <h3 className="font-semibold text-foreground truncate">
               {result.name}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-slate-200 truncate">
+            <p className="text-sm text-muted-foreground truncate">
               {result.title}
             </p>
-            <p className="text-sm text-gray-500 dark:text-slate-400 truncate">
+            <p className="text-sm text-muted-foreground truncate">
               {result.company.name}
             </p>
             {result.location && (
-              <div className="flex items-center mt-1 text-xs text-gray-500">
+              <div className="flex items-center mt-1 text-xs text-muted-foreground">
                 <MapPin className="h-3 w-3 mr-1" />
                 {result.location}
               </div>
@@ -204,23 +204,23 @@ export default function MobileOptimizedSearch({
   );
 
   const renderDesktopResult = (result: SearchResult, index: number) => (
-    <div key={result.id} className="border-b border-gray-200 dark:border-slate-700 py-4 last:border-b-0">
+    <div key={result.id} className="border-b border-border py-4 last:border-b-0">
       <div className="flex items-center justify-between">
         <div className="flex-1 grid grid-cols-4 gap-4">
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+            <h3 className="font-semibold text-foreground">
               {result.name}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-slate-200">
+            <p className="text-sm text-muted-foreground">
               {result.title}
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-900 dark:text-white">
+            <p className="text-sm text-foreground">
               {result.company.name}
             </p>
             {result.location && (
-              <div className="flex items-center mt-1 text-xs text-gray-500">
+              <div className="flex items-center mt-1 text-xs text-muted-foreground">
                 <MapPin className="h-3 w-3 mr-1" />
                 {result.location}
               </div>
@@ -228,13 +228,13 @@ export default function MobileOptimizedSearch({
           </div>
           <div className="text-sm">
             {result.email && (
-              <div className="flex items-center text-gray-600 dark:text-slate-200 mb-1">
+              <div className="flex items-center text-muted-foreground mb-1">
                 <Mail className="h-3 w-3 mr-2" />
                 {result.email}
               </div>
             )}
             {result.phone && (
-              <div className="flex items-center text-gray-600 dark:text-slate-200">
+              <div className="flex items-center text-muted-foreground">
                 <Phone className="h-3 w-3 mr-2" />
                 {result.phone}
               </div>
@@ -284,7 +284,7 @@ export default function MobileOptimizedSearch({
         <CardContent className="space-y-4">
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={placeholder}
               value={query}
@@ -348,10 +348,10 @@ export default function MobileOptimizedSearch({
 
           {/* Sort Options */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-slate-200">
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <SortAsc className="h-4 w-4" />
-              <select 
-                value={sortBy} 
+              <select
+                value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="bg-transparent border-none text-sm"
               >
@@ -360,8 +360,8 @@ export default function MobileOptimizedSearch({
                 <option value="company">Sort by Company</option>
               </select>
             </div>
-            
-            <div className="text-sm text-gray-500">
+
+            <div className="text-sm text-muted-foreground">
               Showing {optimizedResults.length} of {results.length} results
             </div>
           </div>
@@ -422,11 +422,11 @@ export default function MobileOptimizedSearch({
       {!loading && query && optimizedResults.length === 0 && (
         <Card>
           <CardContent className="text-center py-12">
-            <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">
               No results found
             </h3>
-            <p className="text-gray-600 dark:text-slate-200">
+            <p className="text-muted-foreground">
               Try adjusting your search terms or filters
             </p>
           </CardContent>
@@ -438,7 +438,7 @@ export default function MobileOptimizedSearch({
         <Card>
           <CardContent className="p-4">
             <h4 className="font-medium mb-2">Performance Info</h4>
-            <div className="text-xs text-gray-600 dark:text-slate-200 space-y-1">
+            <div className="text-xs text-muted-foreground space-y-1">
               <div>Device: {deviceInfo.viewport.width}x{deviceInfo.viewport.height}</div>
               <div>Connection: {deviceInfo.connectionType}</div>
               <div>Batch Size: {deviceInfo.recommendedBatchSize}</div>

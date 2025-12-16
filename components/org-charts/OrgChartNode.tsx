@@ -166,12 +166,12 @@ export function OrgChartNode({
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
-                <h4 className="font-medium text-gray-900 truncate text-sm">{node.name}</h4>
+                <h4 className="font-medium text-foreground truncate text-sm">{node.name}</h4>
                 {node.department && (
                   <span className="text-sm">{getDepartmentIcon(node.department)}</span>
                 )}
               </div>
-              <p className="text-xs text-gray-600 truncate">{node.title}</p>
+              <p className="text-xs text-muted-foreground truncate">{node.title}</p>
             </div>
           </div>
 
@@ -207,7 +207,7 @@ export function OrgChartNode({
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <h3 className="font-semibold text-gray-900 truncate">{node.name}</h3>
+                <h3 className="font-semibold text-foreground truncate">{node.name}</h3>
                 {node.department && (
                   <span className="text-lg" title={formatText(node.department)}>
                     {getDepartmentIcon(node.department)}
@@ -215,7 +215,7 @@ export function OrgChartNode({
                 )}
               </div>
               
-              <p className="text-sm font-medium text-gray-700 mb-2 truncate">{node.title}</p>
+              <p className="text-sm font-medium text-foreground mb-2 truncate">{node.title}</p>
               
               <div className="flex flex-wrap gap-2 mb-3">
                 {node.seniority && (
@@ -244,7 +244,7 @@ export function OrgChartNode({
               </div>
 
               {/* Contact Information */}
-              <div className="flex items-center space-x-4 text-xs text-gray-500">
+              <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                 {node.email && (
                   <button
                     onClick={(e) => {
@@ -349,8 +349,8 @@ export function OrgChartNode({
         
         {/* Bio/Description */}
         {node.bio && viewMode === 'detailed' && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-600 line-clamp-2">{node.bio}</p>
+          <div className="mt-3 pt-3 border-t border-border">
+            <p className="text-xs text-muted-foreground line-clamp-2">{node.bio}</p>
           </div>
         )}
       </CardContent>
@@ -359,7 +359,7 @@ export function OrgChartNode({
 
   const renderCardView = () => (
     <Card 
-      className={`cursor-pointer hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-white to-gray-50 ${className}`}
+      className={`cursor-pointer hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-card to-muted ${className}`}
       onClick={handleNodeClick}
       style={{ transform: `scale(${zoom})` }}
     >
@@ -371,8 +371,8 @@ export function OrgChartNode({
           </AvatarFallback>
         </Avatar>
         
-        <h3 className="font-semibold text-gray-900 mb-1">{node.name}</h3>
-        <p className="text-sm text-gray-600 mb-3">{node.title}</p>
+        <h3 className="font-semibold text-foreground mb-1">{node.name}</h3>
+        <p className="text-sm text-muted-foreground mb-3">{node.title}</p>
         
         <div className="flex justify-center mb-4">
           {node.seniority && (
@@ -429,7 +429,7 @@ export function OrgChartNode({
         </div>
         
         {node.managerOf && node.managerOf > 0 && (
-          <p className="text-xs text-gray-500 mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             Manages {node.managerOf} {node.managerOf === 1 ? 'person' : 'people'}
           </p>
         )}

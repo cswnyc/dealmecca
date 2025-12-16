@@ -183,8 +183,8 @@ export default function DutiesAdminPage() {
     return (
       <div className="max-w-7xl mx-auto p-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="h-96 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
+          <div className="h-96 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -200,8 +200,8 @@ export default function DutiesAdminPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Duties Management</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-foreground">Duties Management</h1>
+            <p className="text-muted-foreground mt-1">
               Manage duties that can be assigned to companies, partnerships, and contacts
             </p>
           </div>
@@ -301,7 +301,7 @@ export default function DutiesAdminPage() {
         <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 type="text"
                 placeholder="Search duties..."
@@ -337,8 +337,8 @@ export default function DutiesAdminPage() {
           {Object.entries(groupedDuties).length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <Tag className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No duties found matching your filters.</p>
+                <Tag className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No duties found matching your filters.</p>
               </CardContent>
             </Card>
           ) : (
@@ -367,9 +367,9 @@ export default function DutiesAdminPage() {
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900">{duty.name}</h4>
+                              <h4 className="font-semibold text-foreground">{duty.name}</h4>
                               {duty.description && (
-                                <p className="text-sm text-gray-600 mt-1">{duty.description}</p>
+                                <p className="text-sm text-muted-foreground mt-1">{duty.description}</p>
                               )}
                             </div>
                             <Button
@@ -383,10 +383,10 @@ export default function DutiesAdminPage() {
                           </div>
 
                           <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-muted-foreground">
                               Total usage: {getTotalUsage(duty)}
                             </div>
-                            <div className="flex items-center space-x-2 text-xs text-gray-500">
+                            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                               <span title="Company assignments">{duty._count.CompanyDuty} Co.</span>
                               <span>•</span>
                               <span title="Partnership assignments">{duty._count.PartnershipDuty} Part.</span>
@@ -408,7 +408,7 @@ export default function DutiesAdminPage() {
         {duties.length > 0 && (
           <Card className="mt-6">
             <CardContent className="py-4">
-              <div className="flex items-center justify-between text-sm text-gray-600">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Total duties: {duties.length}</span>
                 <span>
                   Total assignments: {duties.reduce((sum, d) => sum + getTotalUsage(d), 0)}

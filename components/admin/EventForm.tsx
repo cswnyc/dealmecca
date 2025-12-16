@@ -504,12 +504,12 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-foreground">
               {mode === 'create' ? 'Create New Event' : `Edit ${event?.name}`}
             </h1>
-            <p className="text-gray-600">
-              {mode === 'create' 
-                ? 'Set up a new event with capacity management and org chart integration' 
+            <p className="text-muted-foreground">
+              {mode === 'create'
+                ? 'Set up a new event with capacity management and org chart integration'
                 : 'Update event information and settings'
               }
             </p>
@@ -521,11 +521,11 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                     <span>{getStatusInfo()?.label}</span>
                   </div>
                 </Badge>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   Created {new Date(event.createdAt).toLocaleDateString()}
                 </span>
                 {event.creator && (
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-muted-foreground">
                     by {event.creator.name}
                   </span>
                 )}
@@ -580,7 +580,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
                   value={urlToParse}
                   onChange={(e) => setUrlToParse(e.target.value)}
                   placeholder="https://example.com/event"
-                  className="flex-1 bg-white"
+                  className="flex-1 bg-card"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();

@@ -149,8 +149,8 @@ export default function MobileLayout({
           }}
         >
           <div className="flex flex-col items-center">
-            <div 
-              className={`w-8 h-8 border-2 border-blue-600 rounded-full ${
+            <div
+              className={`w-8 h-8 border-2 border-primary rounded-full ${
                 isRefreshing ? 'animate-spin border-t-transparent' : ''
               }`}
               style={{
@@ -159,12 +159,12 @@ export default function MobileLayout({
               }}
             />
             {pullDistance > 80 && !isRefreshing && (
-              <span className="text-xs text-blue-600 mt-1 font-medium">
+              <span className="text-xs text-primary mt-1 font-medium">
                 Release to refresh
               </span>
             )}
             {isRefreshing && (
-              <span className="text-xs text-blue-600 mt-1 font-medium">
+              <span className="text-xs text-primary mt-1 font-medium">
                 Refreshing...
               </span>
             )}
@@ -243,7 +243,7 @@ export function OptimizedImage({
         loading={lazy ? 'lazy' : 'eager'}
       />
       {!imageLoaded && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+        <div className="absolute inset-0 bg-muted animate-pulse" />
       )}
     </div>
   )

@@ -167,9 +167,9 @@ export function SmartSearch({
     <div className="relative">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+          <MagnifyingGlassIcon className="h-5 w-5 text-muted-foreground" />
         </div>
-        
+
         <input
           ref={searchRef}
           type="text"
@@ -179,7 +179,7 @@ export function SmartSearch({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           placeholder={placeholder}
-          className="block w-full pl-10 pr-12 py-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200"
+          className="block w-full pl-10 pr-12 py-3 text-foreground bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent text-sm transition-all duration-200"
           autoComplete="off"
         />
 
@@ -187,17 +187,17 @@ export function SmartSearch({
           {query && (
             <button
               onClick={clearSearch}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
               title="Clear search"
             >
               <XMarkIcon className="h-4 w-4" />
             </button>
           )}
-          
+
           {showFilters && (
             <button
               onClick={onFiltersClick}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
               title="Advanced filters"
             >
               <AdjustmentsHorizontalIcon className="h-4 w-4" />
@@ -208,10 +208,10 @@ export function SmartSearch({
 
       {/* Search Suggestions Dropdown */}
       {showSuggestions && (suggestions.length > 0 || isLoading) && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mx-auto mb-2"></div>
+            <div className="p-4 text-center text-muted-foreground">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mx-auto mb-2"></div>
               Loading suggestions...
             </div>
           ) : (
@@ -221,14 +221,14 @@ export function SmartSearch({
                   <button
                     key={`${suggestion.type}-${suggestion.value}-${index}`}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center justify-between group transition-colors ${
-                      index === selectedIndex ? 'bg-blue-50' : ''
+                    className={`w-full px-4 py-2 text-left hover:bg-muted flex items-center justify-between group transition-colors ${
+                      index === selectedIndex ? 'bg-primary/10' : ''
                     }`}
                   >
-                    <span className="text-sm text-gray-900">{suggestion.label}</span>
+                    <span className="text-sm text-foreground">{suggestion.label}</span>
                     <span className={`text-xs capitalize px-2 py-1 rounded-full ${
                       suggestion.type === 'company' ? 'bg-green-100 text-green-600' :
-                      suggestion.type === 'location' ? 'bg-blue-100 text-blue-600' :
+                      suggestion.type === 'location' ? 'bg-primary/20 text-primary' :
                       'bg-purple-100 text-purple-600'
                     }`}>
                       {suggestion.type}
@@ -236,7 +236,7 @@ export function SmartSearch({
                   </button>
                 ))
               ) : (
-                <div className="p-4 text-center text-gray-500">
+                <div className="p-4 text-center text-muted-foreground">
                   No suggestions found
                 </div>
               )}
@@ -259,9 +259,9 @@ export function SmartSearch({
 // Search tips component
 export function SearchTips() {
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-      <h4 className="font-medium text-blue-900 mb-2">Search Tips:</h4>
-      <ul className="space-y-1 text-blue-700">
+    <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 text-sm">
+      <h4 className="font-medium text-foreground mb-2">Search Tips:</h4>
+      <ul className="space-y-1 text-primary">
         <li>• Use quotes for exact phrases: "media buy"</li>
         <li>• Search by company: Nike, Amazon, Google</li>
         <li>• Filter by location: location:NYC or location:California</li>

@@ -16,16 +16,16 @@ const statusConfig = {
     label: 'Mark Interest',
     icon: Clock,
     color: 'gray',
-    bgColor: 'bg-gray-100 hover:bg-gray-200',
-    textColor: 'text-gray-700',
+    bgColor: 'bg-muted hover:bg-muted/80',
+    textColor: 'text-muted-foreground',
     description: 'Show interest in this event'
   },
   interested: {
     label: 'Interested',
     icon: Clock,
     color: 'blue',
-    bgColor: 'bg-blue-100 hover:bg-blue-200',
-    textColor: 'text-blue-700',
+    bgColor: 'bg-primary/20 hover:bg-primary/30',
+    textColor: 'text-primary',
     description: 'You\'re interested in this event'
   },
   planning: {
@@ -97,18 +97,18 @@ export default function AttendanceActions({ eventId, currentStatus = 'none', onS
           <Icon size={18} />
           <span className="font-medium">{config.label}</span>
         </div>
-        <span className="text-sm text-gray-600">{config.description}</span>
+        <span className="text-sm text-muted-foreground">{config.description}</span>
       </div>
 
       {/* Progress Bar */}
       <div className="space-y-2">
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-muted-foreground">
           <span>Progress</span>
           <span>{currentIndex + 1} of {statusFlow.length}</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full transition-all duration-300"
+        <div className="w-full bg-muted rounded-full h-2">
+          <div
+            className="bg-gradient-to-r from-primary to-emerald-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${((currentIndex + 1) / statusFlow.length) * 100}%` }}
           />
         </div>
@@ -121,9 +121,9 @@ export default function AttendanceActions({ eventId, currentStatus = 'none', onS
             onClick={() => handleStatusUpdate(nextStatus)}
             disabled={isLoading}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-              isLoading 
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+              isLoading
+                ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                : 'bg-primary text-primary-foreground hover:bg-primary/90'
             }`}
           >
             {isLoading ? (
@@ -145,7 +145,7 @@ export default function AttendanceActions({ eventId, currentStatus = 'none', onS
           <button
             onClick={() => handleStatusUpdate('none')}
             disabled={isLoading}
-            className="px-4 py-2 rounded-lg font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="px-4 py-2 rounded-lg font-medium border border-border text-foreground hover:bg-muted transition-colors disabled:opacity-50"
           >
             Reset
           </button>
@@ -154,7 +154,7 @@ export default function AttendanceActions({ eventId, currentStatus = 'none', onS
 
       {/* Status Timeline */}
       <div className="border-t pt-4">
-        <h4 className="font-medium text-gray-900 mb-3">Attendance Timeline</h4>
+        <h4 className="font-medium text-foreground mb-3">Attendance Timeline</h4>
         <div className="space-y-3">
           {statusFlow.map((statusKey, index) => {
             const statusItem = statusConfig[statusKey]
@@ -163,39 +163,39 @@ export default function AttendanceActions({ eventId, currentStatus = 'none', onS
             const isCurrent = index === currentIndex
             
             return (
-              <div 
+              <div
                 key={statusKey}
                 className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
-                  isCurrent 
-                    ? 'bg-blue-50 border border-blue-200' 
-                    : isActive 
-                      ? 'bg-green-50' 
-                      : 'bg-gray-50'
+                  isCurrent
+                    ? 'bg-primary/10 border border-primary/20'
+                    : isActive
+                      ? 'bg-green-50'
+                      : 'bg-muted'
                 }`}
               >
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
                   isCurrent
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary text-primary-foreground'
                     : isActive
                       ? 'bg-green-600 text-white'
-                      : 'bg-gray-300 text-gray-600'
+                      : 'bg-muted text-muted-foreground'
                 }`}>
                   {isActive ? <Check size={16} /> : <StatusIcon size={16} />}
                 </div>
                 <div className="flex-1">
                   <div className={`font-medium ${
-                    isCurrent 
-                      ? 'text-blue-700' 
-                      : isActive 
-                        ? 'text-green-700' 
-                        : 'text-gray-500'
+                    isCurrent
+                      ? 'text-primary'
+                      : isActive
+                        ? 'text-green-700'
+                        : 'text-muted-foreground'
                   }`}>
                     {statusItem.label}
                   </div>
-                  <div className="text-xs text-gray-500">{statusItem.description}</div>
+                  <div className="text-xs text-muted-foreground">{statusItem.description}</div>
                 </div>
                 {isCurrent && (
-                  <div className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                  <div className="text-xs font-medium text-primary bg-primary/20 px-2 py-1 rounded">
                     Current
                   </div>
                 )}

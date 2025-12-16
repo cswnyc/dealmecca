@@ -121,7 +121,7 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
     <div className="relative max-w-2xl mx-auto" ref={searchRef}>
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
+          <Search className="h-5 w-5 text-muted-foreground" />
         </div>
         
         <Input
@@ -132,7 +132,7 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => query.length >= 2 && setShowSuggestions(true)}
-          className="pl-10 pr-12 py-4 text-lg text-gray-900 bg-white border-2 border-white/20 focus:border-white rounded-xl shadow-lg"
+          className="pl-10 pr-12 py-4 text-lg text-foreground bg-card border-2 border-border/20 focus:border-ring rounded-xl shadow-lg"
         />
 
         {query && (
@@ -143,7 +143,7 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
             }}
             className="absolute inset-y-0 right-10 flex items-center"
           >
-            <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+            <X className="h-5 w-5 text-muted-foreground hover:text-foreground" />
           </button>
         )}
 
@@ -163,19 +163,19 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
             {/* Company Suggestions */}
             {(suggestions?.companies || []).length > 0 && (
               <div className="p-3 border-b">
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
                   Companies
                 </div>
                 {(suggestions?.companies || []).map((company, index) => (
                   <button
                     key={company.id}
                     onClick={() => handleSuggestionClick(company, 'company')}
-                    className="w-full text-left p-2 hover:bg-gray-50 rounded-md flex items-center space-x-3"
+                    className="w-full text-left p-2 hover:bg-muted rounded-md flex items-center space-x-3"
                   >
                     <Building2 className="w-4 h-4 text-blue-600" />
                     <div className="flex-1">
                       <div className="font-medium">{company.name}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted-foreground">
                         {company.city}, {company.state} • {company.companyType.replace(/_/g, ' ')}
                       </div>
                     </div>
@@ -190,19 +190,19 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
             {/* Contact Suggestions */}
             {(suggestions?.contacts || []).length > 0 && (
               <div className="p-3 border-b">
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
                   Contacts
                 </div>
                 {(suggestions?.contacts || []).map((contact, index) => (
                   <button
                     key={contact.id}
                     onClick={() => handleSuggestionClick(contact, 'contact')}
-                    className="w-full text-left p-2 hover:bg-gray-50 rounded-md flex items-center space-x-3"
+                    className="w-full text-left p-2 hover:bg-muted rounded-md flex items-center space-x-3"
                   >
                     <User className="w-4 h-4 text-green-600" />
                     <div className="flex-1">
                       <div className="font-medium">{contact.fullName}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted-foreground">
                         {contact.title} at {contact.company.name}
                       </div>
                     </div>
@@ -217,19 +217,19 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
             {/* Location Suggestions */}
             {(suggestions?.locations || []).length > 0 && (
               <div className="p-3">
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
                   Locations
                 </div>
                 {(suggestions?.locations || []).map((location, index) => (
                   <button
                     key={`${location.city}-${location.state}`}
                     onClick={() => handleSuggestionClick(location, 'location')}
-                    className="w-full text-left p-2 hover:bg-gray-50 rounded-md flex items-center space-x-3"
+                    className="w-full text-left p-2 hover:bg-muted rounded-md flex items-center space-x-3"
                   >
                     <MapPin className="w-4 h-4 text-purple-600" />
                     <div className="flex-1">
                       <div className="font-medium">{location.location}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted-foreground">
                         {location.count} {location.count === 1 ? 'company' : 'companies'}
                       </div>
                     </div>
@@ -242,8 +242,8 @@ export function OrgSearchHeader({ onSearch, initialQuery = '', loading = false }
             {(suggestions?.companies || []).length === 0 && 
              (suggestions?.contacts || []).length === 0 && 
              (suggestions?.locations || []).length === 0 && (
-              <div className="p-6 text-center text-gray-500">
-                <Search className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+              <div className="p-6 text-center text-muted-foreground">
+                <Search className="w-8 h-8 mx-auto mb-2 text-muted" />
                 <div>No suggestions found</div>
                 <div className="text-sm">Try a different search term</div>
               </div>

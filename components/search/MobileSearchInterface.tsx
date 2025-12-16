@@ -92,18 +92,18 @@ export default function MobileSearchInterface({
   const activeFilterCount = Object.keys(activeFilters).length
 
   return (
-    <div className="bg-white rounded-t-3xl shadow-2xl max-h-[90vh] overflow-hidden">
+    <div className="bg-card rounded-t-3xl shadow-2xl max-h-[90vh] overflow-hidden">
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-100 p-4">
+      <div className="sticky top-0 bg-card border-b border-border p-4">
         <div className="flex items-center gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search companies, contacts..."
-              className="w-full pl-12 pr-20 py-3 text-lg border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-12 pr-20 py-3 text-lg border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
@@ -153,7 +153,7 @@ export default function MobileSearchInterface({
         {showSuggestions && suggestions.length > 0 ? (
           /* Search Suggestions */
           <div className="p-4">
-            <div className="text-sm font-medium text-gray-600 mb-3">Suggestions</div>
+            <div className="text-sm font-medium text-muted-foreground mb-3">Suggestions</div>
             {suggestions.map((suggestion) => (
               <button
                 key={suggestion.id}
@@ -161,10 +161,10 @@ export default function MobileSearchInterface({
                   setQuery(suggestion.text)
                   onSearch(suggestion.text, activeFilters)
                 }}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl mb-2"
+                className="w-full flex items-center justify-between p-3 hover:bg-muted rounded-xl mb-2"
               >
                 <div className="flex items-center gap-3">
-                  <Search className="w-4 h-4 text-gray-400" />
+                  <Search className="w-4 h-4 text-muted-foreground" />
                   <span className="text-left">{suggestion.text}</span>
                 </div>
                 <Badge variant="outline">{suggestion.count}</Badge>
@@ -177,20 +177,20 @@ export default function MobileSearchInterface({
             {/* Quick Filters */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="text-sm font-medium text-gray-600">Quick Filters</div>
+                <div className="text-sm font-medium text-muted-foreground">Quick Filters</div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {quickFilters.slice(0, 6).map((filter) => (
                   <button
                     key={filter.id}
                     onClick={() => applyQuickFilter(filter)}
-                    className="p-3 text-left bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                    className="p-3 text-left bg-muted rounded-xl hover:bg-muted/80 transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-lg">{filter.icon}</span>
                       <span className="font-medium text-sm">{filter.label}</span>
                     </div>
-                    <div className="text-xs text-gray-500">{filter.description}</div>
+                    <div className="text-xs text-muted-foreground">{filter.description}</div>
                   </button>
                 ))}
               </div>
@@ -200,8 +200,8 @@ export default function MobileSearchInterface({
             {recentSearches.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <Clock className="w-4 h-4 text-gray-400" />
-                  <div className="text-sm font-medium text-gray-600">Recent</div>
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <div className="text-sm font-medium text-muted-foreground">Recent</div>
                 </div>
                 {recentSearches.slice(0, 5).map((search, index) => (
                   <button
@@ -210,9 +210,9 @@ export default function MobileSearchInterface({
                       setQuery(search)
                       onSearch(search, activeFilters)
                     }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl mb-2"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-xl mb-2"
                   >
-                    <Clock className="w-4 h-4 text-gray-400" />
+                    <Clock className="w-4 h-4 text-muted-foreground" />
                     <span className="text-left flex-1">{search}</span>
                   </button>
                 ))}
@@ -223,8 +223,8 @@ export default function MobileSearchInterface({
             {savedSearches.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <Star className="w-4 h-4 text-gray-400" />
-                  <div className="text-sm font-medium text-gray-600">Saved</div>
+                  <Star className="w-4 h-4 text-muted-foreground" />
+                  <div className="text-sm font-medium text-muted-foreground">Saved</div>
                 </div>
                 {savedSearches.slice(0, 3).map((search) => (
                   <button
@@ -234,12 +234,12 @@ export default function MobileSearchInterface({
                       setActiveFilters(search.filters)
                       onSearch(search.query, search.filters)
                     }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl mb-2"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-xl mb-2"
                   >
-                    <Star className="w-4 h-4 text-gray-400" />
+                    <Star className="w-4 h-4 text-muted-foreground" />
                     <div className="text-left flex-1">
                       <div className="font-medium">{search.name}</div>
-                      <div className="text-sm text-gray-500">{search.query}</div>
+                      <div className="text-sm text-muted-foreground">{search.query}</div>
                     </div>
                     <Badge variant="outline">{search.lastResultCount}</Badge>
                   </button>
@@ -252,7 +252,7 @@ export default function MobileSearchInterface({
 
       {/* Advanced Filters Panel */}
       {showFilters && (
-        <div className="border-t border-gray-100 p-4 bg-gray-50">
+        <div className="border-t border-border p-4 bg-muted">
           <div className="flex items-center justify-between mb-3">
             <span className="font-medium">Filters</span>
             <Button
@@ -266,7 +266,7 @@ export default function MobileSearchInterface({
           
           {/* Location Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               <MapPin className="w-4 h-4 inline mr-1" />
               Location
             </label>
@@ -283,8 +283,8 @@ export default function MobileSearchInterface({
                   }}
                   className={`p-2 text-sm rounded-lg border ${
                     activeFilters.city?.includes(city) 
-                      ? 'bg-blue-100 border-blue-300' 
-                      : 'bg-white border-gray-200'
+                      ? 'bg-blue-100 border-blue-300'
+                      : 'bg-card border-border'
                   }`}
                 >
                   {city}
@@ -295,7 +295,7 @@ export default function MobileSearchInterface({
 
           {/* Industry Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Industry
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -311,8 +311,8 @@ export default function MobileSearchInterface({
                   }}
                   className={`p-2 text-sm rounded-lg border ${
                     activeFilters.industry?.includes(industry) 
-                      ? 'bg-blue-100 border-blue-300' 
-                      : 'bg-white border-gray-200'
+                      ? 'bg-blue-100 border-blue-300'
+                      : 'bg-card border-border'
                   }`}
                 >
                   {industry}
@@ -334,12 +334,12 @@ export default function MobileSearchInterface({
       {/* Voice Search Indicator */}
       {voiceSearch && (
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-6 text-center">
+          <div className="bg-card rounded-2xl p-6 text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
               <Mic className="w-8 h-8 text-red-600" />
             </div>
             <div className="font-medium mb-2">Listening...</div>
-            <div className="text-sm text-gray-500">Speak your search query</div>
+            <div className="text-sm text-muted-foreground">Speak your search query</div>
           </div>
         </div>
       )}

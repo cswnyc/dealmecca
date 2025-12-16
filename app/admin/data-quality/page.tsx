@@ -86,11 +86,11 @@ export default function DataQualityPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
           <div className="grid grid-cols-3 gap-6">
-            <div className="h-64 bg-gray-200 rounded"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-64 bg-muted rounded"></div>
+            <div className="h-64 bg-muted rounded"></div>
+            <div className="h-64 bg-muted rounded"></div>
           </div>
         </div>
       </div>
@@ -124,20 +124,20 @@ export default function DataQualityPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Data Quality Dashboard</h1>
-        <p className="text-gray-600 mt-2">Monitor and improve data quality across companies, contacts, and partnerships</p>
+        <h1 className="text-3xl font-bold text-foreground">Data Quality Dashboard</h1>
+        <p className="text-muted-foreground mt-2">Monitor and improve data quality across companies, contacts, and partnerships</p>
       </div>
 
       {/* Overall Quality Scores */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Companies Quality</h2>
+            <h2 className="text-lg font-semibold text-foreground">Companies Quality</h2>
             <div className={`text-3xl font-bold ${getQualityScore('companies') >= 80 ? 'text-green-600' : getQualityScore('companies') >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
               {getQualityScore('companies')}%
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div
               className={`h-2 rounded-full ${getQualityScore('companies') >= 80 ? 'bg-green-600' : getQualityScore('companies') >= 60 ? 'bg-yellow-600' : 'bg-red-600'}`}
               style={{ width: `${getQualityScore('companies')}%` }}
@@ -145,14 +145,14 @@ export default function DataQualityPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Contacts Quality</h2>
+            <h2 className="text-lg font-semibold text-foreground">Contacts Quality</h2>
             <div className={`text-3xl font-bold ${getQualityScore('contacts') >= 80 ? 'text-green-600' : getQualityScore('contacts') >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
               {getQualityScore('contacts')}%
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div
               className={`h-2 rounded-full ${getQualityScore('contacts') >= 80 ? 'bg-green-600' : getQualityScore('contacts') >= 60 ? 'bg-yellow-600' : 'bg-red-600'}`}
               style={{ width: `${getQualityScore('contacts')}%` }}
@@ -160,14 +160,14 @@ export default function DataQualityPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Total Records</h2>
+            <h2 className="text-lg font-semibold text-foreground">Total Records</h2>
             <div className="text-3xl font-bold text-blue-600">
               {stats.companies.total + stats.contacts.total}
             </div>
           </div>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex justify-between">
               <span>Companies:</span>
               <span className="font-medium">{stats.companies.total}</span>
@@ -182,19 +182,19 @@ export default function DataQualityPage() {
 
       {/* Companies Issues */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Companies - Data Issues</h2>
+        <div className="bg-white rounded-lg border border-border">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-semibold text-foreground">Companies - Data Issues</h2>
           </div>
-          <div className="divide-y divide-gray-200">
-            <div className="p-6 hover:bg-gray-50">
+          <div className="divide-y divide-border">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Unverified Companies</h3>
-                  <p className="text-sm text-gray-600">Companies not yet verified</p>
+                  <h3 className="font-semibold text-foreground">Unverified Companies</h3>
+                  <p className="text-sm text-muted-foreground">Companies not yet verified</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.companies.unverified}</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.companies.unverified}</div>
                   <Link href="/admin/orgs/companies?verified=false" className="text-sm text-blue-600 hover:text-blue-700">
                     View →
                   </Link>
@@ -202,45 +202,45 @@ export default function DataQualityPage() {
               </div>
             </div>
 
-            <div className="p-6 hover:bg-gray-50">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Missing Website</h3>
-                  <p className="text-sm text-gray-600">Companies without website URL</p>
+                  <h3 className="font-semibold text-foreground">Missing Website</h3>
+                  <p className="text-sm text-muted-foreground">Companies without website URL</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.companies.missingWebsite}</div>
-                  <span className="text-sm text-gray-500">
+                  <div className="text-2xl font-bold text-foreground">{stats.companies.missingWebsite}</div>
+                  <span className="text-sm text-muted-foreground">
                     {Math.round((stats.companies.missingWebsite / stats.companies.total) * 100)}%
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 hover:bg-gray-50">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Missing Industry</h3>
-                  <p className="text-sm text-gray-600">Companies without industry classification</p>
+                  <h3 className="font-semibold text-foreground">Missing Industry</h3>
+                  <p className="text-sm text-muted-foreground">Companies without industry classification</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.companies.missingIndustry}</div>
-                  <span className="text-sm text-gray-500">
+                  <div className="text-2xl font-bold text-foreground">{stats.companies.missingIndustry}</div>
+                  <span className="text-sm text-muted-foreground">
                     {Math.round((stats.companies.missingIndustry / stats.companies.total) * 100)}%
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 hover:bg-gray-50">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Missing Location</h3>
-                  <p className="text-sm text-gray-600">Companies without city/state</p>
+                  <h3 className="font-semibold text-foreground">Missing Location</h3>
+                  <p className="text-sm text-muted-foreground">Companies without city/state</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.companies.missingLocation}</div>
-                  <span className="text-sm text-gray-500">
+                  <div className="text-2xl font-bold text-foreground">{stats.companies.missingLocation}</div>
+                  <span className="text-sm text-muted-foreground">
                     {Math.round((stats.companies.missingLocation / stats.companies.total) * 100)}%
                   </span>
                 </div>
@@ -250,19 +250,19 @@ export default function DataQualityPage() {
         </div>
 
         {/* Contacts Issues */}
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Contacts - Data Issues</h2>
+        <div className="bg-white rounded-lg border border-border">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-semibold text-foreground">Contacts - Data Issues</h2>
           </div>
-          <div className="divide-y divide-gray-200">
-            <div className="p-6 hover:bg-gray-50">
+          <div className="divide-y divide-border">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Unverified Contacts</h3>
-                  <p className="text-sm text-gray-600">Contacts not yet verified</p>
+                  <h3 className="font-semibold text-foreground">Unverified Contacts</h3>
+                  <p className="text-sm text-muted-foreground">Contacts not yet verified</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.contacts.unverified}</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.contacts.unverified}</div>
                   <Link href="/admin/orgs/contacts?verified=false" className="text-sm text-blue-600 hover:text-blue-700">
                     View →
                   </Link>
@@ -270,59 +270,59 @@ export default function DataQualityPage() {
               </div>
             </div>
 
-            <div className="p-6 hover:bg-gray-50">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Missing Email</h3>
-                  <p className="text-sm text-gray-600">Contacts without email address</p>
+                  <h3 className="font-semibold text-foreground">Missing Email</h3>
+                  <p className="text-sm text-muted-foreground">Contacts without email address</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.contacts.missingEmail}</div>
-                  <span className="text-sm text-gray-500">
+                  <div className="text-2xl font-bold text-foreground">{stats.contacts.missingEmail}</div>
+                  <span className="text-sm text-muted-foreground">
                     {Math.round((stats.contacts.missingEmail / stats.contacts.total) * 100)}%
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 hover:bg-gray-50">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Missing Phone</h3>
-                  <p className="text-sm text-gray-600">Contacts without phone number</p>
+                  <h3 className="font-semibold text-foreground">Missing Phone</h3>
+                  <p className="text-sm text-muted-foreground">Contacts without phone number</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.contacts.missingPhone}</div>
-                  <span className="text-sm text-gray-500">
+                  <div className="text-2xl font-bold text-foreground">{stats.contacts.missingPhone}</div>
+                  <span className="text-sm text-muted-foreground">
                     {Math.round((stats.contacts.missingPhone / stats.contacts.total) * 100)}%
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 hover:bg-gray-50">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Missing LinkedIn</h3>
-                  <p className="text-sm text-gray-600">Contacts without LinkedIn profile</p>
+                  <h3 className="font-semibold text-foreground">Missing LinkedIn</h3>
+                  <p className="text-sm text-muted-foreground">Contacts without LinkedIn profile</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.contacts.missingLinkedIn}</div>
-                  <span className="text-sm text-gray-500">
+                  <div className="text-2xl font-bold text-foreground">{stats.contacts.missingLinkedIn}</div>
+                  <span className="text-sm text-muted-foreground">
                     {Math.round((stats.contacts.missingLinkedIn / stats.contacts.total) * 100)}%
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 hover:bg-gray-50">
+            <div className="p-6 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Inactive Contacts</h3>
-                  <p className="text-sm text-gray-600">Contacts marked as inactive</p>
+                  <h3 className="font-semibold text-foreground">Inactive Contacts</h3>
+                  <p className="text-sm text-muted-foreground">Contacts marked as inactive</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{stats.contacts.inactive}</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.contacts.inactive}</div>
                   <Link href="/admin/orgs/contacts?isActive=false" className="text-sm text-blue-600 hover:text-blue-700">
                     View →
                   </Link>

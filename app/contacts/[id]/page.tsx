@@ -16,10 +16,10 @@ export default function ContactRedirectPage() {
 
   // Show minimal loading state during redirect
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-muted flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading contact profile...</p>
+        <p className="text-muted-foreground">Loading contact profile...</p>
       </div>
     </div>
   );

@@ -216,18 +216,18 @@ export default function MobileSavedSearches({
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-card min-h-screen">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-4 safe-area-top">
+      <div className="sticky top-0 z-40 bg-card border-b border-border px-4 py-4 safe-area-top">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Saved Searches</h1>
-            <p className="text-sm text-gray-500">Quick access to your favorite filters</p>
+            <h1 className="text-xl font-bold text-foreground">Saved Searches</h1>
+            <p className="text-sm text-muted-foreground">Quick access to your favorite filters</p>
           </div>
           <Button
             size="sm"
             onClick={() => setShowSaveDialog(true)}
-            className="min-h-[44px] rounded-full bg-blue-600 hover:bg-blue-700"
+            className="min-h-[44px] rounded-full bg-primary hover:bg-primary/90"
           >
             <Plus className="w-4 h-4 mr-1" />
             Save Current
@@ -238,7 +238,7 @@ export default function MobileSavedSearches({
       {/* Pull to Refresh Indicator */}
       {refreshing && (
         <div className="flex justify-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
         </div>
       )}
 
@@ -246,17 +246,17 @@ export default function MobileSavedSearches({
       <div className="p-4">
         {loading && savedSearches.length === 0 ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading saved searches...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading saved searches...</p>
           </div>
         ) : savedSearches.length === 0 ? (
           <div className="text-center py-16">
-            <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved searches yet</h3>
-            <p className="text-gray-500 mb-6 px-8">Save your current search to quickly access it later and get notified of new matches</p>
+            <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No saved searches yet</h3>
+            <p className="text-muted-foreground mb-6 px-8">Save your current search to quickly access it later and get notified of new matches</p>
             <Button
               onClick={() => setShowSaveDialog(true)}
-              className="rounded-full bg-blue-600 hover:bg-blue-700"
+              className="rounded-full bg-primary hover:bg-primary/90"
             >
               <Plus className="w-4 h-4 mr-2" />
               Save Your First Search
@@ -281,14 +281,14 @@ export default function MobileSavedSearches({
       {/* Save Dialog */}
       {showSaveDialog && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl p-6 max-h-[80vh] overflow-y-auto">
+          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl shadow-2xl p-6 max-h-[80vh] overflow-y-auto">
             {/* Handle */}
             <div className="flex justify-center mb-4">
-              <div className="w-10 h-1 bg-gray-300 rounded-full" />
+              <div className="w-10 h-1 bg-border rounded-full" />
             </div>
 
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Save Current Search</h3>
+              <h3 className="text-xl font-bold text-foreground">Save Current Search</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -301,18 +301,18 @@ export default function MobileSavedSearches({
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Search Name *
                 </label>
                 <Input
                   value={saveForm.name}
                   onChange={(e) => setSaveForm({ ...saveForm, name: e.target.value })}
                   placeholder="e.g., NYC Agency CEOs"
-                  className={`text-base rounded-xl ${error ? 'border-red-500' : ''}`}
+                  className={`text-base rounded-xl ${error ? 'border-destructive' : ''}`}
                   style={{ fontSize: '16px' }} // Prevent zoom on iOS
                 />
                 {error && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
                     <AlertCircle className="h-4 w-4" />
                     {error}
                   </p>
@@ -320,7 +320,7 @@ export default function MobileSavedSearches({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Description (optional)
                 </label>
                 <Input
@@ -334,14 +334,14 @@ export default function MobileSavedSearches({
 
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <div className="font-medium text-gray-900">Get notifications</div>
-                  <div className="text-sm text-gray-500">Alert me when new matches are found</div>
+                  <div className="font-medium text-foreground">Get notifications</div>
+                  <div className="text-sm text-muted-foreground">Alert me when new matches are found</div>
                 </div>
                 <input
                   type="checkbox"
                   checked={saveForm.alertEnabled}
                   onChange={(e) => setSaveForm({ ...saveForm, alertEnabled: e.target.checked })}
-                  className="w-6 h-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-6 h-6 text-primary border-border rounded focus:ring-ring"
                 />
               </div>
 
@@ -357,7 +357,7 @@ export default function MobileSavedSearches({
                 <Button
                   onClick={handleSaveCurrentSearch}
                   disabled={loading || !saveForm.name.trim()}
-                  className="h-12 rounded-xl bg-blue-600 hover:bg-blue-700"
+                  className="h-12 rounded-xl bg-primary hover:bg-primary/90"
                 >
                   {loading ? (
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
@@ -413,13 +413,13 @@ function SavedSearchCard({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 active:bg-gray-50 transition-colors">
+    <div className="bg-card border border-border rounded-xl p-4 active:bg-muted transition-colors">
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-gray-900 truncate">{search.name}</h3>
+            <h3 className="font-semibold text-foreground truncate">{search.name}</h3>
             {search.alertEnabled && (
-              <Bell className="w-4 h-4 text-blue-500 flex-shrink-0" />
+              <Bell className="w-4 h-4 text-primary flex-shrink-0" />
             )}
             {search.newMatches && search.newMatches > 0 && (
               <Badge variant="destructive" className="text-xs px-2 py-0.5">
@@ -429,10 +429,10 @@ function SavedSearchCard({
           </div>
           
           {search.description && (
-            <p className="text-sm text-gray-600 truncate mb-2">{search.description}</p>
+            <p className="text-sm text-muted-foreground truncate mb-2">{search.description}</p>
           )}
-          
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Filter className="w-3 h-3" />
               <span>{search.resultCount ?? '?'} results</span>
@@ -452,9 +452,9 @@ function SavedSearchCard({
             className="min-h-[44px] min-w-[44px] rounded-full"
           >
             {search.alertEnabled ? (
-              <BellOff className="w-4 h-4 text-gray-400" />
+              <BellOff className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <Bell className="w-4 h-4 text-gray-400" />
+              <Bell className="w-4 h-4 text-muted-foreground" />
             )}
           </Button>
           
@@ -462,7 +462,7 @@ function SavedSearchCard({
             size="sm"
             onClick={onExecute}
             disabled={loading}
-            className="min-h-[44px] px-4 rounded-full bg-blue-600 hover:bg-blue-700"
+            className="min-h-[44px] px-4 rounded-full bg-primary hover:bg-primary/90"
           >
             {loading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
@@ -478,7 +478,7 @@ function SavedSearchCard({
             onClick={onDelete}
             className="min-h-[44px] min-w-[44px] rounded-full"
           >
-            <Trash2 className="w-4 h-4 text-red-500" />
+            <Trash2 className="w-4 h-4 text-destructive" />
           </Button>
         </div>
       </div>

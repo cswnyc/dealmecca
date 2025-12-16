@@ -92,11 +92,11 @@ export default function LinkedInCompletePage() {
           )}
         </div>
 
-        <h1 className="text-xl font-semibold text-gray-900 mb-2">
+        <h1 className="text-xl font-semibold text-foreground mb-2">
           {error ? 'Sign-In Failed' : 'Completing Sign-In'}
         </h1>
 
-        <p className="text-gray-600 mb-4">{status}</p>
+        <p className="text-muted-foreground mb-4">{status}</p>
 
         {error && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -107,7 +107,7 @@ export default function LinkedInCompletePage() {
 
         {!error && (
           <div className="mt-4">
-            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+            <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />

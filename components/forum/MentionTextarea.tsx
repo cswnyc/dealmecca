@@ -187,26 +187,26 @@ export function MentionTextarea({
         placeholder={placeholder}
         rows={rows}
         disabled={disabled}
-        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white text-gray-900 placeholder:text-gray-400 ${className}`}
+        className={`w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent resize-none bg-background text-foreground placeholder:text-muted-foreground ${className}`}
       />
 
       {/* Mention help text */}
-      <div className="mt-2 text-xs text-gray-500">
-        💡 Type <span className="font-mono bg-gray-100 px-1 rounded">@company</span> or{' '}
-        <span className="font-mono bg-gray-100 px-1 rounded">@contact</span> to mention organizations or people
+      <div className="mt-2 text-xs text-muted-foreground">
+        💡 Type <span className="font-mono bg-muted px-1 rounded">@company</span> or{' '}
+        <span className="font-mono bg-muted px-1 rounded">@contact</span> to mention organizations or people
       </div>
 
       {/* Suggestions Dropdown */}
       {showSuggestions && (
-        <div 
-          className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto w-80 max-w-[calc(100vw-16px)] sm:max-w-sm md:max-w-md"
-          style={{ 
-            top: dropdownPosition.top, 
+        <div
+          className="fixed z-50 bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto w-80 max-w-[calc(100vw-16px)] sm:max-w-sm md:max-w-md"
+          style={{
+            top: dropdownPosition.top,
             left: Math.max(8, Math.min(dropdownPosition.left, (typeof window !== 'undefined' ? window.innerWidth : 800) - 320))
           }}
         >
           {isLoading ? (
-            <div className="p-3 text-center text-gray-500">
+            <div className="p-3 text-center text-muted-foreground">
               <Search className="w-4 h-4 animate-spin mx-auto mb-1" />
               <span className="text-sm">Searching...</span>
             </div>
@@ -216,22 +216,22 @@ export function MentionTextarea({
                 <button
                   key={`${suggestion.type}-${suggestion.id}`}
                   onClick={() => handleSuggestionClick(index)}
-                  className={`w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 ${
-                    index === selectedIndex ? 'bg-blue-50 border-r-2 border-blue-500' : ''
+                  className={`w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3 ${
+                    index === selectedIndex ? 'bg-primary/10 border-r-2 border-primary' : ''
                   }`}
                 >
                   {/* Icon */}
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    suggestion.type === 'company' ? 'bg-blue-100' : 'bg-green-100'
+                    suggestion.type === 'company' ? 'bg-primary/10' : 'bg-green-100'
                   }`}>
                     {suggestion.logo ? (
-                      <img 
-                        src={suggestion.logo} 
+                      <img
+                        src={suggestion.logo}
                         alt={suggestion.name}
                         className="w-6 h-6 rounded-full object-cover"
                       />
                     ) : suggestion.type === 'company' ? (
-                      <Building2 className="w-4 h-4 text-blue-600" />
+                      <Building2 className="w-4 h-4 text-primary" />
                     ) : suggestion.type === 'contact' ? (
                       <User className="w-4 h-4 text-green-600" />
                     ) : (
@@ -242,22 +242,22 @@ export function MentionTextarea({
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-900 truncate">
+                      <span className="font-medium text-foreground truncate">
                         {suggestion.name}
                       </span>
                       {suggestion.verified && (
-                        <Check className="w-4 h-4 text-blue-500" />
+                        <Check className="w-4 h-4 text-primary" />
                       )}
                     </div>
-                    
+
                     {suggestion.type === 'contact' && suggestion.company && (
-                      <div className="text-sm text-gray-500 truncate">
+                      <div className="text-sm text-muted-foreground truncate">
                         {suggestion.title} at {suggestion.company.name}
                       </div>
                     )}
-                    
+
                     {suggestion.type === 'company' && (
-                      <div className="text-sm text-gray-500 truncate">
+                      <div className="text-sm text-muted-foreground truncate">
                         {suggestion.title} • {suggestion.company?.name}
                       </div>
                     )}
@@ -265,7 +265,7 @@ export function MentionTextarea({
 
                   {/* Selected indicator */}
                   {index === selectedIndex && (
-                    <div className="text-blue-500">
+                    <div className="text-primary">
                       <Check className="w-4 h-4" />
                     </div>
                   )}
@@ -273,7 +273,7 @@ export function MentionTextarea({
               ))}
             </div>
           ) : currentTrigger && currentTrigger.query.length >= 2 ? (
-            <div className="p-3 text-center text-gray-500">
+            <div className="p-3 text-center text-muted-foreground">
               <span className="text-sm">No {currentTrigger.type}s found</span>
             </div>
           ) : null}

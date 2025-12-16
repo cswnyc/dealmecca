@@ -91,7 +91,7 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
       case 'COMPANY_UPDATE':
         return 'bg-green-50 text-green-600';
       default:
-        return 'bg-gray-50 text-gray-600';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -116,7 +116,7 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
         {showHeader && (
           <CardHeader>
             <CardTitle className="flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
+              <TrendingUp className="h-5 w-5 mr-2 text-primary" />
               Activity Feed
             </CardTitle>
           </CardHeader>
@@ -125,10 +125,10 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="animate-pulse flex items-start space-x-3">
-                <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                <div className="w-10 h-10 bg-muted rounded-lg"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -144,7 +144,7 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
+              <TrendingUp className="h-5 w-5 mr-2 text-primary" />
               Activity Feed
             </CardTitle>
             <div className="flex items-center space-x-2">
@@ -159,7 +159,7 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
               <select
                 value={filter || ''}
                 onChange={(e) => setFilter(e.target.value || null)}
-                className="text-sm border border-gray-300 rounded-md px-2 py-1"
+                className="text-sm border border-border rounded-md px-2 py-1"
               >
                 <option value="">All Activities</option>
                 <option value="NEW_CONTACT">New Contacts</option>
@@ -175,9 +175,9 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
       <CardContent className={compact ? 'p-3' : ''}>
         {activities.length === 0 ? (
           <div className="text-center py-12">
-            <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-600 font-medium">No recent activity</p>
-            <p className="text-sm text-gray-500 mt-1">
+            <TrendingUp className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+            <p className="text-foreground font-medium">No recent activity</p>
+            <p className="text-sm text-muted-foreground mt-1">
               Follow companies to see their latest updates here
             </p>
             <Link href="/organizations">
@@ -194,7 +194,7 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
                 href={activity.actionUrl}
                 className="block group"
               >
-                <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200">
+                <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-muted transition-colors border border-transparent hover:border-border">
                   {/* Icon */}
                   <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${getIconColor(activity.type)}`}>
                     {getIcon(activity.icon)}
@@ -203,15 +203,15 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
-                      <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600">
+                      <p className="text-sm font-semibold text-foreground group-hover:text-primary">
                         {activity.title}
                       </p>
-                      <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
+                      <span className="text-xs text-muted-foreground ml-2 flex-shrink-0">
                         {formatTimeAgo(activity.createdAt)}
                       </span>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-muted-foreground mb-2">
                       {activity.description}
                     </p>
 
@@ -233,7 +233,7 @@ export function ActivityFeed({ limit = 20, showHeader = true, compact = false }:
                   </div>
 
                   {/* Arrow */}
-                  <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-blue-600 flex-shrink-0 mt-1" />
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-1" />
                 </div>
               </Link>
             ))}

@@ -41,17 +41,17 @@ export function CompanyGrid({ companies, loading, variant = 'companies' }: Compa
           <Card key={i} className="animate-pulse">
             <CardHeader className="pb-3">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                <div className="w-12 h-12 bg-muted rounded-lg"></div>
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="h-3 bg-gray-200 rounded w-full"></div>
-                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-3 bg-muted rounded w-full"></div>
+                <div className="h-3 bg-muted rounded w-2/3"></div>
               </div>
             </CardContent>
           </Card>
@@ -63,11 +63,11 @@ export function CompanyGrid({ companies, loading, variant = 'companies' }: Compa
   if (safeCompanies.length === 0) {
     return (
       <div className="text-center py-12">
-        <Building2 className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">
+        <Building2 className="mx-auto h-12 w-12 text-muted-foreground" />
+        <h3 className="mt-2 text-sm font-medium text-foreground">
           No {variant} found
         </h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Try adjusting your search or filters to find what you're looking for.
         </p>
       </div>
@@ -77,11 +77,11 @@ export function CompanyGrid({ companies, loading, variant = 'companies' }: Compa
   return (
     <div className="space-y-4">
       {/* View Mode Toggle with Enhanced Info */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0 p-3 bg-gray-50 rounded-lg">
-        <div className="text-sm text-gray-600 text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0 p-3 bg-muted rounded-lg">
+        <div className="text-sm text-muted-foreground text-center sm:text-left">
           Showing {formatCount(safeCompanies.length)} {variant}
           {variant === 'agencies' && (
-            <span className="block sm:inline sm:ml-2 text-xs text-gray-500">
+            <span className="block sm:inline sm:ml-2 text-xs text-muted-foreground">
               • {safeCompanies.filter(c => c.verified).length} verified
             </span>
           )}
@@ -160,7 +160,7 @@ function CompanyCard({
       case 'CREATIVE_AGENCY': return 'bg-pink-100 text-pink-800';
       case 'REGIONAL_ADVERTISER': return 'bg-emerald-100 text-emerald-800';
       case 'ECOMMERCE_BRAND': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -191,7 +191,7 @@ function CompanyCard({
           secondaryMetric: company._count?.subsidiaries || 0,
           secondaryLabel: 'subsidiaries',
           icon: Users,
-          color: 'text-gray-600'
+          color: 'text-muted-foreground'
         };
     }
   };
@@ -207,14 +207,14 @@ function CompanyCard({
               {/* Logo */}
               <div className="flex-shrink-0 mx-auto sm:mx-0">
                 {company.logoUrl ? (
-                  <img 
-                    src={company.logoUrl} 
+                  <img
+                    src={company.logoUrl}
                     alt={`${company.name} logo`}
                     className="w-12 h-12 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <Building2 className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-primary-foreground" />
                   </div>
                 )}
               </div>
@@ -223,7 +223,7 @@ function CompanyCard({
               <div className="flex-1 min-w-0 text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
                   <Link href={`/orgs/companies/${company.id}`} className="group">
-                    <h3 className="font-semibold text-lg hover:text-blue-600 cursor-pointer truncate group-hover:underline">
+                    <h3 className="font-semibold text-lg hover:text-primary cursor-pointer truncate group-hover:underline">
                       {company.name}
                     </h3>
                   </Link>
@@ -237,7 +237,7 @@ function CompanyCard({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-sm text-gray-600 mb-3">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground mb-3">
                   <Badge className={getCompanyTypeColor(company.companyType)}>
                     {company.companyType.replace(/_/g, ' ')}
                   </Badge>
@@ -255,7 +255,7 @@ function CompanyCard({
                   )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-600">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-muted-foreground">
                   {company.city && company.state && (
                     <div className="flex items-center justify-center sm:justify-start space-x-1">
                       <MapPin className="w-3 h-3" />
@@ -271,7 +271,7 @@ function CompanyCard({
                     </div>
                     
                     <div className="flex items-center space-x-1">
-                      <Users className="w-3 h-3 text-gray-500" />
+                      <Users className="w-3 h-3 text-muted-foreground" />
                       <span>{formatCount(variantInfo.secondaryMetric)} {variantInfo.secondaryLabel}</span>
                     </div>
                   </div>
@@ -321,23 +321,23 @@ function CompanyCard({
             <div className="flex items-center space-x-3 flex-1">
               {/* Logo */}
               {company.logoUrl ? (
-                <img 
-                  src={company.logoUrl} 
+                <img
+                  src={company.logoUrl}
                   alt={`${company.name} logo`}
                   className="w-12 h-12 rounded-lg object-cover"
                 />
               ) : (
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+                  <Building2 className="w-6 h-6 text-primary-foreground" />
                 </div>
               )}
               
               {/* Company Name & Type */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors truncate">
+                <h3 className="font-semibold text-lg group-hover:text-primary transition-colors truncate">
                   {company.name}
                 </h3>
-                <p className="text-sm text-gray-600 truncate">
+                <p className="text-sm text-muted-foreground truncate">
                   {company.companyType.replace(/_/g, ' ')}
                 </p>
               </div>
@@ -364,8 +364,8 @@ function CompanyCard({
         <CardContent>
           {/* Parent Company or Key Relationship */}
           {company.parentCompany ? (
-            <div className="mb-3 p-2 bg-gray-50 rounded-lg">
-              <div className="text-xs text-gray-500">Part of</div>
+            <div className="mb-3 p-2 bg-muted rounded-lg">
+              <div className="text-xs text-muted-foreground">Part of</div>
               <div className="text-sm font-medium">{company.parentCompany.name}</div>
             </div>
           ) : variant === 'agencies' && company.clients && company.clients.length > 0 ? (
@@ -381,7 +381,7 @@ function CompanyCard({
           ) : null}
 
           {/* Location & Enhanced Stats */}
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-muted-foreground">
             {company.city && company.state && (
               <div className="flex items-center space-x-1">
                 <MapPin className="w-4 h-4" />
@@ -403,7 +403,7 @@ function CompanyCard({
               
               {variantInfo.secondaryMetric > 0 && (
                 <div className="flex items-center space-x-1">
-                  <Users className="w-4 h-4 text-gray-500" />
+                  <Users className="w-4 h-4 text-muted-foreground" />
                   <span>{formatCount(variantInfo.secondaryMetric)} {variantInfo.secondaryLabel}</span>
                 </div>
               )}
@@ -413,7 +413,7 @@ function CompanyCard({
             {(company.employeeCount || company.revenueRange) && (
               <div className="flex items-center justify-between text-xs">
                 {company.employeeCount && (
-                  <span className="bg-gray-100 px-2 py-1 rounded">
+                  <span className="bg-muted px-2 py-1 rounded">
                     {company.employeeCount.replace(/_/g, ' ')}
                   </span>
                 )}
@@ -428,7 +428,7 @@ function CompanyCard({
 
           {/* Description */}
           {company.description && (
-            <p className="text-sm text-gray-600 mt-3 line-clamp-2">
+            <p className="text-sm text-muted-foreground mt-3 line-clamp-2">
               {company.description}
             </p>
           )}
@@ -446,7 +446,7 @@ function CompanyCard({
               </Badge>
             )}
             {company.lastActivity && (
-              <Badge variant="outline" className="text-xs text-gray-500">
+              <Badge variant="outline" className="text-xs text-muted-foreground">
                 Updated {new Date(company.lastActivity).toLocaleDateString()}
               </Badge>
             )}

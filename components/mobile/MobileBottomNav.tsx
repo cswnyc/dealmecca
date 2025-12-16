@@ -37,14 +37,14 @@ export default function MobileBottomNav({
       label: 'Dashboard',
       icon: Home,
       path: '/dashboard',
-      color: 'text-blue-600'
+      color: 'text-primary'
     },
     {
       id: 'search',
       label: 'Search',
       icon: Search,
       path: '/search/intelligence',
-      color: 'text-purple-600'
+      color: 'text-accent-foreground'
     },
     {
       id: 'saved',
@@ -66,7 +66,7 @@ export default function MobileBottomNav({
       icon: User,
       path: '/profile',
       badge: notifications,
-      color: 'text-gray-600'
+      color: 'text-muted-foreground'
     }
   ]
 
@@ -131,7 +131,7 @@ export default function MobileBottomNav({
   return (
     <>
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 safe-area-bottom">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border safe-area-bottom">
         <div className="grid grid-cols-5 h-16">
           {navItems.map((item) => {
             const IconComponent = item.icon
@@ -142,25 +142,25 @@ export default function MobileBottomNav({
                 key={item.id}
                 onClick={() => handleNavClick(item)}
                 className={`flex flex-col items-center justify-center space-y-1 transition-colors ${
-                  isActive 
-                    ? 'text-blue-600' 
-                    : 'text-gray-400 hover:text-gray-600 active:text-gray-800'
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground active:text-foreground'
                 }`}
               >
                 <div className="relative">
-                  <IconComponent 
-                    className={`w-5 h-5 ${isActive ? item.color : ''}`} 
+                  <IconComponent
+                    className={`w-5 h-5 ${isActive ? item.color : ''}`}
                   />
                   {item.badge && item.badge > 0 && (
-                    <Badge 
-                      variant="destructive" 
+                    <Badge
+                      variant="destructive"
                       className="absolute -top-2 -right-2 h-4 w-4 text-xs p-0 flex items-center justify-center rounded-full"
                     >
                       {item.badge > 9 ? '9+' : item.badge}
                     </Badge>
                   )}
                 </div>
-                <span className={`text-xs font-medium ${isActive ? 'text-blue-600' : ''}`}>
+                <span className={`text-xs font-medium ${isActive ? 'text-primary' : ''}`}>
                   {item.label}
                 </span>
               </button>
@@ -177,10 +177,7 @@ export default function MobileBottomNav({
       >
         <button
           onClick={handleFABClick}
-          className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl active:scale-95 transition-all duration-200"
-          style={{
-            background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)'
-          }}
+          className="w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-full shadow-lg flex items-center justify-center hover:shadow-xl active:scale-95 transition-all duration-200"
         >
           <Plus className="w-6 h-6 text-white" />
         </button>
@@ -209,7 +206,7 @@ export function ExpandableFAB({
       label: 'New Search',
       icon: Search,
       onClick: onNewSearch,
-      color: 'bg-blue-600'
+      color: 'bg-primary'
     },
     {
       label: 'Save Search',
@@ -238,8 +235,8 @@ export function ExpandableFAB({
                 className="flex items-center space-x-3 animate-in slide-in-from-bottom duration-200"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="bg-white px-3 py-2 rounded-full shadow-lg">
-                  <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                <div className="bg-card px-3 py-2 rounded-full shadow-lg">
+                  <span className="text-sm font-medium text-foreground whitespace-nowrap">
                     {action.label}
                   </span>
                 </div>
@@ -261,12 +258,9 @@ export function ExpandableFAB({
       {/* Main FAB */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className={`w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 ${
+        className={`w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 ${
           expanded ? 'rotate-45' : 'rotate-0'
         }`}
-        style={{
-          background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)'
-        }}
       >
         <Plus className="w-6 h-6 text-white" />
       </button>
@@ -296,14 +290,14 @@ export function MobileTabIndicator({
 
   return (
     <div className="relative">
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-border">
         {tabs.map((tab) => (
           <div
             key={tab.id}
             className={`flex-1 py-3 text-center text-sm font-medium transition-colors ${
               activeTab === tab.id
-                ? 'text-blue-600'
-                : 'text-gray-500'
+                ? 'text-primary'
+                : 'text-muted-foreground'
             }`}
           >
             {tab.label}
@@ -311,7 +305,7 @@ export function MobileTabIndicator({
         ))}
       </div>
       <div
-        className="absolute bottom-0 h-0.5 bg-blue-600 transition-all duration-300 ease-out"
+        className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out"
         style={{
           width: `${indicatorWidth}%`,
           left: `${indicatorLeft}%`
@@ -341,7 +335,7 @@ export function PullToRefreshIndicator({
           transform: `rotate(${rotation}deg)` 
         }}
       >
-        <Activity className="w-5 h-5 text-blue-600" />
+        <Activity className="w-5 h-5 text-primary" />
       </div>
     </div>
   )

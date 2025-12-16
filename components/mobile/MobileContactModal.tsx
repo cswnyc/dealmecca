@@ -223,7 +223,7 @@ export default function MobileContactModal({
       {/* Modal */}
       <div 
         ref={modalRef}
-        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl transform transition-transform duration-300 ease-out max-h-[95vh] overflow-hidden"
+        className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl shadow-2xl transform transition-transform duration-300 ease-out max-h-[95vh] overflow-hidden"
         style={{
           transform: modalTransform,
           transition: isDragging ? 'none' : 'transform 0.3s ease-out'
@@ -234,11 +234,11 @@ export default function MobileContactModal({
       >
         {/* Handle */}
         <div className="flex justify-center py-3">
-          <div className="w-10 h-1 bg-gray-300 rounded-full" />
+          <div className="w-10 h-1 bg-border rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-border">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -276,13 +276,13 @@ export default function MobileContactModal({
 
           {/* Contact Info */}
           <div className="mt-4 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-10 h-10 text-white" />
             </div>
-            
-            <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
-            <p className="text-gray-600 mt-1">{contact.title}</p>
-            <p className="text-gray-500 text-sm">{contact.company.name}</p>
+
+            <h2 className="text-xl font-bold text-foreground">{displayName}</h2>
+            <p className="text-muted-foreground mt-1">{contact.title}</p>
+            <p className="text-muted-foreground text-sm">{contact.company.name}</p>
             
             <div className="flex items-center justify-center gap-2 mt-3">
               {contact.isDecisionMaker && (
@@ -302,7 +302,7 @@ export default function MobileContactModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="px-6 py-4 bg-gray-50">
+        <div className="px-6 py-4 bg-muted">
           <div className="grid grid-cols-3 gap-4">
             {contact.email && (
               <Button
@@ -318,12 +318,12 @@ export default function MobileContactModal({
                 <span className="text-xs">Email</span>
               </Button>
             )}
-            
+
             {contact.phone && (
               <Button
                 onClick={handlePhoneAction}
                 disabled={actionLoading === 'phone'}
-                className="h-16 flex flex-col items-center gap-1 bg-blue-600 hover:bg-blue-700 rounded-xl"
+                className="h-16 flex flex-col items-center gap-1 bg-primary hover:bg-primary/90 rounded-xl"
               >
                 {actionLoading === 'phone' ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
@@ -333,12 +333,12 @@ export default function MobileContactModal({
                 <span className="text-xs">Call</span>
               </Button>
             )}
-            
+
             {contact.linkedinUrl && (
               <Button
                 onClick={handleLinkedInAction}
                 disabled={actionLoading === 'linkedin'}
-                className="h-16 flex flex-col items-center gap-1 bg-indigo-600 hover:bg-indigo-700 rounded-xl"
+                className="h-16 flex flex-col items-center gap-1 bg-accent hover:bg-accent/90 rounded-xl"
               >
                 {actionLoading === 'linkedin' ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
@@ -352,7 +352,7 @@ export default function MobileContactModal({
         </div>
 
         {/* Tabs */}
-        <div className="px-6 border-b border-gray-200">
+        <div className="px-6 border-b border-border">
           <div className="flex">
             {(['details', 'notes', 'activity'] as const).map((tab) => (
               <button
@@ -360,8 +360,8 @@ export default function MobileContactModal({
                 onClick={() => setActiveTab(tab)}
                 className={`flex-1 py-4 text-center font-medium capitalize transition-colors ${
                   activeTab === tab
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-primary border-b-2 border-primary'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {tab}
@@ -376,24 +376,24 @@ export default function MobileContactModal({
             <div className="p-6 space-y-6">
               {/* Contact Information */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Contact Information</h3>
                 <div className="space-y-3">
                   {contact.email && (
                     <div className="flex items-center gap-3">
-                      <Mail className="w-5 h-5 text-gray-400" />
-                      <span className="text-gray-900">{contact.email}</span>
+                      <Mail className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-foreground">{contact.email}</span>
                     </div>
                   )}
                   {contact.phone && (
                     <div className="flex items-center gap-3">
-                      <Phone className="w-5 h-5 text-gray-400" />
-                      <span className="text-gray-900">{contact.phone}</span>
+                      <Phone className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-foreground">{contact.phone}</span>
                     </div>
                   )}
                   {contact.linkedinUrl && (
                     <div className="flex items-center gap-3">
-                      <ExternalLink className="w-5 h-5 text-gray-400" />
-                      <span className="text-blue-600">LinkedIn Profile</span>
+                      <ExternalLink className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-primary">LinkedIn Profile</span>
                     </div>
                   )}
                 </div>
@@ -401,29 +401,29 @@ export default function MobileContactModal({
 
               {/* Company Information */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Company Details</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Company Details</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Building2 className="w-5 h-5 text-gray-400" />
+                    <Building2 className="w-5 h-5 text-muted-foreground" />
                     <div>
-                      <div className="font-medium text-gray-900">{contact.company.name}</div>
+                      <div className="font-medium text-foreground">{contact.company.name}</div>
                       {contact.company.industry && (
-                        <div className="text-sm text-gray-500">{contact.company.industry.replace(/_/g, ' ')}</div>
+                        <div className="text-sm text-muted-foreground">{contact.company.industry.replace(/_/g, ' ')}</div>
                       )}
                     </div>
                   </div>
-                  
+
                   {contact.company.city && contact.company.state && (
                     <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-gray-400" />
-                      <span className="text-gray-900">{contact.company.city}, {contact.company.state}</span>
+                      <MapPin className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-foreground">{contact.company.city}, {contact.company.state}</span>
                     </div>
                   )}
-                  
+
                   {contact.seniority && (
                     <div className="flex items-center gap-3">
-                      <Award className="w-5 h-5 text-gray-400" />
-                      <span className="text-gray-900">{contact.seniority.replace(/_/g, ' ')}</span>
+                      <Award className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-foreground">{contact.seniority.replace(/_/g, ' ')}</span>
                     </div>
                   )}
                 </div>
@@ -434,7 +434,7 @@ export default function MobileContactModal({
           {activeTab === 'notes' && (
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Notes</h3>
+                <h3 className="text-lg font-semibold text-foreground">Notes</h3>
                 <Button
                   size="sm"
                   onClick={() => setShowNoteForm(!showNoteForm)}
@@ -446,12 +446,12 @@ export default function MobileContactModal({
               </div>
 
               {showNoteForm && (
-                <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                <div className="bg-muted rounded-xl p-4 mb-4">
                   <textarea
                     value={noteText}
                     onChange={(e) => setNoteText(e.target.value)}
                     placeholder="Add a note about this contact..."
-                    className="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-24 p-3 border border-border rounded-lg resize-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     style={{ fontSize: '16px' }} // Prevent zoom on iOS
                   />
                   <div className="flex gap-2 mt-3">
@@ -476,8 +476,8 @@ export default function MobileContactModal({
                 </div>
               )}
 
-              <div className="text-center py-8 text-gray-500">
-                <MessageSquare className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+              <div className="text-center py-8 text-muted-foreground">
+                <MessageSquare className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
                 <p>No notes yet</p>
                 <p className="text-sm">Add your first note to start tracking interactions</p>
               </div>
@@ -487,7 +487,7 @@ export default function MobileContactModal({
           {activeTab === 'activity' && (
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Activity</h3>
+                <h3 className="text-lg font-semibold text-foreground">Activity</h3>
                 <Button
                   size="sm"
                   onClick={() => setShowFollowUpForm(!showFollowUpForm)}
@@ -499,8 +499,8 @@ export default function MobileContactModal({
               </div>
 
               {showFollowUpForm && (
-                <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="bg-muted rounded-xl p-4 mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Schedule Follow-up
                   </label>
                   <Input
@@ -531,8 +531,8 @@ export default function MobileContactModal({
                 </div>
               )}
 
-              <div className="text-center py-8 text-gray-500">
-                <Clock className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+              <div className="text-center py-8 text-muted-foreground">
+                <Clock className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
                 <p>No activity yet</p>
                 <p className="text-sm">Interactions will appear here</p>
               </div>
