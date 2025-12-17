@@ -37,9 +37,9 @@ const generateAvatarColors = (userId: string) => {
     { bg: '#059669', pattern: '#10b981' }, // Emerald
     { bg: '#7c3aed', pattern: '#a855f7' }, // Purple
     { bg: '#dc2626', pattern: '#ef4444' }, // Red
-    { bg: '#ea580c', pattern: '#f97316' }, // Orange
+    { bg: '#8B5CF6', pattern: '#A78BFA' }, // Violet
     { bg: '#4338ca', pattern: '#6366f1' }, // Indigo
-    { bg: '#0891b2', pattern: '#06b6d4' }, // Cyan
+    { bg: '#2575FC', pattern: '#5B8DFF' }, // Primary Blue
     { bg: '#65a30d', pattern: '#84cc16' }, // Lime
   ];
 

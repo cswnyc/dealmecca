@@ -240,7 +240,7 @@ export default function EventsPage() {
       'TRADE_SHOW': 'bg-green-100 text-green-800 border-green-200',
       'SUMMIT': 'bg-purple-100 text-purple-800 border-purple-200',
       'WORKSHOP': 'bg-orange-100 text-orange-800 border-orange-200',
-      'NETWORKING': 'bg-teal-100 text-teal-800 border-teal-200',
+      'NETWORKING': 'bg-green-100 text-green-800 border-green-200',
       'AWARDS': 'bg-amber-100 text-amber-800 border-amber-200',
       'WEBINAR': 'bg-violet-100 text-violet-800 border-violet-200',
       'MASTERCLASS': 'bg-rose-100 text-rose-800 border-rose-200',
@@ -653,7 +653,7 @@ export default function EventsPage() {
                           event.category === 'MEETUP' ? 'from-pink-500 to-rose-600' :
                           event.category === 'WEBINAR' ? 'from-purple-500 to-violet-600' :
                           event.category === 'WORKSHOP' ? 'from-orange-500 to-amber-600' :
-                          'from-teal-500 to-cyan-600'
+                          'from-green-500 to-emerald-600'
                         }`}>
                           <Calendar className="w-8 h-8 text-white" />
                         </div>

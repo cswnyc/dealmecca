@@ -454,10 +454,10 @@ Admin Edit → API Update → Live Refresh → User Sees Changes
 ## 🎨 DESIGN SYSTEM
 
 ### **Color Hierarchy**
-- **Level 1 (C-Suite)**: Purple to Blue gradient
-- **Level 2 (VP)**: Blue to Teal gradient  
+- **Level 1 (C-Suite)**: Violet to Blue gradient
+- **Level 2 (VP)**: Blue to Violet gradient
 - **Level 3 (Director)**: Green to Blue gradient
-- **Level 4 (Manager)**: Orange to Red gradient
+- **Level 4 (Manager)**: Violet to Purple gradient
 - **Level 5 (Individual)**: Gray gradient
 
 ### **Typography**

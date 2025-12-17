@@ -830,6 +830,7 @@ model User {
   provider                                                        String?
   publicHandle                                                    String?                  @unique
   verifiedSeller                                                  Boolean                  @default(false)
+  linkedinUrl                                                     String?
   Account                                                         Account[]
   CodeGeneration                                                  CodeGeneration[]
   Comment                                                         Comment[]

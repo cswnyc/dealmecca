@@ -109,7 +109,7 @@ export function PartnershipCard({
       'PREFERRED_VENDOR': 'bg-orange-100 text-orange-800 border-orange-200',
       'HOLDING_COMPANY_SUBSIDIARY': 'bg-accent/10 text-accent-foreground border-accent/20',
       'SISTER_AGENCY': 'bg-pink-100 text-pink-800 border-pink-200',
-      'JOINT_VENTURE': 'bg-teal-100 text-teal-800 border-teal-200',
+      'JOINT_VENTURE': 'bg-emerald-100 text-emerald-800 border-emerald-200',
       'SUBCONTRACTOR': 'bg-muted text-foreground border-border'
     };
     return colors[type as keyof typeof colors] || 'bg-muted text-foreground border-border';

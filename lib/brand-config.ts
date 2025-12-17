@@ -44,9 +44,10 @@ export const brandConfig = {
   
   // Visual Identity
   colors: {
-    primary: '#0f172a',     // Deep midnight blue (trust)
-    secondary: '#0891b2',   // Vibrant teal (insight)
-    accent: '#ea580c',      // Electric orange (action)
+    ink: '#162B54',         // Brand ink (headings, dark text)
+    primary: '#2575FC',     // Primary blue (buttons, links)
+    secondary: '#8B5CF6',   // Violet (accents, highlights)
+    accent: '#8B5CF6',      // Violet (CTAs, emphasis)
     neutral: {
       50: '#f8fafc',
       100: '#f1f5f9',
@@ -60,9 +61,9 @@ export const brandConfig = {
       900: '#0f172a'
     },
     gradients: {
-      primary: 'linear-gradient(135deg, #0f172a 0%, #0891b2 100%)',
-      accent: 'linear-gradient(135deg, #0891b2 0%, #ea580c 100%)',
-      hero: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0891b2 100%)'
+      primary: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)',
+      accent: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)',
+      hero: 'linear-gradient(135deg, #162B54 0%, #2575FC 50%, #8B5CF6 100%)'
     }
   },
   

@@ -48,7 +48,7 @@ const CATEGORY_INFO: Record<DutyCategory, { label: string; icon: any; color: str
   BRAND: { label: 'Brand', icon: Building2, color: 'bg-pink-100 text-pink-800' },
   BUSINESS_LINE: { label: 'Business Line', icon: TrendingUp, color: 'bg-green-100 text-green-800' },
   GOAL: { label: 'Goal', icon: Target, color: 'bg-orange-100 text-orange-800' },
-  AUDIENCE: { label: 'Audience', icon: UsersIcon, color: 'bg-teal-100 text-teal-800' },
+  AUDIENCE: { label: 'Audience', icon: UsersIcon, color: 'bg-emerald-100 text-emerald-800' },
   GEOGRAPHY: { label: 'Geography', icon: Globe, color: 'bg-indigo-100 text-indigo-800' }
 };
 

@@ -87,7 +87,7 @@ export function OrgChartBuilder({
 
   const levels = [
     { value: 1, label: 'C-Level', icon: Crown, color: 'from-purple-500 to-blue-600' },
-    { value: 2, label: 'Vice President', icon: Shield, color: 'from-blue-500 to-teal-600' },
+    { value: 2, label: 'Vice President', icon: Shield, color: 'from-blue-500 to-indigo-600' },
     { value: 3, label: 'Director', icon: Target, color: 'from-green-500 to-blue-500' },
     { value: 4, label: 'Manager', icon: Settings, color: 'from-orange-500 to-red-500' },
     { value: 5, label: 'Individual', icon: Code, color: 'from-gray-400 to-gray-600' }
@@ -474,7 +474,7 @@ function PositionCard({
   const children = allPositions.filter(pos => pos.parentId === position.id);
   const levelColors = [
     'from-purple-500 to-blue-600',
-    'from-blue-500 to-teal-600',
+    'from-blue-500 to-indigo-600',
     'from-green-500 to-blue-500',
     'from-orange-500 to-red-500',
     'from-gray-400 to-gray-600'

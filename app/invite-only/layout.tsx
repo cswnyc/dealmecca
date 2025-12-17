@@ -1,9 +1,4 @@
-import React from 'react';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import '../globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Currently Invite-Only | DealMecca',
@@ -40,56 +35,5 @@ export default function InviteOnlyLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <head>
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            /* Force dark background for invite-only page */
-            body {
-              background-color: #0f172a !important; /* slate-900 */
-              background-image: none !important;
-            }
-
-            /* Hide any potential global UI elements */
-            body::before,
-            body::after,
-            html::before,
-            html::after {
-              display: none !important;
-            }
-
-            /* Specifically target common auth/PWA button selectors */
-            button[aria-label*="Sign"],
-            button[aria-label*="Get Started"],
-            button[data-testid*="auth"],
-            div[data-testid*="auth"],
-            .auth-buttons,
-            .sign-in-button,
-            .get-started-button {
-              display: none !important;
-            }
-
-            /* Hide any fixed positioned elements at bottom */
-            *[style*="bottom: 0"],
-            *[style*="bottom:0"],
-            .fixed.bottom-0,
-            .fixed.bottom-4 {
-              display: none !important;
-            }
-
-            /* Override any white backgrounds that might appear */
-            main,
-            .main,
-            #__next {
-              background-color: transparent !important;
-            }
-          `
-        }} />
-      </head>
-      <body className={`${inter.className} min-h-screen overflow-x-hidden`}>
-        {children}
-      </body>
-    </html>
-  );
+  return children;
 }

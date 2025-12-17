@@ -113,7 +113,7 @@ export function EnhancedPartnershipCards({
       'PREFERRED_VENDOR': 'bg-orange-100 text-orange-800 border-orange-200',
       'HOLDING_COMPANY_SUBSIDIARY': 'bg-indigo-100 text-indigo-800 border-indigo-200',
       'SISTER_AGENCY': 'bg-pink-100 text-pink-800 border-pink-200',
-      'JOINT_VENTURE': 'bg-teal-100 text-teal-800 border-teal-200',
+      'JOINT_VENTURE': 'bg-emerald-100 text-emerald-800 border-emerald-200',
       'SUBCONTRACTOR': 'bg-gray-100 text-gray-800 border-gray-200'
     };
     return colors[type as keyof typeof colors] || colors['SUBCONTRACTOR'];

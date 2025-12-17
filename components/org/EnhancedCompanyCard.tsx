@@ -103,7 +103,7 @@ export function EnhancedCompanyCard({
   const getTierColor = (tier?: string) => {
     switch (tier) {
       case 'enterprise': return 'from-purple-500 to-blue-600';
-      case 'growth': return 'from-green-500 to-teal-600';  
+      case 'growth': return 'from-green-500 to-emerald-600';
       case 'startup': return 'from-orange-500 to-red-600';
       default: return 'from-gray-500 to-gray-600';
     }

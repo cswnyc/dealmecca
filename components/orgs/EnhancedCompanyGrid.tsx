@@ -45,7 +45,7 @@ export function EnhancedCompanyGrid({ companies, loading = false, variant = 'com
   const getTierColor = (tier?: string) => {
     switch (tier) {
       case 'enterprise': return 'bg-gradient-to-r from-purple-500 to-blue-600';
-      case 'growth': return 'bg-gradient-to-r from-green-500 to-teal-600';
+      case 'growth': return 'bg-gradient-to-r from-green-500 to-emerald-600';
       case 'startup': return 'bg-gradient-to-r from-orange-500 to-red-600';
       default: return 'bg-gradient-to-r from-muted-foreground to-muted-foreground/80';
     }

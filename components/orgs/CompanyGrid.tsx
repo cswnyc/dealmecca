@@ -155,8 +155,8 @@ function CompanyCard({
       case 'HOLDING_COMPANY_AGENCY': return 'bg-purple-100 text-purple-800';
       case 'NATIONAL_ADVERTISER': return 'bg-green-100 text-green-800';
       case 'MEDIA_HOLDING_COMPANY': return 'bg-indigo-100 text-indigo-800';
-      case 'BOUTIQUE_AGENCY': return 'bg-teal-100 text-teal-800';
-      case 'DIGITAL_AGENCY': return 'bg-cyan-100 text-cyan-800';
+      case 'BOUTIQUE_AGENCY': return 'bg-emerald-100 text-emerald-800';
+      case 'DIGITAL_AGENCY': return 'bg-blue-100 text-blue-800';
       case 'CREATIVE_AGENCY': return 'bg-pink-100 text-pink-800';
       case 'REGIONAL_ADVERTISER': return 'bg-emerald-100 text-emerald-800';
       case 'ECOMMERCE_BRAND': return 'bg-orange-100 text-orange-800';

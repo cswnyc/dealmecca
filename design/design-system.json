@@ -26,6 +26,10 @@
         "why": "Actual runtime CSS variables, base styles, and custom utility classes used across the app."
       },
       {
+        "path": "design.json",
+        "why": "Legacy/alternate design spec (blue/violet brand palette) used by design-system-showcase/. Reference for historical brand colors and optional marketing styling, not necessarily the live app tokens."
+      },
+      {
         "path": "lib/design-tokens.ts",
         "why": "Programmatic motion/shadow/spacing tokens used by Framer Motion-based components."
       },
@@ -63,6 +67,72 @@
         "@radix-ui/react-progress"
       ],
       "animation": "framer-motion"
+    }
+  },
+
+  "externalDesignSpecs": {
+    "designJson": {
+      "path": "design.json",
+      "status": "reference",
+      "summary": "Contains a Flokana-inspired SaaS spec with a blue/violet brand core (e.g. #2575FC primary) and matching light/dark palettes. This is used by design-system-showcase/ but is not the canonical source for the current live app theme tokens in app/globals.css.",
+      "brandColorsFromDesignJson": {
+        "brand": {
+          "primary": "#2575FC",
+          "ink": "#162B54"
+        },
+        "gradientTextStops": [
+          "#2575FC",
+          "#8B5CF6"
+        ],
+        "light": {
+          "background": "#F7F9FC",
+          "surface": "#FFFFFF",
+          "surfaceSubtle": "#F3F6FB",
+          "text": {
+            "primary": "#0B1220",
+            "secondary": "#334155",
+            "muted": "#64748B",
+            "inverse": "#FFFFFF"
+          },
+          "border": {
+            "subtle": "#E6EAF2",
+            "strong": "#D7DEEA"
+          },
+          "primary": {
+            "solid": "#2575FC",
+            "hover": "#1E63D8",
+            "active": "#184FB0",
+            "softBg": "#EAF1FF",
+            "softText": "#1E63D8"
+          }
+        },
+        "dark": {
+          "background": "#0B1220",
+          "surface": "#0F1A2E",
+          "surfaceSubtle": "#101E38",
+          "text": {
+            "primary": "#EAF0FF",
+            "secondary": "#C7D2FE",
+            "muted": "#9AA7C2",
+            "inverse": "#0B1220"
+          },
+          "border": {
+            "subtle": "#22304A",
+            "strong": "#2C3C5C"
+          },
+          "primary": {
+            "solid": "#5B8DFF",
+            "hover": "#4D7DFF",
+            "active": "#3B68F0",
+            "softBg": "#162449",
+            "softText": "#C7D2FE"
+          }
+        }
+      },
+      "whereItMatchesInRepo": [
+        "design-system-showcase/tailwind.config.js (defines brand/light/dark palettes from design.json)",
+        "design-system-showcase/src/index.css (.text-gradient uses #2575FC → #8B5CF6)"
+      ]
     }
   },
 
@@ -186,14 +256,14 @@
           "premium-lg": "0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 16px -4px rgba(0, 0, 0, 0.08)",
           "premium-xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 12px 24px -8px rgba(0, 0, 0, 0.12)",
           "inner-premium": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)",
-          "glow": "0 0 20px rgba(8, 145, 178, 0.3), 0 0 40px rgba(8, 145, 178, 0.1)",
-          "glow-lg": "0 0 30px rgba(8, 145, 178, 0.4), 0 0 60px rgba(8, 145, 178, 0.2)",
+          "glow": "0 0 20px rgba(37, 117, 252, 0.3), 0 0 40px rgba(37, 117, 252, 0.1)",
+          "glow-lg": "0 0 30px rgba(37, 117, 252, 0.4), 0 0 60px rgba(37, 117, 252, 0.2)",
           "card": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
           "card-hover": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
         },
         "cssVariables": {
-          "--primary-glow": "rgba(8, 145, 178, 0.3) light | rgba(20, 184, 166, 0.4) dark",
-          "--primary-glow-lg": "rgba(8, 145, 178, 0.5) light | rgba(20, 184, 166, 0.6) dark"
+          "--primary-glow": "rgba(37, 117, 252, 0.3) light | rgba(91, 141, 255, 0.4) dark",
+          "--primary-glow-lg": "rgba(37, 117, 252, 0.5) light | rgba(91, 141, 255, 0.6) dark"
         },
         "designTokens": {
           "subtle": "0 1px 3px rgba(0, 0, 0, 0.08)",
@@ -324,28 +394,28 @@
             "900": "#0f172a"
           },
           "secondary": {
-            "50": "#f0fdfa",
-            "100": "#ccfbf1",
-            "200": "#99f6e4",
-            "300": "#5eead4",
-            "400": "#2dd4bf",
-            "500": "#14b8a6",
-            "600": "#0891b2",
-            "700": "#0e7490",
-            "800": "#155e75",
-            "900": "#164e63"
+            "50": "#EEF2FF",
+            "100": "#E0E7FF",
+            "200": "#C7D2FE",
+            "300": "#A5B4FC",
+            "400": "#818CF8",
+            "500": "#8B5CF6",
+            "600": "#7C3AED",
+            "700": "#6D28D9",
+            "800": "#5B21B6",
+            "900": "#4C1D95"
           },
           "accent": {
-            "50": "#fff7ed",
-            "100": "#ffedd5",
-            "200": "#fed7aa",
-            "300": "#fdba74",
-            "400": "#fb923c",
-            "500": "#f97316",
-            "600": "#ea580c",
-            "700": "#c2410c",
-            "800": "#9a3412",
-            "900": "#7c2d12"
+            "50": "#F5F3FF",
+            "100": "#EDE9FE",
+            "200": "#DDD6FE",
+            "300": "#C4B5FD",
+            "400": "#A78BFA",
+            "500": "#8B5CF6",
+            "600": "#7C3AED",
+            "700": "#6D28D9",
+            "800": "#5B21B6",
+            "900": "#4C1D95"
           },
           "neutral": {
             "50": "#f8fafc",
@@ -362,28 +432,55 @@
         },
         "cssVariables": {
           "light": {
-            "--color-primary": "#1e293b",
-            "--color-secondary": "#0f766e",
-            "--color-accent": "#059669",
-            "--gradient-primary": "linear-gradient(135deg, #40E0D0 0%, #FF8C00 25%, #8A2BE2 100%)",
-            "--gradient-secondary": "linear-gradient(135deg, #20B2AA 0%, #9932CC 100%)",
-            "--gradient-accent": "linear-gradient(135deg, #40E0D0 0%, #8A2BE2 100%)",
+            "--color-primary": "#2575FC",
+            "--color-secondary": "#8B5CF6",
+            "--color-accent": "#8B5CF6",
+            "--color-ink": "#162B54",
+            "--gradient-primary": "linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)",
+            "--gradient-secondary": "linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)",
+            "--gradient-accent": "linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)",
             "--gradient-card": "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
             "--header-footer-bg": "255 255 255",
             "--header-footer-text": "15 23 42",
             "--header-footer-border": "226 232 240"
           },
           "dark": {
-            "--color-primary": "#e2e8f0",
-            "--color-secondary": "#14b8a6",
-            "--color-accent": "#10b981",
-            "--gradient-primary": "linear-gradient(135deg, #20B2AA 0%, #FF6347 25%, #9932CC 100%)",
-            "--gradient-secondary": "linear-gradient(135deg, #1E90FF 0%, #8A2BE2 100%)",
-            "--gradient-accent": "linear-gradient(135deg, #20B2AA 0%, #9932CC 100%)",
+            "--color-primary": "#5B8DFF",
+            "--color-secondary": "#A78BFA",
+            "--color-accent": "#A78BFA",
+            "--color-ink": "#EAF0FF",
+            "--gradient-primary": "linear-gradient(135deg, #5B8DFF 0%, #A78BFA 100%)",
+            "--gradient-secondary": "linear-gradient(135deg, #5B8DFF 0%, #A78BFA 100%)",
+            "--gradient-accent": "linear-gradient(135deg, #5B8DFF 0%, #A78BFA 100%)",
             "--gradient-card": "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
             "--header-footer-bg": "15 23 42",
             "--header-footer-text": "248 250 252",
             "--header-footer-border": "51 65 85"
+          }
+        },
+        "designJsonMapping": {
+          "intent": "Explicit mapping to the legacy design.json palette for AI reference. Use this to match design-system-showcase/ or older marketing specs. For new production UI, prefer the live app tokens in app/globals.css + tailwind.config.ts unless you are intentionally migrating the app to the design.json palette.",
+          "designJsonBrandPrimary": "#2575FC",
+          "designJsonGradientTextStops": [
+            "#2575FC",
+            "#8B5CF6"
+          ],
+          "closestLiveAppEquivalents": {
+            "ctaGradient": {
+              "live": "var(--gradient-accent) (blue → violet in light mode)",
+              "designJson": "linear-gradient(90deg, #2575FC 0%, #8B5CF6 100%)",
+              "rule": "If the screen already uses var(--gradient-accent) (landing page), continue using it. If you are implementing a screen explicitly modeled after design-system-showcase, use the #2575FC/#8B5CF6 gradient."
+            },
+            "primarySolid": {
+              "live": "bg-primary (semantic; points at hsl(var(--primary)))",
+              "designJson": "#2575FC",
+              "rule": "Prefer bg-primary for consistency. Only use the design.json primary hex when matching the showcase or when explicitly migrating tokens."
+            },
+            "focusRing": {
+              "live": "ring (semantic: hsl(var(--ring)))",
+              "designJson": "shadows.focusRing uses rgba(37, 117, 252, 0.20)",
+              "rule": "Prefer focus-visible:ring-ring; avoid hard-coded focus:ring-blue-500 unless matching existing component behavior."
+            }
           }
         },
         "formatWarning": "The CSS variables --background/--foreground/etc are currently written as space-separated numeric triplets (e.g. '250 250 250'). Tailwind config references them via hsl(var(--...)). When extending styling, prefer using the extended palettes (primary/secondary/accent/neutral) or the hex-based --color-* vars + gradients to match existing screens.",
@@ -474,7 +571,7 @@
         "animate-count-up": "animation: countUp 0.4s ease-out forwards",
         "animate-avatar-stack": "animation: avatarStack 0.3s ease-out forwards",
         "progress-bar-animated": "animation: progressFill 0.8s ease-out forwards; width uses --progress-width",
-        "event-card-hover": "hover: translateY(-4px) scale(1.01) + multi-shadow including turquoise glow"
+        "event-card-hover": "hover: translateY(-4px) scale(1.01) + multi-shadow including blue glow"
       }
     }
   },

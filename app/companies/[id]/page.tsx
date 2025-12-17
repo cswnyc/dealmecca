@@ -402,9 +402,9 @@ export default function CompanyDetailPage() {
       MEDIA_HOLDING_COMPANY: 'bg-indigo-100 text-indigo-800',
       ADVERTISER: 'bg-orange-100 text-orange-800',
       BRAND: 'bg-pink-100 text-pink-800',
-      VENDOR: 'bg-teal-100 text-teal-800',
+      VENDOR: 'bg-emerald-100 text-emerald-800',
       PUBLISHER: 'bg-red-100 text-red-800',
-      DSP: 'bg-cyan-100 text-cyan-800',
+      DSP: 'bg-blue-100 text-blue-800',
       SSP: 'bg-sky-100 text-sky-800',
       ADTECH: 'bg-violet-100 text-violet-800'
     };

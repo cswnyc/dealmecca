@@ -7,10 +7,11 @@
 @layer base {
   :root {
     /* ==================== ENHANCED THEME COLORS ==================== */
-    /* Modern Light Theme Colors */
-    --color-primary: #1e293b;      /* Softer dark blue */
-    --color-secondary: #0f766e;    /* Muted teal */
-    --color-accent: #059669;       /* Modern green accent */
+    /* Modern Light Theme Colors - Blue/Violet Brand */
+    --color-primary: #2575FC;      /* Brand primary blue */
+    --color-secondary: #8B5CF6;    /* Violet accent */
+    --color-accent: #8B5CF6;       /* Violet accent (unified) */
+    --color-ink: #162B54;          /* Brand ink for text */
 
     /* Light Mode Neutral Scale */
     --color-neutral-50: #fafafa;
@@ -29,12 +30,12 @@
     --font-body: 'Inter', system-ui, sans-serif;
     --font-display: 'DM Sans', system-ui, sans-serif;
 
-    /* Turquoise-Purple Gradient System */
-    --gradient-primary: linear-gradient(135deg, #40E0D0 0%, #FF8C00 25%, #8A2BE2 100%);
-    --gradient-secondary: linear-gradient(135deg, #20B2AA 0%, #9932CC 100%);
-    --gradient-hero: var(--gradient-primary);
+    /* Blue-Violet Gradient System */
+    --gradient-primary: linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%);
+    --gradient-secondary: linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%);
+    --gradient-hero: linear-gradient(135deg, #162B54 0%, #2575FC 50%, #8B5CF6 100%);
     --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    --gradient-accent: linear-gradient(135deg, #40E0D0 0%, #8A2BE2 100%);
+    --gradient-accent: linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%);
 
     /* Header/Footer System */
     --header-footer-bg: 255 255 255;
@@ -51,22 +52,22 @@
     --popover-foreground: 24 24 27;
     --primary: 30 41 59;
     --primary-foreground: 250 250 250;
-    --secondary: 15 118 110;
+    --secondary: 139 92 246;
     --secondary-foreground: 255 255 255;
     --muted: 244 244 245;
     --muted-foreground: 113 113 122;
-    --accent: 5 150 105;
+    --accent: 139 92 246;
     --accent-foreground: 255 255 255;
     --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
     --border: 226 232 240;
     --input: 226 232 240;
-    --ring: 8 145 178;
+    --ring: 37 117 252;
     --radius: 0.5rem;
 
-    /* Glow Effects */
-    --primary-glow: rgba(8, 145, 178, 0.3);
-    --primary-glow-lg: rgba(8, 145, 178, 0.5);
+    /* Glow Effects (Blue primary) */
+    --primary-glow: rgba(37, 117, 252, 0.3);
+    --primary-glow-lg: rgba(37, 117, 252, 0.5);
 
     /* ==================== GLASSMORPHISM VARIABLES ==================== */
     --glass-blur: 12px;
@@ -81,16 +82,17 @@
 
   .dark {
     /* ==================== DARK MODE COLORS ==================== */
-    --color-primary: #e2e8f0;      /* Light text on dark */
-    --color-secondary: #14b8a6;    /* Brighter teal for dark mode */
-    --color-accent: #10b981;       /* Brighter green for dark mode */
+    --color-primary: #5B8DFF;      /* Lighter blue for dark mode */
+    --color-secondary: #A78BFA;    /* Lighter violet for dark mode */
+    --color-accent: #A78BFA;       /* Lighter violet for dark mode */
+    --color-ink: #EAF0FF;          /* Light ink for dark mode */
 
-    /* Dark Mode Turquoise-Purple Gradients */
-    --gradient-primary: linear-gradient(135deg, #20B2AA 0%, #FF6347 25%, #9932CC 100%);
-    --gradient-secondary: linear-gradient(135deg, #1E90FF 0%, #8A2BE2 100%);
-    --gradient-hero: var(--gradient-primary);
+    /* Dark Mode Blue-Violet Gradients */
+    --gradient-primary: linear-gradient(135deg, #5B8DFF 0%, #A78BFA 100%);
+    --gradient-secondary: linear-gradient(135deg, #5B8DFF 0%, #A78BFA 100%);
+    --gradient-hero: linear-gradient(135deg, #0B1220 0%, #5B8DFF 50%, #A78BFA 100%);
     --gradient-card: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    --gradient-accent: linear-gradient(135deg, #20B2AA 0%, #9932CC 100%);
+    --gradient-accent: linear-gradient(135deg, #5B8DFF 0%, #A78BFA 100%);
 
     /* Dark Mode Header/Footer System */
     --header-footer-bg: 15 23 42;
@@ -106,21 +108,21 @@
     --popover-foreground: 248 250 252;
     --primary: 248 250 252;
     --primary-foreground: 15 23 42;
-    --secondary: 20 184 166;
+    --secondary: 167 139 250;
     --secondary-foreground: 15 23 42;
     --muted: 51 65 85;
     --muted-foreground: 148 163 184;
-    --accent: 16 185 129;
+    --accent: 167 139 250;
     --accent-foreground: 15 23 42;
     --destructive: 239 68 68;
     --destructive-foreground: 248 250 252;
     --border: 51 65 85;
     --input: 51 65 85;
-    --ring: 8 145 178;
+    --ring: 91 141 255;
 
-    /* Dark Mode Glow Effects */
-    --primary-glow: rgba(20, 184, 166, 0.4);
-    --primary-glow-lg: rgba(20, 184, 166, 0.6);
+    /* Dark Mode Glow Effects (Lighter blue) */
+    --primary-glow: rgba(91, 141, 255, 0.4);
+    --primary-glow-lg: rgba(91, 141, 255, 0.6);
 
     /* Dark Mode Glassmorphism */
     --glass-blur: 16px;
@@ -262,7 +264,7 @@
 
 @keyframes cardHoverGlow {
   0%, 100% { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-  50% { box-shadow: 0 10px 40px -10px rgba(64, 224, 208, 0.4), 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+  50% { box-shadow: 0 10px 40px -10px rgba(37, 117, 252, 0.4), 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
 }
 
 @keyframes avatarStack {
@@ -404,6 +406,202 @@
   .dark [contenteditable] {
     color: #f3f4f6 !important;
     -webkit-text-fill-color: #f3f4f6 !important;
+  }
+
+  /* ==================== SHINY BUTTON ANIMATION ==================== */
+  @property --gradient-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @property --gradient-angle-offset {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @property --gradient-percent {
+    syntax: "<percentage>";
+    initial-value: 5%;
+    inherits: false;
+  }
+
+  @property --gradient-shine {
+    syntax: "<color>";
+    initial-value: white;
+    inherits: false;
+  }
+
+  .shiny-cta {
+    /* Light mode: slightly darker vibrant gradient with brand colors */
+    --shiny-cta-bg: #3B82F6;
+    --shiny-cta-bg-subtle: #6366F1;
+    --shiny-cta-fg: #ffffff;
+    --shiny-cta-highlight: #2575FC;
+    --shiny-cta-highlight-subtle: #8B5CF6;
+    --animation: gradient-angle linear infinite;
+    --duration: 3s;
+    --shadow-size: 2px;
+
+    isolation: isolate;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    outline-offset: 4px;
+    padding: 1rem 2rem;
+    font-family: inherit;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    font-weight: 600;
+    border: none;
+    border-radius: 360px;
+    color: var(--shiny-cta-fg);
+    background: linear-gradient(
+      135deg,
+      #3B82F6 0%,
+      #6366F1 100%
+    ) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+      0 6px 24px rgba(59, 130, 246, 0.5),
+      0 0 60px -10px var(--shiny-cta-highlight),
+      0 2px 8px rgba(37, 117, 252, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  /* Explicitly set light mode (no dark class) */
+  :root .shiny-cta,
+  html:not(.dark) .shiny-cta {
+    --shiny-cta-bg: #3B82F6 !important;
+    --shiny-cta-bg-subtle: #6366F1 !important;
+    background: linear-gradient(
+      135deg,
+      #3B82F6 0%,
+      #6366F1 100%
+    ) !important;
+  }
+
+  /* Dark mode: keep the dramatic black background */
+  .dark .shiny-cta,
+  html.dark .shiny-cta {
+    --shiny-cta-bg: #000000;
+    --shiny-cta-bg-subtle: #111111;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+      0 4px 20px rgba(0, 0, 0, 0.5),
+      0 0 40px -10px var(--shiny-cta-highlight);
+  }
+
+  /* Dot pattern overlay */
+  .shiny-cta::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.2) 1px,
+      transparent 1px
+    );
+    background-size: 4px 4px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+
+  .shiny-cta:hover::before {
+    opacity: 0.9;
+  }
+
+  /* Animated conic gradient border */
+  .shiny-cta::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: calc(var(--shadow-size) * -1);
+    border-radius: inherit;
+    background: conic-gradient(
+      from calc(var(--gradient-angle) - 90deg) at 50% 50%,
+      transparent 0%,
+      var(--shiny-cta-highlight) 5%,
+      var(--shiny-cta-highlight-subtle) 15%,
+      transparent 25%,
+      transparent 75%,
+      var(--shiny-cta-highlight-subtle) 85%,
+      var(--shiny-cta-highlight) 95%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: var(--shadow-size);
+    animation: var(--animation);
+    animation-duration: var(--duration);
+  }
+
+  /* Inner shimmer effect */
+  .shiny-cta .shimmer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
+  .shiny-cta .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shiny-shimmer 3s infinite;
+  }
+
+  .shiny-cta span {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .shiny-cta:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+      0 10px 40px rgba(59, 130, 246, 0.6),
+      0 0 80px -10px var(--shiny-cta-highlight),
+      0 0 60px -15px var(--shiny-cta-highlight-subtle),
+      0 4px 12px rgba(37, 117, 252, 0.3);
+  }
+
+  .dark .shiny-cta:hover {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+      0 8px 30px rgba(0, 0, 0, 0.6),
+      0 0 60px -10px var(--shiny-cta-highlight),
+      0 0 40px -15px var(--shiny-cta-highlight-subtle);
+  }
+
+  .shiny-cta:active {
+    transform: translateY(0);
+  }
+
+  @keyframes shiny-shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 200%;
+    }
   }
 
   /* Premium Typography Classes */
@@ -628,6 +826,13 @@
   }
 
   /* ==================== GRADIENT TEXT UTILITIES ==================== */
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   .text-gradient-primary {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -683,11 +888,11 @@
   }
 
   .event-card-gradient-workshop {
-    background: linear-gradient(90deg, #f97316 0%, #fb923c 100%);
+    background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%);
   }
 
   .event-card-gradient-networking {
-    background: linear-gradient(90deg, #14b8a6 0%, #06b6d4 100%);
+    background: linear-gradient(90deg, #2575FC 0%, #5B8DFF 100%);
   }
 
   .event-card-gradient-trade_show {
@@ -709,7 +914,7 @@
 
   .event-card-hover:hover {
     transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 0 30px -10px rgba(64, 224, 208, 0.2);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 0 30px -10px rgba(37, 117, 252, 0.2);
   }
 
   /* Progress Bar Fill Animation */
@@ -755,9 +960,9 @@
   /* Featured Event Hero */
   .featured-hero-gradient {
     background: linear-gradient(135deg,
-      rgba(64, 224, 208, 0.9) 0%,
-      rgba(255, 140, 0, 0.85) 50%,
-      rgba(138, 43, 226, 0.9) 100%
+      rgba(37, 117, 252, 0.9) 0%,
+      rgba(139, 92, 246, 0.85) 50%,
+      rgba(167, 139, 250, 0.9) 100%
     );
     background-size: 200% 200%;
     animation: gradient-shift 8s ease-in-out infinite;

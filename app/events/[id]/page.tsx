@@ -159,7 +159,7 @@ export default function EventDetailPage() {
       'TRADE_SHOW': 'from-green-500 to-emerald-600',
       'SUMMIT': 'from-purple-500 to-violet-600',
       'WORKSHOP': 'from-orange-500 to-amber-600',
-      'NETWORKING': 'from-teal-500 to-cyan-600',
+      'NETWORKING': 'from-green-500 to-emerald-600',
       'AWARDS': 'from-yellow-500 to-amber-600',
       'WEBINAR': 'from-purple-500 to-pink-600',
       'MASTERCLASS': 'from-rose-500 to-pink-600',
@@ -309,7 +309,7 @@ export default function EventDetailPage() {
                 {event.industry.replace(/_/g, ' ')}
               </span>
               {event.isVirtual && (
-                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-cyan-500/80 text-white">
+                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-blue-500/80 text-white">
                   <Wifi className="w-4 h-4" />
                   Virtual
                 </span>
@@ -450,8 +450,8 @@ export default function EventDetailPage() {
                       </div>
                     )}
                     {event.sponsorshipAvailable && (
-                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-200 hover:shadow-lg transition-all group cursor-pointer">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-5 border border-emerald-200 hover:shadow-lg transition-all group cursor-pointer">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                           <Target className="w-6 h-6 text-white" />
                         </div>
                         <h3 className="font-bold text-foreground mb-2">Sponsorship Available</h3>
@@ -504,7 +504,7 @@ export default function EventDetailPage() {
                       href={event.registrationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full text-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
+                      className="block w-full text-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-green-600 transition-all shadow-lg"
                     >
                       Register Now
                       <span className="ml-2">{event.estimatedCost !== null && event.estimatedCost > 0 ? `- ${formatCost(event.estimatedCost)}` : '- Free'}</span>

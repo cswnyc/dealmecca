@@ -100,15 +100,15 @@ import { EnhancedCompanyGrid } from '@/components/orgs/EnhancedCompanyGrid';
 ### Tier Indicators
 Companies are automatically categorized:
 - **Enterprise** (500+ employees) - Purple gradient
-- **Growth** (50-500 employees) - Green gradient  
-- **Startup** (<50 employees) - Orange gradient
+- **Growth** (50-500 employees) - Green gradient
+- **Startup** (<50 employees) - Blue gradient
 
 ### Seniority Color Coding
 Contacts get badges based on level:
-- **C-Level** - Purple (CEO, CTO, CFO)
+- **C-Level** - Violet (CEO, CTO, CFO)
 - **VP** - Blue (Vice Presidents)
 - **Director** - Green (Directors)
-- **Manager** - Orange (Managers)
+- **Manager** - Violet (Managers)
 - **Other** - Gray (Coordinators, etc.)
 
 ### Action Buttons

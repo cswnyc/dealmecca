@@ -124,7 +124,7 @@ export function CapabilitiesSection({ company, contacts }: CapabilitiesSectionPr
         {capabilities.advertisingModel && (
           <div>
             <h3 className="text-sm font-semibold text-foreground mb-3">Advertising Approach</h3>
-            <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
               {capabilities.advertisingModel}
             </Badge>
           </div>

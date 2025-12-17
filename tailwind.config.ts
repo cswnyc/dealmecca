@@ -64,30 +64,32 @@ const config: Config = {
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0891b2',
-          700: '#0e7490',
-          800: '#155e75',
-          900: '#164e63',
+          // Blue/Violet palette (updated from teal/cyan)
+          50: '#EEF2FF',
+          100: '#E0E7FF',
+          200: '#C7D2FE',
+          300: '#A5B4FC',
+          400: '#818CF8',
+          500: '#8B5CF6',   // Violet primary
+          600: '#7C3AED',
+          700: '#6D28D9',
+          800: '#5B21B6',
+          900: '#4C1D95',
         },
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
+          // Violet palette (updated from orange)
+          50: '#F5F3FF',
+          100: '#EDE9FE',
+          200: '#DDD6FE',
+          300: '#C4B5FD',
+          400: '#A78BFA',
+          500: '#8B5CF6',   // Violet primary
+          600: '#7C3AED',
+          700: '#6D28D9',
+          800: '#5B21B6',
+          900: '#4C1D95',
         },
         neutral: {
           50: '#f8fafc',
@@ -100,6 +102,17 @@ const config: Config = {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
+        },
+        // DealMecca Brand Colors (Blue/Violet)
+        brand: {
+          primary: '#2575FC',
+          hover: '#1E63D8',
+          active: '#184FB0',
+          ink: '#162B54',
+          violet: '#8B5CF6',
+          'violet-hover': '#7C3AED',
+          softBg: '#EAF1FF',
+          softText: '#1E63D8',
         },
         // shadcn/ui compatible colors
         border: 'hsl(var(--border))',
@@ -158,9 +171,10 @@ const config: Config = {
         subheading: ['1.5rem', { lineHeight: '1.4', letterSpacing: '-0.01em' }],
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #0f172a 0%, #0891b2 100%)',
-        'gradient-accent': 'linear-gradient(135deg, #0891b2 0%, #ea580c 100%)',
-        'gradient-hero': 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0891b2 100%)',
+        // Updated brand gradients: Blue (#2575FC) → Violet (#8B5CF6)
+        'gradient-primary': 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)',
+        'gradient-accent': 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)',
+        'gradient-hero': 'linear-gradient(135deg, #162B54 0%, #2575FC 50%, #8B5CF6 100%)',
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
@@ -178,9 +192,9 @@ const config: Config = {
         'premium-lg': '0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 16px -4px rgba(0, 0, 0, 0.08)',
         'premium-xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 12px 24px -8px rgba(0, 0, 0, 0.12)',
         'inner-premium': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
-        // Enhanced glow effects
-        glow: '0 0 20px rgba(8, 145, 178, 0.3), 0 0 40px rgba(8, 145, 178, 0.1)',
-        'glow-lg': '0 0 30px rgba(8, 145, 178, 0.4), 0 0 60px rgba(8, 145, 178, 0.2)',
+        // Enhanced glow effects (updated to blue primary)
+        glow: '0 0 20px rgba(37, 117, 252, 0.3), 0 0 40px rgba(37, 117, 252, 0.1)',
+        'glow-lg': '0 0 30px rgba(37, 117, 252, 0.4), 0 0 60px rgba(37, 117, 252, 0.2)',
         // Card shadows
         card: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',

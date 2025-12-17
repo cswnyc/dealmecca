@@ -51,7 +51,7 @@ const forumCategories = [
     name: "⚡ Quick Questions",
     description: "Fast answers needed - community help wanted",
     slug: "quick-questions",
-    color: "#06b6d4",
+    color: "#2575FC",
     icon: "⚡",
     order: 6,
     isActive: true

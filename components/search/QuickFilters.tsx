@@ -101,7 +101,7 @@ export function QuickFilters({ activeTab, onApplyFilter }: QuickFiltersProps) {
         label: 'Financial Services',
         filters: { industry: ['FINANCIAL_SERVICES'] },
         description: 'Banks, insurance, fintech',
-        color: 'bg-teal-50 text-teal-700 border-teal-200'
+        color: 'bg-emerald-50 text-emerald-700 border-emerald-200'
       },
       {
         id: 'healthcare-advertisers',
@@ -162,7 +162,7 @@ export function QuickFilters({ activeTab, onApplyFilter }: QuickFiltersProps) {
         label: 'Strategy',
         filters: { department: ['STRATEGY_PLANNING'] },
         description: 'Strategic planning',
-        color: 'bg-teal-50 text-teal-700 border-teal-200'
+        color: 'bg-emerald-50 text-emerald-700 border-emerald-200'
       }
     ]
   };

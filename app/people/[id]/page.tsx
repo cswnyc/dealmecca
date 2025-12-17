@@ -204,7 +204,7 @@ export default function ContactDetailPage() {
       'VP': 'bg-blue-100 text-blue-800',
       'DIRECTOR': 'bg-indigo-100 text-indigo-800',
       'MANAGER': 'bg-green-100 text-green-800',
-      'COORDINATOR': 'bg-teal-100 text-teal-800',
+      'COORDINATOR': 'bg-emerald-100 text-emerald-800',
       'INDIVIDUAL_CONTRIBUTOR': 'bg-gray-100 text-gray-800'
     };
     return colors[seniority] || 'bg-gray-100 text-gray-800';
@@ -308,7 +308,7 @@ export default function ContactDetailPage() {
             <div className="pb-4">
               <div className="flex items-start gap-4">
                 {/* Avatar */}
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                   {contact.firstName[0]}{contact.lastName[0]}
                 </div>
 

@@ -57,7 +57,7 @@ export function StickyCtaBar({
           <div className="flex items-center justify-between h-16">
             {/* Event Name */}
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-2 h-8 rounded-full bg-gradient-to-b from-emerald-400 to-teal-500" />
+              <div className="w-2 h-8 rounded-full bg-gradient-to-b from-emerald-400 to-green-500" />
               <h2 className="text-lg font-bold text-foreground truncate max-w-md">
                 {eventName}
               </h2>
@@ -86,7 +86,7 @@ export function StickyCtaBar({
                   href={registrationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold rounded-lg hover:from-emerald-600 hover:to-green-700 transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
                 >
                   Register Now
                   <ExternalLink className="w-4 h-4" />
@@ -110,7 +110,7 @@ export function StickyCtaBar({
                 href={registrationUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all shadow-lg"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold rounded-lg hover:from-emerald-600 hover:to-green-700 transition-all shadow-lg"
               >
                 Register {cost !== null && cost !== undefined && `- ${formatCost(cost)}`}
                 <ExternalLink className="w-4 h-4" />
@@ -180,7 +180,7 @@ export function FloatingRegisterButton({
       href={registrationUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-full shadow-xl hover:from-emerald-600 hover:to-teal-700 transition-all animate-slide-up hover:scale-105"
+      className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-full shadow-xl hover:from-emerald-600 hover:to-green-700 transition-all animate-slide-up hover:scale-105"
     >
       <Calendar className="w-5 h-5" />
       Register {cost !== null && cost !== undefined && `- ${formatCost(cost)}`}

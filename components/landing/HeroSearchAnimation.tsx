@@ -55,7 +55,7 @@ const MOCK_RESULTS = [
     isDecisionMaker: false,
     avatar: 'KE',
     gradientFrom: 'from-emerald-500',
-    gradientTo: 'to-teal-600',
+    gradientTo: 'to-green-600',
   },
 ];
 

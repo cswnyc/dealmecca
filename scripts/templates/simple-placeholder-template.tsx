@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function REPLACE_COMPONENT_NAME() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-teal-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 p-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">

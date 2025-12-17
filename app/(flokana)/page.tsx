@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 
 import { useTheme } from '@/lib/theme-context';
+import { Logo } from '@/components/ui/Logo';
+import { ShinyButton } from '@/components/ui/shiny-button';
 
 type Tab = 'product' | 'security' | 'workflow';
 
@@ -138,11 +140,11 @@ export default function FlokanaLandingPage(): JSX.Element {
       <header className="sticky top-0 z-40 border-b border-flk-border-subtle bg-flk-surface/95 backdrop-blur">
         <div className="mx-auto flex h-[72px] w-full max-w-[1120px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
-            <Link className="text-flk-h4 font-bold text-flk-primary" href="/">
-              DealMecca
+            <Link href="/">
+              <Logo size="lg" dark={theme === 'dark'} />
             </Link>
 
-            <nav className="hidden items-center gap-6 md:flex">
+            <nav className="hidden items-center gap-6 lg:flex">
               <a className="text-flk-body-s text-flk-text-muted hover:text-flk-text-primary" href="#forum">Forum</a>
               <a className="text-flk-body-s text-flk-text-muted hover:text-flk-text-primary" href="#org-charts">Org Charts</a>
               <a className="text-flk-body-s text-flk-text-muted hover:text-flk-text-primary" href="#features">Features</a>
@@ -161,18 +163,19 @@ export default function FlokanaLandingPage(): JSX.Element {
             </button>
 
             <Link
-              className="hidden h-11 items-center rounded-flk-pill border border-flk-border-subtle bg-flk-surface px-[18px] text-flk-body-m font-medium text-flk-text-primary hover:bg-flk-surface-subtle md:inline-flex"
+              className="hidden h-11 items-center rounded-flk-pill border border-flk-border-subtle bg-flk-surface px-[18px] text-flk-body-m font-medium text-flk-text-primary hover:bg-flk-surface-subtle lg:inline-flex"
               href="/auth/signup"
             >
               Sign In
             </Link>
 
             <Link
-              className="inline-flex h-11 items-center rounded-flk-pill bg-flk-primary px-[18px] text-flk-body-m font-medium text-flk-text-inverse shadow-flk-card hover:bg-flk-primary-hover active:bg-flk-primary-active dark:shadow-flk-card-dark"
+              className="inline-flex h-11 items-center rounded-flk-pill bg-flk-primary px-3 lg:px-[18px] text-flk-body-m font-medium text-flk-text-inverse shadow-flk-card hover:bg-flk-primary-hover active:bg-flk-primary-active dark:shadow-flk-card-dark"
               href="/auth/signup"
             >
-              Get Access Now
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <span className="hidden lg:inline">Get Access Now</span>
+              <span className="lg:hidden">Access</span>
+              <ArrowRight className="ml-1.5 lg:ml-2 h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -194,29 +197,23 @@ export default function FlokanaLandingPage(): JSX.Element {
             Community-verified org charts and decision-maker contacts. Built by media sellers. Less than $1/day.
           </p>
 
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              className="inline-flex h-[52px] items-center rounded-flk-pill bg-flk-primary px-[22px] text-flk-body-l font-medium text-flk-text-inverse shadow-flk-card hover:bg-flk-primary-hover active:bg-flk-primary-active dark:shadow-flk-card-dark"
-              href="/auth/signup"
-            >
-              Get Access Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-            <a
-              className="inline-flex h-[52px] items-center rounded-flk-pill border border-flk-border-subtle bg-transparent px-[22px] text-flk-body-l font-medium text-flk-text-primary hover:bg-flk-surface-subtle"
-              href="mailto:sales@getmecca.com?subject=Demo%20Request"
-            >
-              Schedule Demo
-            </a>
+          <div className="mt-12 flex justify-center">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <ShinyButton href="/auth/signup">
+                Get Access Now <ArrowRight className="ml-2 h-5 w-5 inline" />
+              </ShinyButton>
+              <a
+                className="inline-flex h-[52px] items-center rounded-flk-pill border border-flk-border-subtle bg-transparent px-[22px] text-flk-body-l font-medium text-flk-text-primary hover:bg-flk-surface-subtle"
+                href="mailto:sales@getmecca.com?subject=Demo%20Request"
+              >
+                Schedule Demo
+              </a>
+            </div>
           </div>
         </div>
 
         <div className="mt-auto pt-10 text-center">
-          <p className="text-flk-caption text-flk-text-muted">
-            7-day full access. See why media sellers are making the switch.
-          </p>
-
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-flk-caption text-flk-text-muted">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-flk-caption text-flk-text-muted">
             <div className="inline-flex items-center gap-2 rounded-flk-pill bg-flk-surface px-3 py-1.5 shadow-flk-card dark:shadow-flk-card-dark">
               <Sparkles className="h-4 w-4" />
               7-Day Free Trial
@@ -681,16 +678,16 @@ export default function FlokanaLandingPage(): JSX.Element {
             return (
               <div className="border-b border-flk-border-subtle last:border-0" key={f.id}>
                 <button
-                  className="flex h-14 w-full items-center justify-between px-6 text-left hover:bg-flk-surface-subtle"
+                  className="flex h-14 w-full items-center gap-4 px-6 text-left hover:bg-flk-surface-subtle"
                   data-faq={f.id}
                   onClick={onToggleFaq}
                   type="button"
                 >
-                  <span className="text-flk-body-m font-medium">{f.q}</span>
-                  {isOpen ? <Minus className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                  {isOpen ? <Minus className="h-5 w-5 flex-shrink-0" /> : <Plus className="h-5 w-5 flex-shrink-0" />}
+                  <span className="text-flk-body-m font-medium flex-1 pr-4">{f.q}</span>
                 </button>
                 {isOpen ? (
-                  <div className="bg-flk-surface-subtle px-6 py-4 text-flk-body-m text-flk-text-secondary">{f.a}</div>
+                  <div className="bg-flk-surface-subtle px-6 pl-[52px] py-4 text-flk-body-m text-flk-text-secondary">{f.a}</div>
                 ) : null}
               </div>
             );
@@ -702,11 +699,8 @@ export default function FlokanaLandingPage(): JSX.Element {
       <section className="bg-flk-primary py-20 sm:py-24">
         <div className="mx-auto w-full max-w-[1120px] px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-flk-h2 font-bold text-flk-text-inverse">
-            Stop Overpaying. <span className="text-white">Start Closing.</span>
+            Join the Community today. <span className="text-white">Work smarter, not harder.</span>
           </h2>
-          <p className="mx-auto mt-3 max-w-[68ch] text-flk-body-l text-white/90">
-            7-day free trial. Full access. See why media sellers are making the switch.
-          </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               className="inline-flex h-[52px] items-center rounded-flk-pill bg-white px-[22px] text-flk-body-l font-medium text-flk-brand-ink shadow-flk-floating hover:bg-white/90"
@@ -729,7 +723,7 @@ export default function FlokanaLandingPage(): JSX.Element {
         <div className="mx-auto w-full max-w-[1120px] px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 md:grid-cols-4">
             <div>
-              <div className="text-flk-h4 font-bold text-flk-primary">DealMecca</div>
+              <Logo size="lg" dark={theme === 'dark'} />
               <p className="mt-3 text-flk-body-s text-flk-text-muted">
                 Premium intel for media sellers. Org charts. Contacts. Community. No enterprise pricing.
               </p>

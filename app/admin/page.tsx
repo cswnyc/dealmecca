@@ -89,7 +89,7 @@ export default function AdminDashboard() {
       description: 'View and manage waitlist signups',
       href: '/admin/waitlist',
       icon: Shield,
-      color: 'text-cyan-600 bg-cyan-50'
+      color: 'text-brand-primary bg-brand-softBg'
     },
     {
       title: 'Bulk Import',

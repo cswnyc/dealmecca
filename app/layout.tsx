@@ -90,13 +90,13 @@ export const metadata: Metadata = {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
-    'msapplication-TileColor': '#0f172a',
+    'msapplication-TileColor': '#2575FC',
     'msapplication-TileImage': '/icons/ms-icon-144x144.png',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#3b82f6',
+  themeColor: '#2575FC',
   width: 'device-width',
   initialScale: 1,
   minimumScale: 1,

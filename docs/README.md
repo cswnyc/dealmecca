@@ -83,9 +83,9 @@ website/
 ## 🎨 Design System
 
 ### Colors
-- **Primary Blue**: `#0ea5e9` (sky-500) - Trust and reliability
-- **Primary Teal**: `#14b8a6` (teal-500) - Modern and professional
-- **Accent Orange**: `#f97316` (orange-500) - Call-to-action buttons
+- **Primary Blue**: `#2575FC` - Trust and reliability
+- **Accent Violet**: `#8B5CF6` - Call-to-action buttons and highlights
+- **Brand Ink**: `#162B54` - Headings and dark text
 
 ### Typography
 - **Font**: Inter (Google Fonts)

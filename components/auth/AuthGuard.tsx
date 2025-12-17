@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/firebase-auth';
 import { Button } from '@/components/ui/button';
-import { LogoWithIcon } from '@/components/brand/Logo';
+import { Logo } from '@/components/ui/Logo';
 import { Shield, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -121,7 +121,7 @@ export function AuthGuard({
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
         <div className="text-center">
           <div className="flex items-center justify-center mb-6">
-            <LogoWithIcon size="lg" />
+            <Logo size="lg" />
           </div>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Checking access...</p>
@@ -139,7 +139,7 @@ export function AuthGuard({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <Link href="/">
-                <LogoWithIcon size="md" className="cursor-pointer" />
+                <Logo size="md" className="cursor-pointer" />
               </Link>
               <div className="flex items-center space-x-4">
                 <Link href="/auth/signup">

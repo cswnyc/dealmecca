@@ -334,7 +334,7 @@ export default function MetricsOverview({ userId, period, onPeriodChange }: Metr
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <Eye className="w-8 h-8 text-teal-600 mr-3" />
+                <Eye className="w-8 h-8 text-emerald-600 mr-3" />
                 <div>
                   <p className="text-sm text-muted-foreground">Dashboard Visits</p>
                   <p className="text-2xl font-bold text-foreground">

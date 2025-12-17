@@ -104,7 +104,7 @@ export function AnimatedText({ text, highlightWord, className = '', highlightCla
                       repeat: reducedMotion ? 0 : Infinity,
                       repeatDelay: 1
                     }}
-                    className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent bg-[length:200%_100%]"
+                    className="bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-600 bg-clip-text text-transparent bg-[length:200%_100%]"
                   >
                     {word}
                   </motion.span>

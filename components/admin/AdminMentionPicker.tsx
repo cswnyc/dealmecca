@@ -226,12 +226,12 @@ export function AdminMentionPicker({
       );
     } else if (type === 'publishers') {
       return (
-        <div key={item.id} className="inline-flex items-center space-x-1 px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">
+        <div key={item.id} className="inline-flex items-center space-x-1 px-2 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-full">
           <GlobeAltIcon className="w-3 h-3" />
           <span>{item.name}</span>
           <button
             onClick={() => handleRemoveItem(item.id)}
-            className="ml-1 text-teal-600 hover:text-teal-800"
+            className="ml-1 text-emerald-600 hover:text-emerald-800"
           >
             <XMarkIcon className="w-3 h-3" />
           </button>
@@ -344,11 +344,11 @@ export function AdminMentionPicker({
           onClick={() => handleSelectItem(item)}
           className="w-full px-3 py-2 text-left hover:bg-muted flex items-center space-x-3"
         >
-          <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
             {item.logo ? (
               <img src={item.logo} alt={item.name} className="w-6 h-6 rounded-full object-cover" />
             ) : (
-              <GlobeAltIcon className="w-4 h-4 text-teal-600" />
+              <GlobeAltIcon className="w-4 h-4 text-emerald-600" />
             )}
           </div>
           <div className="flex-1 min-w-0">
@@ -356,7 +356,7 @@ export function AdminMentionPicker({
             <div className="text-sm text-muted-foreground">Publisher</div>
           </div>
           {item.verified && (
-            <div className="text-teal-500 text-xs">Verified</div>
+            <div className="text-emerald-500 text-xs">Verified</div>
           )}
         </button>
       );

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { LogoWithIcon } from '@/components/brand/Logo'
+import { Logo } from '@/components/ui/Logo'
 import { Heart, Mail, Shield } from 'lucide-react'
 
 export default function Footer() {
@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo and Description */}
           <div className="space-y-4">
-            <LogoWithIcon size="sm" />
+            <Logo size="md" />
             <p className="text-muted-foreground text-sm">
               Intelligence that closes. The premier platform for media sales professionals.
             </p>

@@ -108,7 +108,7 @@ export const AVATAR_LIBRARY: AvatarOption[] = [
       <path d="M38 38 L46 37" stroke="#451a03" stroke-width="2"/>
       <path d="M54 37 L62 38" stroke="#451a03" stroke-width="2"/>
       <!-- Nose -->
-      <ellipse cx="50" cy="48" rx="2" ry="1" fill="#ea580c"/>
+      <ellipse cx="50" cy="48" rx="2" ry="1" fill="#8B5CF6"/>
       <!-- Smile -->
       <path d="M44 52 Q50 58 56 52" stroke="#1f2937" stroke-width="2" fill="none"/>
       <!-- Body -->
@@ -209,7 +209,7 @@ export const AVATAR_LIBRARY: AvatarOption[] = [
       <!-- Mouth -->
       <path d="M46 52 Q50 55 54 52" stroke="#1f2937" stroke-width="2" fill="none"/>
       <!-- Body -->
-      <rect x="35" y="70" width="30" height="30" rx="5" fill="#0891b2"/>
+      <rect x="35" y="70" width="30" height="30" rx="5" fill="#2575FC"/>
     </svg>`
   }
 ];

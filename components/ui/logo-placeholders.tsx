@@ -94,7 +94,7 @@ export function AgencyLogos({ className = '', delay = 0 }: LogoPlaceholderProps)
     { name: 'WPP', placeholder: 'WPP', color: 'bg-gradient-to-br from-red-500 to-red-600' },
     { name: 'Publicis', placeholder: 'PUB', color: 'bg-gradient-to-br from-green-500 to-green-600' },
     { name: 'IPG', placeholder: 'IPG', color: 'bg-gradient-to-br from-orange-500 to-orange-600' },
-    { name: 'Havas', placeholder: 'HAV', color: 'bg-gradient-to-br from-teal-500 to-teal-600' }
+    { name: 'Havas', placeholder: 'HAV', color: 'bg-gradient-to-br from-emerald-500 to-emerald-600' }
   ];
 
   return (
@@ -129,7 +129,7 @@ export function BrandLogos({ className = '', delay = 0 }: LogoPlaceholderProps) 
 
 export function AdditionalAgencies({ className = '', delay = 0 }: LogoPlaceholderProps) {
   const agencies = [
-    { name: 'Zenith', placeholder: 'ZEN', color: 'bg-gradient-to-br from-cyan-500 to-cyan-600' },
+    { name: 'Zenith', placeholder: 'ZEN', color: 'bg-gradient-to-br from-blue-500 to-blue-600' },
     { name: 'Mindshare', placeholder: 'MS', color: 'bg-gradient-to-br from-pink-500 to-pink-600' },
     { name: 'OMD', placeholder: 'OMD', color: 'bg-gradient-to-br from-emerald-500 to-emerald-600' },
     { name: 'Starcom', placeholder: 'SC', color: 'bg-gradient-to-br from-violet-500 to-violet-600' },
@@ -150,7 +150,7 @@ export function AdditionalAgencies({ className = '', delay = 0 }: LogoPlaceholde
 export function TechBrands({ className = '', delay = 0 }: LogoPlaceholderProps) {
   const brands = [
     { name: 'Google', placeholder: 'G', color: 'bg-gradient-to-br from-blue-500 to-green-500' },
-    { name: 'Microsoft', placeholder: 'MS', color: 'bg-gradient-to-br from-blue-600 to-cyan-600' },
+    { name: 'Microsoft', placeholder: 'MS', color: 'bg-gradient-to-br from-blue-600 to-indigo-600' },
     { name: 'Meta', placeholder: 'M', color: 'bg-gradient-to-br from-blue-700 to-purple-700' },
     { name: 'Amazon', placeholder: 'A', color: 'bg-gradient-to-br from-orange-500 to-yellow-500' },
     { name: 'Netflix', placeholder: 'N', color: 'bg-gradient-to-br from-red-600 to-red-700' },

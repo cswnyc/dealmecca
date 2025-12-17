@@ -98,9 +98,216 @@
   -webkit-text-fill-color: rgb(var(--flk-text-primary)) !important;
 }
 
+/* Override DealMecca's global heading rules (scoped) */
+.flk h1,
+.flk h2,
+.flk h3,
+.flk h4,
+.flk h5 {
+  font-family: 'Helvetica Neue', 'Inter', 'DM Sans', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Reset global button styles within Flokana scope */
+.flk button {
+  font-family: 'Helvetica Neue', 'Inter', 'DM Sans', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+  border-radius: 0 !important;
+  border: none !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  cursor: pointer !important;
+  transition: none !important;
+}
+
+.flk button:hover {
+  border-color: transparent !important;
+}
+
+.flk button:focus,
+.flk button:focus-visible {
+  outline: none !important;
+}
+
+/* Prevent DealMecca utility classes from applying within Flokana */
+.flk .btn-primary,
+.flk .btn-secondary,
+.flk .btn-accent,
+.flk .btn-outline-primary,
+.flk .btn-outline-secondary {
+  all: unset !important;
+  cursor: pointer !important;
+}
+
+.flk .heading-hero,
+.flk .heading-section,
+.flk .heading-subsection,
+.flk .heading-display,
+.flk .tagline,
+.flk .tagline-hero {
+  all: unset !important;
+  display: inline !important;
+}
+
 .flk-text-gradient {
-  background-image: linear-gradient(90deg, rgb(236 72 153) 0%, rgb(139 92 246) 100%);
+  background-image: linear-gradient(90deg, rgb(37 117 252) 0%, rgb(139 92 246) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* ============================================
+   ShinyButton Component Styles
+   ============================================ */
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.shiny-cta {
+  /* Dark background with brand color highlights */
+  --shiny-cta-bg: #000000;
+  --shiny-cta-bg-subtle: #111111;
+  --shiny-cta-fg: #ffffff;
+  --shiny-cta-highlight: #2575FC;
+  --shiny-cta-highlight-subtle: #8B5CF6;
+  --shiny-cta-duration: 3s;
+  --shiny-cta-shadow-size: 2px;
+
+  isolation: isolate;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  outline-offset: 4px;
+  padding: 1rem 2rem;
+  font-family: inherit;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  font-weight: 600;
+  border: none !important;
+  border-radius: 360px !important;
+  color: var(--shiny-cta-fg) !important;
+  background: linear-gradient(
+    145deg,
+    var(--shiny-cta-bg) 0%,
+    var(--shiny-cta-bg-subtle) 100%
+  ) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 40px -10px var(--shiny-cta-highlight);
+  transition: all 0.3s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+}
+
+/* Dot pattern overlay */
+.shiny-cta::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 4px 4px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.shiny-cta:hover::before {
+  opacity: 0.8;
+}
+
+/* Animated conic gradient border */
+.shiny-cta::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: calc(var(--shiny-cta-shadow-size) * -1);
+  border-radius: inherit;
+  background: conic-gradient(
+    from calc(var(--gradient-angle) - 90deg) at 50% 50%,
+    transparent 0%,
+    var(--shiny-cta-highlight) 5%,
+    var(--shiny-cta-highlight-subtle) 15%,
+    transparent 25%,
+    transparent 75%,
+    var(--shiny-cta-highlight-subtle) 85%,
+    var(--shiny-cta-highlight) 95%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: var(--shiny-cta-shadow-size);
+  animation: shiny-gradient-angle var(--shiny-cta-duration) linear infinite;
+}
+
+/* Inner shimmer effect */
+.shiny-cta .shimmer {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shiny-cta .shimmer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shiny-shimmer 3s infinite;
+}
+
+.shiny-cta span {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shiny-cta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    0 0 60px -10px var(--shiny-cta-highlight),
+    0 0 40px -15px var(--shiny-cta-highlight-subtle);
+}
+
+.shiny-cta:active {
+  transform: translateY(0);
+}
+
+@keyframes shiny-gradient-angle {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+@keyframes shiny-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
 }
