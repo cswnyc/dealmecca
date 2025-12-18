@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Building2, Users, Zap, Mail, ShieldCheck, FileText } from 'lucide-react';
+import { Logo } from '@/components/ui/Logo';
 
 export default function PricingPage() {
   return (
@@ -10,8 +11,8 @@ export default function PricingPage() {
       <header className="sticky top-0 z-40 border-b border-flk-border-subtle bg-flk-surface/95 backdrop-blur">
         <div className="mx-auto flex h-[72px] w-full max-w-[1120px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
-            <Link className="text-flk-h4 font-bold text-flk-primary" href="/">
-              DealMecca
+            <Link href="/">
+              <Logo size="md" />
             </Link>
             <nav className="hidden items-center gap-6 md:flex">
               <Link className="text-flk-body-s text-flk-text-muted hover:text-flk-text-primary" href="/forum">
@@ -227,7 +228,7 @@ export default function PricingPage() {
         <div className="mx-auto w-full max-w-[1120px] px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 md:grid-cols-4">
             <div>
-              <div className="text-flk-h4 font-bold text-flk-primary">DealMecca</div>
+              <Logo size="md" />
               <p className="mt-3 text-flk-body-s text-flk-text-muted">
                 Premium intel for media sellers. Org charts. Contacts. Community. No enterprise pricing.
               </p>
