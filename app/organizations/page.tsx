@@ -6,12 +6,12 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network, Filter, Plus, MapPin, ChevronDown, X, Globe, User, Briefcase, BarChart3, Tv, Satellite, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { PageFrame, PageHeader, PageContent, PageCard, PageGrid } from '@/components/layout/PageFrame';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BrandTabs } from '@/components/ui/BrandTabs';
 import {
   Select,
   SelectContent,
@@ -25,6 +25,8 @@ import { AddEntityModal } from '@/components/org-charts/AddEntityModal';
 import { ComprehensiveFilterPanel } from '@/components/filters/ComprehensiveFilterPanel';
 import { ComprehensiveAdvertiserFilterPanel } from '@/components/filters/ComprehensiveAdvertiserFilterPanel';
 import { ComprehensivePeopleFilterPanel } from '@/components/filters/ComprehensivePeopleFilterPanel';
+import { StatsBar } from '@/components/orgs/StatsBar';
+import { OrgListItem, RelatedItems } from '@/components/orgs/OrgListItem';
 
 // Force dynamic rendering for user-specific content
 export const dynamic = 'force-dynamic'
@@ -372,27 +374,27 @@ const INDUSTRIES_DATA = [
 ];
 
 const INDUSTRY_COLORS: Record<string, string> = {
-  'TECHNOLOGY': 'bg-blue-100 text-blue-800',
-  'AEROSPACE': 'bg-purple-100 text-purple-800',
-  'FOOD_DELIVERY': 'bg-orange-100 text-orange-800',
-  'E_COMMERCE': 'bg-green-100 text-green-800',
-  'INSURANCE': 'bg-red-100 text-red-800',
-  'FOOD_BEVERAGE': 'bg-amber-100 text-amber-800',
-  'EDUCATION': 'bg-indigo-100 text-indigo-800',
-  'TRAVEL': 'bg-pink-100 text-pink-800',
-  'ENTERTAINMENT_MEDIA': 'bg-violet-100 text-violet-800',
-  'RETAIL': 'bg-emerald-100 text-emerald-800',
-  'SPORTS_APPAREL': 'bg-lime-100 text-lime-800',
-  'PERSONAL_CARE': 'bg-blue-100 text-blue-800',
-  'AUTOMOTIVE': 'bg-slate-100 text-slate-800',
-  'CONSUMER_GOODS': 'bg-amber-100 text-amber-800',
-  'FINANCIAL_SERVICES': 'bg-emerald-100 text-emerald-800',
-  'ELECTRONICS': 'bg-sky-100 text-sky-800',
-  'BEVERAGES': 'bg-rose-100 text-rose-800',
-  'HEALTHCARE': 'bg-fuchsia-100 text-fuchsia-800',
-  'TELECOMMUNICATIONS': 'bg-violet-100 text-violet-800',
-  'BEAUTY': 'bg-pink-100 text-pink-800',
-  'GAMING': 'bg-purple-100 text-purple-800',
+  'TECHNOLOGY': 'bg-primary/10 text-primary dark:bg-primary/20',
+  'AEROSPACE': 'bg-secondary/10 text-secondary dark:bg-secondary/20',
+  'FOOD_DELIVERY': 'bg-accent/10 text-accent dark:bg-accent/20',
+  'E_COMMERCE': 'bg-primary/10 text-primary dark:bg-primary/20',
+  'INSURANCE': 'bg-destructive/10 text-destructive dark:bg-destructive/20',
+  'FOOD_BEVERAGE': 'bg-accent/10 text-accent dark:bg-accent/20',
+  'EDUCATION': 'bg-secondary/10 text-secondary dark:bg-secondary/20',
+  'TRAVEL': 'bg-accent/10 text-accent dark:bg-accent/20',
+  'ENTERTAINMENT_MEDIA': 'bg-secondary/10 text-secondary dark:bg-secondary/20',
+  'RETAIL': 'bg-primary/10 text-primary dark:bg-primary/20',
+  'SPORTS_APPAREL': 'bg-accent/10 text-accent dark:bg-accent/20',
+  'PERSONAL_CARE': 'bg-primary/10 text-primary dark:bg-primary/20',
+  'AUTOMOTIVE': 'bg-muted text-muted-foreground',
+  'CONSUMER_GOODS': 'bg-accent/10 text-accent dark:bg-accent/20',
+  'FINANCIAL_SERVICES': 'bg-primary/10 text-primary dark:bg-primary/20',
+  'ELECTRONICS': 'bg-primary/10 text-primary dark:bg-primary/20',
+  'BEVERAGES': 'bg-accent/10 text-accent dark:bg-accent/20',
+  'HEALTHCARE': 'bg-secondary/10 text-secondary dark:bg-secondary/20',
+  'TELECOMMUNICATIONS': 'bg-secondary/10 text-secondary dark:bg-secondary/20',
+  'BEAUTY': 'bg-accent/10 text-accent dark:bg-accent/20',
+  'GAMING': 'bg-secondary/10 text-secondary dark:bg-secondary/20',
   'MEDIA': 'bg-muted text-muted-foreground'
 }
 
@@ -480,11 +482,11 @@ export default function OrganizationsPage() {
 
   const getAgencyTypeBadgeColor = (type: string) => {
     switch (type) {
-      case 'HOLDING_COMPANY': return 'bg-purple-100 text-purple-800';
-      case 'MEDIA_HOLDING_COMPANY': return 'bg-indigo-100 text-indigo-800';
-      case 'HOLDING_COMPANY_AGENCY': return 'bg-blue-100 text-blue-800';
-      case 'INDEPENDENT_AGENCY': return 'bg-green-100 text-green-800';
-      case 'NETWORK_AGENCY': return 'bg-orange-100 text-orange-800';
+      case 'HOLDING_COMPANY': return 'bg-secondary/10 text-secondary dark:bg-secondary/20';
+      case 'MEDIA_HOLDING_COMPANY': return 'bg-primary/10 text-primary dark:bg-primary/20';
+      case 'HOLDING_COMPANY_AGENCY': return 'bg-primary/10 text-primary dark:bg-primary/20';
+      case 'INDEPENDENT_AGENCY': return 'bg-accent/10 text-accent dark:bg-accent/20';
+      case 'NETWORK_AGENCY': return 'bg-accent/10 text-accent dark:bg-accent/20';
       default: return 'bg-muted text-muted-foreground';
     }
   };
@@ -889,932 +891,375 @@ export default function OrganizationsPage() {
   // Early return for loading state - must come after all hooks
   if (authLoading) {
     return (
-      <MainLayout>
-        <div className="min-h-full bg-muted flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-            <p className="text-muted-foreground text-lg">Loading...</p>
+      <AuthGuard>
+        <PageFrame maxWidth="7xl">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground text-lg">Loading...</p>
+            </div>
           </div>
-        </div>
-      </MainLayout>
+        </PageFrame>
+      </AuthGuard>
     );
   }
 
   return (
     <AuthGuard>
-      <MainLayout>
-      <div className="min-h-full bg-muted">
-        {/* Header */}
-        <div className="bg-card shadow-sm border-b border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold text-foreground flex items-center">
-                    <Building2 className="h-8 w-8 mr-3 text-sky-600" />
-                    Organizations
-                  </h1>
-                  <p className="mt-1 text-muted-foreground">
-                    Explore deal connections and partnership opportunities
-                  </p>
-                </div>
-              </div>
+      <PageFrame maxWidth="7xl">
+        <PageHeader
+          title="Organizations"
+          description="Explore deal connections and partnership opportunities"
+        />
+
+        <PageContent>
+          {/* Tab Navigation */}
+          <BrandTabs
+            tabs={[
+              { id: 'agencies', label: 'Agencies', icon: Building2 },
+              { id: 'advertisers', label: 'Advertisers', icon: Globe },
+              { id: 'people', label: 'People', icon: User },
+              { id: 'industries', label: 'Industries', icon: Briefcase },
+              { id: 'publisher', label: 'Publisher', icon: Monitor },
+              { id: 'dsp-ssp', label: 'DSP/SSP', icon: Satellite },
+              { id: 'adtech', label: 'Adtech', icon: BarChart3 }
+            ]}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            className="mb-6"
+          />
+
+          {/* Search Bar and Action Buttons */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9AA7C2]" />
+              <input
+                type="text"
+                placeholder={
+                  activeTab === 'agencies' ? 'Search agencies...' :
+                  activeTab === 'advertisers' ? 'Search advertisers...' :
+                  activeTab === 'people' ? 'Search people...' :
+                  activeTab === 'industries' ? 'Search industries...' :
+                  activeTab === 'publisher' ? 'Search publishers...' :
+                  activeTab === 'dsp-ssp' ? 'Search DSP/SSP...' :
+                  'Search adtech...'
+                }
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] placeholder-[#9AA7C2] focus:outline-none focus:ring-2 focus:ring-[#2575FC]/20 focus:border-[#2575FC] dark:focus:ring-[#5B8DFF]/20 dark:focus:border-[#5B8DFF] transition-all"
+              />
             </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="space-y-6">
-            {/* Sticky Header */}
-            <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border pb-6 mb-6">
-              {/* Tab Navigation */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex space-x-1 bg-muted p-1 rounded-lg">
-                  {[
-                    { id: 'agencies', label: 'Agencies', icon: Building2 },
-                    { id: 'advertisers', label: 'Advertisers', icon: Globe },
-                    { id: 'people', label: 'People', icon: User },
-                    { id: 'industries', label: 'Industries', icon: Briefcase },
-                    { id: 'publisher', label: 'Publisher', icon: Monitor },
-                    { id: 'dsp-ssp', label: 'DSP/SSP', icon: Satellite },
-                    { id: 'adtech', label: 'Adtech', icon: BarChart3 }
-                  ].map((tab) => {
-                    const IconComponent = tab.icon;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => handleTabChange(tab.id)}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                          activeTab === tab.id
-                            ? 'bg-card text-primary shadow-sm'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                        }`}
-                      >
-                        <IconComponent className="h-4 w-4" />
-                        <span>{tab.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Search Bar and Action Buttons */}
-              <div className="flex items-center justify-between space-x-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    type="text"
-                    placeholder={
-                      activeTab === 'agencies' ? 'Search agencies...' :
-                      activeTab === 'advertisers' ? 'Search advertisers...' :
-                      activeTab === 'people' ? 'Search people...' :
-                      activeTab === 'industries' ? 'Search industries...' :
-                      activeTab === 'publisher' ? 'Search publishers...' :
-                      activeTab === 'dsp-ssp' ? 'Search DSP/SSP...' :
-                      'Search adtech...'
-                    }
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-10 h-11 bg-card shadow-sm"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-                <div className="flex space-x-2">
-                  {activeTab === 'agencies' && (
-                    <Button onClick={() => {
-                      setSelectedEntityType('agency');
-                      setShowAddEntityModal(true);
-                    }} className="bg-blue-600 hover:bg-blue-700">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Agency
-                    </Button>
-                  )}
-                  {activeTab === 'advertisers' && (
-                    <Button
-                      onClick={() => {
-                        setSelectedEntityType('advertiser');
-                        setShowAddEntityModal(true);
-                      }}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Advertiser
-                    </Button>
-                  )}
-                  {activeTab === 'people' && (
-                    <Button
-                      onClick={() => {
-                        setSelectedEntityType('person');
-                        setShowAddEntityModal(true);
-                      }}
-                      className="bg-purple-600 hover:bg-purple-700"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Person
-                    </Button>
-                  )}
-                  {activeTab === 'industries' && (
-                    <Button className="bg-orange-600 hover:bg-orange-700">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Industry
-                    </Button>
-                  )}
-                  {activeTab === 'publisher' && (
-                    <Button className="bg-red-600 hover:bg-red-700">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Publisher
-                    </Button>
-                  )}
-                  {activeTab === 'dsp-ssp' && (
-                    <Button className="bg-indigo-600 hover:bg-indigo-700">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add DSP/SSP
-                    </Button>
-                  )}
-                  {activeTab === 'adtech' && (
-                    <Button className="bg-pink-600 hover:bg-pink-700">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Adtech
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Tab Content */}
             {activeTab === 'agencies' && (
-              <div className="w-full">
-                {/* Modern Stats Bar */}
-                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
-                          <Building2 className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Total Agencies</p>
-                          <p className="text-2xl font-bold text-foreground">{filteredAgencies.length}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
-                          <Users className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Team Members</p>
-                          <p className="text-2xl font-bold text-foreground">
-                            {filteredAgencies.reduce((total, agency) => total + agency.teamCount, 0)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
-                          <CheckCircle className="h-5 w-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Verified Rate</p>
-                          <p className="text-2xl font-bold text-foreground">
-                            {filteredAgencies.length > 0
-                              ? Math.round((filteredAgencies.filter(a => a.verified).length / filteredAgencies.length) * 100)
-                              : 0}%
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+              <button
+                onClick={() => {
+                  setSelectedEntityType('agency');
+                  setShowAddEntityModal(true);
+                }}
+                className="text-white px-5 py-3 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
+                style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+              >
+                <Plus className="w-5 h-5" />
+                Add Agency
+              </button>
+            )}
+            {activeTab === 'advertisers' && (
+              <button
+                onClick={() => {
+                  setSelectedEntityType('advertiser');
+                  setShowAddEntityModal(true);
+                }}
+                className="text-white px-5 py-3 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
+                style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+              >
+                <Plus className="w-5 h-5" />
+                Add Advertiser
+              </button>
+            )}
+            {activeTab === 'people' && (
+              <button
+                onClick={() => {
+                  setSelectedEntityType('person');
+                  setShowAddEntityModal(true);
+                }}
+                className="text-white px-5 py-3 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
+                style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+              >
+                <Plus className="w-5 h-5" />
+                Add Person
+              </button>
+            )}
+          </div>
 
-                    {/* Filter Toggle */}
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors duration-200"
-                    >
-                      <Filter className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium text-foreground">Filters</span>
-                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
-                    </button>
-                  </div>
-                </div>
+          {/* Agencies Tab */}
+          {activeTab === 'agencies' && (
+            <div className="space-y-6">
+              {/* Stats Bar */}
+              <StatsBar
+                stats={[
+                  { icon: Building2, label: 'Total Agencies', value: filteredAgencies.length, colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
+                  { icon: Users, label: 'Team Members', value: filteredAgencies.reduce((total, agency) => total + agency.teamCount, 0), colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
+                  { icon: CheckCircle, label: 'Verified Rate', value: `${filteredAgencies.length > 0 ? Math.round((filteredAgencies.filter(a => a.verified).length / filteredAgencies.length) * 100) : 0}%`, colorClass: 'bg-green-500/10 text-green-500' }
+                ]}
+              />
 
-                {/* Filter Panel */}
-                {showFilters && (
-                  <ComprehensiveFilterPanel
-                    filterState={filterState}
-                    setFilterState={setFilterState}
-                    filteredCount={filteredAgencies.length}
-                    totalCount={agencies.length}
-                    onClose={() => setShowFilters(false)}
-                  />
-                )}
-
-                {/* Agencies List */}
-                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-border bg-muted">
-                    <h3 className="text-lg font-semibold text-foreground">
+              {/* Agencies List */}
+              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
                       {searchQuery ? `Search Results (${filteredAgencies.length})` : 'Agency Directory'}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    </h2>
+                    <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">
                       {searchQuery ? `Found ${filteredAgencies.length} agencies matching your search` : 'Discover and connect with leading agencies'}
                     </p>
                   </div>
-                  <div className="p-6">
-                    <div className="grid gap-4">
-                      {filteredAgencies.map((agency) => (
-                        <div key={agency.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-4 flex-1">
-                              <CompanyLogo
-                                logoUrl={agency.logoUrl}
-                                companyName={agency.name}
-                                size="lg"
-                                className="rounded-xl"
-                              />
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-start justify-between mb-2">
-                                  <div>
-                                    <Link href={`/companies/${agency.id}`} className="group">
-                                      <h3 className="text-lg font-semibold text-foreground group-hover:text-blue-600 transition-colors">
-                                        <SearchHighlight
-                                          text={agency.name}
-                                          searchTerm={searchQuery}
-                                          highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-semibold"
-                                        />
-                                      </h3>
-                                    </Link>
-                                    <div className="flex items-center space-x-2 mt-1">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getAgencyTypeBadgeColor(agency.type)}`}>
-                                        {getAgencyTypeLabel(agency.type)}
-                                      </span>
-                                      {(agency.city || agency.state) && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                          <MapPin className="w-3 h-3 mr-1" />
-                                          <SearchHighlight
-                                            text={`${agency.city || ''}, ${agency.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
-                                            searchTerm={searchQuery}
-                                            highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-medium"
-                                          />
-                                        </span>
-                                      )}
-                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                                        <Network className="w-3 h-3 mr-1" />
-                                        Org Chart
-                                      </span>
-                                      {agency.verified && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                          <CheckCircle className="w-3 h-3 mr-1" />
-                                          Verified
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                    <Users className="w-4 h-4" />
-                                    <span>{agency.teamCount} people</span>
-                                  </div>
-                                </div>
-                                {/* Client/Advertiser Pills */}
-                                <div className="mt-2 mb-1">
-                                  <div className="flex flex-wrap items-center gap-2">
-                                    {agency.clients?.slice(0, expandedCompanies.has(agency.id) ? undefined : 3).map((client, index) => (
-                                      <div key={index} className="flex items-center gap-1">
-                                        <CompanyLogo
-                                          logoUrl={client.logoUrl}
-                                          companyName={client.name}
-                                          size="sm"
-                                          className="rounded-full"
-                                        />
-                                        <span className="text-sm font-medium text-foreground">
-                                          <SearchHighlight
-                                            text={client.name}
-                                            searchTerm={searchQuery}
-                                            highlightClassName="bg-sky-100 text-sky-900 px-1 rounded font-medium"
-                                          />
-                                        </span>
-                                        {index < (expandedCompanies.has(agency.id) ? agency.clients.length - 1 : Math.min(2, agency.clients.length - 1)) && (
-                                          <span className="text-muted-foreground">,</span>
-                                        )}
-                                      </div>
-                                    ))}
-                                    {agency.clients && agency.clients.length > 3 && (
-                                      <button
-                                        onClick={() => toggleCompanyExpansion(agency.id)}
-                                        className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                                      >
-                                        {expandedCompanies.has(agency.id)
-                                          ? 'Show less'
-                                          : `+${agency.clients.length - 3} teams`
-                                        }
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                </div>
+                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                  {filteredAgencies.map((agency) => (
+                    <OrgListItem
+                      key={agency.id}
+                      id={agency.id}
+                      name={agency.name}
+                      logoUrl={agency.logoUrl}
+                      type={getAgencyTypeLabel(agency.type)}
+                      location={{ city: agency.city, state: agency.state }}
+                      verified={agency.verified}
+                      teamCount={agency.teamCount}
+                      searchQuery={searchQuery}
+                    />
+                  ))}
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Advertisers Tab */}
-            {activeTab === 'advertisers' && (
-              <div className="w-full">
-                {/* Stats Bar */}
-                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
-                          <Globe className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Total Advertisers</p>
-                          <p className="text-2xl font-bold text-foreground">{filteredAdvertisers.length}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
-                          <Users className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Team Members</p>
-                          <p className="text-2xl font-bold text-foreground">
-                            {filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
-                          <CheckCircle className="h-5 w-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Verified Rate</p>
-                          <p className="text-2xl font-bold text-foreground">
-                            {filteredAdvertisers.length > 0
-                              ? Math.round((filteredAdvertisers.filter(a => a.verified).length / filteredAdvertisers.length) * 100)
-                              : 0}%
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Filter Toggle */}
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors duration-200"
-                    >
-                      <Filter className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium text-foreground">Filters</span>
-                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Filter Panel */}
-                {showFilters && (
-                  <ComprehensiveAdvertiserFilterPanel
-                    filterState={filterState}
-                    setFilterState={setFilterState}
-                    filteredCount={filteredAdvertisers.length}
-                    totalCount={advertisers.length}
-                    onClose={() => setShowFilters(false)}
-                  />
-                )}
-
-                {/* Advertisers List */}
-                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-border bg-muted">
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {searchQuery ? `Search Results (${filteredAdvertisers.length})` : 'Advertiser Directory'}
-                    </h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid gap-4">
-                      {filteredAdvertisers.map((advertiser) => (
-                        <div key={advertiser.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-4 flex-1">
-                              <CompanyLogo
-                                logoUrl={advertiser.logoUrl}
-                                companyName={advertiser.name}
-                                size="lg"
-                                className="rounded-xl"
-                              />
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-start justify-between mb-2">
-                                  <div>
-                                    <Link href={`/companies/${advertiser.id}`} className="group">
-                                      <h3 className="text-lg font-semibold text-foreground group-hover:text-green-600 transition-colors">
-                                        {advertiser.name}
-                                      </h3>
-                                    </Link>
-                                    <div className="flex items-center space-x-2 mt-1">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${INDUSTRY_COLORS[advertiser.industry] || 'bg-muted text-muted-foreground'}`}>
-                                        {advertiser.industry}
-                                      </span>
-                                      {(advertiser.city || advertiser.state) && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                          <MapPin className="w-3 h-3 mr-1" />
-                                          {`${advertiser.city || ''}, ${advertiser.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
-                                        </span>
-                                      )}
-                                      {advertiser.verified && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                          <CheckCircle className="w-3 h-3 mr-1" />
-                                          Verified
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                    <Users className="w-4 h-4" />
-                                    <span>{advertiser.teamCount} people</span>
-                                  </div>
-                                </div>
-                                {/* Agency Partners */}
-                                {advertiser.agencies && advertiser.agencies.length > 0 && (
-                                  <div className="mt-2">
-                                    <p className="text-xs font-medium text-muted-foreground mb-1">Agency Partners:</p>
-                                    <div className="flex flex-wrap gap-1">
-                                      {advertiser.agencies.slice(0, expandedCompanies.has(advertiser.id) ? undefined : 3).map((agency, index) => (
-                                        <span
-                                          key={index}
-                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
-                                        >
-                                          {agency.name}
-                                          {agency.isAOR && ' (AOR)'}
-                                        </span>
-                                      ))}
-                                      {advertiser.agencies.length > 3 && (
-                                        <button
-                                          onClick={() => toggleCompanyExpansion(advertiser.id)}
-                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground hover:bg-muted transition-colors"
-                                        >
-                                          {expandedCompanies.has(advertiser.id)
-                                            ? 'Show less'
-                                            : `+${advertiser.agencies.length - 3} more`
-                                          }
-                                        </button>
-                                      )}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* People Tab */}
-            {activeTab === 'people' && (
-              <div className="w-full">
-                {/* Stats Bar */}
-                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
-                          <User className="h-5 w-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Total People</p>
-                          <p className="text-2xl font-bold text-foreground">{filteredContacts.length}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
-                          <Building2 className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Companies</p>
-                          <p className="text-2xl font-bold text-foreground">
-                            {new Set(filteredContacts.map(c => c.company.id)).size}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
-                          <CheckCircle className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Decision Makers</p>
-                          <p className="text-2xl font-bold text-foreground">
-                            {filteredContacts.filter(c => c.isDecisionMaker).length}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Filter Toggle */}
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors duration-200"
-                    >
-                      <Filter className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium text-foreground">Filters</span>
-                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Filter Panel */}
-                {showFilters && (
-                  <ComprehensivePeopleFilterPanel
-                    filterState={filterState}
-                    setFilterState={setFilterState}
-                    filteredCount={filteredContacts.length}
-                    totalCount={contacts.length}
-                    onClose={() => setShowFilters(false)}
-                  />
-                )}
-
-                {/* People List */}
-                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-border bg-muted">
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {searchQuery ? `Search Results (${filteredContacts.length})` : 'People Directory'}
-                    </h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid gap-4">
-                      {filteredContacts.map((contact) => (
-                        <div key={contact.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-4 flex-1">
-                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-                                {contact.firstName[0]}{contact.lastName[0]}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-start justify-between mb-2">
-                                  <div>
-                                    <Link href={`/people/${contact.id}`} className="group">
-                                      <h3 className="text-lg font-semibold text-foreground group-hover:text-purple-600 transition-colors">
-                                        {contact.fullName}
-                                      </h3>
-                                    </Link>
-                                    <p className="text-sm text-muted-foreground">{contact.title}</p>
-                                    <div className="flex items-center space-x-2 mt-1">
-                                      <Link
-                                        href={`/companies/${contact.company.id}`}
-                                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100"
-                                      >
-                                        <Building2 className="w-3 h-3 mr-1" />
-                                        {contact.company.name}
-                                      </Link>
-                                      {contact.seniority && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                          {contact.seniority}
-                                        </span>
-                                      )}
-                                      {contact.isDecisionMaker && (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                          <CheckCircle className="w-3 h-3 mr-1" />
-                                          Decision Maker
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="flex flex-col items-end space-y-1 text-xs text-muted-foreground">
-                                    <span className="flex items-center">
-                                      <Network className="w-3 h-3 mr-1" />
-                                      {contact.interactionCount} interactions
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'industries' && (
-              <div className="w-full">
-                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-border bg-muted">
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {INDUSTRIES_DATA.length} Industries
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Browse industries and explore associated posts
-                    </p>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {INDUSTRIES_DATA.filter(industry =>
-                        industry.name.toLowerCase().includes(searchQuery.toLowerCase())
-                      ).map((industry) => (
-                        <Link
-                          key={industry.name}
-                          href={`/industries/${encodeURIComponent(industry.name)}`}
-                          className="group bg-white border border-border rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors truncate">
-                                {industry.name}
-                              </h4>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {industry.posts.toLocaleString()} {industry.posts === 1 ? 'Post' : 'Posts'}
-                              </p>
-                            </div>
-                            <Briefcase className="h-5 w-5 text-muted-foreground group-hover:text-blue-500 transition-colors ml-2 flex-shrink-0" />
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Publishers Tab */}
-            {activeTab === 'publisher' && (
-              <div className="w-full">
-                {/* Stats Bar */}
-                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-red-50 rounded-lg">
-                        <Monitor className="h-5 w-5 text-red-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Publishers</p>
-                        <p className="text-2xl font-bold text-foreground">{filteredPublishers.length}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Verified</p>
-                        <p className="text-2xl font-bold text-foreground">
-                          {filteredPublishers.filter(p => p.verified).length}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Publishers List */}
-                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-border bg-muted">
-                    <h3 className="text-lg font-semibold text-foreground">Publisher Directory</h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid gap-4">
-                      {filteredPublishers.map((publisher) => (
-                        <div key={publisher.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
-                          <div className="flex items-start space-x-4">
-                            <CompanyLogo
-                              logoUrl={publisher.logoUrl}
-                              companyName={publisher.name}
-                              size="lg"
-                              className="rounded-xl"
-                            />
-                            <div className="flex-1">
-                              <Link href={`/companies/${publisher.id}`}>
-                                <h3 className="text-lg font-semibold text-foreground hover:text-red-600 transition-colors">
-                                  {publisher.name}
-                                </h3>
-                              </Link>
-                              <div className="flex items-center space-x-2 mt-1">
-                                {(publisher.city || publisher.state) && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                    <MapPin className="w-3 h-3 mr-1" />
-                                    {`${publisher.city || ''}, ${publisher.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
-                                  </span>
-                                )}
-                                {publisher.verified && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    Verified
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* DSP/SSP Tab */}
-            {activeTab === 'dsp-ssp' && (
-              <div className="w-full">
-                {/* Stats Bar */}
-                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-indigo-50 rounded-lg">
-                        <Satellite className="h-5 w-5 text-indigo-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Platforms</p>
-                        <p className="text-2xl font-bold text-foreground">{filteredPlatforms.length}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
-                        <Network className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Partnerships</p>
-                        <p className="text-2xl font-bold text-foreground">
-                          {filteredPlatforms.reduce((sum, p) => sum + p.partnerCount, 0)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Verified</p>
-                        <p className="text-2xl font-bold text-foreground">
-                          {filteredPlatforms.filter(p => p.verified).length}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Platforms List */}
-                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-border bg-muted">
-                    <h3 className="text-lg font-semibold text-foreground">DSP/SSP Directory</h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid gap-4">
-                      {filteredPlatforms.map((platform) => (
-                        <div key={platform.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
-                          <div className="flex items-start space-x-4">
-                            <CompanyLogo
-                              logoUrl={platform.logoUrl}
-                              companyName={platform.name}
-                              size="lg"
-                              className="rounded-xl"
-                            />
-                            <div className="flex-1">
-                              <Link href={`/companies/${platform.id}`}>
-                                <h3 className="text-lg font-semibold text-foreground hover:text-indigo-600 transition-colors">
-                                  {platform.name}
-                                </h3>
-                              </Link>
-                              <div className="flex items-center space-x-2 mt-1">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${platform.type === 'DSP' ? 'bg-indigo-100 text-indigo-800' : 'bg-purple-100 text-purple-800'}`}>
-                                  {platform.type}
-                                </span>
-                                {(platform.city || platform.state) && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                    <MapPin className="w-3 h-3 mr-1" />
-                                    {`${platform.city || ''}, ${platform.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
-                                  </span>
-                                )}
-                                {platform.verified && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    Verified
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Adtech Tab */}
-            {activeTab === 'adtech' && (
-              <div className="w-full">
-                {/* Stats Bar */}
-                <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-pink-50 rounded-lg">
-                        <BarChart3 className="h-5 w-5 text-pink-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Adtech</p>
-                        <p className="text-2xl font-bold text-foreground">{filteredAdtech.length}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
-                        <Network className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Partnerships</p>
-                        <p className="text-2xl font-bold text-foreground">
-                          {filteredAdtech.reduce((sum, c) => sum + c.partnerCount, 0)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Verified</p>
-                        <p className="text-2xl font-bold text-foreground">
-                          {filteredAdtech.filter(c => c.verified).length}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Adtech List */}
-                <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 border-b border-border bg-muted">
-                    <h3 className="text-lg font-semibold text-foreground">Adtech Directory</h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid gap-4">
-                      {filteredAdtech.map((company) => (
-                        <div key={company.id} className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-border transition-all duration-200">
-                          <div className="flex items-start space-x-4">
-                            <CompanyLogo
-                              logoUrl={company.logoUrl}
-                              companyName={company.name}
-                              size="lg"
-                              className="rounded-xl"
-                            />
-                            <div className="flex-1">
-                              <Link href={`/companies/${company.id}`}>
-                                <h3 className="text-lg font-semibold text-foreground hover:text-pink-600 transition-colors">
-                                  {company.name}
-                                </h3>
-                              </Link>
-                              <div className="flex items-center space-x-2 mt-1">
-                                {(company.city || company.state) && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                    <MapPin className="w-3 h-3 mr-1" />
-                                    {`${company.city || ''}, ${company.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
-                                  </span>
-                                )}
-                                {company.verified && (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    Verified
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Add Entity Modal */}
-            {showAddEntityModal && (
-              <AddEntityModal
-                isOpen={showAddEntityModal}
-                onClose={() => setShowAddEntityModal(false)}
-                entityType={selectedEntityType}
-                onEntityAdded={(entity) => {
-                  console.log('Entity added:', entity);
-                  // Refresh the companies list if needed
-                  if (selectedEntityType === 'agency') {
-                    window.location.reload();
-                  }
-                }}
+          {/* Advertisers Tab */}
+          {activeTab === 'advertisers' && (
+            <div className="space-y-6">
+              {/* Stats Bar */}
+              <StatsBar
+                stats={[
+                  { icon: Globe, label: 'Total Advertisers', value: filteredAdvertisers.length, colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
+                  { icon: Users, label: 'Team Members', value: filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0), colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
+                  { icon: CheckCircle, label: 'Verified Rate', value: `${filteredAdvertisers.length > 0 ? Math.round((filteredAdvertisers.filter(a => a.verified).length / filteredAdvertisers.length) * 100) : 0}%`, colorClass: 'bg-green-500/10 text-green-500' }
+                ]}
               />
-            )}
-          </div>
-        </div>
-      </div>
-    </MainLayout>
+
+              {/* Advertisers List */}
+              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+                  <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
+                    {searchQuery ? `Search Results (${filteredAdvertisers.length})` : 'Advertiser Directory'}
+                  </h2>
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover and connect with leading advertisers</p>
+                </div>
+                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                  {filteredAdvertisers.map((advertiser) => (
+                    <OrgListItem
+                      key={advertiser.id}
+                      id={advertiser.id}
+                      name={advertiser.name}
+                      logoUrl={advertiser.logoUrl}
+                      type={advertiser.industry}
+                      location={{ city: advertiser.city, state: advertiser.state }}
+                      verified={advertiser.verified}
+                      teamCount={advertiser.teamCount}
+                      searchQuery={searchQuery}
+                      showOrgChart={false}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* People Tab */}
+          {activeTab === 'people' && (
+            <div className="space-y-6">
+              {/* Stats Bar */}
+              <StatsBar
+                stats={[
+                  { icon: User, label: 'Total People', value: filteredContacts.length, colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
+                  { icon: Building2, label: 'Companies', value: new Set(filteredContacts.map(c => c.company.id)).size, colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
+                  { icon: CheckCircle, label: 'Decision Makers', value: filteredContacts.filter(c => c.isDecisionMaker).length, colorClass: 'bg-green-500/10 text-green-500' }
+                ]}
+              />
+
+              {/* People List */}
+              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+                  <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
+                    {searchQuery ? `Search Results (${filteredContacts.length})` : 'People Directory'}
+                  </h2>
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Connect with industry professionals</p>
+                </div>
+                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                  {filteredContacts.map((contact) => (
+                    <div key={contact.id} className="px-6 py-4 hover:bg-[#F7F9FC] dark:hover:bg-[#101E38] cursor-pointer transition-all">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-full icon-gradient-bg flex items-center justify-center text-[#2575FC] dark:text-[#5B8DFF] font-bold text-lg">
+                          {contact.firstName[0]}{contact.lastName[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <Link href={`/people/${contact.id}`} className="group">
+                            <h3 className="font-semibold text-[#162B54] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors">
+                              {contact.fullName}
+                            </h3>
+                          </Link>
+                          <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">{contact.title}</p>
+                          <div className="flex items-center flex-wrap gap-2 mt-1">
+                            <span className="px-2 py-0.5 bg-[#2575FC]/10 text-[#2575FC] dark:bg-[#5B8DFF]/10 dark:text-[#5B8DFF] rounded text-xs font-medium">
+                              {contact.company.name}
+                            </span>
+                            {contact.seniority && (
+                              <span className="text-xs text-[#64748B] dark:text-[#9AA7C2]">
+                                {contact.seniority}
+                              </span>
+                            )}
+                            {contact.isDecisionMaker && (
+                              <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs font-medium">
+                                <CheckCircle className="w-3 h-3" />
+                                Decision Maker
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Industries Tab */}
+          {activeTab === 'industries' && (
+            <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+                <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
+                  {INDUSTRIES_DATA.length} Industries
+                </h2>
+                <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">
+                  Browse industries and explore associated posts
+                </p>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {INDUSTRIES_DATA.filter(industry =>
+                    industry.name.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).map((industry) => (
+                    <Link
+                      key={industry.name}
+                      href={`/industries/${encodeURIComponent(industry.name)}`}
+                      className="group bg-card border border-border rounded-lg p-4 hover:shadow-md hover:border-[#2575FC] dark:hover:border-[#5B8DFF] transition-all duration-200"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-semibold text-[#162B54] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors truncate">
+                            {industry.name}
+                          </h4>
+                          <p className="text-xs text-[#64748B] dark:text-[#9AA7C2] mt-1">
+                            {industry.posts.toLocaleString()} {industry.posts === 1 ? 'Post' : 'Posts'}
+                          </p>
+                        </div>
+                        <Briefcase className="h-5 w-5 text-[#64748B] dark:text-[#9AA7C2] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors ml-2 flex-shrink-0" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Publisher Tab */}
+          {activeTab === 'publisher' && (
+            <div className="space-y-6">
+              {/* Stats Bar */}
+              <StatsBar
+                stats={[
+                  { icon: Monitor, label: 'Total Publishers', value: filteredPublishers.length, colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
+                  { icon: CheckCircle, label: 'Verified', value: filteredPublishers.filter(p => p.verified).length, colorClass: 'bg-green-500/10 text-green-500' }
+                ]}
+              />
+
+              {/* Publishers List */}
+              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+                  <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">Publisher Directory</h2>
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover media publishers</p>
+                </div>
+                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                  {filteredPublishers.map((publisher) => (
+                    <OrgListItem
+                      key={publisher.id}
+                      id={publisher.id}
+                      name={publisher.name}
+                      logoUrl={publisher.logoUrl}
+                      type={publisher.type}
+                      location={{ city: publisher.city, state: publisher.state }}
+                      verified={publisher.verified}
+                      searchQuery={searchQuery}
+                      showOrgChart={false}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Adtech Tab */}
+          {activeTab === 'adtech' && (
+            <div className="space-y-6">
+              {/* Stats Bar */}
+              <StatsBar
+                stats={[
+                  { icon: BarChart3, label: 'Total Adtech', value: filteredAdtech.length, colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
+                  { icon: Network, label: 'Total Partnerships', value: filteredAdtech.reduce((sum, c) => sum + c.partnerCount, 0), colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
+                  { icon: CheckCircle, label: 'Verified', value: filteredAdtech.filter(c => c.verified).length, colorClass: 'bg-green-500/10 text-green-500' }
+                ]}
+              />
+
+              {/* Adtech List */}
+              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+                  <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">Adtech Directory</h2>
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover advertising technology platforms</p>
+                </div>
+                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                  {filteredAdtech.map((company) => (
+                    <OrgListItem
+                      key={company.id}
+                      id={company.id}
+                      name={company.name}
+                      logoUrl={company.logoUrl}
+                      type={company.type}
+                      location={{ city: company.city, state: company.state }}
+                      verified={company.verified}
+                      searchQuery={searchQuery}
+                      showOrgChart={false}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Add Entity Modal */}
+          {showAddEntityModal && (
+            <AddEntityModal
+              isOpen={showAddEntityModal}
+              onClose={() => setShowAddEntityModal(false)}
+              entityType={selectedEntityType}
+              onEntityAdded={(entity) => {
+                // Refresh the companies list if needed
+                if (selectedEntityType === 'agency') {
+                  window.location.reload();
+                }
+              }}
+            />
+          )}
+        </PageContent>
+      </PageFrame>
     </AuthGuard>
   );
 }

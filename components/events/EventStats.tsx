@@ -85,51 +85,53 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
     <div className="space-y-6">
       {/* Event Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-card p-4 rounded-lg border">
+        <div className="stat-card rounded-xl p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Event Format</span>
+            <span className="text-sm font-medium text-[#64748B] dark:text-[#9AA7C2]">Event Format</span>
             <span className={`text-xs px-2 py-1 rounded-full ${eventFormat.color}`}>
               {eventFormat.label}
             </span>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center text-sm text-muted-foreground">
+            <div className="flex items-center text-sm text-[#64748B] dark:text-[#9AA7C2]">
               <Calendar className="w-4 h-4 mr-2" />
               <span>{formatDate(event.startDate)} - {formatDate(event.endDate)}</span>
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
+            <div className="flex items-center text-sm text-[#64748B] dark:text-[#9AA7C2]">
               <MapPin className="w-4 h-4 mr-2" />
               <span>{event.location}</span>
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
+            <div className="flex items-center text-sm text-[#64748B] dark:text-[#9AA7C2]">
               <Building className="w-4 h-4 mr-2" />
               <span>{event.venue}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-card p-4 rounded-lg border">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Attendees</span>
-            <Users className="w-5 h-5 text-primary" />
+        <div className="stat-card rounded-xl p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 flex items-center justify-center">
+            <Users className="w-6 h-6 text-[#2575FC] dark:text-[#5B8DFF]" />
           </div>
-          <div className="text-2xl font-bold text-foreground">{event._count.attendees}</div>
-          <div className="text-sm text-muted-foreground">DealMecca users</div>
+          <div>
+            <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Attendees</p>
+            <p className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">{event._count.attendees}</p>
+          </div>
         </div>
 
-        <div className="bg-card p-4 rounded-lg border">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Reviews</span>
-            <MessageSquare className="w-5 h-5 text-green-500" />
+        <div className="stat-card rounded-xl p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+            <MessageSquare className="w-6 h-6 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-foreground">{event._count.ratings}</div>
-          <div className="text-sm text-muted-foreground">User ratings</div>
+          <div>
+            <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Reviews</p>
+            <p className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">{event._count.ratings}</p>
+          </div>
         </div>
       </div>
 
       {/* Ratings Breakdown */}
-      <div className="bg-card p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Ratings Breakdown</h3>
+      <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border p-6 rounded-xl">
+        <h3 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF] mb-4">Ratings Breakdown</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className={`p-4 rounded-lg text-center ${getRatingBg(avgRatings.overall)}`}>
             <div className="flex items-center justify-center mb-2">
@@ -183,7 +185,7 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
       </div>
 
       {/* Cost Analysis */}
-      <div className="bg-card p-6 rounded-lg border">
+      <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-foreground mb-4">Cost Analysis</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -252,7 +254,7 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
       </div>
 
       {/* ROI Statistics */}
-      <div className="bg-card p-6 rounded-lg border">
+      <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-foreground mb-4">ROI Statistics</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center p-4 bg-green-50 rounded-lg">
@@ -298,7 +300,7 @@ export default function EventStats({ event, avgRatings, avgCosts, roiStats }: Ev
       </div>
 
       {/* Attendee Demographics */}
-      <div className="bg-card p-6 rounded-lg border">
+      <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-foreground mb-4">Attendee Insights</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>

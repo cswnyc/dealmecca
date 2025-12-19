@@ -109,13 +109,10 @@ export default function UsernameSelector({
 
       {/* Current username display */}
       {currentUsername && (
-        <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-foreground">Current</p>
-              <p className="text-sm text-primary">{currentUsername}</p>
-            </div>
-          </div>
+        <div className="p-4 rounded-lg"
+          style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%)' }}>
+          <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mb-1">Current</p>
+          <p className="font-semibold text-[#2575FC] dark:text-[#5B8DFF]">{currentUsername}</p>
         </div>
       )}
 
@@ -132,23 +129,17 @@ export default function UsernameSelector({
                   onClick={() => handleUsernameSelect(username)}
                   disabled={disabled}
                   className={`
-                    p-3 text-left rounded-lg border transition-all duration-200
+                    px-4 py-3 rounded-lg text-left border transition-all
                     ${isSelected
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border hover:border-border/80 hover:bg-muted text-foreground'
+                      ? 'border-[#2575FC] dark:border-[#5B8DFF]'
+                      : 'border-[#E6EAF2] dark:border-dark-border hover:border-[#2575FC] dark:hover:border-[#5B8DFF]'
                     }
                     ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                     focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1
                   `}
+                  style={isSelected ? { background: 'var(--color-primary-soft-bg)' } : undefined}
                 >
-                  <span className="text-sm font-medium">{username}</span>
-                  {isSelected && (
-                    <div className="mt-1">
-                      <span className="inline-flex items-center px-2 py-0.5 text-xs bg-primary/20 text-primary rounded-full">
-                        Selected
-                      </span>
-                    </div>
-                  )}
+                  <span className={`text-sm ${isSelected ? 'text-[#162B54] dark:text-[#EAF0FF]' : 'text-[#162B54] dark:text-[#EAF0FF]'}`}>{username}</span>
                 </button>
               );
             })}

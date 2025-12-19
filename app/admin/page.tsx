@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, BarChart3, UserCheck, Shield, Folder, Calendar } from 'lucide-react';
+import { PageFrame, PageHeader, PageContent, PageCard, PageGrid } from '@/components/layout/PageFrame';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface DashboardStats {
   totalCompanies: number;
@@ -68,203 +72,213 @@ export default function AdminDashboard() {
       description: 'View and edit company data',
       href: '/admin/orgs/companies',
       icon: Building2,
-      color: 'text-blue-600 bg-blue-50'
+      color: 'text-primary bg-primary/10'
     },
     {
       title: 'Manage Contacts',
       description: 'View and edit contact data',
       href: '/admin/orgs/contacts',
       icon: Users,
-      color: 'text-green-600 bg-green-50'
+      color: 'text-accent bg-accent/10'
     },
     {
       title: 'User Management',
       description: 'Manage users, roles, and subscriptions',
       href: '/admin/users',
       icon: UserCheck,
-      color: 'text-purple-600 bg-purple-50'
+      color: 'text-secondary bg-secondary/10'
     },
     {
       title: 'Waitlist Management',
       description: 'View and manage waitlist signups',
       href: '/admin/waitlist',
       icon: Shield,
-      color: 'text-brand-primary bg-brand-softBg'
+      color: 'text-primary bg-primary/10'
     },
     {
       title: 'Bulk Import',
       description: 'Upload CSV data for companies and contacts',
       href: '/admin/bulk-import',
       icon: Upload,
-      color: 'text-purple-600 bg-purple-50'
+      color: 'text-secondary bg-secondary/10'
     },
     {
       title: 'Forum Posts',
       description: 'Manage all forum posts and moderation',
       href: '/admin/forum/posts',
       icon: MessageSquare,
-      color: 'text-orange-600 bg-orange-50'
+      color: 'text-accent bg-accent/10'
     },
     {
       title: 'Forum Categories',
       description: 'Manage discussion categories and topics',
       href: '/admin/forum-categories',
       icon: Folder,
-      color: 'text-amber-600 bg-amber-50'
+      color: 'text-accent bg-accent/10'
     },
     {
       title: 'Events Management',
       description: 'Create and manage industry events',
       href: '/admin/events',
       icon: TrendingUp,
-      color: 'text-indigo-600 bg-indigo-50'
+      color: 'text-secondary bg-secondary/10'
     }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="bg-card rounded-lg border border-border p-6">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Manage DealMecca platform and data</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <a
-              href="/admin/bulk-import"
-              className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-            >
+    <PageFrame maxWidth="7xl">
+      <PageHeader
+        title="Admin Dashboard"
+        description="Manage DealMecca platform and data"
+        actions={
+          <Button asChild>
+            <Link href="/admin/bulk-import">
               <Plus className="w-4 h-4 mr-2" />
               Bulk Import
-            </a>
-          </div>
-        </div>
+            </Link>
+          </Button>
+        }
+      />
+
+      <PageContent>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-medium text-blue-600 mb-2">Total Companies</p>
-                <p className="text-3xl font-bold text-blue-900">
-                  {loading ? (
-                    <span className="animate-pulse">...</span>
-                  ) : (
-                    stats.totalCompanies.toLocaleString()
-                  )}
-                </p>
+        <PageGrid columns={3}>
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-primary mb-2">Total Companies</p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {loading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      stats.totalCompanies.toLocaleString()
+                    )}
+                  </p>
+                </div>
+                <Building2 className="w-8 h-8 text-primary flex-shrink-0" />
               </div>
-              <Building2 className="w-8 h-8 text-blue-600 flex-shrink-0" />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-medium text-green-600 mb-2">Total Contacts</p>
-                <p className="text-3xl font-bold text-green-900">
-                  {loading ? (
-                    <span className="animate-pulse">...</span>
-                  ) : (
-                    stats.totalContacts.toLocaleString()
-                  )}
-                </p>
+          <Card className="bg-accent/5 border-accent/20">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-accent mb-2">Total Contacts</p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {loading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      stats.totalContacts.toLocaleString()
+                    )}
+                  </p>
+                </div>
+                <Users className="w-8 h-8 text-accent flex-shrink-0" />
               </div>
-              <Users className="w-8 h-8 text-green-600 flex-shrink-0" />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-medium text-purple-600 mb-2">Total Users</p>
-                <p className="text-3xl font-bold text-purple-900">
-                  {loading ? (
-                    <span className="animate-pulse">...</span>
-                  ) : (
-                    stats.totalUsers.toLocaleString()
-                  )}
-                </p>
+          <Card className="bg-secondary/5 border-secondary/20">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-secondary mb-2">Total Users</p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {loading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      stats.totalUsers.toLocaleString()
+                    )}
+                  </p>
+                </div>
+                <Users className="w-8 h-8 text-secondary flex-shrink-0" />
               </div>
-              <Users className="w-8 h-8 text-purple-600 flex-shrink-0" />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-xl border border-orange-200">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-medium text-orange-600 mb-2">Forum Posts</p>
-                <p className="text-3xl font-bold text-orange-900">
-                  {loading ? (
-                    <span className="animate-pulse">...</span>
-                  ) : (
-                    stats.forumPosts.toLocaleString()
-                  )}
-                </p>
+          <Card className="bg-accent/5 border-accent/20">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-accent mb-2">Forum Posts</p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {loading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      stats.forumPosts.toLocaleString()
+                    )}
+                  </p>
+                </div>
+                <MessageSquare className="w-8 h-8 text-accent flex-shrink-0" />
               </div>
-              <MessageSquare className="w-8 h-8 text-orange-600 flex-shrink-0" />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-6 rounded-xl border border-indigo-200">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-medium text-indigo-600 mb-2">Total Events</p>
-                <p className="text-3xl font-bold text-indigo-900">
-                  {loading ? (
-                    <span className="animate-pulse">...</span>
-                  ) : (
-                    stats.totalEvents.toLocaleString()
-                  )}
-                </p>
+          <Card className="bg-secondary/5 border-secondary/20">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-secondary mb-2">Total Events</p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {loading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      stats.totalEvents.toLocaleString()
+                    )}
+                  </p>
+                </div>
+                <Calendar className="w-8 h-8 text-secondary flex-shrink-0" />
               </div>
-              <Calendar className="w-8 h-8 text-indigo-600 flex-shrink-0" />
-            </div>
-          </div>
-        </div>
+            </CardContent>
+          </Card>
+        </PageGrid>
 
         {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-foreground mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-foreground">Quick Actions</h2>
+          <PageGrid columns={3}>
             {quickActions.map((action, index) => (
-              <a
-                key={index}
-                href={action.href}
-                className="group p-6 border border-border rounded-xl hover:border-border hover:shadow-md transition-all duration-200"
-              >
-                <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-lg ${action.color} flex-shrink-0`}>
-                    <action.icon className="w-6 h-6" />
+              <Link key={index} href={action.href}>
+                <PageCard hover>
+                  <div className="p-6">
+                    <div className="flex items-start space-x-4">
+                      <div className={`p-3 rounded-lg ${action.color} flex-shrink-0`}>
+                        <action.icon className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {action.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {action.description}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-foreground group-hover:text-foreground/80">
-                      {action.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {action.description}
-                    </p>
-                  </div>
-                </div>
-              </a>
+                </PageCard>
+              </Link>
             ))}
-          </div>
+          </PageGrid>
         </div>
 
-        {/* Recent Activity */}
-        <div>
-          <h2 className="text-xl font-semibold text-foreground mb-4">System Status</h2>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-              <p className="text-green-800 font-medium">All systems operational</p>
-            </div>
-            <p className="text-green-700 text-sm mt-1">
-              Platform is running smoothly with no detected issues.
-            </p>
-          </div>
+        {/* System Status */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-foreground">System Status</h2>
+          <Card className="bg-accent/5 border-accent/20">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-accent rounded-full mr-3"></div>
+                <p className="text-foreground font-medium">All systems operational</p>
+              </div>
+              <p className="text-muted-foreground text-sm mt-1">
+                Platform is running smoothly with no detected issues.
+              </p>
+            </CardContent>
+          </Card>
         </div>
-      </div>
-    </div>
+      </PageContent>
+    </PageFrame>
   );
 }

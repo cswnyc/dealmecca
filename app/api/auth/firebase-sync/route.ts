@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       // Create new user in database
       user = await prisma.user.create({
         data: {
-          id: uid, // Use Firebase UID as database ID
+          firebaseUid: uid,
           email,
           name: displayName || null,
           role: 'FREE',
@@ -74,12 +74,12 @@ export async function POST(request: NextRequest) {
           // Don't fail the user registration if ConvertKit fails
         }
       }
-    } else if (user.id !== uid) {
-      // Update user ID if it doesn't match Firebase UID
+    } else if (user.firebaseUid !== uid) {
+      // Update firebaseUid if it doesn't match
       user = await prisma.user.update({
-        where: { email },
+        where: { id: user.id },
         data: {
-          id: uid,
+          firebaseUid: uid,
           name: displayName || user.name,
           updatedAt: new Date()
         }
@@ -122,14 +122,14 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.cookies.get('dealmecca-session')?.value;
+    const firebaseUid = request.cookies.get('dealmecca-session')?.value;
 
-    if (!userId) {
+    if (!firebaseUid) {
       return NextResponse.json({ user: null });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { firebaseUid },
       select: {
         id: true,
         email: true,
@@ -163,7 +163,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const user = await prisma.user.update({
-      where: { id: uid },
+      where: { firebaseUid: uid },
       data: {
         name: displayName || null,
         updatedAt: new Date()
@@ -185,9 +185,9 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const userId = request.cookies.get('dealmecca-session')?.value;
+    const firebaseUid = request.cookies.get('dealmecca-session')?.value;
 
-    if (!userId) {
+    if (!firebaseUid) {
       return NextResponse.json(
         { error: 'No active session' },
         { status: 401 }
@@ -201,7 +201,7 @@ export async function DELETE(request: NextRequest) {
       path: '/'
     });
 
-    console.log('🔥 Firebase session cleared:', { userId });
+    console.log('🔥 Firebase session cleared:', { firebaseUid });
 
     return response;
 

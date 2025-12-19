@@ -175,15 +175,19 @@ export function TeamCard({
   const hiddenDutyCount = teamDuties.length - visibleDutyCount;
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="row-hover-accent hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           {/* Company/Team Logo */}
           {displayCompany ? (
-            <CompanyLogo logoUrl={displayCompany.logoUrl} name={displayCompany.name} />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)' }}>
+              <CompanyLogo logoUrl={displayCompany.logoUrl} name={displayCompany.name} />
+            </div>
           ) : (
-            <div className="w-12 h-12 bg-gradient-to-br from-muted-foreground to-foreground rounded-lg flex items-center justify-center">
-              <span className="text-white text-xs font-bold">{team.name.substring(0, 2).toUpperCase()}</span>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)' }}>
+              <Building2 className="w-5 h-5 text-[#2575FC] dark:text-[#5B8DFF]" />
             </div>
           )}
 
@@ -289,18 +293,18 @@ export function TeamCard({
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <button className="hover:text-foreground">
+          <div className="flex items-center gap-2 text-[#9AA7C2]">
+            <button className="p-2 hover:text-[#2575FC] dark:hover:text-[#5B8DFF] transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </button>
-            <button className="hover:text-foreground">
+            <button className="p-2 hover:text-[#2575FC] dark:hover:text-[#5B8DFF] transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
             </button>
-            <button className="hover:text-foreground">
+            <button className="p-2 hover:text-[#2575FC] dark:hover:text-[#5B8DFF] transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>

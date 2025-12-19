@@ -10,31 +10,40 @@ export interface SwitchProps
 }
 
 const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
-  ({ className, checked, onCheckedChange, ...props }, ref) => {
+  ({ className, checked, onCheckedChange, disabled, ...props }, ref) => {
     return (
-      <label className={cn("relative inline-flex items-center cursor-pointer", className)}>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => !disabled && onCheckedChange?.(!checked)}
+        className={cn(
+          "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2575FC] dark:focus-visible:ring-[#5B8DFF] focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          checked
+            ? "bg-gradient-to-r from-[#2575FC] to-[#8B5CF6]"
+            : "bg-[#CBD5E1] dark:bg-[#475569]",
+          disabled && "opacity-50 cursor-not-allowed",
+          className
+        )}
+      >
         <input
           type="checkbox"
           className="sr-only"
           ref={ref}
           checked={checked}
-          onChange={(e) => onCheckedChange?.(e.target.checked)}
+          disabled={disabled}
+          readOnly
           {...props}
         />
-        <div
+        <span
           className={cn(
-            "relative w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-ring/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background after:border-input after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary",
-            checked ? "bg-primary" : "bg-muted"
+            "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out",
+            checked ? "translate-x-6" : "translate-x-1"
           )}
-        >
-          <div
-            className={cn(
-              "absolute top-0.5 left-0.5 bg-background border border-input rounded-full h-5 w-5 transition-transform duration-200 ease-in-out",
-              checked ? "transform translate-x-5" : ""
-            )}
-          />
-        </div>
-      </label>
+        />
+      </button>
     )
   }
 )

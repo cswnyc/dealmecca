@@ -10,10 +10,12 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { PageFrame, PageContent, PageCard } from '@/components/layout/PageFrame';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { BrandTabs } from '@/components/ui/BrandTabs';
+import { EmptyState } from '@/components/events/EmptyState';
 import {
   Select,
   SelectContent,
@@ -29,6 +31,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { CountdownBadge } from '@/components/events/CountdownTimer';
 import { StarRating, RatingBadge } from '@/components/events/RatingProgressBars';
 import { AttendeeAvatarRow } from '@/components/events/AttendeePreview';
@@ -87,7 +90,7 @@ const TABS = [
   { id: 'webinars', label: 'Webinars', icon: Monitor },
   { id: 'virtual', label: 'Virtual', icon: Wifi },
   { id: 'networking', label: 'Networking', icon: Globe }
-];
+] as const;
 
 export default function EventsPage() {
   const { user: firebaseUser, loading: authLoading } = useAuth();
@@ -236,15 +239,15 @@ export default function EventsPage() {
 
   const getCategoryBadgeColor = (category: string) => {
     const colors: Record<string, string> = {
-      'CONFERENCE': 'bg-blue-100 text-blue-800 border-blue-200',
-      'TRADE_SHOW': 'bg-green-100 text-green-800 border-green-200',
-      'SUMMIT': 'bg-purple-100 text-purple-800 border-purple-200',
-      'WORKSHOP': 'bg-orange-100 text-orange-800 border-orange-200',
-      'NETWORKING': 'bg-green-100 text-green-800 border-green-200',
-      'AWARDS': 'bg-amber-100 text-amber-800 border-amber-200',
-      'WEBINAR': 'bg-violet-100 text-violet-800 border-violet-200',
-      'MASTERCLASS': 'bg-rose-100 text-rose-800 border-rose-200',
-      'MEETUP': 'bg-pink-100 text-pink-800 border-pink-200'
+      'CONFERENCE': 'bg-primary/10 text-primary border-primary/20',
+      'TRADE_SHOW': 'bg-accent/10 text-accent border-accent/20',
+      'SUMMIT': 'bg-secondary/10 text-secondary border-secondary/20',
+      'WORKSHOP': 'bg-accent/10 text-accent border-accent/20',
+      'NETWORKING': 'bg-accent/10 text-accent border-accent/20',
+      'AWARDS': 'bg-accent/10 text-accent border-accent/20',
+      'WEBINAR': 'bg-secondary/10 text-secondary border-secondary/20',
+      'MASTERCLASS': 'bg-destructive/10 text-destructive border-destructive/20',
+      'MEETUP': 'bg-accent/10 text-accent border-accent/20'
     };
     return colors[category] || 'bg-muted text-muted-foreground border-border';
   };
@@ -314,23 +317,23 @@ export default function EventsPage() {
 
   if (authLoading) {
     return (
-      <MainLayout>
-        <div className="min-h-screen bg-background flex items-center justify-center">
+      <PageFrame maxWidth="7xl">
+        <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-muted-foreground">Loading events...</p>
           </div>
         </div>
-      </MainLayout>
+      </PageFrame>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="min-h-screen bg-background">
+    <PageFrame maxWidth="full" className="p-0">
+      <div className="bg-background">
         {/* Featured Event Hero */}
         {featuredEvent && (
-          <div className="relative overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700">
+          <div className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}>
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
@@ -386,7 +389,7 @@ export default function EventsPage() {
                   <div className="flex flex-wrap items-center gap-3">
                     <Link
                       href={`/events/${featuredEvent.id}`}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white text-purple-700 font-bold rounded-lg hover:bg-muted transition-all shadow-lg"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#2575FC] font-semibold rounded-lg hover:bg-white/90 transition-all"
                     >
                       View Details
                       <ArrowRight className="w-4 h-4" />
@@ -425,71 +428,43 @@ export default function EventsPage() {
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Tab Navigation */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {TABS.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/25 scale-105'
-                        : 'bg-card text-muted-foreground hover:bg-muted border border-border'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <BrandTabs
+            tabs={TABS}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            className="mb-6"
+          />
 
           {/* Search & Filters */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
+          <div className="flex items-center gap-4 mb-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
-              <Input
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9AA7C2]" />
+              <input
                 type="text"
                 placeholder="Search events by name, location, or industry..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-10 h-12 bg-card shadow-sm border-border text-base"
+                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] placeholder-[#9AA7C2] focus:outline-none focus:ring-2 focus:ring-[#2575FC]/20 focus:border-[#2575FC] dark:focus:ring-[#5B8DFF]/20 dark:focus:border-[#5B8DFF] transition-all"
               />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              )}
             </div>
-
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className={`h-12 px-4 ${showFilters ? 'bg-primary/10 border-primary/30 text-primary' : ''}`}
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-
-              <Button
-                onClick={() => {
-                  resetSuggestionDialog();
-                  setShowSuggestionDialog(true);
-                }}
-                className="h-12 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg"
-              >
-                <Lightbulb className="w-4 h-4 mr-2" />
-                Suggest Event
-              </Button>
-            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-3 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl text-sm font-medium text-[#64748B] dark:text-[#9AA7C2] hover:border-[#2575FC] dark:hover:border-[#5B8DFF] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] transition-all whitespace-nowrap ${showFilters ? 'border-[#2575FC] dark:border-[#5B8DFF] text-[#2575FC] dark:text-[#5B8DFF]' : ''}`}
+            >
+              <Filter className="w-5 h-5" />
+              Filters
+            </button>
+            <button
+              onClick={() => {
+                resetSuggestionDialog();
+                setShowSuggestionDialog(true);
+              }}
+              className="text-white px-5 py-3 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
+              style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+            >
+              <Lightbulb className="w-5 h-5" />
+              Suggest Event
+            </button>
           </div>
 
           {/* Filter Panel */}
@@ -573,34 +548,26 @@ export default function EventsPage() {
           {/* Stats Bar */}
           <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { icon: Calendar, label: 'Total Events', value: filteredEvents.length, color: 'blue' },
-              { icon: Users, label: 'Total Attendees', value: totalAttendees.toLocaleString(), color: 'emerald' },
-              { icon: Wifi, label: 'Virtual Events', value: virtualCount, color: 'purple' },
-              { icon: Star, label: 'Avg Rating', value: avgRating ? avgRating.toFixed(1) : '—', color: 'amber' }
+              { icon: Calendar, label: 'Total Events', value: filteredEvents.length, colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
+              { icon: Users, label: 'Total Attendees', value: totalAttendees.toLocaleString(), colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
+              { icon: Wifi, label: 'Virtual Events', value: virtualCount, colorClass: 'bg-cyan-500/10 text-cyan-500' },
+              { icon: Star, label: 'Avg Rating', value: avgRating ? avgRating.toFixed(1) : '—', colorClass: 'bg-yellow-500/10 text-yellow-500' }
             ].map((stat, index) => {
               const Icon = stat.icon;
-              const colors: Record<string, string> = {
-                blue: 'bg-blue-100 text-blue-600',
-                emerald: 'bg-emerald-100 text-emerald-600',
-                purple: 'bg-purple-100 text-purple-600',
-                amber: 'bg-amber-100 text-amber-600'
-              };
               return (
                 <div
                   key={stat.label}
-                  className={`bg-card rounded-xl border border-border p-4 shadow-sm transition-all duration-500 ${
+                  className={`stat-card rounded-xl p-5 flex items-center gap-4 transition-all duration-500 ${
                     statsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg ${colors[stat.color]} flex items-center justify-center`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      <p className="text-sm text-muted-foreground">{stat.label}</p>
-                    </div>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.colorClass}`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">{stat.label}</p>
+                    <p className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">{stat.value}</p>
                   </div>
                 </div>
               );
@@ -617,141 +584,133 @@ export default function EventsPage() {
                 </div>
               </div>
             ) : filteredEvents.length === 0 ? (
-              <div className="text-center py-20 bg-card rounded-xl border border-border">
-                <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">No events found</h3>
-                <p className="text-muted-foreground mb-6">Try adjusting your search or filters</p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setFilterState({ category: 'all', industry: 'all', isVirtual: 'all' });
-                    setActiveTab('upcoming');
-                  }}
-                >
-                  Clear All Filters
-                </Button>
-              </div>
+              <EmptyState
+                onClearFilters={() => {
+                  setSearchQuery('');
+                  setFilterState({ category: 'all', industry: 'all', isVirtual: 'all' });
+                  setActiveTab('upcoming');
+                }}
+                onSuggestEvent={() => {
+                  resetSuggestionDialog();
+                  setShowSuggestionDialog(true);
+                }}
+              />
             ) : (
               filteredEvents.map((event, index) => {
                 const isUpcoming = new Date(event.startDate) > new Date();
                 return (
-                  <div
+                  <PageCard
                     key={event.id}
-                    onClick={() => router.push(`/events/${event.id}`)}
-                    className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm event-card-hover cursor-pointer animate-slide-up"
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    hover
+                    className="cursor-pointer animate-slide-up overflow-hidden"
                   >
-                    {/* Gradient Accent Bar */}
-                    <div className={`h-1 ${getCategoryGradient(event.category)}`} />
+                    <div onClick={() => router.push(`/events/${event.id}`)}>
+                          {/* Gradient Accent Bar */}
+                      <div className={`h-1 ${getCategoryGradient(event.category)}`} />
 
-                    <div className="p-6">
-                      <div className="flex items-start gap-5">
-                        {/* Event Icon/Logo */}
-                        <div className={`w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br ${
-                          event.category === 'CONFERENCE' ? 'from-blue-500 to-indigo-600' :
-                          event.category === 'MEETUP' ? 'from-pink-500 to-rose-600' :
-                          event.category === 'WEBINAR' ? 'from-purple-500 to-violet-600' :
-                          event.category === 'WORKSHOP' ? 'from-orange-500 to-amber-600' :
-                          'from-green-500 to-emerald-600'
-                        }`}>
-                          <Calendar className="w-8 h-8 text-white" />
-                        </div>
+                      <div className="p-6">
+                        <div className="flex items-start gap-5">
+                          {/* Event Icon/Logo */}
+                          <div className="w-16 h-16 rounded-xl icon-gradient-bg flex items-center justify-center flex-shrink-0">
+                            <Calendar className="w-8 h-8 text-[#2575FC] dark:text-[#5B8DFF]" />
+                          </div>
 
-                        {/* Event Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors mb-1">
-                                {event.name}
-                              </h3>
-                              <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
-                                {event.description}
-                              </p>
+                          {/* Event Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors mb-1">
+                                  {event.name}
+                                </h3>
+                                <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
+                                  {event.description}
+                                </p>
 
-                              {/* Details Row */}
-                              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                                <span className="inline-flex items-center gap-1.5">
-                                  <Clock className="w-4 h-4" />
-                                  {formatDate(event.startDate)} - {formatDate(event.endDate)}
-                                </span>
-                                <span className="inline-flex items-center gap-1.5">
-                                  <MapPin className="w-4 h-4" />
-                                  {event.location}
-                                </span>
-                                <span className="inline-flex items-center gap-1.5">
-                                  {event.isVirtual ? <Wifi className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
-                                  {event.isVirtual ? 'Virtual' : event.isHybrid ? 'Hybrid' : 'In-Person'}
-                                </span>
+                                {/* Details Row */}
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                                  <span className="inline-flex items-center gap-1.5">
+                                    <Clock className="w-4 h-4" />
+                                    {formatDate(event.startDate)} - {formatDate(event.endDate)}
+                                  </span>
+                                  <span className="inline-flex items-center gap-1.5">
+                                    <MapPin className="w-4 h-4" />
+                                    {event.location}
+                                  </span>
+                                  <span className="inline-flex items-center gap-1.5">
+                                    {event.isVirtual ? <Wifi className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
+                                    {event.isVirtual ? 'Virtual' : event.isHybrid ? 'Hybrid' : 'In-Person'}
+                                  </span>
+                                </div>
+
+                                {/* Badges Row */}
+                                <div className="flex flex-wrap items-center gap-2 mt-3">
+                                  <Badge variant="outline" className={getCategoryBadgeColor(event.category)}>
+                                    {event.category.replace(/_/g, ' ')}
+                                  </Badge>
+                                  <Badge variant="outline">
+                                    {event.industry.replace(/_/g, ' ')}
+                                  </Badge>
+                                  {isUpcoming && <CountdownBadge targetDate={event.startDate} />}
+                                  {event.callForSpeakers && (
+                                    <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/20">
+                                      Call for Speakers
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
 
-                              {/* Badges Row */}
-                              <div className="flex flex-wrap items-center gap-2 mt-3">
-                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getCategoryBadgeColor(event.category)}`}>
-                                  {event.category.replace(/_/g, ' ')}
-                                </span>
-                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-foreground">
-                                  {event.industry.replace(/_/g, ' ')}
-                                </span>
-                                {isUpcoming && <CountdownBadge targetDate={event.startDate} />}
-                                {event.callForSpeakers && (
-                                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
-                                    Call for Speakers
-                                  </span>
+                              {/* Right Side - Stats & Price */}
+                              <div className="text-right flex-shrink-0">
+                                <p className="text-2xl font-bold text-foreground mb-1">
+                                  {formatCost(event.estimatedCost)}
+                                </p>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {event.attendeeCount?.toLocaleString() || '—'} attendees
+                                </p>
+                                {event.avgOverallRating && (
+                                  <RatingBadge value={event.avgOverallRating} reviews={event.totalRatings} />
                                 )}
                               </div>
                             </div>
 
-                            {/* Right Side - Stats & Price */}
-                            <div className="text-right flex-shrink-0">
-                              <p className="text-2xl font-bold text-foreground mb-1">
-                                {formatCost(event.estimatedCost)}
-                              </p>
-                              <p className="text-sm text-muted-foreground mb-2">
-                                {event.attendeeCount?.toLocaleString() || '—'} attendees
-                              </p>
-                              {event.avgOverallRating && (
-                                <RatingBadge value={event.avgOverallRating} reviews={event.totalRatings} />
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[#E6EAF2] dark:border-dark-border" onClick={(e) => e.stopPropagation()}>
+                              {event.registrationUrl && (
+                                <a
+                                  href={event.registrationUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+                                  style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+                                >
+                                  <Ticket className="w-4 h-4" />
+                                  Register
+                                </a>
                               )}
+                              {event.website && (
+                                <a
+                                  href={event.website}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-lg text-sm font-medium text-[#64748B] dark:text-[#9AA7C2] hover:border-[#2575FC] dark:hover:border-[#5B8DFF] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] transition-all"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                  Website
+                                </a>
+                              )}
+                              <Link
+                                href={`/events/${event.id}`}
+                                className="inline-flex items-center gap-2 px-4 py-2 text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] text-sm font-medium transition-colors ml-auto"
+                              >
+                                View Details
+                                <ChevronRight className="w-4 h-4" />
+                              </Link>
                             </div>
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border" onClick={(e) => e.stopPropagation()}>
-                            {event.registrationUrl && (
-                              <a
-                                href={event.registrationUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-sm"
-                              >
-                                <Ticket className="w-4 h-4" />
-                                Register
-                              </a>
-                            )}
-                            {event.website && (
-                              <a
-                                href={event.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-4 py-2 border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted transition-all"
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                                Website
-                              </a>
-                            )}
-                            <Link
-                              href={`/events/${event.id}`}
-                              className="inline-flex items-center gap-2 px-4 py-2 text-primary text-sm font-medium rounded-lg hover:bg-primary/10 transition-all ml-auto"
-                            >
-                              View Details
-                              <ChevronRight className="w-4 h-4" />
-                            </Link>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </PageCard>
                 );
               })
             )}
@@ -856,25 +815,26 @@ export default function EventsPage() {
                 >
                   Cancel
                 </Button>
-                <Button
+                <button
                   type="submit"
                   disabled={submittingSuggestion}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                  className="flex-1 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
                 >
                   {submittingSuggestion ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />
                       Submitting...
                     </>
                   ) : (
                     'Submit Suggestion'
                   )}
-                </Button>
+                </button>
               </div>
             </form>
           )}
         </DialogContent>
       </Dialog>
-    </MainLayout>
+    </PageFrame>
   );
 }

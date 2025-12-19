@@ -225,7 +225,7 @@ export default function EventDetailPage() {
     <MainLayout>
       <div className="min-h-screen bg-background">
         {/* Immersive Hero Section */}
-        <div className={`relative min-h-[550px] md:min-h-[600px] bg-gradient-to-br ${getCategoryGradient(event.category)} overflow-hidden`}>
+        <div className="relative" style={{ background: 'linear-gradient(135deg, #2575FC 0%, #6366F1 50%, #8B5CF6 100%)' }}>
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
@@ -237,12 +237,12 @@ export default function EventDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
           {/* Hero Content */}
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-32">
             {/* Top Navigation */}
             <div className="flex items-center justify-between mb-8">
               <button
                 onClick={() => router.push('/events')}
-                className="flex items-center gap-2 text-white/90 hover:text-white transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-medium transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Back to Events
@@ -251,17 +251,17 @@ export default function EventDetailPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleBookmark}
-                  className={`p-3 rounded-full transition-all ${
+                  className={`p-2.5 rounded-lg transition-all ${
                     isBookmarked
                       ? 'bg-white text-blue-600'
-                      : 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20'
+                      : 'bg-white/10 hover:bg-white/20 text-white'
                   }`}
                 >
                   <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
                 </button>
                 <button
                   onClick={handleShare}
-                  className="p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all relative"
+                  className="p-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all relative"
                 >
                   <Share2 className="w-5 h-5" />
                   {shareSuccess && (
@@ -274,48 +274,27 @@ export default function EventDetailPage() {
             </div>
 
             {/* Status Badge */}
-            <div className="mb-6">
-              {isUpcoming && (
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-emerald-500 text-white animate-pulse-glow">
-                  <span className="w-2 h-2 bg-white rounded-full"></span>
-                  Upcoming Event
-                </span>
-              )}
-              {isOngoing && (
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-amber-500 text-white">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                  Happening Now
-                </span>
-              )}
-              {isPast && (
-                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gray-500 text-white">
-                  Past Event
-                </span>
-              )}
-            </div>
+            <span className="inline-block px-3 py-1 bg-white/20 text-white rounded-full text-sm font-medium mb-4">
+              {isPast ? 'Past Event' : 'Upcoming'}
+            </span>
 
             {/* Event Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 max-w-4xl leading-tight">
-              {event.name}
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-white font-display mb-4">{event.name}</h1>
 
-            {/* Category & Industry */}
-            <div className="flex flex-wrap items-center gap-3 mb-8">
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-white/20 backdrop-blur-sm text-white">
-                <Briefcase className="w-4 h-4" />
+            {/* Category & Industry Tags */}
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-white/20 text-white rounded-lg text-sm font-medium">
+                <Building2 className="w-4 h-4" />
                 {event.category.replace(/_/g, ' ')}
               </span>
-              <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-white/20 backdrop-blur-sm text-white">
-                {event.industry.replace(/_/g, ' ')}
-              </span>
               {event.isVirtual && (
-                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-blue-500/80 text-white">
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-white/20 text-white rounded-lg text-sm font-medium">
                   <Wifi className="w-4 h-4" />
                   Virtual
                 </span>
               )}
               {event.isHybrid && (
-                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-purple-500/80 text-white">
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-white/20 text-white rounded-lg text-sm font-medium">
                   <Globe className="w-4 h-4" />
                   Hybrid
                 </span>
@@ -336,62 +315,62 @@ export default function EventDetailPage() {
           </div>
         </div>
 
-        {/* Floating Stats Cards */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Info Cards (Overlapping Hero) */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {/* Date Card */}
-            <div className="bg-card rounded-xl shadow-lg p-5 border border-border hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-blue-600" />
+            <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-[#2575FC] dark:text-[#5B8DFF]" />
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">Date</span>
+                <span className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Date</span>
               </div>
-              <p className="font-bold text-foreground">{formatDate(event.startDate)}</p>
+              <p className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">{formatDate(event.startDate)}</p>
               {event.startDate !== event.endDate && (
-                <p className="text-sm text-muted-foreground">to {formatDate(event.endDate)}</p>
+                <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">to {formatDate(event.endDate)}</p>
               )}
             </div>
 
             {/* Location Card */}
-            <div className="bg-card rounded-xl shadow-lg p-5 border border-border hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-emerald-600" />
+            <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-green-500/10 dark:bg-green-500/10 flex items-center justify-center">
+                  <MapPin className="w-4 h-4 text-green-500" />
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">Location</span>
+                <span className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Location</span>
               </div>
-              <p className="font-bold text-foreground">{event.location}</p>
+              <p className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">{event.location}</p>
               {event.venue && (
-                <p className="text-sm text-muted-foreground">{event.venue}</p>
+                <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">{event.venue}</p>
               )}
             </div>
 
             {/* Attendees Card */}
-            <div className="bg-card rounded-xl shadow-lg p-5 border border-border hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-purple-600" />
+            <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-[#8B5CF6]/10 dark:bg-[#A78BFA]/10 flex items-center justify-center">
+                  <Users className="w-4 h-4 text-[#8B5CF6] dark:text-[#A78BFA]" />
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">Attendees</span>
+                <span className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Attendees</span>
               </div>
-              <p className="font-bold text-foreground">
+              <p className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">
                 {event.attendeeCount?.toLocaleString() || 'TBA'}
               </p>
               {event.capacity && (
-                <p className="text-sm text-muted-foreground">Capacity: {event.capacity.toLocaleString()}</p>
+                <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Capacity: {event.capacity.toLocaleString()}</p>
               )}
             </div>
 
             {/* Cost Card */}
-            <div className="bg-card rounded-xl shadow-lg p-5 border border-border hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-amber-600" />
+            <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/10 dark:bg-orange-500/10 flex items-center justify-center">
+                  <DollarSign className="w-4 h-4 text-orange-500" />
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">Est. Cost</span>
+                <span className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Cost</span>
               </div>
-              <p className="font-bold text-foreground">
+              <p className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">
                 {event.estimatedCost !== null ? formatCost(event.estimatedCost) : 'TBA'}
               </p>
               {event.estimatedCost === 0 && (
@@ -435,33 +414,45 @@ export default function EventDetailPage() {
                   <h2 className="text-xl font-bold text-foreground mb-6">Opportunities</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {event.callForSpeakers && (
-                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-5 border border-purple-200 hover:shadow-lg transition-all group cursor-pointer">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                          <Mic className="w-6 h-6 text-white" />
+                      <div className="rounded-xl p-5 cursor-pointer transition-all"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)',
+                          border: '1px solid rgba(37, 117, 252, 0.1)'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2575FC'}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(37, 117, 252, 0.1)'}>
+                        <div className="w-10 h-10 rounded-lg bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 flex items-center justify-center mb-4">
+                          <Mic className="w-5 h-5 text-[#2575FC] dark:text-[#5B8DFF]" />
                         </div>
-                        <h3 className="font-bold text-foreground mb-2">Call for Speakers</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
+                        <h3 className="text-xl font-bold text-[#162B54] dark:text-[#EAF0FF] mb-2">Call for Speakers</h3>
+                        <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mb-4">
                           Share your expertise with industry peers. Submit your talk proposal.
                         </p>
-                        <span className="text-purple-600 font-medium text-sm flex items-center gap-1">
+                        <a className="text-[#2575FC] dark:text-[#5B8DFF] text-sm font-medium hover:underline flex items-center gap-1">
                           Apply Now
                           <ChevronLeft className="w-4 h-4 rotate-180" />
-                        </span>
+                        </a>
                       </div>
                     )}
                     {event.sponsorshipAvailable && (
-                      <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-5 border border-emerald-200 hover:shadow-lg transition-all group cursor-pointer">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                          <Target className="w-6 h-6 text-white" />
+                      <div className="rounded-xl p-5 cursor-pointer transition-all"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)',
+                          border: '1px solid rgba(37, 117, 252, 0.1)'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2575FC'}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(37, 117, 252, 0.1)'}>
+                        <div className="w-10 h-10 rounded-lg bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 flex items-center justify-center mb-4">
+                          <Target className="w-5 h-5 text-[#2575FC] dark:text-[#5B8DFF]" />
                         </div>
-                        <h3 className="font-bold text-foreground mb-2">Sponsorship Available</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
+                        <h3 className="text-xl font-bold text-[#162B54] dark:text-[#EAF0FF] mb-2">Sponsorship Available</h3>
+                        <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mb-4">
                           Get your brand in front of thousands of industry professionals.
                         </p>
-                        <span className="text-emerald-600 font-medium text-sm flex items-center gap-1">
+                        <a className="text-[#2575FC] dark:text-[#5B8DFF] text-sm font-medium hover:underline flex items-center gap-1">
                           Learn More
                           <ChevronLeft className="w-4 h-4 rotate-180" />
-                        </span>
+                        </a>
                       </div>
                     )}
                   </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '@/lib/theme-context';
 import {
   User,
   Mail,
@@ -19,6 +20,20 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import IdentityTab from '@/components/settings/IdentityTab';
+import { PageFrame, PageHeader, PageContent, PageCard } from '@/components/layout/PageFrame';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface UserSettings {
   displayName: string;
@@ -60,11 +75,6 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      console.log('Settings: Checking authentication...', {
-        hasFirebaseUser: !!user,
-        firebaseLoading: loading
-      });
-
       // Check for LinkedIn session first
       try {
         const linkedinSession = localStorage.getItem('linkedin-session');
@@ -73,7 +83,6 @@ export default function SettingsPage() {
 
           // Validate session token hasn't expired
           if (sessionData.exp && Date.now() < sessionData.exp) {
-            console.log('Settings: LinkedIn user authenticated');
             setIsAuthenticated(true);
             setUserProfile(sessionData);
             setSettings(prev => ({
@@ -84,24 +93,20 @@ export default function SettingsPage() {
             setAuthLoading(false);
             return;
           } else {
-            console.log('Settings: LinkedIn session expired, removing');
             localStorage.removeItem('linkedin-session');
           }
         }
       } catch (error) {
-        console.log('Settings: Invalid LinkedIn session data, removing');
         localStorage.removeItem('linkedin-session');
       }
 
       // Wait for Firebase auth to load if available
       if (loading) {
-        console.log('Settings: Waiting for Firebase auth to load...');
         return;
       }
 
       // Check for Firebase user as fallback
       if (user) {
-        console.log('Settings: Firebase user authenticated');
         setIsAuthenticated(true);
         setUserProfile(user);
         setSettings(prev => ({
@@ -114,7 +119,6 @@ export default function SettingsPage() {
       }
 
       // No authenticated user found
-      console.log('Settings: No authenticated user, redirecting to signup');
       setAuthLoading(false);
       router.replace('/auth/signup');
     };
@@ -204,14 +208,28 @@ export default function SettingsPage() {
     }
   };
 
+  const { theme: currentTheme, toggleTheme } = useTheme();
+
+  // Sync theme state with settings
+  useEffect(() => {
+    if (currentTheme) {
+      setSettings(prev => ({
+        ...prev,
+        darkMode: currentTheme === 'dark'
+      }));
+    }
+  }, [currentTheme]);
+
   if (!mounted || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading settings...</p>
+      <PageFrame maxWidth="4xl">
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading settings...</p>
+          </div>
         </div>
-      </div>
+      </PageFrame>
     );
   }
 
@@ -220,368 +238,267 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/forum" className="flex items-center text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="w-5 h-5 mr-2" />
+    <PageFrame maxWidth="4xl">
+      <PageHeader
+        title="Settings"
+        description="Manage your account preferences and settings"
+        actions={
+          <>
+            <Button variant="ghost" asChild>
+              <Link href="/forum">
+                <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Link>
-              <div className="flex items-center space-x-2">
-                <SettingsIcon className="w-6 h-6 text-muted-foreground" />
-                <h1 className="text-xl font-semibold text-foreground">Settings</h1>
-              </div>
-            </div>
-            {activeTab !== 'identity' && (
-              <div className="flex items-center space-x-3">
-                {saved && (
-                  <span className="text-green-600 text-sm font-medium">Saved!</span>
-                )}
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
+            </Button>
+            {activeTab !== 'identity' && saved && (
+              <span className="text-green-600 text-sm font-medium">Saved!</span>
             )}
-          </div>
-        </div>
-      </div>
+            {activeTab !== 'identity' && (
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            )}
+          </>
+        }
+      />
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tab Navigation */}
-        <div className="mb-8">
-          <div className="border-b border-border">
-            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-              <button
-                onClick={() => setActiveTab('identity')}
-                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'identity'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
-                }`}
-              >
-                <User className="w-4 h-4 inline mr-2" />
-                Identity
-              </button>
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'profile'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
-                }`}
-              >
-                <Mail className="w-4 h-4 inline mr-2" />
-                Profile
-              </button>
-              <button
-                onClick={() => setActiveTab('notifications')}
-                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'notifications'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
-                }`}
-              >
-                <Bell className="w-4 h-4 inline mr-2" />
-                Notifications
-              </button>
-              <button
-                onClick={() => setActiveTab('preferences')}
-                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'preferences'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
-                }`}
-              >
-                <Globe className="w-4 h-4 inline mr-2" />
-                Preferences
-              </button>
-              <button
-                onClick={() => setActiveTab('security')}
-                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'security'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-muted-foreground hover:text-muted-foreground hover:border-input'
-                }`}
-              >
-                <Shield className="w-4 h-4 inline mr-2" />
-                Security
-              </button>
-            </nav>
-          </div>
-        </div>
+      <PageContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-6 flex border-b border-[#E6EAF2] dark:border-dark-border bg-transparent p-0 h-auto rounded-none">
+            <TabsTrigger value="identity" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+              <User className="w-4 h-4" />
+              <span>Identity</span>
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+              <Mail className="w-4 h-4" />
+              <span>Profile</span>
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+              <Bell className="w-4 h-4" />
+              <span>Notifications</span>
+            </TabsTrigger>
+            <TabsTrigger value="preferences" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+              <Globe className="w-4 h-4" />
+              <span>Preferences</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+              <Shield className="w-4 h-4" />
+              <span>Security</span>
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Tab Content */}
-        <div className="bg-white rounded-lg border border-border p-6">
-          {activeTab === 'identity' && <IdentityTab />}
+          <TabsContent value="identity">
+            <PageCard>
+              <div className="p-6">
+                <IdentityTab />
+              </div>
+            </PageCard>
+          </TabsContent>
 
-          {activeTab === 'profile' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center">
+          <TabsContent value="profile">
+            <PageCard>
+              <CardHeader>
+                <CardTitle className="flex items-center">
                   <User className="w-5 h-5 mr-2" />
                   Profile Information
-                </h2>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">Account Name</Label>
+                  <Input
+                    id="displayName"
+                    value={settings.displayName}
+                    onChange={(e) => handleSettingChange('displayName', e.target.value)}
+                    placeholder="Enter your display name"
+                  />
+                </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-2">
-                      Account Name
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.displayName}
-                      onChange={(e) => handleSettingChange('displayName', e.target.value)}
-                      className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter your display name"
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <div className="flex items-center space-x-2">
+                    <Mail className="w-5 h-5 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={settings.email}
+                      disabled
+                      className="flex-1"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-2">
-                      Email Address
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Mail className="w-5 h-5 text-muted-foreground" />
-                      <input
-                        type="email"
-                        value={settings.email}
-                        disabled
-                        className="flex-1 px-3 py-2 border border-input rounded-lg bg-muted text-muted-foreground"
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Email cannot be changed. Contact support if you need to update this.
-                    </p>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Email cannot be changed. Contact support if you need to update this.
+                  </p>
                 </div>
-              </div>
-            </div>
-          )}
+              </CardContent>
+            </PageCard>
+          </TabsContent>
 
-          {activeTab === 'notifications' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center">
+          <TabsContent value="notifications">
+            <PageCard>
+              <CardHeader>
+                <CardTitle className="flex items-center">
                   <Bell className="w-5 h-5 mr-2" />
                   Notification Preferences
-                </h2>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Email Notifications</label>
-                      <p className="text-xs text-muted-foreground">Receive notifications about new messages and updates</p>
-                    </div>
-                    <button
-                      onClick={() => handleSettingChange('emailNotifications', !settings.emailNotifications)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.emailNotifications ? 'bg-blue-600' : 'bg-muted'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                          settings.emailNotifications ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                    </button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Email Notifications</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive notifications about new messages and updates
+                    </p>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Push Notifications</label>
-                      <p className="text-xs text-muted-foreground">Get notified about important updates on your device</p>
-                    </div>
-                    <button
-                      onClick={() => handleSettingChange('pushNotifications', !settings.pushNotifications)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.pushNotifications ? 'bg-blue-600' : 'bg-muted'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                          settings.pushNotifications ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Marketing Emails</label>
-                      <p className="text-xs text-muted-foreground">Receive emails about new features and promotions</p>
-                    </div>
-                    <button
-                      onClick={() => handleSettingChange('marketingEmails', !settings.marketingEmails)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.marketingEmails ? 'bg-blue-600' : 'bg-muted'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                          settings.marketingEmails ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                    </button>
-                  </div>
+                  <Switch
+                    checked={settings.emailNotifications}
+                    onCheckedChange={(checked) => handleSettingChange('emailNotifications', checked)}
+                  />
                 </div>
-              </div>
-            </div>
-          )}
 
-          {activeTab === 'preferences' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Push Notifications</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Get notified about important updates on your device
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.pushNotifications}
+                    onCheckedChange={(checked) => handleSettingChange('pushNotifications', checked)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Marketing Emails</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive emails about new features and promotions
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.marketingEmails}
+                    onCheckedChange={(checked) => handleSettingChange('marketingEmails', checked)}
+                  />
+                </div>
+              </CardContent>
+            </PageCard>
+          </TabsContent>
+
+          <TabsContent value="preferences">
+            <PageCard>
+              <CardHeader>
+                <CardTitle className="flex items-center">
                   <Globe className="w-5 h-5 mr-2" />
                   Appearance & Preferences
-                </h2>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Dark Mode</label>
-                      <p className="text-xs text-muted-foreground">Switch between light and dark theme</p>
-                    </div>
-                    <button
-                      onClick={() => handleSettingChange('darkMode', !settings.darkMode)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        settings.darkMode ? 'bg-blue-600' : 'bg-muted'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                          settings.darkMode ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                    </button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Dark Mode</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Switch between light and dark theme
+                    </p>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-2">
-                      Language
-                    </label>
-                    <select
-                      value={settings.language}
-                      onChange={(e) => handleSettingChange('language', e.target.value)}
-                      className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="en">English</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-2">
-                      Timezone
-                    </label>
-                    <select
-                      value={settings.timezone}
-                      onChange={(e) => handleSettingChange('timezone', e.target.value)}
-                      className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="UTC">UTC</option>
-                      <option value="America/New_York">Eastern Time</option>
-                      <option value="America/Chicago">Central Time</option>
-                      <option value="America/Denver">Mountain Time</option>
-                      <option value="America/Los_Angeles">Pacific Time</option>
-                    </select>
-                  </div>
+                  <Switch
+                    checked={settings.darkMode}
+                    onCheckedChange={() => {
+                      toggleTheme();
+                      handleSettingChange('darkMode', !settings.darkMode);
+                    }}
+                  />
                 </div>
-              </div>
-            </div>
-          )}
 
-          {activeTab === 'security' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center justify-between">
-                  <div className="flex items-center">
+                <div className="space-y-2">
+                  <Label htmlFor="language">Language</Label>
+                  <Select
+                    value={settings.language}
+                    onValueChange={(value) => handleSettingChange('language', value)}
+                  >
+                    <SelectTrigger id="language">
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="es">Spanish</SelectItem>
+                      <SelectItem value="fr">French</SelectItem>
+                      <SelectItem value="de">German</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="timezone">Timezone</Label>
+                  <Select
+                    value={settings.timezone}
+                    onValueChange={(value) => handleSettingChange('timezone', value)}
+                  >
+                    <SelectTrigger id="timezone">
+                      <SelectValue placeholder="Select timezone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="UTC">UTC</SelectItem>
+                      <SelectItem value="America/New_York">Eastern Time</SelectItem>
+                      <SelectItem value="America/Chicago">Central Time</SelectItem>
+                      <SelectItem value="America/Denver">Mountain Time</SelectItem>
+                      <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </PageCard>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <PageCard>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center">
                     <Shield className="w-5 h-5 mr-2" />
-                    <span>Account Security</span>
-                  </div>
-                  <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+                    Account Security
+                  </CardTitle>
+                  <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full font-medium">
                     Coming Soon
                   </span>
-                </h2>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <Key className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Password</p>
-                        <p className="text-xs text-muted-foreground">Last changed 30 days ago</p>
-                      </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Key className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Password</p>
+                      <p className="text-xs text-muted-foreground">Last changed 30 days ago</p>
                     </div>
-                    <button className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
-                      Change Password
-                    </button>
                   </div>
+                  <Button variant="outline">
+                    Change Password
+                  </Button>
+                </div>
 
-                  <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <Smartphone className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Two-Factor Authentication</p>
-                        <p className="text-xs text-muted-foreground">Not enabled</p>
-                      </div>
+                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Smartphone className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Two-Factor Authentication</p>
+                      <p className="text-xs text-muted-foreground">Not enabled</p>
                     </div>
-                    <button className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
-                      Enable 2FA
-                    </button>
                   </div>
+                  <Button variant="outline">
+                    Enable 2FA
+                  </Button>
                 </div>
-              </div>
-            </div>
-          )}
-        </div>
+              </CardContent>
+            </PageCard>
+          </TabsContent>
+        </Tabs>
 
-        {/* Quick Links */}
-        {activeTab === 'profile' && (
-          <div className="bg-white rounded-lg border border-border p-6 mt-8">
-            <h2 className="text-lg font-semibold text-foreground mb-6">Quick Links</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link
-                href="/forum"
-                className="flex items-center p-4 border border-border rounded-lg hover:border-input hover:shadow-sm transition-all"
-              >
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
-                  <div className="w-5 h-5 bg-blue-600 rounded"></div>
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">Community Forum</p>
-                  <p className="text-sm text-muted-foreground">Join discussions and connect</p>
-                </div>
-              </Link>
-
-              <Link
-                href="/organizations"
-                className="flex items-center p-4 border border-border rounded-lg hover:border-input hover:shadow-sm transition-all"
-              >
-                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mr-3">
-                  <div className="w-5 h-5 bg-green-600 rounded"></div>
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">Browse Organizations</p>
-                  <p className="text-sm text-muted-foreground">Explore companies and contacts</p>
-                </div>
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+      </PageContent>
+    </PageFrame>
   );
 }

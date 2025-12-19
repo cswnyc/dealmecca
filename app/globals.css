@@ -69,6 +69,9 @@
     --primary-glow: rgba(37, 117, 252, 0.3);
     --primary-glow-lg: rgba(37, 117, 252, 0.5);
 
+    /* Soft Primary Background (for selected states) */
+    --color-primary-soft-bg: #EAF1FF;
+
     /* ==================== GLASSMORPHISM VARIABLES ==================== */
     --glass-blur: 12px;
     --glass-opacity: 0.7;
@@ -123,6 +126,9 @@
     /* Dark Mode Glow Effects (Lighter blue) */
     --primary-glow: rgba(91, 141, 255, 0.4);
     --primary-glow-lg: rgba(91, 141, 255, 0.6);
+
+    /* Soft Primary Background (for selected states in dark mode) */
+    --color-primary-soft-bg: #162449;
 
     /* Dark Mode Glassmorphism */
     --glass-blur: 16px;
@@ -1006,6 +1012,75 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+
+  /* ==================== DETAIL PAGE REDESIGN UTILITIES ==================== */
+  /* Tab underline active state */
+  .tab-underline-active {
+    color: #2575FC;
+    border-bottom: 2px solid #2575FC;
+  }
+
+  .dark .tab-underline-active {
+    color: #5B8DFF;
+    border-bottom-color: #5B8DFF;
+  }
+
+  /* Row hover with left border accent */
+  .row-hover-accent {
+    border-left: 2px solid transparent;
+    transition: all var(--transition-base);
+  }
+
+  .row-hover-accent:hover {
+    background: #F7F9FC;
+    border-left-color: #2575FC;
+  }
+
+  .dark .row-hover-accent:hover {
+    background: #101E38;
+    border-left-color: #5B8DFF;
+  }
+
+  /* Avatar selection ring */
+  .avatar-selected {
+    border: 3px solid #2575FC;
+    box-shadow: 0 0 0 4px rgba(37, 117, 252, 0.1);
+  }
+
+  .dark .avatar-selected {
+    border-color: #5B8DFF;
+    box-shadow: 0 0 0 4px rgba(91, 141, 255, 0.15);
+  }
+
+  /* ==================== ORGS & EVENTS REDESIGN UTILITIES ==================== */
+  /* Gradient stat card background */
+  .stat-card {
+    background: linear-gradient(135deg, rgba(37, 117, 252, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
+    border: 1px solid rgba(37, 117, 252, 0.1);
+  }
+
+  .dark .stat-card {
+    background: linear-gradient(135deg, rgba(91, 141, 255, 0.08) 0%, rgba(167, 139, 250, 0.08) 100%);
+    border: 1px solid rgba(91, 141, 255, 0.15);
+  }
+
+  /* Icon container gradient */
+  .icon-gradient-bg {
+    background: linear-gradient(135deg, rgba(37, 117, 252, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  }
+
+  .dark .icon-gradient-bg {
+    background: linear-gradient(135deg, rgba(91, 141, 255, 0.2) 0%, rgba(167, 139, 250, 0.2) 100%);
+  }
+
+  /* Empty state icon background */
+  .empty-state-icon {
+    background: linear-gradient(135deg, rgba(37, 117, 252, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+  }
+
+  .dark .empty-state-icon {
+    background: linear-gradient(135deg, rgba(91, 141, 255, 0.12) 0%, rgba(167, 139, 250, 0.12) 100%);
   }
 }
 

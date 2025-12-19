@@ -895,25 +895,28 @@ export default function CompanyDetailPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                   {/* Company Header Card */}
-                  <div className="bg-white rounded-lg border border-border p-6">
+                  <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start gap-4">
-                        <CompanyLogo
-                          logoUrl={company.logoUrl}
-                          companyName={company.name}
-                          size="lg"
-                          className="rounded-lg flex-shrink-0"
-                        />
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-xl bg-white dark:bg-dark-surfaceAlt border border-[#E6EAF2] dark:border-dark-border flex items-center justify-center overflow-hidden">
+                          <CompanyLogo
+                            logoUrl={company.logoUrl}
+                            companyName={company.name}
+                            size="lg"
+                            className="flex-shrink-0"
+                          />
+                        </div>
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h1 className="text-2xl font-bold text-foreground">{company.name}</h1>
+                          <div className="flex items-center gap-3">
+                            <h1 className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF] font-display">{company.name}</h1>
                             {company.verified && (
-                              <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                              <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs font-medium">
+                                <CheckCircle className="w-3 h-3" />
                                 Verified
                               </span>
                             )}
                           </div>
-                          <p className="text-muted-foreground">
+                          <p className="text-[#64748B] dark:text-[#9AA7C2] mt-1">
                             {getCompanyTypeLabel(company.companyType)}
                             {(company.city || company.state) && (
                               <> • {[company.city, company.state].filter(Boolean).join(', ')}</>
@@ -921,15 +924,16 @@ export default function CompanyDetailPage() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={handleToggleFollow}
                           disabled={followLoading}
-                          className="px-4 py-2 text-sm text-foreground border border-border rounded-lg hover:bg-muted"
+                          className="px-4 py-2 border border-[#E6EAF2] dark:border-dark-border rounded-lg text-sm font-medium text-[#64748B] dark:text-[#9AA7C2] hover:border-[#2575FC] dark:hover:border-[#5B8DFF] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] transition-all"
                         >
                           {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
                         </button>
-                        <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <button className="text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+                          style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}>
                           Save
                         </button>
                       </div>
@@ -957,9 +961,9 @@ export default function CompanyDetailPage() {
                   </div>
 
                   {/* Tabs Navigation + Content Card */}
-                  <div className="bg-white rounded-lg border border-border">
-                    <div className="border-b border-border px-6">
-                      <nav className="-mb-px flex gap-8">
+                  <div className="bg-white dark:bg-dark-surface rounded-xl border border-[#E6EAF2] dark:border-dark-border">
+                    <div className="border-b border-[#E6EAF2] dark:border-dark-border">
+                      <nav className="flex px-6">
                         {[
                           { id: 'overview', label: 'Overview', count: null },
                           { id: 'people', label: 'People', count: totalContacts },
@@ -972,10 +976,10 @@ export default function CompanyDetailPage() {
                           <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`py-4 px-1 border-b-2 transition-colors text-sm font-medium ${
+                            className={`px-5 py-3 text-sm font-medium transition-colors ${
                               activeTab === tab.id
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
+                                ? 'text-[#2575FC] dark:text-[#5B8DFF] border-b-2 border-[#2575FC] dark:border-[#5B8DFF]'
+                                : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF]'
                             }`}
                           >
                             {tab.label}{tab.count !== null && ` (${tab.count})`}
@@ -1446,58 +1450,56 @@ export default function CompanyDetailPage() {
                 {/* Right Sidebar for NON-HOLDING companies */}
                 <div className="space-y-6">
                   {/* Suggest Edit Panel */}
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-5">
+                  <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden hover:border-[#2575FC] dark:hover:border-[#5B8DFF] transition-all">
                     <div
-                      className="flex items-start gap-3 mb-4 cursor-pointer"
+                      className="flex items-start gap-3 p-5 cursor-pointer"
                       onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
                     >
-                      <div className="flex-shrink-0">
-                        <span className="text-2xl">💡</span>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)' }}>
+                        <Lightbulb className="w-5 h-5 text-[#2575FC] dark:text-[#5B8DFF]" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-foreground mb-1">
-                          Suggest an edit for this company
-                        </h3>
+                        <h3 className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">Suggest an edit</h3>
                         {!isSuggestEditExpanded && (
-                          <p className="text-xs text-muted-foreground">
-                            Click to expand
-                          </p>
+                          <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">Click to expand</p>
                         )}
                       </div>
-                      <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-5 h-5 text-[#9AA7C2] transition-transform ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
                     </div>
 
                     {isSuggestEditExpanded && (
-                      <>
+                      <div className="px-5 pb-5 border-t border-[#E6EAF2] dark:border-dark-border pt-5">
                         <div className="space-y-2 mb-4">
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-foreground">Should we add or remove people?</span>
+                            <span className="text-[#162B54] dark:text-[#EAF0FF]">Should we add or remove people?</span>
                           </label>
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-foreground">Are any teams no longer active?</span>
+                            <span className="text-[#162B54] dark:text-[#EAF0FF]">Are any teams no longer active?</span>
                           </label>
                           <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" className="mt-0.5" />
-                            <span className="text-foreground">Are there other agencies we should add?</span>
+                            <span className="text-[#162B54] dark:text-[#EAF0FF]">Are there other agencies we should add?</span>
                           </label>
                         </div>
 
                         <textarea
                           placeholder="Write your suggestion here..."
-                          className="w-full px-3 py-2 border border-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-[#E6EAF2] dark:border-dark-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#2575FC] dark:focus:ring-[#5B8DFF] bg-white dark:bg-dark-surface"
                           rows={3}
                         />
 
-                        <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium mb-3">
+                        <button className="w-full py-2 text-white rounded-lg text-sm font-medium mb-3 hover:opacity-90 transition-opacity"
+                          style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}>
                           Submit
                         </button>
 
-                        <p className="text-xs text-muted-foreground text-center">
+                        <p className="text-xs text-[#64748B] dark:text-[#9AA7C2] text-center">
                           Share information with the community and obtain rewards when you do.
                         </p>
-                      </>
+                      </div>
                     )}
                   </div>
 

@@ -56,30 +56,19 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
               onClick={() => handleAvatarClick(avatar.id)}
               disabled={disabled}
               className={`
-                relative w-16 h-16 rounded-full overflow-hidden border-2 transition-all duration-200
+                relative w-16 h-16 rounded-full overflow-hidden p-1 transition-all duration-200
                 ${isSelected
-                  ? 'border-primary ring-2 ring-primary/20 shadow-md'
-                  : 'border-border hover:border-border/80 hover:shadow-sm'
+                  ? 'avatar-selected'
+                  : 'border-3 border-transparent hover:border-[#2575FC]/30'
                 }
                 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
               `}
               title={`${avatar.name} - ${avatar.description}`}
             >
-              {renderAvatar(avatar)}
-
-              {/* Selected indicator */}
-              {isSelected && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                  <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-              )}
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center overflow-hidden">
+                {renderAvatar(avatar)}
+              </div>
             </button>
           );
         })}
@@ -87,19 +76,18 @@ export default function AvatarSelector({ currentAvatarId, onSelect, disabled = f
 
       {/* Current selection info */}
       {selectedId && (
-        <div className="mt-4 p-3 bg-muted rounded-lg">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full overflow-hidden border border-border flex-shrink-0">
-              {renderAvatar(AVATAR_LIBRARY.find(a => a.id === selectedId))}
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                {AVATAR_LIBRARY.find(a => a.id === selectedId)?.name}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {AVATAR_LIBRARY.find(a => a.id === selectedId)?.description}
-              </p>
-            </div>
+        <div className="mt-4 flex items-center gap-3 p-3 rounded-lg"
+          style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)' }}>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center overflow-hidden">
+            {renderAvatar(AVATAR_LIBRARY.find(a => a.id === selectedId))}
+          </div>
+          <div>
+            <p className="font-medium text-[#162B54] dark:text-[#EAF0FF]">
+              {AVATAR_LIBRARY.find(a => a.id === selectedId)?.name}
+            </p>
+            <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">
+              {AVATAR_LIBRARY.find(a => a.id === selectedId)?.description}
+            </p>
           </div>
         </div>
       )}

@@ -24,7 +24,7 @@ export default function IdentityTab() {
     const authContext = useAuth();
     user = authContext.user;
   } catch (error) {
-    console.log('Firebase auth not available, using LinkedIn-only authentication');
+    // Firebase auth not available, using LinkedIn-only authentication
   }
 
   const [identityData, setIdentityData] = useState<IdentityData | null>(null);
@@ -47,11 +47,10 @@ export default function IdentityTab() {
         const sessionData = JSON.parse(linkedinSessionData);
         if (sessionData.exp && Date.now() < sessionData.exp) {
           setLinkedinSession(sessionData);
-          console.log('IdentityTab: LinkedIn session found:', sessionData);
         }
       }
     } catch (error) {
-      console.log('IdentityTab: Invalid LinkedIn session data');
+      // Invalid LinkedIn session data
     }
   }, []);
 
@@ -88,7 +87,6 @@ export default function IdentityTab() {
         return;
       }
 
-      console.log('IdentityTab: Fetching identity data from:', apiUrl);
       const response = await fetch(apiUrl);
 
       if (response.ok) {
@@ -139,8 +137,6 @@ export default function IdentityTab() {
       } else if (linkedinSession?.userId) {
         requestBody.linkedinId = linkedinSession.userId;
       }
-
-      console.log('IdentityTab: Saving identity data:', requestBody);
 
       const response = await fetch('/api/users/identity', {
         method: 'PATCH',
@@ -284,9 +280,10 @@ export default function IdentityTab() {
 
       {/* Preview section */}
       {(selectedUsername || selectedAvatarId) && (
-        <div className="bg-muted rounded-lg p-4 border">
-          <h3 className="text-sm font-medium text-foreground mb-3">Preview</h3>
-          <div className="flex items-start space-x-3">
+        <div className="p-5 rounded-xl border border-[#E6EAF2] dark:border-dark-border"
+          style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%)' }}>
+          <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mb-3">Preview</p>
+          <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
               {selectedAvatarId ? (
                 <div
@@ -299,16 +296,16 @@ export default function IdentityTab() {
                   }}
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-primary-foreground text-sm">
+                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-sm font-semibold">
                   {selectedUsername.charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
             <div>
-              <p className="font-medium text-foreground">
+              <p className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">
                 {selectedUsername || 'Anonymous User'}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">
                 This is how you'll appear in forum discussions
               </p>
             </div>

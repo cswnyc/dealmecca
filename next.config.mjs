@@ -1,12 +1,5 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
-  // Development configuration
-  ...(process.env.NODE_ENV === 'development' && {
-    // Allow all hosts in development
-    experimental: {
-      allowedRevalidateHeaderKeys: [],
-    },
-  }),
   env: {
     NEXT_PUBLIC_APP_NAME: "DealMecca",
     NEXT_PUBLIC_BRAND_NAME: "DealMecca",
