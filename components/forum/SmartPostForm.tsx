@@ -235,9 +235,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
     if (postType !== 'poll' && !formData.categoryId) return;
 
     // Check authentication with detailed logging
-    console.log('🔐 Auth check - user object:', user);
-    console.log('🔐 Auth check - user.id:', user?.id);
-    console.log('🔐 Auth check - authLoading:', authLoading);
 
     setIsSubmitting(true);
     try {
@@ -301,8 +298,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         }
       };
 
-      console.log('📤 Request body being sent:', JSON.stringify(requestBody, null, 2));
-      console.log('📤 mediaType value:', requestBody.mediaType, 'type:', typeof requestBody.mediaType);
 
       const response = await authedFetch('/api/forum/posts', {
         method: 'POST',
@@ -325,7 +320,6 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
       }
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Failed to create post. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -348,15 +342,15 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         {eventInfo && (
           <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
             <div className="flex items-start space-x-3">
-              <CalendarIcon className="w-5 h-5 text-primary mt-0.5" />
+              <CalendarIcon className="w-5 h-5 text-brand-primary dark:text-[#5B8DFF] mt-0.5" />
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-foreground">
                   Creating discussion for event
                 </h3>
-                <p className="text-sm text-primary font-medium mt-1">
+                <p className="text-sm text-brand-primary dark:text-[#5B8DFF] font-medium mt-1">
                   {eventInfo.name}
                 </p>
-                <div className="flex items-center space-x-4 mt-2 text-xs text-primary">
+                <div className="flex items-center space-x-4 mt-2 text-xs text-brand-primary dark:text-[#5B8DFF]">
                   <span>{new Date(eventInfo.startDate).toLocaleDateString()}</span>
                   {eventInfo.location && <span>{eventInfo.location}</span>}
                 </div>
@@ -527,7 +521,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               <button
                 type="button"
                 onClick={addPollChoice}
-                className="flex items-center space-x-2 px-6 py-3 border-2 border-primary text-primary rounded-full font-medium hover:bg-primary/10 transition-colors"
+                className="flex items-center space-x-2 px-6 py-3 border-2 border-brand-primary dark:border-[#5B8DFF] text-brand-primary dark:text-[#5B8DFF] rounded-full font-medium hover:bg-[#EAF1FF] dark:hover:bg-[#162449] transition-colors"
               >
                 <span className="text-xl font-bold">+</span>
                 <span>Add option</span>
@@ -592,14 +586,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             {/* Suggested Tags */}
             {aiSuggestions.tags.length > 0 && (
               <div className="mb-3">
-                <p className="text-xs text-primary mb-2">Suggested tags:</p>
+                <p className="text-xs text-brand-primary dark:text-[#5B8DFF] mb-2">Suggested tags:</p>
                 <div className="flex flex-wrap gap-2">
                   {aiSuggestions.tags.map(tag => (
                     <button
                       key={tag}
                       type="button"
                       onClick={() => addTag(tag)}
-                      className="px-2 py-1 bg-primary/20 text-primary text-xs rounded hover:bg-primary/30 transition-colors"
+                      className="px-2 py-1 bg-[#EAF1FF] dark:bg-[#162449] text-brand-primary dark:text-[#5B8DFF] text-xs rounded hover:bg-[#EAF1FF]/80 dark:hover:bg-[#162449]/80 transition-colors"
                     >
                       #{tag}
                     </button>
@@ -611,7 +605,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             {/* Detected Companies */}
             {aiSuggestions.companies.length > 0 && (
               <div className="mb-3">
-                <p className="text-xs text-primary mb-2 flex items-center">
+                <p className="text-xs text-brand-primary dark:text-[#5B8DFF] mb-2 flex items-center">
                   <BuildingOfficeIcon className="w-3 h-3 mr-1" />
                   Detected companies:
                 </p>
@@ -631,7 +625,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             {/* Detected Media Types */}
             {aiSuggestions.mediaTypes.length > 0 && (
               <div className="mb-3">
-                <p className="text-xs text-primary mb-2">Suggested media types:</p>
+                <p className="text-xs text-brand-primary dark:text-[#5B8DFF] mb-2">Suggested media types:</p>
                 <div className="flex flex-wrap gap-2">
                   {aiSuggestions.mediaTypes.map(mediaType => (
                     <button
@@ -650,7 +644,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
             {/* Detected Location */}
             {aiSuggestions.location && (
               <div className="mb-3">
-                <p className="text-xs text-primary mb-2 flex items-center">
+                <p className="text-xs text-brand-primary dark:text-[#5B8DFF] mb-2 flex items-center">
                   <MapPinIcon className="w-3 h-3 mr-1" />
                   Detected location: <span className="font-medium ml-1">{aiSuggestions.location}</span>
                 </p>
@@ -752,13 +746,13 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 {formData.tags.map(tag => (
                   <span
                     key={tag}
-                    className="inline-flex items-center px-2 py-1 bg-primary/20 text-primary text-sm rounded"
+                    className="inline-flex items-center px-2 py-1 bg-[#EAF1FF] dark:bg-[#162449] text-brand-primary dark:text-[#5B8DFF] text-sm rounded"
                   >
                     #{tag}
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="ml-1 text-primary/80 hover:text-primary"
+                      className="ml-1 text-brand-primary/80 dark:text-[#5B8DFF]/80 hover:text-brand-primary dark:hover:text-[#5B8DFF]"
                     >
                       ×
                     </button>
@@ -787,7 +781,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                   id="anonymous"
                   checked={formData.isAnonymous}
                   onChange={(e) => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
-                  className="w-4 h-4 text-primary border-border rounded focus:ring-2 focus:ring-ring"
+                  className="w-4 h-4 text-brand-primary dark:text-[#5B8DFF] border-border rounded focus:ring-2 focus:ring-brand-primary/20 dark:focus:ring-[#5B8DFF]/20"
                 />
                 <label htmlFor="anonymous" className="ml-2 text-sm text-foreground">
                   Post anonymously
@@ -802,9 +796,9 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                     </div>
                     <span className="text-muted-foreground">Will be posted as:</span>
                     <span className="font-medium text-foreground">Anonymous User</span>
-                    <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">Anonymous</span>
+                    <span className="text-xs bg-[#EAF1FF] dark:bg-[#162449] text-brand-primary dark:text-[#5B8DFF] px-2 py-1 rounded-full">Anonymous</span>
                   </div>
-                  <div className="text-xs text-primary mt-2">
+                  <div className="text-xs text-brand-primary dark:text-[#5B8DFF] mt-2">
                     💡 Set an anonymous handle in your profile to maintain consistency across anonymous posts
                   </div>
                 </div>
@@ -830,7 +824,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
               (postType === 'poll' && (!formData.pollQuestion.trim() || formData.pollChoices.filter(choice => choice.trim()).length < 2 || !formData.categoryId)) ||
               (postType === 'code' && !formData.generatedCode && !formData.content) ||
               (postType !== 'poll' && !formData.categoryId)}
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-2 bg-gradient-brand text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isSubmitting ? 'Creating...' : `Create ${postType.charAt(0).toUpperCase() + postType.slice(1)}`}
           </button>

@@ -43,26 +43,26 @@
     --header-footer-border: 226 232 240;
 
     /* ==================== ENHANCED HSL VARIABLES ==================== */
-    /* Light Mode CSS Variables (HSL format for better theme control) */
-    --background: 250 250 250;
-    --foreground: 24 24 27;
-    --card: 255 255 255;
-    --card-foreground: 24 24 27;
-    --popover: 255 255 255;
-    --popover-foreground: 24 24 27;
-    --primary: 30 41 59;
-    --primary-foreground: 250 250 250;
-    --secondary: 139 92 246;
+    /* Light Mode CSS Variables (RGB format aligned with Flokana landing) */
+    --background: 247 249 252;        /* Flokana bg - soft blue-gray */
+    --foreground: 11 18 32;           /* Flokana text-primary - deep blue-black */
+    --card: 255 255 255;              /* Pure white cards */
+    --card-foreground: 11 18 32;      /* Deep blue-black text */
+    --popover: 255 255 255;           /* Pure white popovers */
+    --popover-foreground: 11 18 32;   /* Deep blue-black text */
+    --primary: 37 117 252;            /* Brand blue (Flokana primary) */
+    --primary-foreground: 255 255 255;/* White text on primary */
+    --secondary: 139 92 246;          /* Violet accent */
     --secondary-foreground: 255 255 255;
-    --muted: 244 244 245;
-    --muted-foreground: 113 113 122;
-    --accent: 139 92 246;
+    --muted: 243 246 251;             /* Flokana surface-subtle */
+    --muted-foreground: 100 116 139;  /* Flokana text-muted */
+    --accent: 139 92 246;             /* Violet accent */
     --accent-foreground: 255 255 255;
     --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
-    --border: 226 232 240;
-    --input: 226 232 240;
-    --ring: 37 117 252;
+    --border: 230 234 242;            /* Flokana border-subtle */
+    --input: 230 234 242;
+    --ring: 37 117 252;               /* Brand blue for focus rings */
     --radius: 0.5rem;
 
     /* Glow Effects (Blue primary) */
@@ -99,26 +99,26 @@
     --header-footer-text: 248 250 252;
     --header-footer-border: 51 65 85;
 
-    /* Dark Mode HSL Variables */
-    --background: 15 23 42;
-    --foreground: 248 250 252;
-    --card: 30 41 59;
-    --card-foreground: 248 250 252;
-    --popover: 30 41 59;
-    --popover-foreground: 248 250 252;
-    --primary: 248 250 252;
-    --primary-foreground: 15 23 42;
-    --secondary: 167 139 250;
-    --secondary-foreground: 15 23 42;
-    --muted: 51 65 85;
-    --muted-foreground: 148 163 184;
-    --accent: 167 139 250;
-    --accent-foreground: 15 23 42;
-    --destructive: 239 68 68;
-    --destructive-foreground: 248 250 252;
-    --border: 51 65 85;
-    --input: 51 65 85;
-    --ring: 91 141 255;
+    /* Dark Mode RGB Variables (aligned with Flokana dark mode) */
+    --background: 11 18 32;           /* Flokana dark bg */
+    --foreground: 234 240 255;        /* Flokana dark text-primary */
+    --card: 15 26 46;                 /* Flokana dark surface */
+    --card-foreground: 234 240 255;   /* Light text on cards */
+    --popover: 15 26 46;              /* Flokana dark surface */
+    --popover-foreground: 234 240 255;
+    --primary: 91 141 255;            /* Lighter blue for dark mode (Flokana) */
+    --primary-foreground: 11 18 32;   /* Dark text on primary */
+    --secondary: 167 139 250;         /* Lighter violet for dark mode */
+    --secondary-foreground: 11 18 32;
+    --muted: 16 30 56;                /* Flokana dark surface-subtle */
+    --muted-foreground: 154 167 194;  /* Flokana dark text-muted */
+    --accent: 167 139 250;            /* Lighter violet for dark mode */
+    --accent-foreground: 11 18 32;
+    --destructive: 248 113 113;       /* Lighter red for dark mode */
+    --destructive-foreground: 234 240 255;
+    --border: 34 48 74;               /* Flokana dark border-subtle */
+    --input: 34 48 74;
+    --ring: 91 141 255;               /* Lighter blue for focus rings */
 
     /* Dark Mode Glow Effects (Lighter blue) */
     --primary-glow: rgba(91, 141, 255, 0.4);
@@ -674,9 +674,9 @@
     animation: shimmer 2s infinite linear;
     background: linear-gradient(
       90deg,
-      hsl(var(--muted)) 0%,
-      hsl(var(--muted-foreground) / 0.1) 50%,
-      hsl(var(--muted)) 100%
+      rgb(var(--muted)) 0%,
+      rgb(var(--muted-foreground) / 0.1) 50%,
+      rgb(var(--muted)) 100%
     );
     background-size: 1000px 100%;
   }
@@ -823,6 +823,19 @@
 
   .container-premium {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ==================== BRAND GRADIENT UTILITIES ==================== */
+  .bg-gradient-brand {
+    background: linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%);
+  }
+
+  .bg-gradient-brand-subtle {
+    background: linear-gradient(135deg, rgba(37, 117, 252, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  }
+
+  .dark .bg-gradient-brand-subtle {
+    background: linear-gradient(135deg, rgba(91, 141, 255, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%);
   }
 
   /* ==================== GRADIENT TEXT UTILITIES ==================== */

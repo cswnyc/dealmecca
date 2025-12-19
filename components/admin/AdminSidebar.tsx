@@ -176,7 +176,7 @@ export function AdminSidebar() {
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
           <Link href="/admin" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-brand rounded-lg flex items-center justify-center">
               <LayoutDashboard className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -209,11 +209,11 @@ export function AdminSidebar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                   isActive(item.href)
-                    ? 'bg-primary/10 text-primary font-medium'
-                    : 'text-foreground hover:bg-muted'
+                    ? 'bg-gradient-brand-subtle border-l-[3px] border-brand-primary dark:border-[#5B8DFF] text-brand-primary dark:text-[#5B8DFF] font-medium'
+                    : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF] hover:bg-muted'
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className={`w-5 h-5 ${isActive(item.href) ? 'text-brand-primary dark:text-[#5B8DFF]' : ''}`} />
                 <span>{item.title}</span>
               </Link>
             );
@@ -248,11 +248,11 @@ export function AdminSidebar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                           isActive(child.href!)
-                            ? 'bg-primary/10 text-primary font-medium'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                            ? 'bg-gradient-brand-subtle text-brand-primary dark:text-[#5B8DFF] font-medium'
+                            : 'text-[#64748B] dark:text-[#9AA7C2] hover:bg-muted hover:text-[#162B54] dark:hover:text-[#EAF0FF]'
                         }`}
                       >
-                        <ChildIcon className="w-4 h-4" />
+                        <ChildIcon className={`w-4 h-4 ${isActive(child.href!) ? 'text-brand-primary dark:text-[#5B8DFF]' : ''}`} />
                         <span>{child.title}</span>
                       </Link>
                     );

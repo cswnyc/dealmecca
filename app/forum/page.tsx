@@ -9,7 +9,11 @@ import { SmartPostForm } from '@/components/forum/SmartPostForm';
 import { IntelligenceSharing } from '@/components/forum/IntelligenceSharing';
 import { ForumSidebar } from '@/components/forum/ForumSidebar';
 import { GlobalSearchInput } from '@/components/navigation/GlobalSearchInput';
-import { ForumLayout } from '@/components/layout/ForumLayout';
+import { PageFrame, PageHeader, PageContent, PageCard } from '@/components/layout/PageFrame';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import {
   Search,
   ChevronDown,
@@ -20,7 +24,8 @@ import {
   Users,
   Target,
   Gift,
-  Crown
+  Crown,
+  X
 } from 'lucide-react';
 
 interface ForumPost {
@@ -183,6 +188,9 @@ export default function ForumPage() {
     }
   }, [categoryFilter, categories]);
 
+  // Track highlighted post for notification
+  const [highlightedPostId, setHighlightedPostId] = useState<string | null>(null);
+
   // Scroll to and highlight post from notification
   useEffect(() => {
     if (highlightPostId && posts.length > 0 && !loading) {
@@ -193,13 +201,12 @@ export default function ForumPage() {
           // Scroll to the post with smooth behavior
           postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-          // Add a highlight effect
-          postElement.style.transition = 'background-color 0.5s ease';
-          postElement.style.backgroundColor = '#dbeafe'; // blue-100
+          // Add highlight via state
+          setHighlightedPostId(highlightPostId);
 
           // Remove highlight after 3 seconds
           setTimeout(() => {
-            postElement.style.backgroundColor = '';
+            setHighlightedPostId(null);
           }, 3000);
         }
       }, 100);
@@ -369,259 +376,256 @@ export default function ForumPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-muted">
-        <div className="container mx-auto px-4 py-8">
-          {/* Skeleton for header */}
-          <div className="mb-8">
-            <div className="h-8 bg-muted-foreground/20 rounded w-48 mb-4 animate-pulse"></div>
-            <div className="h-4 bg-muted-foreground/20 rounded w-96 animate-pulse"></div>
-          </div>
-
-          {/* Skeleton for tabs */}
-          <div className="flex space-x-4 mb-6">
-            <div className="h-10 bg-muted-foreground/20 rounded-lg w-24 animate-pulse"></div>
-            <div className="h-10 bg-muted-foreground/20 rounded-lg w-24 animate-pulse"></div>
-          </div>
-
-          {/* Skeleton for category pills */}
-          <div className="flex space-x-2 mb-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-8 bg-muted-foreground/20 rounded-full w-20 animate-pulse" style={{ animationDelay: `${i * 100}ms` }}></div>
-            ))}
-          </div>
-
-          {/* Skeleton for search bar */}
-          <div className="h-12 bg-muted-foreground/20 rounded-lg mb-6 animate-pulse"></div>
-
-          {/* Skeleton for posts */}
+      <AuthGuard>
+        <PageFrame maxWidth="6xl">
           <div className="space-y-6">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-card rounded-lg border border-border p-6 animate-pulse" style={{ animationDelay: `${i * 200}ms` }}>
-                <div className="flex items-start space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-muted-foreground/20 rounded-lg"></div>
-                  <div className="flex-1">
-                    <div className="h-4 bg-muted-foreground/20 rounded w-32 mb-2"></div>
-                    <div className="h-3 bg-muted-foreground/20 rounded w-48"></div>
+            {/* Skeleton for header */}
+            <div className="space-y-2">
+              <div className="h-8 bg-muted-foreground/20 rounded w-48 animate-pulse"></div>
+              <div className="h-4 bg-muted-foreground/20 rounded w-96 animate-pulse"></div>
+            </div>
+
+            {/* Skeleton for tabs */}
+            <div className="flex space-x-4">
+              <div className="h-10 bg-muted-foreground/20 rounded-lg w-24 animate-pulse"></div>
+              <div className="h-10 bg-muted-foreground/20 rounded-lg w-24 animate-pulse"></div>
+            </div>
+
+            {/* Skeleton for category pills */}
+            <div className="flex space-x-2">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-8 bg-muted-foreground/20 rounded-full w-20 animate-pulse"></div>
+              ))}
+            </div>
+
+            {/* Skeleton for posts */}
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <PageCard key={i}>
+                  <div className="p-6 animate-pulse">
+                    <div className="flex items-start space-x-3 mb-4">
+                      <div className="w-12 h-12 bg-muted-foreground/20 rounded-lg"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-muted-foreground/20 rounded w-32 mb-2"></div>
+                        <div className="h-3 bg-muted-foreground/20 rounded w-48"></div>
+                      </div>
+                    </div>
+                    <div className="h-6 bg-muted-foreground/20 rounded w-3/4 mb-3"></div>
+                    <div className="h-4 bg-muted-foreground/20 rounded w-full mb-2"></div>
+                    <div className="h-4 bg-muted-foreground/20 rounded w-2/3"></div>
                   </div>
-                </div>
-                <div className="h-6 bg-muted-foreground/20 rounded w-3/4 mb-3"></div>
-                <div className="h-4 bg-muted-foreground/20 rounded w-full mb-2"></div>
-                <div className="h-4 bg-muted-foreground/20 rounded w-2/3"></div>
-              </div>
-            ))}
+                </PageCard>
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
+        </PageFrame>
+      </AuthGuard>
     );
   }
 
   return (
     <AuthGuard>
-      <ForumLayout>
-      <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Header with Search */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
-          <h1 className="text-2xl font-bold text-foreground">Community Forum</h1>
-          <div className="relative">
+      <PageFrame maxWidth="6xl">
+        <PageHeader
+          title="Community Forum"
+          description="Connect and share insights with media sellers. Ask questions, share intel, and build relationships."
+          actions={
             <GlobalSearchInput
               className="w-full lg:w-96"
               placeholder="Search companies, teams, contacts..."
               size="md"
             />
-          </div>
-        </div>
-        {/* Tab Navigation */}
-        <div className="flex items-center space-x-8 border-b border-border mb-6">
-          <button
-            onClick={() => handleTabChange('all')}
-            className={`flex items-center space-x-2 pb-4 border-b-2 font-medium transition-colors ${
-              activeTab === 'all'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Globe className="w-5 h-5" />
-            <span>All Posts</span>
-          </button>
-          <button
-            onClick={() => handleTabChange('my')}
-            className={`flex items-center space-x-2 pb-4 border-b-2 font-medium transition-colors ${
-              activeTab === 'my'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <User className="w-5 h-5" />
-            <span>My Posts</span>
-          </button>
-        </div>
+          }
+        />
 
-        {/* Category Filters - Compact pills */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
-          <button
-            onClick={() => handleCategoryChange('')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              selectedCategory === ''
-                ? 'bg-foreground text-background'
-                : 'bg-muted text-foreground hover:bg-muted/80'
-            }`}
-          >
-            All <span className="ml-1 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs rounded-full">
-              {pagination?.total || 0}
-            </span>
-          </button>
+        <PageContent>
+          {/* Tab Navigation */}
+          <Tabs value={activeTab} onValueChange={(value) => handleTabChange(value as 'all' | 'my')}>
+            <TabsList className="mb-8 bg-muted/60">
+              <TabsTrigger value="all" className="flex items-center space-x-2 rounded-md">
+                <Globe className="w-4 h-4" />
+                <span>All Posts</span>
+              </TabsTrigger>
+              <TabsTrigger value="my" className="flex items-center space-x-2 rounded-md">
+                <User className="w-4 h-4" />
+                <span>My Posts</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Show categories based on state */}
-          {(showAllCategories ? categories : (categories || []).slice(0, 6)).map((category) => (
-            <button
-              key={category.id}
-              onClick={() => handleCategoryChange(category.id)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                selectedCategory === category.id
-                  ? 'bg-foreground text-background'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              {category.name} <span className="ml-1 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs rounded-full">
-                {category._count.posts}
-              </span>
-            </button>
-          ))}
-
-          {(categories || []).length > 6 && (
-            <button
-              onClick={() => setShowAllCategories(!showAllCategories)}
-              className="px-3 py-1 bg-muted text-primary rounded-full text-xs font-medium hover:bg-muted/80 transition-colors"
-            >
-              {showAllCategories ? 'Show less' : `+${(categories || []).length - 6} more`}
-            </button>
-          )}
-        </div>
-
-
-        {/* Create Post Section */}
-        <div className="mb-6">
-          {!showCreateForm ? (
-            <div className="bg-card rounded-lg border border-border p-4">
+            {/* Category Filters */}
+            <div className="flex flex-wrap items-center gap-2.5 mb-8">
               <button
-                onClick={() => setShowCreateForm(true)}
-                className="w-full text-left p-4 bg-muted border border-border rounded-lg text-muted-foreground hover:bg-muted/80 transition-colors"
+                onClick={() => handleCategoryChange('')}
+                className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
+                  selectedCategory === ''
+                    ? 'bg-gradient-brand text-white'
+                    : 'bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:border-brand-primary dark:hover:border-[#5B8DFF] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
+                }`}
               >
-                Ask a question...
+                All
+                <span className={`ml-2 px-1.5 py-0.5 rounded-full text-xs ${
+                  selectedCategory === ''
+                    ? 'bg-white/20'
+                    : 'text-[#9AA7C2]'
+                }`}>
+                  {pagination?.total || 0}
+                </span>
               </button>
-            </div>
-          ) : (
-            <div className="bg-card rounded-lg border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-foreground">What are you creating?</h3>
-                <button
-                  onClick={() => setShowCreateForm(false)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  ✕
-                </button>
-              </div>
 
-              {/* Post Type Selector */}
-              <div className="flex space-x-2 mb-6">
+              {/* Show categories based on state */}
+              {(showAllCategories ? categories : (categories || []).slice(0, 6)).map((category) => (
                 <button
-                  onClick={() => setPostType('post')}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    postType === 'post'
-                      ? 'bg-foreground text-background'
-                      : 'bg-muted text-foreground hover:bg-muted/80'
+                  key={category.id}
+                  onClick={() => handleCategoryChange(category.id)}
+                  className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
+                    selectedCategory === category.id
+                      ? 'bg-gradient-brand text-white'
+                      : 'bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:border-brand-primary dark:hover:border-[#5B8DFF] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
                   }`}
                 >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Post</span>
+                  {category.name}
+                  <span className={`ml-2 text-xs ${
+                    selectedCategory === category.id
+                      ? 'bg-white/20 px-1.5 py-0.5 rounded-full'
+                      : 'text-[#9AA7C2]'
+                  }`}>
+                    {category._count.posts}
+                  </span>
                 </button>
-                <button
-                  onClick={() => setPostType('poll')}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    postType === 'poll'
-                      ? 'bg-foreground text-background'
-                      : 'bg-muted text-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  <BarChart3 className="w-4 h-4" />
-                  <span>Poll</span>
-                </button>
-              </div>
+              ))}
 
-              <SmartPostForm
-                categories={categories as any}
-                postType={postType}
-                onSuccess={() => {
-                  setShowCreateForm(false);
-                  fetchPosts(); // Refresh posts after creation
-                }}
-              />
+              {(categories || []).length > 6 && (
+                <button
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  className="h-9 px-4 text-sm font-medium rounded-full text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors"
+                >
+                  {showAllCategories ? 'Show less' : `+${(categories || []).length - 6} more`}
+                </button>
+              )}
             </div>
-          )}
-        </div>
 
 
-        {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Posts Feed */}
-          <div className="lg:col-span-2">
-            <div className="space-y-4">
-            {loading ? (
-              <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-card rounded-lg border border-border p-6 animate-pulse">
-                    <div className="h-4 bg-muted-foreground/20 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-muted rounded w-full mb-1"></div>
-                    <div className="h-3 bg-muted rounded w-2/3"></div>
-                  </div>
-                ))}
-              </div>
-            ) : posts.length === 0 ? (
-              <div className="text-center py-12 bg-card rounded-lg border border-border">
-                <p className="text-muted-foreground text-lg">No posts yet. Be the first to start a discussion!</p>
-                <button
-                  onClick={() => setShowCreateForm(true)}
-                  className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  Create First Post
-                </button>
-              </div>
-            ) : (
-              posts.map((post) => (
-                <div key={post.id} id={`post-${post.id}`}>
-                  <ForumPostCard
-                    post={post}
-                    onVote={handleVote}
-                    onBookmark={handleBookmark}
-                    expandable={true}
-                  />
+            {/* Main Content Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Posts Feed */}
+              <div className="lg:col-span-2 space-y-4">
+                {/* Create Post Section */}
+                <div className="mb-4">
+                  {!showCreateForm ? (
+                    <div
+                      onClick={() => setShowCreateForm(true)}
+                      className="w-full text-left p-5 bg-gradient-brand-subtle border border-[#D7DEEA] dark:border-[#22304A] rounded-xl cursor-pointer hover:border-brand-primary/50 dark:hover:border-[#5B8DFF]/50 transition-all duration-200"
+                    >
+                      <p className="text-[#64748B] dark:text-[#9AA7C2] font-medium">
+                        Share intel, ask a question, or start a discussion...
+                      </p>
+                    </div>
+                  ) : (
+                    <PageCard>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <h3 className="text-xl font-semibold text-foreground">What are you creating?</h3>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowCreateForm(false)}
+                            className="rounded-full"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                        {/* Post Type Selector */}
+                        <div className="flex space-x-2 mb-6">
+                          <button
+                            onClick={() => setPostType('post')}
+                            className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
+                              postType === 'post'
+                                ? 'bg-gradient-brand text-white'
+                                : 'bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:border-brand-primary dark:hover:border-[#5B8DFF] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
+                            }`}
+                          >
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Post
+                          </button>
+                          <button
+                            onClick={() => setPostType('poll')}
+                            className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
+                              postType === 'poll'
+                                ? 'bg-gradient-brand text-white'
+                                : 'bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:border-brand-primary dark:hover:border-[#5B8DFF] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
+                            }`}
+                          >
+                            <BarChart3 className="w-4 h-4 mr-2" />
+                            Poll
+                          </button>
+                        </div>
+
+                        <SmartPostForm
+                          categories={categories as any}
+                          postType={postType}
+                          onSuccess={() => {
+                            setShowCreateForm(false);
+                            fetchPosts();
+                          }}
+                        />
+                      </div>
+                    </PageCard>
+                  )}
                 </div>
-              ))
-            )}
+                {posts.length === 0 ? (
+                  <PageCard>
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground text-lg">No posts yet. Be the first to start a discussion!</p>
+                      <Button
+                        onClick={() => setShowCreateForm(true)}
+                        className="mt-4"
+                      >
+                        Create First Post
+                      </Button>
+                    </div>
+                  </PageCard>
+                ) : (
+                  posts.map((post) => (
+                    <div 
+                      key={post.id} 
+                      id={`post-${post.id}`}
+                      className={cn(
+                        'transition-colors duration-500',
+                        highlightedPostId === post.id && 'bg-primary/10 rounded-lg'
+                      )}
+                    >
+                      <ForumPostCard
+                        post={post}
+                        onVote={handleVote}
+                        onBookmark={handleBookmark}
+                        expandable={true}
+                      />
+                    </div>
+                  ))
+                )}
 
-            {/* Load More */}
-            {pagination && pagination.pages > 1 && page < pagination.pages && (
-              <div className="flex justify-center mt-8">
-                <button
-                  onClick={handleLoadMore}
-                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  Load More Posts
-                </button>
+                {/* Load More */}
+                {pagination && pagination.pages > 1 && page < pagination.pages && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      onClick={handleLoadMore}
+                      size="lg"
+                    >
+                      Load More Posts
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
-            </div>
-          </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <ForumSidebar />
-          </div>
-        </div>
-      </div>
-      </div>
-    </ForumLayout>
+              {/* Sidebar */}
+              <div className="lg:col-span-1">
+                <ForumSidebar />
+              </div>
+            </div>
+          </Tabs>
+        </PageContent>
+      </PageFrame>
     </AuthGuard>
   );
 }

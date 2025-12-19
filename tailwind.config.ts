@@ -48,8 +48,8 @@ const config: Config = {
         },
         // DealMecca Premium Brand Colors
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
+          foreground: 'rgb(var(--primary-foreground) / <alpha-value>)',
           50: '#f8fafc',
           100: '#f1f5f9',
           200: '#e2e8f0',
@@ -62,8 +62,8 @@ const config: Config = {
           900: '#0f172a',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: 'rgb(var(--secondary) / <alpha-value>)',
+          foreground: 'rgb(var(--secondary-foreground) / <alpha-value>)',
           // Blue/Violet palette (updated from teal/cyan)
           50: '#EEF2FF',
           100: '#E0E7FF',
@@ -77,8 +77,8 @@ const config: Config = {
           900: '#4C1D95',
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          foreground: 'rgb(var(--accent-foreground) / <alpha-value>)',
           // Violet palette (updated from orange)
           50: '#F5F3FF',
           100: '#EDE9FE',
@@ -111,30 +111,44 @@ const config: Config = {
           ink: '#162B54',
           violet: '#8B5CF6',
           'violet-hover': '#7C3AED',
+          soft: '#EAF1FF',
           softBg: '#EAF1FF',
           softText: '#1E63D8',
         },
+        // Surface colors for light mode
+        surface: {
+          light: '#F7F9FC',
+          subtle: '#F3F6FB',
+        },
+        // Dark mode specific colors
+        dark: {
+          bg: '#0B1220',
+          surface: '#0F1A2E',
+          surfaceAlt: '#101E38',
+          border: '#22304A',
+          borderStrong: '#2C3C5C',
+        },
         // shadcn/ui compatible colors
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        border: 'rgb(var(--border) / <alpha-value>)',
+        input: 'rgb(var(--input) / <alpha-value>)',
+        ring: 'rgb(var(--ring) / <alpha-value>)',
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: 'rgb(var(--destructive) / <alpha-value>)',
+          foreground: 'rgb(var(--destructive-foreground) / <alpha-value>)',
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: 'rgb(var(--popover) / <alpha-value>)',
+          foreground: 'rgb(var(--popover-foreground) / <alpha-value>)',
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: 'rgb(var(--card) / <alpha-value>)',
+          foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
         },
       },
       fontFamily: {

@@ -13,7 +13,9 @@ import {
 } from 'lucide-react';
 import { AnimatedIconButton } from '@/components/ui/animated-components';
 import { UserProfileCard } from './UserProfileCard';
+import { Logo, LogoMark } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useTheme } from '@/lib/theme-context';
 import { designTokens, motionVariants, shouldReduceMotion } from '@/lib/design-tokens';
 
 interface NavigationItem {
@@ -62,6 +64,8 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
   const router = useRouter();
   const pathname = usePathname();
   const reducedMotion = shouldReduceMotion();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   // Load collapsed state from localStorage
   useEffect(() => {
@@ -110,28 +114,40 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
       transition={reducedMotion ? { duration: 0 } : designTokens.transitions.spring}
       className="hidden md:flex flex-col bg-card border-r border-border h-screen overflow-hidden"
     >
-      {/* Collapse Toggle Button */}
-      <div className="flex items-center justify-end p-3 border-b border-border">
-        <AnimatedIconButton
-          onClick={toggleCollapse}
-          tooltip={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="w-8 h-8"
-        >
-          <motion.div
-            initial={false}
-            animate={{
-              rotate: isCollapsed ? 180 : 0,
-            }}
-            transition={reducedMotion ? { duration: 0 } : { duration: 0.3, ease: 'easeInOut' }}
+      {/* Logo and Collapse Toggle */}
+      <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-4 border-b border-border`}>
+        <AnimatePresence mode="wait">
+          {isCollapsed ? (
+            <motion.button
+              key="logomark"
+              onClick={toggleCollapse}
+              {...motionVariants.fadeIn}
+              transition={reducedMotion ? { duration: 0 } : { duration: 0.2 }}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              title="Expand sidebar"
+            >
+              <LogoMark size={40} dark={isDark} />
+            </motion.button>
+          ) : (
+            <motion.div
+              key="logo"
+              {...motionVariants.fadeIn}
+              transition={reducedMotion ? { duration: 0 } : { duration: 0.2, delay: 0.1 }}
+            >
+              <Logo size="lg" dark={isDark} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {!isCollapsed && (
+          <AnimatedIconButton
+            onClick={toggleCollapse}
+            tooltip="Collapse sidebar"
+            aria-label="Collapse sidebar"
+            className="w-8 h-8"
           >
-            {isCollapsed ? (
-              <ChevronRight className="w-5 h-5" />
-            ) : (
-              <ChevronLeft className="w-5 h-5" />
-            )}
-          </motion.div>
-        </AnimatedIconButton>
+            <ChevronLeft className="w-5 h-5" />
+          </AnimatedIconButton>
+        )}
       </div>
 
       {/* Navigation Items */}
@@ -151,15 +167,15 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
                 w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
                 transition-all duration-200
                 ${active
-                  ? 'bg-accent/10 text-accent border-l-4 border-accent'
-                  : 'text-foreground hover:bg-muted'
+                  ? 'bg-gradient-brand-subtle border-l-[3px] border-brand-primary dark:border-[#5B8DFF] text-brand-primary dark:text-[#5B8DFF]'
+                  : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF] hover:bg-muted'
                 }
                 ${isCollapsed ? 'justify-center' : ''}
               `}
             >
               <Icon className={`
                 flex-shrink-0 w-5 h-5
-                ${active ? 'text-accent' : 'text-muted-foreground'}
+                ${active ? 'text-brand-primary dark:text-[#5B8DFF]' : 'text-[#64748B] dark:text-[#9AA7C2]'}
               `} />
 
               <AnimatePresence mode="wait">

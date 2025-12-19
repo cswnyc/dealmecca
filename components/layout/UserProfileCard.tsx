@@ -433,17 +433,16 @@ function UserProfileContent() {
           <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-card rounded-full"></div>
         </div>
 
-        {/* User Name - Clean and prominent */}
-        <div className="flex-1 text-left">
+        {/* User Name and Gems - Stacked layout like screenshot */}
+        <div className="flex-1 text-left min-w-0">
           <p className="text-sm font-medium text-foreground truncate">
             {getDisplayName()}
           </p>
-        </div>
-
-        {/* Gems with Icon - SellerCrowd style */}
-        <div className="flex items-center space-x-1">
-          <Gem className={`w-4 h-4 ${getTierColor(tier)}`} />
-          <span className="text-sm font-medium text-muted-foreground">{gems}</span>
+          {/* Gems under username - SellerCrowd style */}
+          <div className="flex items-center space-x-0.5 mt-0.5">
+            <span className="text-xs text-[#5BC4E8]">💎</span>
+            <span className="text-xs text-muted-foreground">{gems}</span>
+          </div>
         </div>
 
         {/* Dropdown Arrow */}

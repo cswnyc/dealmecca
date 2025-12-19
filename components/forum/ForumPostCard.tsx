@@ -178,6 +178,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   } | null>(null);
   const [pollLoading, setPollLoading] = useState(false);
   const [pollVoting, setPollVoting] = useState(false);
+  const [pollNotice, setPollNotice] = useState<string | null>(null);
 
   // Helper functions to parse JSON string fields
   const parseListItems = (listItems?: string): string[] => {
@@ -206,7 +207,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   const { user: firebaseUser, idToken, loading: authLoading, refreshToken } = useFirebaseAuth();
   const urgencyColors = {
     LOW: 'text-muted-foreground',
-    MEDIUM: 'text-primary',
+    MEDIUM: 'text-brand-primary dark:text-[#5B8DFF]',
     HIGH: 'text-orange-500',
     URGENT: 'text-destructive'
   };
@@ -255,37 +256,22 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
   // Fetch current user's anonymous identity for their own comments
   useEffect(() => {
-    console.log('🔄 ForumPostCard component loaded, Firebase user:', firebaseUser?.uid);
-
     const fetchCurrentUserIdentity = async () => {
       if (firebaseUser?.uid) {
-        console.log('🔍 Fetching user identity for UID:', firebaseUser.uid);
-
         try {
           const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
-          console.log('📡 Identity API response status:', response.status);
-
           if (response.ok) {
             const data = await response.json();
-            console.log('📦 Identity API data:', data);
-
             if (data.currentUsername && data.currentAvatarId) {
               setCurrentUserIdentity({
                 username: data.currentUsername,
                 avatarId: data.currentAvatarId
               });
-              console.log('✅ User identity loaded:', data.currentUsername, data.currentAvatarId);
-            } else {
-              console.log('❌ User identity data incomplete:', data);
             }
-          } else {
-            console.log('❌ Identity API request failed:', response.status);
           }
         } catch (error) {
-          console.error('💥 Error fetching user identity:', error);
+          console.error('Error fetching user identity:', error);
         }
-      } else {
-        console.log('⚠️ No Firebase UID available');
       }
     };
 
@@ -417,18 +403,6 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
     const anonymousHandle = commentAnonymous ? (currentUserIdentity?.username || 'Anonymous User') : null;
     const anonymousAvatarId = commentAnonymous ? (currentUserIdentity?.avatarId || 'avatar_1') : null;
 
-    console.log('🚀 Submitting comment:', {
-      isAnonymous: commentAnonymous,
-      currentUserIdentity,
-      anonymousHandle,
-      anonymousAvatarId
-    });
-
-    // Temporary alert for debugging
-    if (commentAnonymous) {
-      alert(`Submitting as: ${anonymousHandle} with avatar: ${anonymousAvatarId}`);
-    }
-
     try {
       const { authedFetch } = await import('@/lib/authedFetch');
       const response = await authedFetch(`/api/forum/posts/${post.id}/comments`, {
@@ -496,17 +470,11 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
   };
 
   const handleFollow = async () => {
-    console.log('🔵 Follow button clicked, firebaseUser:', firebaseUser, 'idToken:', idToken);
-
     if (!firebaseUser || !idToken) {
-      console.log('🔥 User not authenticated, cannot follow');
-      alert('Please sign in to follow posts');
       return;
     }
 
     try {
-      console.log('🔑 Using ID token, making API call...');
-
       let token = idToken;
       let response = await fetch(`/api/forum/posts/${post.id}/follow`, {
         method: 'POST',
@@ -522,7 +490,6 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
       // If token expired, refresh and retry once
       if (response.status === 401) {
-        console.log('🔄 Token expired, refreshing...');
         const newToken = await refreshToken();
         if (newToken) {
           token = newToken;
@@ -540,35 +507,24 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         }
       }
 
-      console.log('📡 Follow API response:', response.status);
-
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Follow successful:', data);
         setIsFollowing(!isFollowing);
       } else {
         const errorText = await response.text();
-        console.error('❌ Failed to toggle follow:', response.status, errorText);
-        alert(`Failed to follow: ${response.status}`);
+        console.error('Failed to toggle follow:', response.status, errorText);
       }
     } catch (error) {
-      console.error('💥 Failed to toggle follow:', error);
-      alert('Error following post');
+      console.error('Failed to toggle follow:', error);
     }
   };
 
   const handleBookmark = async () => {
-    console.log('📚 Bookmark button clicked, firebaseUser:', firebaseUser, 'idToken:', idToken);
-
     if (!firebaseUser || !idToken) {
-      console.log('🔥 User not authenticated, cannot bookmark');
-      alert('Please sign in to bookmark posts');
       return;
     }
 
     try {
-      console.log('🔑 Using ID token, making bookmark API call...');
-
       let token = idToken;
       let response = await fetch(`/api/forum/posts/${post.id}/bookmark`, {
         method: 'POST',
@@ -585,7 +541,6 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
       // If token expired, refresh and retry once
       if (response.status === 401) {
-        console.log('🔄 Token expired, refreshing...');
         const newToken = await refreshToken();
         if (newToken) {
           token = newToken;
@@ -604,21 +559,16 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         }
       }
 
-      console.log('📡 Bookmark API response:', response.status);
-
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Bookmark successful:', data);
         setIsBookmarked(!isBookmarked);
         onBookmark?.(post.id);
       } else {
         const errorText = await response.text();
-        console.error('❌ Failed to toggle bookmark:', response.status, errorText);
-        alert(`Failed to bookmark: ${response.status}`);
+        console.error('Failed to toggle bookmark:', response.status, errorText);
       }
     } catch (error) {
-      console.error('💥 Failed to toggle bookmark:', error);
-      alert('Error bookmarking post');
+      console.error('Failed to toggle bookmark:', error);
     }
   };
 
@@ -629,8 +579,6 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
       case 'copy':
         try {
           await navigator.clipboard.writeText(postUrl);
-          // Show success feedback (you could add a toast notification here)
-          alert('Link copied to clipboard!');
         } catch (error) {
           console.error('Failed to copy to clipboard:', error);
         }
@@ -649,17 +597,18 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
   const handlePollVote = async (choiceIndex: number) => {
     if (!firebaseUser || !idToken) {
-      alert('Please sign in to vote');
+      setPollNotice('Please sign in to vote.');
       return;
     }
 
     if (pollResults?.hasEnded) {
-      alert('This poll has ended');
+      setPollNotice('This poll has ended.');
       return;
     }
 
     if (pollVoting) return;
 
+    setPollNotice(null);
     setPollVoting(true);
     try {
       const response = await fetch(`/api/forum/posts/${post.id}/vote-poll`, {
@@ -690,12 +639,12 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         });
         setPollResults(prev => prev ? { ...prev, percentages: newPercentages } : null);
       } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to vote');
+        console.error('Failed to vote');
+        setPollNotice('Failed to vote. Please try again.');
       }
     } catch (error) {
       console.error('Failed to vote:', error);
-      alert('Failed to vote');
+      setPollNotice('Failed to vote. Please try again.');
     } finally {
       setPollVoting(false);
     }
@@ -703,7 +652,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
 
   return (
-    <div className="bg-card rounded-lg shadow-sm border border-border p-6 hover:shadow-lg hover:border-border/80 transition-all duration-300 hover:-translate-y-0.5 group">
+    <div className="bg-white dark:bg-[#0F1A2E] rounded-xl shadow-sm border border-[#E6EAF2] dark:border-[#22304A] p-6 hover:shadow-lg hover:border-[#D7DEEA] dark:hover:border-[#2C3C5C] transition-all duration-300 hover:-translate-y-0.5 group">
       {/* Header */}
       <div className="flex items-start space-x-3 mb-4">
         {/* Company Logo as Main Avatar */}
@@ -717,7 +666,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               />
             ) : (
               <div className="w-12 h-12 rounded-lg bg-primary/10 border border-border flex items-center justify-center">
-                <BuildingOfficeIcon className="w-6 h-6 text-primary" />
+                <BuildingOfficeIcon className="w-6 h-6 text-brand-primary dark:text-[#5B8DFF]" />
               </div>
             )}
           </Link>
@@ -751,11 +700,11 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                       post.primaryTopicType === 'contact' ? `/people/${post.primaryTopicId}` :
                       `/topics/${post.primaryTopicId}`
                     }
-                    className="font-semibold text-foreground text-lg hover:text-primary transition-colors flex items-center space-x-1"
+                    className="font-semibold text-foreground text-lg hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors flex items-center space-x-1"
                   >
                     <span>{post.primaryTopic.name}</span>
                     {post.primaryTopic.verified && (
-                      <CheckBadgeIcon className="w-4 h-4 text-primary" />
+                      <CheckBadgeIcon className="w-4 h-4 text-brand-primary dark:text-[#5B8DFF]" />
                     )}
                   </Link>
                   {/* Show expandable additional topics if there are company/contact mentions */}
@@ -782,11 +731,11 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                     <div className="flex items-center space-x-2">
                       <Link
                         href={`/orgs/companies/${post.author.company.id}`}
-                        className="font-semibold text-foreground text-lg hover:text-primary transition-colors flex items-center space-x-1"
+                        className="font-semibold text-foreground text-lg hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors flex items-center space-x-1"
                       >
                         <span>{post.author.company.name}</span>
                         {post.author.company.verified && (
-                          <CheckBadgeIcon className="w-4 h-4 text-primary" />
+                          <CheckBadgeIcon className="w-4 h-4 text-brand-primary dark:text-[#5B8DFF]" />
                         )}
                       </Link>
                       {/* Show Company @ Agency format if there are company mentions */}
@@ -795,11 +744,11 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                           <span className="text-muted-foreground text-lg">@</span>
                           <Link
                             href={`/orgs/companies/${post.companyMentions[0].company.id}`}
-                            className="font-medium text-foreground hover:text-primary transition-colors flex items-center space-x-1"
+                            className="font-medium text-foreground hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors flex items-center space-x-1"
                           >
                             <span>{post.companyMentions[0].company.name}</span>
                             {post.companyMentions[0].company.verified && (
-                              <CheckBadgeIcon className="w-3 h-3 text-primary" />
+                              <CheckBadgeIcon className="w-3 h-3 text-brand-primary dark:text-[#5B8DFF]" />
                             )}
                           </Link>
                         </>
@@ -809,7 +758,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                     // Fallback to category when no company - NEVER show username as main header
                     <Link
                       href={`/forum?category=${post.category.slug}`}
-                      className="font-semibold text-foreground text-lg hover:text-primary transition-colors no-underline"
+                      className="font-semibold text-foreground text-lg hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors no-underline"
                     >
                       {post.category.name}
                     </Link>
@@ -819,7 +768,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 // Anonymous posts without primary topic - show category
                 <Link
                   href={`/forum?category=${post.category.slug}`}
-                  className="font-semibold text-foreground text-lg hover:text-primary transition-colors no-underline"
+                  className="font-semibold text-foreground text-lg hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors no-underline"
                 >
                   {post.category.name}
                 </Link>
@@ -827,10 +776,10 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             </div>
             <button
               onClick={handleFollow}
-              className={`px-3 py-1 text-sm rounded-full transition-colors flex items-center space-x-1 ${
+              className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 ${
                 isFollowing
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  : 'text-muted-foreground bg-muted hover:bg-muted/80'
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-violet text-white hover:opacity-90'
+                  : 'border border-brand-primary dark:border-[#5B8DFF] text-brand-primary dark:text-[#5B8DFF] hover:bg-[#EAF1FF] dark:hover:bg-[#162449]'
               }`}
             >
               {isFollowing ? (
@@ -925,6 +874,12 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               </div>
             )}
 
+            {pollNotice ? (
+              <p className="text-sm text-destructive" role="status">
+                {pollNotice}
+              </p>
+            ) : null}
+
             {/* Loading state */}
             {pollLoading ? (
               <div className="flex items-center justify-center py-8">
@@ -963,13 +918,13 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                         <div className="flex items-center space-x-2">
                           <span className="text-foreground font-medium">{choice}</span>
                           {isUserVote && (
-                            <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-4 h-4 text-brand-primary dark:text-[#5B8DFF]" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
                           )}
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-primary font-semibold text-lg">{percentage}%</span>
+                          <span className="text-brand-primary dark:text-[#5B8DFF] font-semibold text-lg">{percentage}%</span>
                           <span className="text-muted-foreground text-sm">({voteCount})</span>
                         </div>
                       </div>
@@ -1043,14 +998,14 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           {/* Bookmark Button */}
           <button
             onClick={handleBookmark}
-            className={`flex items-center space-x-1 transition-colors ${
+            className={`flex items-center space-x-1.5 transition-colors ${
               isBookmarked
-                ? 'text-yellow-600 hover:text-yellow-700'
-                : 'text-foreground hover:text-yellow-600'
+                ? 'text-brand-primary dark:text-[#5B8DFF]'
+                : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
             }`}
             title={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
           >
-            <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-yellow-500' : ''}`} />
+            <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
             <span className="text-xs">{isBookmarked ? 'Saved' : 'Save'}</span>
           </button>
 
@@ -1058,7 +1013,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           <div className="relative">
             <button
               onClick={() => setShowShareMenu(!showShareMenu)}
-              className="flex items-center space-x-1 text-foreground hover:text-foreground/80 transition-colors"
+              className="flex items-center space-x-1.5 text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors"
               title="Share post"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1151,7 +1106,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                   }
                 }}
                 placeholder="Add a comment... Use @topic to mention categories"
-                className="w-full p-3 border border-border rounded-lg text-sm text-foreground bg-background resize-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 hover:border-border/80"
+                className="w-full p-3 border border-[#E6EAF2] dark:border-[#22304A] rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] bg-white dark:bg-[#0F1A2E] placeholder-[#9AA7C2] resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary/20 dark:focus:ring-[#5B8DFF]/20 focus:border-brand-primary dark:focus:border-[#5B8DFF] transition-all duration-200 hover:border-[#D7DEEA] dark:hover:border-[#2C3C5C]"
                 rows={2}
                 disabled={submittingComment}
                 style={{ minHeight: '60px', maxHeight: '150px' }}
@@ -1219,7 +1174,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
               <button
                 onClick={handleSubmitComment}
                 disabled={!commentText.trim() || submittingComment || commentText.length > 500}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 hover:shadow-md"
+                className="px-5 py-2 bg-gradient-brand text-white rounded-lg text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 hover:shadow-md"
               >
                 {submittingComment ? (
                   <>
@@ -1266,7 +1221,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 {comments.length > 1 && !showAllComments && (
                   <button
                     onClick={() => setShowAllComments(true)}
-                    className="flex items-center space-x-2 text-sm text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
+                    className="flex items-center space-x-2 text-sm text-brand-primary dark:text-[#5B8DFF] hover:text-brand-primary/80 dark:hover:text-[#5B8DFF]/80 font-medium mb-4 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -1279,7 +1234,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                 {showAllComments && (
                   <button
                     onClick={() => setShowAllComments(false)}
-                    className="flex items-center space-x-2 text-sm text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
+                    className="flex items-center space-x-2 text-sm text-brand-primary dark:text-[#5B8DFF] hover:text-brand-primary/80 dark:hover:text-[#5B8DFF]/80 font-medium mb-4 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -1335,7 +1290,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                           {/* Reply button */}
                           <button
                             onClick={() => handleReply(comment.id, comment.isAnonymous ? comment.anonymousHandle : comment.author.anonymousUsername)}
-                            className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                            className="text-xs text-muted-foreground hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors"
                           >
                             Reply
                           </button>
@@ -1363,7 +1318,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                             </button>
         <button
                               onClick={handleSubmitReply}
-                              className="px-3 py-1 bg-primary text-primary-foreground text-xs rounded hover:bg-primary/90"
+                              className="px-3 py-1 bg-gradient-brand text-white text-xs rounded hover:opacity-90"
         >
                               Reply
         </button>
@@ -1410,7 +1365,7 @@ function MultiTopicDisplay({
         {/* Primary Topic Name - Large, Clickable, Clean */}
         <Link
           href={`/forum?topic=${encodeURIComponent(primaryTopic.topic.name)}`}
-          className="text-lg font-semibold text-foreground hover:text-primary transition-colors duration-200 no-underline"
+          className="text-lg font-semibold text-foreground hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors duration-200 no-underline"
         >
           {primaryTopic.topic.name}
         </Link>
@@ -1433,7 +1388,7 @@ function MultiTopicDisplay({
             <div key={tm.topic.id}>
               <Link
                 href={`/forum?topic=${encodeURIComponent(tm.topic.name)}`}
-                className="text-primary hover:text-primary/80 font-medium transition-colors duration-200 no-underline"
+                className="text-brand-primary dark:text-[#5B8DFF] hover:text-brand-primary/80 dark:hover:text-[#5B8DFF]/80 font-medium transition-colors duration-200 no-underline"
               >
                 {tm.topic.name}
               </Link>
@@ -1505,12 +1460,12 @@ function AdditionalMentionsDisplay({
                       ? `/orgs/companies/${mention.id}`
                       : `/contacts/${mention.id}`
                   }
-                  className="text-primary hover:text-primary/80 font-medium transition-colors duration-200 no-underline text-sm"
+                  className="text-brand-primary dark:text-[#5B8DFF] hover:text-brand-primary/80 dark:hover:text-[#5B8DFF]/80 font-medium transition-colors duration-200 no-underline text-sm"
                 >
                   {mention.name}
                 </Link>
                 {mention.verified && (
-                  <CheckBadgeIcon className="w-3 h-3 text-primary flex-shrink-0" />
+                  <CheckBadgeIcon className="w-3 h-3 text-brand-primary dark:text-[#5B8DFF] flex-shrink-0" />
                 )}
               </div>
             ))}

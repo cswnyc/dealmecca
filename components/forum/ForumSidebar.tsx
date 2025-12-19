@@ -18,7 +18,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 
 interface UserStats {
   gems: number;
@@ -62,21 +61,16 @@ export function ForumSidebar() {
   });
 
   useEffect(() => {
-    console.log('🎯 ForumSidebar: Firebase user state:', { firebaseUser: !!firebaseUser, authLoading, hasFirebaseSession });
     if (authLoading) {
-      console.log('🎯 ForumSidebar: Auth still loading, waiting...');
       return;
     }
     
     if (firebaseUser && !syncedUser) {
-      console.log('🎯 ForumSidebar: Firebase user found, syncing to database...');
       syncFirebaseUser();
     } else if (firebaseUser && syncedUser) {
-      console.log('🎯 ForumSidebar: Firebase user already synced, fetching stats');
       fetchUserStats();
       fetchNotificationCount();
     } else {
-      console.log('🎯 ForumSidebar: No firebaseUser, setting loading to false');
       setLoading(false);
     }
   }, [firebaseUser, authLoading, syncedUser]);
@@ -85,7 +79,6 @@ export function ForumSidebar() {
     if (!firebaseUser) return;
     
     try {
-      console.log('🔥 Syncing Firebase user to database...');
       const response = await fetch('/api/auth/firebase-sync', {
         method: 'POST',
         headers: {
@@ -103,7 +96,6 @@ export function ForumSidebar() {
       });
 
       if (response.ok) {
-        console.log('🔥 Firebase user synced successfully');
         setSyncedUser(true);
         // Now fetch user stats and notification count
         fetchUserStats();
@@ -120,21 +112,17 @@ export function ForumSidebar() {
 
   const fetchUserStats = async () => {
     if (isFetchingRef.current) {
-      console.log('🎯 ForumSidebar: Already fetching, skipping...');
       return;
     }
 
     isFetchingRef.current = true;
     try {
-      console.log('🎯 ForumSidebar: Fetching user stats...');
 
       // Build URL with firebaseUid if available
       let url = '/api/rewards/stats';
       if (firebaseUser?.uid) {
         url += `?firebaseUid=${firebaseUser.uid}`;
-        console.log('🎯 ForumSidebar: Using firebaseUid:', firebaseUser.uid);
       } else {
-        console.log('🎯 ForumSidebar: No firebaseUid, using session fallback');
       }
 
       const response = await fetch(url, {
@@ -143,13 +131,10 @@ export function ForumSidebar() {
           'Content-Type': 'application/json',
         }
       });
-      console.log('🎯 ForumSidebar: Response status:', response.status);
       if (response.ok) {
         const data = await response.json();
-        console.log('🎯 ForumSidebar: Received data:', data);
         setUserStats(data);
       } else {
-        console.log('🎯 ForumSidebar: Rewards API not available, using default stats');
         // Use default stats when API fails
         setUserStats({
           gems: 0,
@@ -161,7 +146,6 @@ export function ForumSidebar() {
         });
       }
     } catch (error) {
-      console.log('🎯 ForumSidebar: Error fetching user stats, using defaults:', error);
       // Use default stats when API fails
       setUserStats({
         gems: 0,
@@ -172,7 +156,6 @@ export function ForumSidebar() {
         nextTierGems: 100
       });
     } finally {
-      console.log('🎯 ForumSidebar: Setting loading to false');
       isFetchingRef.current = false;
       setLoading(false);
     }
@@ -248,7 +231,7 @@ export function ForumSidebar() {
 
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'DIAMOND': return 'from-blue-500 to-blue-600';
+      case 'DIAMOND': return 'from-primary to-secondary';
       case 'PLATINUM': return 'from-purple-500 to-purple-600';
       case 'GOLD': return 'from-yellow-500 to-yellow-600';
       case 'SILVER': return 'from-gray-400 to-gray-500';
@@ -266,22 +249,13 @@ export function ForumSidebar() {
   };
 
   const quickStats: QuickStat[] = [
-    { label: 'Active Users', value: formatNumber(communityStats.activeUsers), icon: <Users className="w-4 h-4" />, color: 'text-blue-600' },
-    { label: 'Today\'s Posts', value: communityStats.todaysPosts, icon: <MessageSquare className="w-4 h-4" />, color: 'text-green-600' },
-    { label: 'Online Now', value: communityStats.onlineNow, icon: <Eye className="w-4 h-4" />, color: 'text-purple-600' },
+    { label: 'Active Users', value: formatNumber(communityStats.activeUsers), icon: <Users className="w-4 h-4" />, color: 'text-brand-primary dark:text-[#5B8DFF]' },
+    { label: 'Today\'s Posts', value: communityStats.todaysPosts, icon: <MessageSquare className="w-4 h-4" />, color: 'text-emerald-600 dark:text-emerald-400' },
+    { label: 'Online Now', value: communityStats.onlineNow, icon: <Eye className="w-4 h-4" />, color: 'text-brand-violet dark:text-[#A78BFA]' },
   ];
-
-  console.log('🎯 ForumSidebar: Render state check:', { 
-    loading, 
-    firebaseUser: !!firebaseUser, 
-    userStats: !!userStats, 
-    authLoading,
-    hasFirebaseSession 
-  });
 
   // Show loading skeleton only if we're waiting for user stats after confirming user exists
   if (loading && firebaseUser && !authLoading) {
-    console.log('🎯 ForumSidebar: Showing skeleton loading state');
     return (
       <div className="space-y-4">
         <Card>
@@ -300,15 +274,15 @@ export function ForumSidebar() {
   return (
     <div className="space-y-4">
       {/* Quick Actions */}
-      <Card className="border-0 shadow-sm bg-card/60 backdrop-blur-sm">
+      <Card className="border border-[#E6EAF2] dark:border-[#22304A] shadow-sm bg-white dark:bg-[#0F1A2E]">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium text-foreground">Quick Actions</CardTitle>
+          <CardTitle className="text-sm font-medium text-[#162B54] dark:text-[#EAF0FF]">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <Button
             variant="outline"
             size="sm"
-            className="w-full justify-start text-xs"
+            className="w-full justify-start text-xs bg-[#F3F6FB] dark:bg-[#101E38] border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF] hover:bg-[#EAF1FF] dark:hover:bg-[#162449] transition-all"
             onClick={() => window.location.href = '/saved-posts'}
           >
             <Bookmark className="w-3 h-3 mr-2" />
@@ -317,13 +291,13 @@ export function ForumSidebar() {
           <Button
             variant="outline"
             size="sm"
-            className="w-full justify-start text-xs relative"
+            className="w-full justify-start text-xs relative bg-[#F3F6FB] dark:bg-[#101E38] border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF] hover:bg-[#EAF1FF] dark:hover:bg-[#162449] transition-all"
             onClick={() => window.location.href = '/notifications'}
           >
             <Bell className="w-3 h-3 mr-2" />
             Notifications
             {notificationCount > 0 && (
-              <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 text-xs p-0 flex items-center justify-center">
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 text-xs p-0 flex items-center justify-center bg-gradient-to-r from-brand-primary to-brand-violet text-white border-0">
                 {notificationCount > 99 ? '99+' : notificationCount}
               </Badge>
             )}
@@ -332,10 +306,10 @@ export function ForumSidebar() {
       </Card>
 
       {/* Community Stats */}
-      <Card className="border-0 shadow-sm bg-card/60 backdrop-blur-sm">
+      <Card className="border border-[#E6EAF2] dark:border-[#22304A] shadow-sm bg-white dark:bg-[#0F1A2E]">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-foreground">
-            <TrendingUp className="w-4 h-4 text-primary" />
+          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-[#162B54] dark:text-[#EAF0FF]">
+            <TrendingUp className="w-4 h-4 text-brand-primary dark:text-[#5B8DFF]" />
             <span>Community Activity</span>
           </CardTitle>
         </CardHeader>
@@ -344,9 +318,9 @@ export function ForumSidebar() {
             <div key={index} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className={stat.color}>{stat.icon}</div>
-                <span className="text-sm text-muted-foreground">{stat.label}</span>
+                <span className="text-sm text-[#64748B] dark:text-[#9AA7C2]">{stat.label}</span>
               </div>
-              <span className="font-semibold text-foreground">{stat.value}</span>
+              <span className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">{stat.value}</span>
             </div>
           ))}
         </CardContent>
@@ -354,14 +328,14 @@ export function ForumSidebar() {
 
       {/* User Stats Card */}
       {firebaseUser && userStats && (
-        <Card className="border-0 shadow-sm bg-muted/80 backdrop-blur-sm opacity-60">
+        <Card className="border border-[#E6EAF2] dark:border-[#22304A] shadow-sm bg-white/80 dark:bg-[#0F1A2E]/80 backdrop-blur-sm opacity-60">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center justify-between text-foreground">
+            <CardTitle className="text-sm font-medium flex items-center justify-between text-[#162B54] dark:text-[#EAF0FF]">
               <div className="flex items-center space-x-2">
-                <Trophy className="w-4 h-4 text-muted-foreground" />
+                <Trophy className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
                 <span>Your Progress</span>
               </div>
-              <span className="text-sm px-3 py-1 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full font-semibold shadow-lg animate-pulse">
+              <span className="text-sm px-3 py-1 bg-gradient-brand text-white rounded-full font-semibold shadow-lg animate-pulse">
                 Coming Soon
               </span>
             </CardTitle>
@@ -373,33 +347,34 @@ export function ForumSidebar() {
                 {userStats.tier} TIER
               </div>
               <div className="flex items-center space-x-1 opacity-50">
-                <Gift className="w-4 h-4 text-muted-foreground" />
-                <span className="font-bold text-foreground">{userStats.gems}</span>
-                <span className="text-xs text-muted-foreground">gems</span>
+                <span className="text-[#5BC4E8]">💎</span>
+                <span className="font-bold text-[#162B54] dark:text-[#EAF0FF]">{userStats.gems}</span>
               </div>
             </div>
 
             {/* Progress to Next Tier */}
             <div className="opacity-50">
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+              <div className="flex justify-between text-xs text-[#64748B] dark:text-[#9AA7C2] mb-1">
                 <span>Progress to next tier</span>
                 <span>{userStats.gems}/{userStats.nextTierGems}</span>
               </div>
-              <Progress
-                value={(userStats.gems / userStats.nextTierGems) * 100}
-                className="h-2"
-              />
+              <div className="h-2 bg-[#E6EAF2] dark:bg-[#22304A] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-brand"
+                  style={{ width: `${(userStats.gems / userStats.nextTierGems) * 100}%` }}
+                />
+              </div>
             </div>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-2 text-xs opacity-50">
-              <div className="text-center p-2 bg-muted rounded">
-                <div className="font-semibold text-foreground">#{userStats.rank}</div>
-                <div className="text-muted-foreground">Rank</div>
+              <div className="text-center p-2 bg-[#F3F6FB] dark:bg-[#101E38] rounded">
+                <div className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">#{userStats.rank}</div>
+                <div className="text-[#64748B] dark:text-[#9AA7C2]">Rank</div>
               </div>
-              <div className="text-center p-2 bg-muted rounded">
-                <div className="font-semibold text-foreground">{userStats.streak}</div>
-                <div className="text-muted-foreground">Day Streak</div>
+              <div className="text-center p-2 bg-[#F3F6FB] dark:bg-[#101E38] rounded">
+                <div className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">{userStats.streak}</div>
+                <div className="text-[#64748B] dark:text-[#9AA7C2]">Day Streak</div>
               </div>
             </div>
           </CardContent>
@@ -407,40 +382,40 @@ export function ForumSidebar() {
       )}
 
       {/* Top Contributors Mini Leaderboard */}
-      <Card className="border-0 shadow-sm bg-card/60 backdrop-blur-sm">
+      <Card className="border border-[#E6EAF2] dark:border-[#22304A] shadow-sm bg-white dark:bg-[#0F1A2E]">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2 text-foreground">
-            <Star className="w-4 h-4 text-yellow-500" />
+          <CardTitle className="text-base font-semibold flex items-center space-x-2 text-[#162B54] dark:text-[#EAF0FF]">
+            <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
             <span>Top Contributors</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           {topContributors.length > 0 ? topContributors.map((user, index) => (
             <div key={index} className="flex items-center space-x-2">
-              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold ${
-                index === 0 ? 'bg-yellow-500 text-white' :
-                index === 1 ? 'bg-muted-foreground text-white' :
-                'bg-orange-600 text-white'
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                index === 0 ? 'bg-brand-primary dark:bg-[#5B8DFF] text-white' :
+                index === 1 ? 'bg-[#94A3B8] text-white' :
+                'bg-[#CBD5E1] dark:bg-[#475569] text-white'
               }`}>
                 {user.rank}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-1">
-                  <span className="text-sm font-medium truncate text-foreground">{user.name}</span>
-                  {user.isVIP && <Crown className="w-3 h-3 text-yellow-500 flex-shrink-0" />}
+                  <span className="text-xs font-medium truncate text-[#162B54] dark:text-[#EAF0FF]">{user.name}</span>
+                  {user.isVIP && <Crown className="w-3 h-3 text-amber-400 fill-amber-400 flex-shrink-0" />}
                 </div>
               </div>
-              <div className="flex items-center space-x-1">
-                <Gift className="w-3 h-3 text-green-600" />
-                <span className="text-xs font-semibold text-green-600">{user.gems}</span>
+              <div className="flex items-center space-x-0.5">
+                <span className="text-xs text-[#5BC4E8]">💎</span>
+                <span className="text-xs text-[#162B54] dark:text-[#EAF0FF]">{user.gems}</span>
               </div>
             </div>
           )) : (
-            <div className="text-center py-4 text-sm text-muted-foreground">
+            <div className="text-center py-4 text-sm text-[#64748B] dark:text-[#9AA7C2]">
               No contributors yet
             </div>
           )}
-          <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground">
+          <Button variant="ghost" size="sm" className="w-full text-xs text-brand-primary dark:text-[#5B8DFF] hover:text-brand-hover dark:hover:text-[#5B8DFF] hover:bg-[#EAF1FF] dark:hover:bg-[#162449]">
             View Leaderboard
           </Button>
         </CardContent>
