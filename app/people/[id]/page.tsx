@@ -315,7 +315,7 @@ export default function ContactDetailPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h1 className="text-2xl font-bold text-foreground truncate">
+                    <h1 className="text-3xl font-bold text-foreground truncate">
                       {contact.fullName}
                     </h1>
                     {contact.verified && (

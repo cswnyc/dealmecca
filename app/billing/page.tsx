@@ -1,268 +1,214 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useAuth } from '@/lib/auth/firebase-auth'
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/lib/auth/firebase-auth';
 import {
-  Receipt,
   CreditCard,
-  Calendar,
   ArrowLeft,
-  DollarSign,
   CheckCircle,
+  AlertCircle,
   Clock,
   ExternalLink,
-  Star,
-  Zap,
-  Users,
-  TrendingUp,
-  AlertCircle,
-  Loader2
-} from 'lucide-react'
+  Loader2,
+  Minus,
+  Plus,
+} from 'lucide-react';
+import { BillingToggle } from '@/components/billing/BillingToggle';
+import { PricingCard } from '@/components/billing/PricingCard';
+import { PRICING, TEAM_MIN_SEATS, getTeamMonthlyTotal, getTeamAnnualTotal, BillingPeriod } from '@/lib/pricing';
 
 interface SubscriptionData {
-  tier: 'FREE' | 'PRO' | 'TEAM'
-  status: 'ACTIVE' | 'INACTIVE' | 'PAST_DUE' | 'CANCELLED'
-  currentPeriodEnd?: string
-  cancelAtPeriodEnd: boolean
-  stripeCustomerId?: string
+  tier: 'FREE' | 'PRO' | 'TEAM';
+  status: 'ACTIVE' | 'INACTIVE' | 'PAST_DUE' | 'CANCELLED';
+  currentPeriodEnd?: string;
+  cancelAtPeriodEnd: boolean;
+  stripeCustomerId?: string;
 }
 
-export default function BillingPage() {
-  const { user, idToken } = useAuth()
-  const [subscription, setSubscription] = useState<SubscriptionData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [upgradeLoading, setUpgradeLoading] = useState('')
-  const [portalLoading, setPortalLoading] = useState(false)
-  const [billingInterval, setBillingInterval] = useState<'monthly' | 'yearly'>('monthly')
+export default function BillingPage(): JSX.Element {
+  const { user, idToken } = useAuth();
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [upgradeLoading, setUpgradeLoading] = useState('');
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly');
+  const [teamSeats, setTeamSeats] = useState(TEAM_MIN_SEATS);
 
   useEffect(() => {
-    // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (loading) {
         setSubscription({
           tier: 'FREE',
           status: 'ACTIVE',
-          cancelAtPeriodEnd: false
-        })
-        setLoading(false)
+          cancelAtPeriodEnd: false,
+        });
+        setLoading(false);
       }
-    }, 3000)
+    }, 3000);
 
-    fetchSubscriptionData()
+    fetchSubscriptionData();
 
-    return () => clearTimeout(timeout)
-  }, [user, idToken])
+    return () => clearTimeout(timeout);
+  }, [user, idToken]);
 
-  const fetchSubscriptionData = async () => {
+  const fetchSubscriptionData = async (): Promise<void> => {
     try {
       if (!user || !idToken) {
-        // If no user/token, set default free plan and stop loading
         setSubscription({
           tier: 'FREE',
           status: 'ACTIVE',
-          cancelAtPeriodEnd: false
-        })
-        setLoading(false)
-        return
+          cancelAtPeriodEnd: false,
+        });
+        setLoading(false);
+        return;
       }
 
       const response = await fetch('/api/users/profile', {
         headers: {
-          'Authorization': `Bearer ${idToken}`
-        }
-      })
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
 
       if (response.ok) {
-        const userData = await response.json()
+        const userData = await response.json();
         setSubscription({
           tier: userData.subscriptionTier || 'FREE',
           status: userData.subscriptionStatus || 'ACTIVE',
           currentPeriodEnd: userData.currentPeriodEnd,
           cancelAtPeriodEnd: userData.cancelAtPeriodEnd || false,
-          stripeCustomerId: userData.stripeCustomerId
-        })
+          stripeCustomerId: userData.stripeCustomerId,
+        });
       } else {
-        // If API call fails, default to free plan
         setSubscription({
           tier: 'FREE',
           status: 'ACTIVE',
-          cancelAtPeriodEnd: false
-        })
+          cancelAtPeriodEnd: false,
+        });
       }
     } catch (error) {
-      console.error('Failed to fetch subscription data:', error)
-      // On error, default to free plan
+      console.error('Failed to fetch subscription data:', error);
       setSubscription({
         tier: 'FREE',
         status: 'ACTIVE',
-        cancelAtPeriodEnd: false
-      })
+        cancelAtPeriodEnd: false,
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const createCheckoutSession = async (tier: 'PRO' | 'TEAM', interval: 'monthly' | 'annual') => {
-    // Check if user is authenticated
+  const createCheckoutSession = async (
+    tier: 'PRO' | 'TEAM',
+    interval: 'monthly' | 'annual'
+  ): Promise<void> => {
     if (!user || !idToken) {
-      console.log('🔐 User not authenticated, redirecting to sign-in')
-      window.location.href = `/auth/signin?returnTo=${encodeURIComponent('/billing')}`
-      return
+      window.location.href = `/auth/signin?returnTo=${encodeURIComponent('/billing')}`;
+      return;
     }
 
-    setUpgradeLoading(`${tier}_${interval}`)
+    const quantity = tier === 'TEAM' ? teamSeats : 1;
+    setUpgradeLoading(`${tier}_${interval}`);
 
     try {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           tier,
           interval,
+          quantity,
           successUrl: `${window.location.origin}/billing?success=true`,
-          cancelUrl: `${window.location.origin}/billing?canceled=true`
-        })
-      })
+          cancelUrl: `${window.location.origin}/billing?canceled=true`,
+        }),
+      });
 
-      const data = await response.json()
-
-      console.log('🔥 Frontend Checkout Response:', {
-        tier,
-        interval,
-        responseOk: response.ok,
-        data
-      })
+      const data = await response.json();
 
       if (data.url) {
-        console.log('✅ Redirecting to Stripe:', data.url)
-        window.location.href = data.url
+        window.location.href = data.url;
       } else {
-        console.error('❌ No URL in response:', data)
-        throw new Error(data.error || 'Failed to create checkout session')
+        console.error('No URL in response:', data);
+        throw new Error(data.error || 'Failed to create checkout session');
       }
     } catch (error) {
-      console.error('Checkout error:', error)
-      alert('Failed to start checkout process. Please try again.')
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout process. Please try again.');
     } finally {
-      setUpgradeLoading('')
+      setUpgradeLoading('');
     }
-  }
+  };
 
-  const openCustomerPortal = async () => {
-    if (!idToken || !subscription?.stripeCustomerId) return
+  const openCustomerPortal = async (): Promise<void> => {
+    if (!idToken || !subscription?.stripeCustomerId) {
+      return;
+    }
 
-    setPortalLoading(true)
+    setPortalLoading(true);
 
     try {
       const response = await fetch('/api/stripe/portal', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify({
-          returnUrl: window.location.href
-        })
-      })
+          returnUrl: window.location.href,
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.url) {
-        window.location.href = data.url
+        window.location.href = data.url;
       } else {
-        throw new Error(data.error || 'Failed to open billing portal')
+        throw new Error(data.error || 'Failed to open billing portal');
       }
     } catch (error) {
-      console.error('Portal error:', error)
-      alert('Failed to open billing portal. Please try again.')
+      console.error('Portal error:', error);
+      alert('Failed to open billing portal. Please try again.');
     } finally {
-      setPortalLoading(false)
+      setPortalLoading(false);
     }
-  }
+  };
 
-  const getPlanDetails = (tier: string) => {
-    switch (tier) {
-      case 'PRO':
-        return {
-          name: 'Pro',
-          description: 'For media professionals',
-          monthlyPrice: 29,
-          annualPrice: 299, // $299/year
-          features: [
-            'Unlimited company & contact searches',
-            'Advanced filtering & insights',
-            'Data export & reporting',
-            'Premium forum access',
-            'Priority support',
-            'CRM integrations'
-          ]
-        }
-      case 'TEAM':
-        return {
-          name: 'Team',
-          description: 'For agencies & teams',
-          monthlyPrice: 99,
-          annualPrice: 999, // $999/year
-          features: [
-            'Team performance analytics',
-            'User roles & permissions',
-            'API access & webhooks',
-            'Dedicated success manager',
-            'Custom integrations',
-            'White-label options'
-          ]
-        }
-      default:
-        return {
-          name: 'Free',
-          description: 'Get started for free',
-          monthlyPrice: 0,
-          annualPrice: 0,
-          features: [
-            '5 searches per month',
-            'Basic company profiles',
-            'Community forum access',
-            'Email support (48hr)'
-          ]
-        }
-    }
-  }
+  const handleTeamSeatsChange = (delta: number): void => {
+    setTeamSeats((prev) => Math.max(TEAM_MIN_SEATS, prev + delta));
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+      <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B1220] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#2575FC]" />
       </div>
-    )
-  }
-
-  const currentPlan = getPlanDetails(subscription?.tier || 'FREE')
-  const proPlan = getPlanDetails('PRO')
-  const teamPlan = getPlanDetails('TEAM')
-  const freePlan = getPlanDetails('FREE')
-
-  const getPrice = (plan: any) => {
-    return billingInterval === 'yearly' ? plan.annualPrice : plan.monthlyPrice
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B1220]">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-border">
+      <div className="bg-white/80 dark:bg-[#0F1824]/80 backdrop-blur-sm shadow-sm border-b border-[#E6EAF2] dark:border-[#1E3A5F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/forum" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                href="/forum"
+                className="flex items-center text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF] transition-colors"
+              >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back
               </Link>
-              <div className="flex items-center space-x-2">
-                <Receipt className="w-6 h-6 text-purple-600" />
-                <h1 className="text-xl font-semibold text-foreground">Billing & Plans</h1>
+              <div className="flex items-center space-x-3">
+                <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)' }}>
+                  <CreditCard className="w-6 h-6 text-[#2575FC] dark:text-[#5B8DFF]" />
+                </div>
+                <span className="text-[#64748B] dark:text-[#9AA7C2]">
+                  Billing & Plans
+                </span>
               </div>
             </div>
           </div>
@@ -273,182 +219,108 @@ export default function BillingPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-foreground mb-4">
+          <h1 className="text-5xl font-bold text-[#162B54] dark:text-[#EAF0FF] mb-4">
             Choose the right plan for your media needs
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Join 2,500+ media professionals who trust GetMecca
+          <p className="text-xl text-[#64748B] dark:text-[#9AA7C2] max-w-2xl mx-auto mb-8">
+            Join thousands of media professionals who trust DealMecca
           </p>
 
           {/* Billing Toggle */}
-          <div className="flex items-center justify-center space-x-3 mb-8">
-            <button
-              onClick={() => setBillingInterval('monthly')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
-                billingInterval === 'monthly'
-                  ? 'bg-foreground text-white shadow-md'
-                  : 'bg-white text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              Monthly billing
-            </button>
-            <button
-              onClick={() => setBillingInterval('yearly')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center space-x-2 ${
-                billingInterval === 'yearly'
-                  ? 'bg-foreground text-white shadow-md'
-                  : 'bg-white text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              <span>Yearly billing</span>
-              <span className="bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
-                -18%
-              </span>
-            </button>
+          <div className="flex items-center justify-center mb-8">
+            <BillingToggle billingPeriod={billingPeriod} onChange={setBillingPeriod} />
           </div>
         </div>
 
         {/* Pricing Cards - 3 Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-          {/* Free Plan */}
-          <div className="bg-white rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-foreground mb-1">{freePlan.name}</h3>
-              <p className="text-sm text-muted-foreground">{freePlan.description}</p>
-            </div>
+          <PricingCard
+            planKey="free"
+            billingPeriod={billingPeriod}
+            currentTier={subscription?.tier}
+          />
 
-            <div className="mb-6">
-              <div className="flex items-baseline">
-                <span className="text-4xl font-bold text-foreground">${getPrice(freePlan)}</span>
-                <span className="text-muted-foreground ml-2">/month</span>
+          <PricingCard
+            planKey="pro"
+            billingPeriod={billingPeriod}
+            currentTier={subscription?.tier}
+            loading={upgradeLoading === `PRO_${billingPeriod}`}
+            onUpgrade={() =>
+              createCheckoutSession('PRO', billingPeriod === 'yearly' ? 'annual' : 'monthly')
+            }
+          />
+
+          <div className="space-y-4">
+            <PricingCard
+              planKey="team"
+              billingPeriod={billingPeriod}
+              currentTier={subscription?.tier}
+              loading={upgradeLoading === `TEAM_${billingPeriod}`}
+              onUpgrade={() =>
+                createCheckoutSession('TEAM', billingPeriod === 'yearly' ? 'annual' : 'monthly')
+              }
+              teamSeats={teamSeats}
+            />
+
+            {/* Team Seats Selector */}
+            <div className="bg-white dark:bg-[#0F1824] border border-[#E6EAF2] dark:border-[#1E3A5F] rounded-xl p-4">
+              <label className="block text-sm font-medium text-[#162B54] dark:text-[#EAF0FF] mb-2">
+                Number of team members
+              </label>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => handleTeamSeatsChange(-1)}
+                  disabled={teamSeats <= TEAM_MIN_SEATS}
+                  className="p-2 rounded-lg bg-[#F3F6FB] dark:bg-[#101E38] text-[#162B54] dark:text-[#EAF0FF] hover:bg-[#E6EAF2] dark:hover:bg-[#1E3A5F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">
+                    {teamSeats}
+                  </div>
+                  <div className="text-xs text-[#64748B] dark:text-[#9AA7C2]">
+                    {billingPeriod === 'monthly'
+                      ? `$${getTeamMonthlyTotal(teamSeats)}/month`
+                      : `$${getTeamAnnualTotal(teamSeats)}/year`}
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleTeamSeatsChange(1)}
+                  className="p-2 rounded-lg bg-[#F3F6FB] dark:bg-[#101E38] text-[#162B54] dark:text-[#EAF0FF] hover:bg-[#E6EAF2] dark:hover:bg-[#1E3A5F] transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
-            </div>
-
-            <button
-              className="w-full bg-muted text-foreground py-3 rounded-lg font-semibold hover:bg-muted/80 transition-colors mb-6"
-              disabled={subscription?.tier === 'FREE'}
-            >
-              {subscription?.tier === 'FREE' ? 'Current Plan' : 'Get Started'}
-            </button>
-
-            <div className="border-t border-border/50 pt-4">
-              <p className="text-sm font-semibold text-foreground mb-3">What's included</p>
-              <ul className="space-y-2.5">
-                {freePlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm text-foreground">
-                    <CheckCircle className="w-4 h-4 text-green-600 mr-2.5 mt-0.5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Pro Plan - Popular */}
-          <div className="bg-white rounded-xl border-2 border-purple-500 p-6 hover:shadow-xl transition-shadow relative">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-              <span className="bg-purple-600 text-white px-4 py-1 rounded-full text-xs font-semibold">
-                Popular
-              </span>
-            </div>
-
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-foreground mb-1">{proPlan.name}</h3>
-              <p className="text-sm text-muted-foreground">{proPlan.description}</p>
-            </div>
-
-            <div className="mb-6">
-              <div className="flex items-baseline">
-                <span className="text-4xl font-bold text-foreground">${getPrice(proPlan)}</span>
-                <span className="text-muted-foreground ml-2">
-                  /{billingInterval === 'yearly' ? 'year' : 'month'}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => createCheckoutSession('PRO', billingInterval === 'yearly' ? 'annual' : 'monthly')}
-              disabled={upgradeLoading === `PRO_${billingInterval}` || subscription?.tier === 'PRO'}
-              className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50 transition-colors mb-6"
-            >
-              {upgradeLoading === `PRO_${billingInterval}` ? (
-                <Loader2 className="w-5 h-5 animate-spin mx-auto" />
-              ) : subscription?.tier === 'PRO' ? (
-                'Current Plan'
-              ) : (
-                'Start Free Trial'
-              )}
-            </button>
-
-            <div className="border-t border-border/50 pt-4">
-              <p className="text-sm font-semibold text-foreground mb-3">All Free features, plus</p>
-              <ul className="space-y-2.5">
-                {proPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm text-foreground">
-                    <CheckCircle className="w-4 h-4 text-green-600 mr-2.5 mt-0.5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Team Plan */}
-          <div className="bg-white rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-foreground mb-1">{teamPlan.name}</h3>
-              <p className="text-sm text-muted-foreground">{teamPlan.description}</p>
-            </div>
-
-            <div className="mb-6">
-              <div className="flex items-baseline">
-                <span className="text-4xl font-bold text-foreground">${getPrice(teamPlan)}</span>
-                <span className="text-muted-foreground ml-2">
-                  /{billingInterval === 'yearly' ? 'year' : 'month'}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => createCheckoutSession('TEAM', billingInterval === 'yearly' ? 'annual' : 'monthly')}
-              disabled={upgradeLoading === `TEAM_${billingInterval}` || subscription?.tier === 'TEAM'}
-              className="w-full bg-foreground text-white py-3 rounded-lg font-semibold hover:bg-foreground/90 disabled:opacity-50 transition-colors mb-6"
-            >
-              {upgradeLoading === `TEAM_${billingInterval}` ? (
-                <Loader2 className="w-5 h-5 animate-spin mx-auto" />
-              ) : subscription?.tier === 'TEAM' ? (
-                'Current Plan'
-              ) : (
-                'Start Free Trial'
-              )}
-            </button>
-
-            <div className="border-t border-border/50 pt-4">
-              <p className="text-sm font-semibold text-foreground mb-3">All Pro features, plus</p>
-              <ul className="space-y-2.5">
-                {teamPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm text-foreground">
-                    <CheckCircle className="w-4 h-4 text-green-600 mr-2.5 mt-0.5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="text-xs text-[#9AA7C2] mt-2 text-center">
+                Minimum {TEAM_MIN_SEATS} team members required
+              </p>
             </div>
           </div>
         </div>
 
         {/* Current Plan - Only show for subscribed users */}
         {subscription?.tier !== 'FREE' && (
-          <div className="bg-white rounded-lg border border-border p-6 mb-12">
-            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+          <div className="bg-white dark:bg-[#0F1824] rounded-lg border border-[#E6EAF2] dark:border-[#1E3A5F] p-6 mb-12">
+            <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF] mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
               Your Current Plan
             </h2>
 
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+            <div
+              className="flex items-center justify-between p-4 rounded-lg"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(37, 117, 252, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)',
+              }}
+            >
               <div>
-                <h3 className="text-xl font-bold text-foreground">{currentPlan.name}</h3>
-                <p className="text-muted-foreground text-sm">{currentPlan.description}</p>
+                <h3 className="text-xl font-bold text-[#162B54] dark:text-[#EAF0FF]">
+                  {PRICING[subscription.tier.toLowerCase() as 'free' | 'pro' | 'team'].name}
+                </h3>
+                <p className="text-[#64748B] dark:text-[#9AA7C2] text-sm">
+                  {PRICING[subscription.tier.toLowerCase() as 'free' | 'pro' | 'team'].tagline}
+                </p>
                 {subscription?.status === 'PAST_DUE' && (
                   <div className="flex items-center mt-2 text-red-600">
                     <AlertCircle className="w-4 h-4 mr-1" />
@@ -463,12 +335,8 @@ export default function BillingPage() {
                 )}
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold text-foreground">
-                  ${currentPlan.monthlyPrice}
-                </div>
-                <div className="text-sm text-muted-foreground">/month</div>
                 {subscription?.currentPeriodEnd && (
-                  <div className="text-xs text-muted-foreground mt-1">
+                  <div className="text-xs text-[#64748B] dark:text-[#9AA7C2] mt-1">
                     Renews {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                   </div>
                 )}
@@ -480,7 +348,7 @@ export default function BillingPage() {
                 <button
                   onClick={openCustomerPortal}
                   disabled={portalLoading}
-                  className="inline-flex items-center px-4 py-2 bg-foreground text-white rounded-lg hover:bg-foreground/90 disabled:opacity-50 transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-[#162B54] dark:bg-[#EAF0FF] text-white dark:text-[#162B54] rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {portalLoading ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -494,86 +362,92 @@ export default function BillingPage() {
           </div>
         )}
 
-        {/* Social Proof & Testimonials - Simplified */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-8 mb-12">
+        {/* Social Proof & Testimonials */}
+        <div
+          className="rounded-xl p-8 mb-12"
+          style={{
+            background:
+              'linear-gradient(90deg, rgba(37, 117, 252, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)',
+          }}
+        >
           <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-foreground mb-2">Trusted by media professionals</h3>
-            <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
+            <h3 className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF] mb-2">
+              Trusted by media professionals
+            </h3>
+            <div className="flex items-center justify-center space-x-6 text-sm text-[#64748B] dark:text-[#9AA7C2]">
               <div className="flex items-center">
-                <span className="font-semibold text-purple-600 text-lg mr-1">4.9/5</span>
+                <span className="font-semibold text-[#2575FC] dark:text-[#5B8DFF] text-lg mr-1">
+                  4.9/5
+                </span>
                 <div className="flex text-yellow-400 text-lg">★★★★★</div>
-              </div>
-              <div className="text-muted-foreground/50">•</div>
-              <div>
-                <span className="font-semibold text-foreground">2,500+</span> active users
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm p-5 rounded-lg">
+            <div className="bg-white/80 dark:bg-[#0F1A2E]/80 backdrop-blur-sm p-5 rounded-lg border border-[#E6EAF2] dark:border-[#1E3A5F]">
               <div className="flex items-center mb-2">
-                <div className="w-9 h-9 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">SM</div>
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm"
+                  style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+                >
+                  SM
+                </div>
                 <div className="ml-2.5">
-                  <div className="font-semibold text-foreground text-sm">Sarah M.</div>
-                  <div className="text-xs text-muted-foreground">Media Buyer, Agency</div>
+                  <div className="font-semibold text-[#162B54] dark:text-[#EAF0FF] text-sm">
+                    Sarah M.
+                  </div>
+                  <div className="text-xs text-[#64748B] dark:text-[#9AA7C2]">
+                    Media Buyer, Agency
+                  </div>
                 </div>
               </div>
-              <p className="text-foreground text-sm leading-relaxed">
-                "GetMecca saved us hours of research. The contact database is incredibly accurate."
+              <p className="text-[#64748B] dark:text-[#9AA7C2] text-sm leading-relaxed">
+                "DealMecca saved us hours of research. The contact database is incredibly accurate."
               </p>
               <div className="flex text-yellow-400 text-xs mt-1.5">★★★★★</div>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-5 rounded-lg">
+            <div className="bg-white/80 dark:bg-[#0F1A2E]/80 backdrop-blur-sm p-5 rounded-lg border border-[#E6EAF2] dark:border-[#1E3A5F]">
               <div className="flex items-center mb-2">
-                <div className="w-9 h-9 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">JD</div>
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm"
+                  style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+                >
+                  JD
+                </div>
                 <div className="ml-2.5">
-                  <div className="font-semibold text-foreground text-sm">James D.</div>
-                  <div className="text-xs text-muted-foreground">Director, Publisher</div>
+                  <div className="font-semibold text-[#162B54] dark:text-[#EAF0FF] text-sm">
+                    James D.
+                  </div>
+                  <div className="text-xs text-[#64748B] dark:text-[#9AA7C2]">
+                    Director, Publisher
+                  </div>
                 </div>
               </div>
-              <p className="text-foreground text-sm leading-relaxed">
-                "Best investment for our media partnerships. The forum alone is worth the subscription."
+              <p className="text-[#64748B] dark:text-[#9AA7C2] text-sm leading-relaxed">
+                "Best investment for our media partnerships. The forum alone is worth the
+                subscription."
               </p>
               <div className="flex text-yellow-400 text-xs mt-1.5">★★★★★</div>
             </div>
           </div>
         </div>
 
-        {/* Billing Information - Only for subscribed users */}
-        {subscription?.tier !== 'FREE' && subscription?.currentPeriodEnd && (
-          <div className="bg-white rounded-lg border border-border p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Billing Information</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <DollarSign className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-foreground mb-1">
-                  ${currentPlan.monthlyPrice}
-                </div>
-                <div className="text-sm text-muted-foreground">Monthly</div>
-              </div>
-
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <Calendar className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-lg font-semibold text-foreground mb-1">
-                  {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                </div>
-                <div className="text-sm text-muted-foreground">Next Billing</div>
-              </div>
-
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                <div className="text-lg font-semibold text-foreground mb-1">
-                  {subscription.status === 'ACTIVE' ? 'Active' : subscription.status}
-                </div>
-                <div className="text-sm text-muted-foreground">Status</div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Help Section */}
+        <div className="text-center py-12">
+          <p className="text-lg text-[#64748B] dark:text-[#9AA7C2]">
+            Have questions?{' '}
+            <Link href="/faq" className="text-[#2575FC] dark:text-[#5B8DFF] font-semibold hover:underline">
+              View our FAQ
+            </Link>
+            {' '}or{' '}
+            <Link href="/contact" className="text-[#2575FC] dark:text-[#5B8DFF] font-semibold hover:underline">
+              contact support
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
-  )
+  );
 }

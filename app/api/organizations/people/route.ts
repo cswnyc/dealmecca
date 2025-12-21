@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
         seniority: true,
         department: true,
         isDecisionMaker: true,
+        verified: true,
         updatedAt: true,
         company: {
           select: {
@@ -73,6 +74,41 @@ export async function GET(request: NextRequest) {
             city: true,
             state: true
           }
+        },
+        ContactTeam: {
+          select: {
+            team: {
+              select: {
+                id: true,
+                name: true,
+                company: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logoUrl: true
+                  }
+                },
+                clientCompany: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logoUrl: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        ContactDuty: {
+          select: {
+            duty: {
+              select: {
+                name: true,
+                category: true
+              }
+            }
+          },
+          take: 5
         },
         _count: {
           select: {
@@ -107,6 +143,40 @@ export async function GET(request: NextRequest) {
         lastActivity = `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''}`;
       }
 
+      // Extract teams from ContactTeam (prefer clientCompany, fallback to company)
+      const uniqueTeams = new Map();
+      contact.ContactTeam.forEach(ct => {
+        const company = ct.team.clientCompany || ct.team.company;
+        if (company && !uniqueTeams.has(company.id)) {
+          uniqueTeams.set(company.id, company);
+        }
+      });
+
+      // Generate color deterministically
+      const generateColor = (str: string): string => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const hue = Math.abs(hash % 360);
+        const saturation = 65 + (Math.abs(hash) % 20);
+        const lightness = 45 + (Math.abs(hash >> 8) % 15);
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+      };
+
+      const teams = Array.from(uniqueTeams.values()).map(company => ({
+        id: company.id,
+        name: company.name,
+        logoUrl: company.logoUrl || undefined,
+        color: generateColor(company.name)
+      }));
+
+      // Extract handles from ContactDuty (limit to 5)
+      const handles = contact.ContactDuty
+        .map(cd => cd.duty.name)
+        .filter((name, index, arr) => arr.indexOf(name) === index) // dedupe
+        .slice(0, 5);
+
       return {
         id: contact.id,
         firstName: contact.firstName,
@@ -132,7 +202,11 @@ export async function GET(request: NextRequest) {
           state: contact.company.state || ''
         },
         interactionCount: contact._count.ContactInteraction,
-        noteCount: contact._count.ContactNote
+        noteCount: contact._count.ContactNote,
+        // New relationship data
+        teams,
+        handles: handles.length > 0 ? handles : undefined,
+        verificationCount: contact.verified ? 1 : 0
       };
     });
 

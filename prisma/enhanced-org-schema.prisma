@@ -930,7 +930,7 @@ enum Role {
 }
 
 enum SubscriptionTier {
-  FREE      // 10 searches/month
-  PRO       // $99/month - unlimited
-  TEAM      // $299/month - team features
+  FREE      // Free - basic features
+  PRO       // $29/month - unlimited searches
+  TEAM      // $20/user/month - team features (min 10 users)
 } 

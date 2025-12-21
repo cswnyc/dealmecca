@@ -118,9 +118,9 @@ website/
 - [ ] Real-time notifications
 
 ### Freemium Pricing Model
-- [ ] Free: 10 searches/month, basic org charts
-- [ ] Pro ($99/month): Unlimited searches, advanced features
-- [ ] Team ($299/month): Multiple users, admin dashboard
+- [ ] Free: Basic features, community forum access
+- [ ] Pro ($29/month): Unlimited searches, advanced features
+- [ ] Team ($20/user/month): Team analytics, roles & permissions (min 10 users)
 
 ## 🚀 Phase 2 Features
 

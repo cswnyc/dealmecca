@@ -68,9 +68,9 @@ if (!EXPECTED_KEYS.STRIPE_WEBHOOK_SECRET) {
 console.log('\n4️⃣  Price IDs')
 const priceIds = [
   { name: 'PRO Monthly ($29/month)', key: 'STRIPE_PRO_MONTHLY_PRICE_ID', value: EXPECTED_KEYS.STRIPE_PRO_MONTHLY_PRICE_ID },
-  { name: 'PRO Annual ($299/year)', key: 'STRIPE_PRO_ANNUAL_PRICE_ID', value: EXPECTED_KEYS.STRIPE_PRO_ANNUAL_PRICE_ID },
-  { name: 'TEAM Monthly ($99/month)', key: 'STRIPE_TEAM_MONTHLY_PRICE_ID', value: EXPECTED_KEYS.STRIPE_TEAM_MONTHLY_PRICE_ID },
-  { name: 'TEAM Annual ($999/year)', key: 'STRIPE_TEAM_ANNUAL_PRICE_ID', value: EXPECTED_KEYS.STRIPE_TEAM_ANNUAL_PRICE_ID },
+  { name: 'PRO Annual ($288/year)', key: 'STRIPE_PRO_ANNUAL_PRICE_ID', value: EXPECTED_KEYS.STRIPE_PRO_ANNUAL_PRICE_ID },
+  { name: 'TEAM Monthly ($20/user/month)', key: 'STRIPE_TEAM_MONTHLY_PRICE_ID', value: EXPECTED_KEYS.STRIPE_TEAM_MONTHLY_PRICE_ID },
+  { name: 'TEAM Annual ($192/user/year)', key: 'STRIPE_TEAM_ANNUAL_PRICE_ID', value: EXPECTED_KEYS.STRIPE_TEAM_ANNUAL_PRICE_ID },
 ]
 
 for (const price of priceIds) {

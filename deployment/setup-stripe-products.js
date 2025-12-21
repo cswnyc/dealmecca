@@ -11,7 +11,7 @@ async function setupStripeProducts() {
     // Create DealMecca product
     console.log('1️⃣ Creating DealMecca product...');
     const proProduct = await stripe.products.create({
-      name: 'DealMecca',
+      name: 'DealMecca Pro',
       description: 'Unlimited searches, advanced ROI tracking, full event networking, premium forum access, data export, priority support',
       images: ['https://your-domain.com/logo.png'], // Optional: Add your logo URL
       metadata: {
@@ -25,7 +25,7 @@ async function setupStripeProducts() {
     console.log('\n2️⃣ Creating Pro prices...');
     const proMonthly = await stripe.prices.create({
       product: proProduct.id,
-      unit_amount: 9900, // $99.00
+      unit_amount: 2900, // $29.00
       currency: 'usd',
       recurring: {
         interval: 'month',
@@ -40,7 +40,7 @@ async function setupStripeProducts() {
 
     const proAnnual = await stripe.prices.create({
       product: proProduct.id,
-      unit_amount: 99000, // $990.00 (17% discount)
+      unit_amount: 28800, // $288.00 ($24/month * 12, 17% discount)
       currency: 'usd',
       recurring: {
         interval: 'year',
@@ -57,21 +57,21 @@ async function setupStripeProducts() {
     console.log('\n3️⃣ Creating DealMecca Team product...');
     const teamProduct = await stripe.products.create({
       name: 'DealMecca Team',
-      description: 'Everything in Pro for up to 5 users, team analytics, shared goal tracking, admin controls, bulk operations, custom integrations',
+      description: 'Everything in Pro, team analytics, user roles & permissions, dedicated success manager, custom integrations (minimum 10 users)',
       images: ['https://your-domain.com/logo.png'], // Optional: Add your logo URL
       metadata: {
         tier: 'TEAM',
-        max_users: '5',
-        features: 'all_pro_features,team_analytics,shared_goals,admin_controls,bulk_operations,custom_integrations'
+        min_users: '10',
+        features: 'all_pro_features,team_analytics,user_roles,dedicated_manager,custom_integrations'
       }
     });
     console.log('✅ Team product created:', teamProduct.id);
 
-    // Create Team prices
+    // Create Team prices (per user)
     console.log('\n4️⃣ Creating Team prices...');
     const teamMonthly = await stripe.prices.create({
       product: teamProduct.id,
-      unit_amount: 29900, // $299.00
+      unit_amount: 2000, // $20.00 per user
       currency: 'usd',
       recurring: {
         interval: 'month',
@@ -79,14 +79,15 @@ async function setupStripeProducts() {
       nickname: 'Team Monthly',
       metadata: {
         tier: 'TEAM',
-        interval: 'monthly'
+        interval: 'monthly',
+        per_user: 'true'
       }
     });
     console.log('✅ Team Monthly price created:', teamMonthly.id);
 
     const teamAnnual = await stripe.prices.create({
       product: teamProduct.id,
-      unit_amount: 299000, // $2990.00 (17% discount)
+      unit_amount: 19200, // $192.00 per user per year ($16/month * 12, 20% discount)
       currency: 'usd',
       recurring: {
         interval: 'year',
@@ -94,7 +95,8 @@ async function setupStripeProducts() {
       nickname: 'Team Annual',
       metadata: {
         tier: 'TEAM',
-        interval: 'annual'
+        interval: 'annual',
+        per_user: 'true'
       }
     });
     console.log('✅ Team Annual price created:', teamAnnual.id);
@@ -108,10 +110,11 @@ async function setupStripeProducts() {
     console.log(`STRIPE_TEAM_ANNUAL_PRICE_ID="${teamAnnual.id}"`);
 
     console.log('\n📋 Summary:');
-    console.log(`Pro Monthly: $99/month (${proMonthly.id})`);
-    console.log(`Pro Annual: $990/year (${proAnnual.id})`);
-    console.log(`Team Monthly: $299/month (${teamMonthly.id})`);
-    console.log(`Team Annual: $2990/year (${teamAnnual.id})`);
+    console.log(`Pro Monthly: $29/month (${proMonthly.id})`);
+    console.log(`Pro Annual: $288/year (${proAnnual.id})`);
+    console.log(`Team Monthly: $20/user/month (${teamMonthly.id})`);
+    console.log(`Team Annual: $192/user/year (${teamAnnual.id})`);
+    console.log('\nNote: Team plan requires minimum 10 users in checkout.');
 
   } catch (error) {
     console.error('❌ Error setting up Stripe products:', error.message);

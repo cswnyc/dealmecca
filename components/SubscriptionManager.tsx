@@ -49,14 +49,14 @@ const tierInfo = {
   },
   PRO: {
     name: 'Pro',
-    price: '$99/month',
+    price: '$29/month',
     icon: Zap,
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
   },
   TEAM: {
     name: 'Team',
-    price: '$299/month',
+    price: '$20/user/month',
     icon: Users,
     color: 'text-purple-600',
     bgColor: 'bg-purple-100',
@@ -337,7 +337,7 @@ export default function SubscriptionManager() {
                 </h3>
                 <p className="text-muted-foreground mb-4">
                   Get unlimited searches, advanced ROI tracking, premium forum access, 
-                  and priority support for just $99/month.
+                  and priority support for just $29/month.
                 </p>
                 <Button 
                   onClick={handleUpgrade}

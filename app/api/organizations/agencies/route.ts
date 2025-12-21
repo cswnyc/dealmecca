@@ -86,8 +86,8 @@ export async function GET(request: NextRequest) {
             isActive: true,
             type: 'ADVERTISER_TEAM'
           },
-          take: 10,
           select: {
+            id: true,
             clientCompany: {
               select: {
                 id: true,
@@ -152,6 +152,28 @@ export async function GET(request: NextRequest) {
         lastActivity = `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''}`;
       }
 
+      // Dedupe client companies by ID
+      const uniqueClients = new Map();
+      agency.Team.forEach(team => {
+        if (team.clientCompany && !uniqueClients.has(team.clientCompany.id)) {
+          uniqueClients.set(team.clientCompany.id, team.clientCompany);
+        }
+      });
+
+      const clientsArray = Array.from(uniqueClients.values());
+
+      // Generate color deterministically for each client
+      const generateColor = (str: string): string => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const hue = Math.abs(hash % 360);
+        const saturation = 65 + (Math.abs(hash) % 20);
+        const lightness = 45 + (Math.abs(hash >> 8) % 15);
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+      };
+
       return {
         id: agency.id,
         name: agency.name,
@@ -163,15 +185,22 @@ export async function GET(request: NextRequest) {
         logoUrl: agency.logoUrl || undefined,
         teamCount: agency._count.contacts || 0,
         lastActivity,
-        clients: agency.Team
-          .filter(team => team.clientCompany) // Filter out teams without clients
-          .map(team => ({
-            id: team.clientCompany!.id,
-            name: team.clientCompany!.name,
-            industry: team.clientCompany!.industry || '',
-            logoUrl: team.clientCompany!.logoUrl || undefined,
-            verified: team.clientCompany!.verified
-          }))
+        // Legacy field for backward compatibility
+        clients: clientsArray.map(client => ({
+          id: client.id,
+          name: client.name,
+          industry: client.industry || '',
+          logoUrl: client.logoUrl || undefined,
+          verified: client.verified
+        })),
+        // New relationship chips data - ALL teams for expansion
+        clientTeams: clientsArray.map(client => ({
+          id: client.id,
+          name: client.name,
+          logoUrl: client.logoUrl || undefined,
+          color: generateColor(client.name)
+        })),
+        totalTeams: clientsArray.length
       };
     });
 

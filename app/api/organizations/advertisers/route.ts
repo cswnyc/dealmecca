@@ -82,8 +82,8 @@ export async function GET(request: NextRequest) {
             isActive: true,
             type: 'ADVERTISER_TEAM'
           },
-          take: 10,
           select: {
+            id: true,
             company: {
               select: {
                 id: true,
@@ -126,6 +126,31 @@ export async function GET(request: NextRequest) {
         lastActivity = `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''}`;
       }
 
+      // Dedupe agency companies by ID
+      const uniqueAgencies = new Map();
+      advertiser.clientTeams.forEach(team => {
+        if (team.company && !uniqueAgencies.has(team.company.id)) {
+          uniqueAgencies.set(team.company.id, {
+            ...team.company,
+            isAOR: team.description?.includes('Agency of Record') || team.description?.includes('AOR') || false
+          });
+        }
+      });
+
+      const agenciesArray = Array.from(uniqueAgencies.values());
+
+      // Generate color deterministically for each agency
+      const generateColor = (str: string): string => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const hue = Math.abs(hash % 360);
+        const saturation = 65 + (Math.abs(hash) % 20);
+        const lightness = 45 + (Math.abs(hash >> 8) % 15);
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+      };
+
       return {
         id: advertiser.id,
         name: advertiser.name,
@@ -138,14 +163,23 @@ export async function GET(request: NextRequest) {
         logoUrl: advertiser.logoUrl || undefined,
         teamCount: advertiser._count.contacts || 0,
         lastActivity,
-        agencies: advertiser.clientTeams.map(team => ({
-          id: team.company.id,
-          name: team.company.name,
-          companyType: team.company.companyType,
-          logoUrl: team.company.logoUrl || undefined,
-          verified: team.company.verified,
-          isAOR: team.description?.includes('Agency of Record') || team.description?.includes('AOR') || false
-        }))
+        // Legacy field for backward compatibility
+        agencies: agenciesArray.map(agency => ({
+          id: agency.id,
+          name: agency.name,
+          companyType: agency.companyType,
+          logoUrl: agency.logoUrl || undefined,
+          verified: agency.verified,
+          isAOR: agency.isAOR
+        })),
+        // New relationship chips data - ALL teams for expansion
+        agencyTeams: agenciesArray.map(agency => ({
+          id: agency.id,
+          name: agency.name,
+          logoUrl: agency.logoUrl || undefined,
+          color: generateColor(agency.name)
+        })),
+        totalTeams: agenciesArray.length
       };
     });
 

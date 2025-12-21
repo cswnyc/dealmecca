@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const { priceId, tier, interval, successUrl, cancelUrl } = await request.json()
+    const { priceId, tier, interval, quantity = 1, successUrl, cancelUrl } = await request.json()
 
     // Validate required fields
     if (!priceId && (!tier || !interval)) {
@@ -41,19 +41,24 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
+    // Validate quantity based on tier
+    if (tier === 'TEAM' && quantity < 10) {
+      return NextResponse.json({
+        error: 'Team plan requires a minimum of 10 seats'
+      }, { status: 400 })
+    }
+
+    if (quantity < 1) {
+      return NextResponse.json({
+        error: 'Quantity must be at least 1'
+      }, { status: 400 })
+    }
+
     // Determine final price ID
     const finalPriceId = priceId || getPriceId(tier as 'PRO' | 'TEAM', interval as 'monthly' | 'annual')
 
-    console.log('🔥 Stripe Checkout Debug:', {
-      tier,
-      interval,
-      priceId,
-      finalPriceId,
-      userEmail: user.email
-    })
-
     if (!finalPriceId) {
-      console.error('❌ No price ID found for:', { tier, interval })
+      console.error('No price ID found for tier and interval:', { tier, interval })
       return NextResponse.json({
         error: 'Invalid subscription tier or price ID not found'
       }, { status: 400 })
@@ -80,14 +85,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe checkout session
-    console.log('🔥 Creating Stripe session with:', {
-      priceId: finalPriceId,
-      customerId,
-      tier,
-      interval,
-      userEmail: user.email
-    })
-
     try {
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
@@ -96,7 +93,7 @@ export async function POST(request: NextRequest) {
         line_items: [
           {
             price: finalPriceId,
-            quantity: 1,
+            quantity,
           },
         ],
         success_url: successUrl || `${request.nextUrl.origin}/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
@@ -116,35 +113,18 @@ export async function POST(request: NextRequest) {
         allow_promotion_codes: true,
         billing_address_collection: 'required',
       })
-      console.log('✅ Stripe session created successfully:', session.id)
 
       return NextResponse.json({
         url: session.url,
         sessionId: session.id
       })
     } catch (stripeError) {
-      console.error('❌ Stripe session creation failed:', stripeError)
+      console.error('Stripe session creation failed:', stripeError)
       throw stripeError
     }
 
   } catch (error) {
-    console.error('❌ Stripe checkout error:', error)
-
-    // Log detailed error information
-    if (error instanceof Error) {
-      console.error('Error name:', error.name)
-      console.error('Error message:', error.message)
-      console.error('Error stack:', error.stack)
-    }
-
-    // If it's a Stripe error, log more details
-    if (error && typeof error === 'object' && 'type' in error) {
-      const stripeError = error as any
-      console.error('Stripe error type:', stripeError.type)
-      console.error('Stripe error code:', stripeError.code)
-      console.error('Stripe error param:', stripeError.param)
-      console.error('Stripe error raw:', stripeError.raw)
-    }
+    console.error('Stripe checkout error:', error)
 
     return NextResponse.json({
       error: 'Failed to create checkout session',

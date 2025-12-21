@@ -27,6 +27,8 @@ import { ComprehensiveAdvertiserFilterPanel } from '@/components/filters/Compreh
 import { ComprehensivePeopleFilterPanel } from '@/components/filters/ComprehensivePeopleFilterPanel';
 import { StatsBar } from '@/components/orgs/StatsBar';
 import { OrgListItem, RelatedItems } from '@/components/orgs/OrgListItem';
+import { TeamChip, MoreTeamsLink } from '@/components/orgs/TeamChip';
+import { Linkedin } from 'lucide-react';
 
 // Force dynamic rendering for user-specific content
 export const dynamic = 'force-dynamic'
@@ -82,6 +84,13 @@ interface Agency {
     logoUrl?: string
     verified: boolean
   }>
+  clientTeams: Array<{
+    id: string
+    name: string
+    logoUrl?: string
+    color: string
+  }>
+  totalTeams: number
 }
 
 interface Advertiser {
@@ -104,6 +113,13 @@ interface Advertiser {
     verified: boolean
     isAOR: boolean
   }>
+  agencyTeams: Array<{
+    id: string
+    name: string
+    logoUrl?: string
+    color: string
+  }>
+  totalTeams: number
 }
 
 interface Contact {
@@ -132,6 +148,14 @@ interface Contact {
   }
   interactionCount: number
   noteCount: number
+  teams: Array<{
+    id: string
+    name: string
+    logoUrl?: string
+    color: string
+  }>
+  handles?: string[]
+  verificationCount: number
 }
 
 interface Publisher {
@@ -467,6 +491,11 @@ export default function OrganizationsPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<BulkUploadResult | null>(null);
   const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(new Set());
+  
+  // Expansion state for relationship chips
+  const [expandedAgencies, setExpandedAgencies] = useState<Set<string>>(new Set());
+  const [expandedAdvertisers, setExpandedAdvertisers] = useState<Set<string>>(new Set());
+  const [copiedContactEmail, setCopiedContactEmail] = useState<string | null>(null);
 
   // Helper functions for agency view
   const getAgencyTypeLabel = (type: string) => {
@@ -1015,19 +1044,57 @@ export default function OrganizationsPage() {
                   </div>
                 </div>
                 <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
-                  {filteredAgencies.map((agency) => (
-                    <OrgListItem
-                      key={agency.id}
-                      id={agency.id}
-                      name={agency.name}
-                      logoUrl={agency.logoUrl}
-                      type={getAgencyTypeLabel(agency.type)}
-                      location={{ city: agency.city, state: agency.state }}
-                      verified={agency.verified}
-                      teamCount={agency.teamCount}
-                      searchQuery={searchQuery}
-                    />
-                  ))}
+                  {filteredAgencies.map((agency) => {
+                    const isExpanded = expandedAgencies.has(agency.id);
+                    const displayedTeams = isExpanded ? agency.clientTeams : agency.clientTeams?.slice(0, 3) || [];
+                    
+                    return (
+                      <OrgListItem
+                        key={agency.id}
+                        id={agency.id}
+                        name={agency.name}
+                        logoUrl={agency.logoUrl}
+                        type={getAgencyTypeLabel(agency.type)}
+                        location={{ city: agency.city, state: agency.state }}
+                        verified={agency.verified}
+                        teamCount={agency.teamCount}
+                        searchQuery={searchQuery}
+                      >
+                        {agency.clientTeams && agency.clientTeams.length > 0 && (
+                          <div className="space-y-2 mt-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {displayedTeams.map(team => (
+                                <TeamChip 
+                                  key={team.id} 
+                                  name={team.name} 
+                                  logo={team.logoUrl} 
+                                  color={team.color}
+                                />
+                              ))}
+                              {agency.totalTeams > 3 && (
+                                <MoreTeamsLink 
+                                  count={agency.totalTeams - 3}
+                                  expanded={isExpanded}
+                                  onToggle={() => {
+                                    setExpandedAgencies(prev => {
+                                      const next = new Set(prev);
+                                      if (next.has(agency.id)) {
+                                        next.delete(agency.id);
+                                      } else {
+                                        next.add(agency.id);
+                                      }
+                                      return next;
+                                    });
+                                  }}
+                                />
+                              )}
+                            </div>
+                            <p className="text-xs text-[#9AA7C2]">Last activity: {agency.lastActivity}</p>
+                          </div>
+                        )}
+                      </OrgListItem>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1054,20 +1121,58 @@ export default function OrganizationsPage() {
                   <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover and connect with leading advertisers</p>
                 </div>
                 <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
-                  {filteredAdvertisers.map((advertiser) => (
-                    <OrgListItem
-                      key={advertiser.id}
-                      id={advertiser.id}
-                      name={advertiser.name}
-                      logoUrl={advertiser.logoUrl}
-                      type={advertiser.industry}
-                      location={{ city: advertiser.city, state: advertiser.state }}
-                      verified={advertiser.verified}
-                      teamCount={advertiser.teamCount}
-                      searchQuery={searchQuery}
-                      showOrgChart={false}
-                    />
-                  ))}
+                  {filteredAdvertisers.map((advertiser) => {
+                    const isExpanded = expandedAdvertisers.has(advertiser.id);
+                    const displayedTeams = isExpanded ? advertiser.agencyTeams : advertiser.agencyTeams?.slice(0, 3) || [];
+                    
+                    return (
+                      <OrgListItem
+                        key={advertiser.id}
+                        id={advertiser.id}
+                        name={advertiser.name}
+                        logoUrl={advertiser.logoUrl}
+                        type={advertiser.industry}
+                        location={{ city: advertiser.city, state: advertiser.state }}
+                        verified={advertiser.verified}
+                        teamCount={advertiser.teamCount}
+                        searchQuery={searchQuery}
+                        showOrgChart={false}
+                      >
+                        {advertiser.agencyTeams && advertiser.agencyTeams.length > 0 && (
+                          <div className="space-y-2 mt-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {displayedTeams.map(team => (
+                                <TeamChip 
+                                  key={team.id} 
+                                  name={team.name} 
+                                  logo={team.logoUrl} 
+                                  color={team.color}
+                                />
+                              ))}
+                              {advertiser.totalTeams > 3 && (
+                                <MoreTeamsLink 
+                                  count={advertiser.totalTeams - 3}
+                                  expanded={isExpanded}
+                                  onToggle={() => {
+                                    setExpandedAdvertisers(prev => {
+                                      const next = new Set(prev);
+                                      if (next.has(advertiser.id)) {
+                                        next.delete(advertiser.id);
+                                      } else {
+                                        next.add(advertiser.id);
+                                      }
+                                      return next;
+                                    });
+                                  }}
+                                />
+                              )}
+                            </div>
+                            <p className="text-xs text-[#9AA7C2]">Last activity: {advertiser.lastActivity}</p>
+                          </div>
+                        )}
+                      </OrgListItem>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1095,35 +1200,107 @@ export default function OrganizationsPage() {
                 </div>
                 <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
                   {filteredContacts.map((contact) => (
-                    <div key={contact.id} className="px-6 py-4 hover:bg-[#F7F9FC] dark:hover:bg-[#101E38] cursor-pointer transition-all">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full icon-gradient-bg flex items-center justify-center text-[#2575FC] dark:text-[#5B8DFF] font-bold text-lg">
-                          {contact.firstName[0]}{contact.lastName[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <Link href={`/people/${contact.id}`} className="group">
-                            <h3 className="font-semibold text-[#162B54] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors">
-                              {contact.fullName}
-                            </h3>
-                          </Link>
-                          <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">{contact.title}</p>
-                          <div className="flex items-center flex-wrap gap-2 mt-1">
-                            <span className="px-2 py-0.5 bg-[#2575FC]/10 text-[#2575FC] dark:bg-[#5B8DFF]/10 dark:text-[#5B8DFF] rounded text-xs font-medium">
-                              {contact.company.name}
-                            </span>
-                            {contact.seniority && (
-                              <span className="text-xs text-[#64748B] dark:text-[#9AA7C2]">
-                                {contact.seniority}
-                              </span>
+                    <div key={contact.id} className="px-6 py-4 hover:bg-[#F7F9FC] dark:hover:bg-[#101E38] cursor-pointer transition-all border-l-2 border-transparent hover:border-[#2575FC] dark:hover:border-[#5B8DFF]">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className="w-12 h-12 rounded-full icon-gradient-bg flex items-center justify-center text-[#2575FC] dark:text-[#5B8DFF] font-bold text-lg flex-shrink-0">
+                            {contact.firstName[0]}{contact.lastName[0]}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Link href={`/people/${contact.id}`} className="group">
+                                <h3 className="text-sm font-semibold text-[#162B54] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors">
+                                  {contact.fullName}
+                                </h3>
+                              </Link>
+                              {contact.linkedinUrl && (
+                                <a 
+                                  href={contact.linkedinUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-[#0A66C2] hover:text-[#004182] transition-colors"
+                                >
+                                  <Linkedin className="w-4 h-4" />
+                                </a>
+                              )}
+                            </div>
+                            <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mb-2">
+                              {contact.title} @ {contact.company.name}
+                            </p>
+                            
+                            {/* Team Associations */}
+                            {contact.teams && contact.teams.length > 0 && (
+                              <div className="flex items-center gap-2 flex-wrap mb-2">
+                                {contact.teams.map(team => (
+                                  <TeamChip 
+                                    key={team.id} 
+                                    name={team.name} 
+                                    logo={team.logoUrl} 
+                                    color={team.color}
+                                  />
+                                ))}
+                              </div>
                             )}
-                            {contact.isDecisionMaker && (
-                              <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs font-medium">
-                                <CheckCircle className="w-3 h-3" />
-                                Decision Maker
-                              </span>
+                            
+                            {/* Handles */}
+                            {contact.handles && contact.handles.length > 0 && (
+                              <div className="mb-2">
+                                <span className="text-xs font-medium text-[#64748B] dark:text-[#9AA7C2]">Handles: </span>
+                                <span className="text-xs text-[#9AA7C2]">
+                                  {contact.handles.join(', ')}
+                                </span>
+                              </div>
                             )}
+                            
+                            {/* Email */}
+                            {contact.email && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  navigator.clipboard.writeText(contact.email);
+                                  setCopiedContactEmail(contact.email);
+                                  setTimeout(() => setCopiedContactEmail(null), 2000);
+                                }}
+                                className="text-sm text-[#2575FC] dark:text-[#5B8DFF] hover:underline mb-2 text-left transition-all relative group"
+                                title={copiedContactEmail === contact.email ? 'Copied!' : 'Click to copy'}
+                              >
+                                {contact.email}
+                                <span className="absolute left-0 -bottom-6 px-2 py-1 bg-[#162B54] dark:bg-[#EAF0FF] text-white dark:text-[#162B54] text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                                  {copiedContactEmail === contact.email ? 'Copied!' : 'Click to copy'}
+                                </span>
+                              </button>
+                            )}
+                            
+                            <div className="flex items-center flex-wrap gap-2 mt-1">
+                              <span className="px-2 py-0.5 bg-[#2575FC]/10 text-[#2575FC] dark:bg-[#5B8DFF]/10 dark:text-[#5B8DFF] rounded text-xs font-medium">
+                                {contact.company.name}
+                              </span>
+                              {contact.seniority && (
+                                <span className="text-xs text-[#64748B] dark:text-[#9AA7C2]">
+                                  {contact.seniority}
+                                </span>
+                              )}
+                              {contact.isDecisionMaker && (
+                                <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs font-medium">
+                                  <CheckCircle className="w-3 h-3" />
+                                  Decision Maker
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-[#9AA7C2] mt-1">Last activity: {contact.lastActivity}</p>
                           </div>
                         </div>
+                        
+                        {/* Verification Badge */}
+                        {contact.verificationCount > 0 && (
+                          <div className="flex items-center gap-1 ml-4">
+                            <button className="p-2 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors rounded-lg flex items-center gap-1">
+                              <CheckCircle className="w-5 h-5" />
+                              <span className="text-xs font-medium">{contact.verificationCount}</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
