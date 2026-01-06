@@ -1,3 +1,4 @@
+import { NextRequest, NextResponse } from 'next/server';
 import { getAdmin } from './firebaseAdmin';
 import { prisma } from '@/lib/prisma';
 import { makeAlias } from './alias';
@@ -69,6 +70,7 @@ export async function ensureDbUserFromFirebase(decoded: DecodedIdToken): Promise
         publicHandle: alias,
         name: alias, // Use alias as name for privacy
         provider: provider,
+        accountStatus: 'PENDING', // New users require admin approval
         // Role and other fields will use their defaults from schema
       },
     });
@@ -136,4 +138,63 @@ export async function ensureDbUserFromFirebase(decoded: DecodedIdToken): Promise
   }
 
   return user;
+}
+
+/**
+ * Get authenticated user from request.
+ * Similar to requireAuth but returns user object directly.
+ * 
+ * @param request - Next.js request object
+ * @param options - Optional configuration
+ * @returns Object with user or error response
+ */
+export async function getAuthUser(
+  request: NextRequest,
+  options: { requireApproved?: boolean } = {}
+): Promise<{ user: User } | NextResponse> {
+  const { requireApproved = false } = options;
+
+  // Extract Authorization header
+  const authHeader = request.headers.get('authorization') || '';
+  const match = authHeader.match(/^Bearer (.+)$/i);
+
+  if (!match) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Please sign in.' },
+      { status: 401 }
+    );
+  }
+
+  const idToken = match[1];
+
+  try {
+    // Verify Firebase ID token
+    const decoded = await verifyIdToken(idToken);
+
+    // Ensure user exists in PostgreSQL and get DB record
+    const user = await ensureDbUserFromFirebase(decoded);
+
+    // Check if approval is required
+    if (requireApproved && user.accountStatus !== 'APPROVED') {
+      return NextResponse.json(
+        {
+          error: 'account_pending_approval',
+          message: 'Your account is pending admin approval. You will be notified once approved.',
+          accountStatus: user.accountStatus,
+        },
+        { status: 403 }
+      );
+    }
+
+    return { user };
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        error: 'invalid_token',
+        message: 'Failed to verify authentication token',
+        detail: error?.message || String(error),
+      },
+      { status: 401 }
+    );
+  }
 }

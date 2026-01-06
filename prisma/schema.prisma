@@ -831,6 +831,10 @@ model User {
   publicHandle                                                    String?                  @unique
   verifiedSeller                                                  Boolean                  @default(false)
   linkedinUrl                                                     String?
+  accountStatus                                                   AccountStatus            @default(APPROVED)
+  approvedAt                                                      DateTime?
+  approvedByUserId                                                String?
+  approvalNotes                                                   String?
   Account                                                         Account[]
   CodeGeneration                                                  CodeGeneration[]
   Comment                                                         Comment[]
@@ -870,6 +874,9 @@ model User {
   analytics_events                                                analytics_events[]
   introduction_requests_introduction_requests_facilitatorIdToUser introduction_requests[]  @relation("introduction_requests_facilitatorIdToUser")
   introduction_requests_introduction_requests_requesterIdToUser   introduction_requests[]  @relation("introduction_requests_requesterIdToUser")
+
+  @@index([accountStatus])
+  @@index([approvedAt])
 }
 
 model UserConnection {
@@ -1573,6 +1580,12 @@ enum RevenueRange {
   RANGE_500M_1B
   OVER_1B
   UNDISCLOSED
+}
+
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum Role {

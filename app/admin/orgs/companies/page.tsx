@@ -231,11 +231,11 @@ export default function CompaniesAdmin() {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-foreground flex items-center">
-              <Building2 className="w-8 h-8 mr-3 text-blue-600" />
+            <h1 className="text-3xl font-bold text-[#162B54] dark:text-[#EAF0FF] flex items-center">
+              <Building2 className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400" />
               Companies Management
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-[#64748B] dark:text-[#9AA7C2] mt-2">
               Manage and organize company profiles in the DealMecca platform
             </p>
           </div>
@@ -251,54 +251,54 @@ export default function CompaniesAdmin() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg border border-border">
+        <div className="bg-white dark:bg-[#0F1A2E] p-6 rounded-lg border border-[#E6EAF2] dark:border-[#22304A]">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Building2 className="w-6 h-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-muted-foreground">Total Companies</p>
-              <p className="text-2xl font-bold text-foreground">{adminStats?.totalCompanies || pagination.total}</p>
+              <p className="text-sm font-medium text-[#64748B] dark:text-[#9AA7C2]">Total Companies</p>
+              <p className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">{adminStats?.totalCompanies || pagination.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-border">
+        <div className="bg-white dark:bg-[#0F1A2E] p-6 rounded-lg border border-[#E6EAF2] dark:border-[#22304A]">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
               <Verified className="w-6 h-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-muted-foreground">Verified</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-sm font-medium text-[#64748B] dark:text-[#9AA7C2]">Verified</p>
+              <p className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">
                 {adminStats?.verifiedCount || 0}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-border">
+        <div className="bg-white dark:bg-[#0F1A2E] p-6 rounded-lg border border-[#E6EAF2] dark:border-[#22304A]">
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
               <Users className="w-6 h-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-muted-foreground">Total Contacts</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-sm font-medium text-[#64748B] dark:text-[#9AA7C2]">Total Contacts</p>
+              <p className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">
                 {adminStats?.totalContacts || 0}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-border">
+        <div className="bg-white dark:bg-[#0F1A2E] p-6 rounded-lg border border-[#E6EAF2] dark:border-[#22304A]">
           <div className="flex items-center">
-            <div className="p-2 bg-orange-100 rounded-lg">
+            <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
               <TrendingUp className="w-6 h-6 text-orange-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-muted-foreground">This Month</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-sm font-medium text-[#64748B] dark:text-[#9AA7C2]">This Month</p>
+              <p className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF]">
                 {adminStats?.companiesThisMonth || 0}
               </p>
             </div>
@@ -307,7 +307,7 @@ export default function CompaniesAdmin() {
       </div>
 
       {/* Filters & Bulk Actions */}
-      <div className="bg-white p-6 rounded-lg border border-border mb-6">
+      <div className="bg-white dark:bg-[#0F1A2E] p-6 rounded-lg border border-[#E6EAF2] dark:border-[#22304A] mb-6">
         {/* Bulk Actions */}
         {selectedCompanies.length > 0 && (
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -454,7 +454,7 @@ export default function CompaniesAdmin() {
       )}
 
       {/* Companies Table */}
-      <div className="bg-white rounded-lg border border-border overflow-hidden">
+      <div className="bg-white dark:bg-[#0F1A2E] rounded-lg border border-[#E6EAF2] dark:border-[#22304A] overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -470,7 +470,7 @@ export default function CompaniesAdmin() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-muted">
+                <thead className="bg-[#F3F6FB] dark:bg-[#101E38]">
                   <tr>
                     <th className="px-6 py-3 text-left">
                       <input
@@ -500,9 +500,9 @@ export default function CompaniesAdmin() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-border">
+                <tbody className="bg-white dark:bg-[#0F1A2E] divide-y divide-[#E6EAF2] dark:divide-[#22304A]">
                   {companies.map((company) => (
-                    <tr key={company.id} className="hover:bg-muted">
+                    <tr key={company.id} className="hover:bg-[#F3F6FB] dark:hover:bg-[#101E38]">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
@@ -521,7 +521,7 @@ export default function CompaniesAdmin() {
                                 alt={company.name}
                               />
                             ) : (
-                              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+                              <div className="h-10 w-10 rounded-lg bg-[#F3F6FB] dark:bg-[#101E38] flex items-center justify-center">
                                 <Building2 className="h-5 w-5 text-muted-foreground" />
                               </div>
                             )}
@@ -610,19 +610,19 @@ export default function CompaniesAdmin() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
+              <div className="bg-white dark:bg-[#0F1A2E] px-4 py-3 flex items-center justify-between border-t border-[#E6EAF2] dark:border-[#22304A] sm:px-6">
                 <div className="flex-1 flex justify-between sm:hidden">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
                     disabled={pagination.page === 1}
-                    className="relative inline-flex items-center px-4 py-2 border border-input text-sm font-medium rounded-md text-muted-foreground bg-white hover:bg-muted disabled:opacity-50"
+                    className="relative inline-flex items-center px-4 py-2 border border-[#E6EAF2] dark:border-[#22304A] text-sm font-medium rounded-md text-[#64748B] dark:text-[#9AA7C2] bg-white dark:bg-[#0F1A2E] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] disabled:opacity-50"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={pagination.page === pagination.pages}
-                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-input text-sm font-medium rounded-md text-muted-foreground bg-white hover:bg-muted disabled:opacity-50"
+                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-[#E6EAF2] dark:border-[#22304A] text-sm font-medium rounded-md text-[#64748B] dark:text-[#9AA7C2] bg-white dark:bg-[#0F1A2E] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -647,7 +647,7 @@ export default function CompaniesAdmin() {
                       <button
                         onClick={() => handlePageChange(pagination.page - 1)}
                         disabled={pagination.page === 1}
-                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-input bg-white text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
+                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-[#E6EAF2] dark:border-[#22304A] bg-white dark:bg-[#0F1A2E] text-sm font-medium text-[#64748B] dark:text-[#9AA7C2] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] disabled:opacity-50"
                       >
                         Previous
                       </button>
@@ -657,8 +657,8 @@ export default function CompaniesAdmin() {
                           onClick={() => handlePageChange(i + 1)}
                           className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                             pagination.page === i + 1
-                              ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                              : 'bg-white border-input text-muted-foreground hover:bg-muted'
+                              ? 'z-10 bg-blue-50 dark:bg-blue-900/30 border-blue-500 dark:border-blue-600 text-blue-600 dark:text-blue-400'
+                              : 'bg-white dark:bg-[#0F1A2E] border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38]'
                           }`}
                         >
                           {i + 1}
@@ -667,7 +667,7 @@ export default function CompaniesAdmin() {
                       <button
                         onClick={() => handlePageChange(pagination.page + 1)}
                         disabled={pagination.page === pagination.pages}
-                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-input bg-white text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
+                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-[#E6EAF2] dark:border-[#22304A] bg-white dark:bg-[#0F1A2E] text-sm font-medium text-[#64748B] dark:text-[#9AA7C2] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] disabled:opacity-50"
                       >
                         Next
                       </button>

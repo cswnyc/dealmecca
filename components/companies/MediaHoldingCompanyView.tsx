@@ -4,20 +4,19 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
-import { Badge } from '@/components/ui/badge';
+import { GradientPillTabs } from '@/components/ui/GradientPillTabs';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { QuickStatsCard } from '@/components/organizations/QuickStatsCard';
+import { TopLocationsCard } from '@/components/organizations/TopLocationsCard';
+import { SuggestEditCardGradient } from '@/components/organizations/SuggestEditCardGradient';
+import { HoldingCompanyAgencyRow } from '@/components/organizations/HoldingCompanyAgencyRow';
+import { AgencyBranchRow } from '@/components/organizations/AgencyBranchRow';
 import {
   Building2,
   MapPin,
   Users,
   Search,
-  Plus,
-  Edit3,
-  ExternalLink,
-  ChevronDown,
-  Lightbulb,
-  X,
-  Bookmark,
-  BookmarkCheck
+  X
 } from 'lucide-react';
 
 interface Subsidiary {
@@ -99,51 +98,12 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
   const [activeTab, setActiveTab] = useState<'agencies' | 'intel' | 'overview'>('agencies');
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedAgencies, setExpandedAgencies] = useState<Set<string>>(new Set());
-  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
-  const [expandedDuties, setExpandedDuties] = useState<Set<string>>(new Set());
-  const [isSuggestEditExpanded, setIsSuggestEditExpanded] = useState(false);
-  const [bookmarkedAgencies, setBookmarkedAgencies] = useState<Set<string>>(new Set());
 
   // Global search state
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-
-  const toggleAgency = (agencyId: string) => {
-    const newExpanded = new Set(expandedAgencies);
-    if (newExpanded.has(agencyId)) {
-      newExpanded.delete(agencyId);
-    } else {
-      newExpanded.add(agencyId);
-    }
-    setExpandedAgencies(newExpanded);
-  };
-
-  const toggleTeams = (agencyId: string) => {
-    setExpandedTeams(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(agencyId)) {
-        newSet.delete(agencyId);
-      } else {
-        newSet.add(agencyId);
-      }
-      return newSet;
-    });
-  };
-
-  const toggleDuties = (agencyId: string) => {
-    setExpandedDuties(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(agencyId)) {
-        newSet.delete(agencyId);
-      } else {
-        newSet.add(agencyId);
-      }
-      return newSet;
-    });
-  };
 
   // Debounced search effect
   useEffect(() => {
@@ -202,24 +162,10 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
     }
   };
 
-  // Get location info for an agency
-  // For now, each agency is in one location (its city/state)
-  // This function returns empty array since we don't have multi-location agencies yet
-  const getAgencyLocations = (agency: Subsidiary) => {
-    // Future: When agencies have multiple office locations,
-    // we can group by location and show them here
-    return [];
-  };
-
   // Use subsidiaries as networks, and their nested subsidiaries as branches
-  const agencyNetworks = company.subsidiaries.map(sub => ({
-    id: sub.id,
-    name: sub.name,
-    branches: sub.subsidiaries && sub.subsidiaries.length > 0 ? sub.subsidiaries : [sub],
-    logo: sub.logoUrl,
-  }));
+  const agencyNetworks = company.subsidiaries;
 
-  // Group subsidiaries by location and calculate stats
+  // Calculate stats
   const subsidiaryStats = company.subsidiaries.reduce((acc, sub) => {
     const peopleCount = sub._count?.contacts || 0;
     acc.totalPeople += peopleCount;
@@ -235,17 +181,68 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
   const topLocations = Object.entries(subsidiaryStats.locationCounts)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 5);
+    .slice(0, 5)
+    .map(([name, count]) => ({ name, count: `${count} people` }));
+
+  // Filter agencies based on search
+  const filteredAgencies = searchQuery.trim()
+    ? agencyNetworks.filter(agency =>
+        agency.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agency.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agency.state?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : agencyNetworks;
+
+  // Determine if this is an agency network (ALL subsidiaries have no sub-subsidiaries)
+  // vs a holding company (subsidiaries have their own subsidiaries/branches)
+  const hasSubsidiariesWithBranches = agencyNetworks.some(sub => 
+    sub.subsidiaries && sub.subsidiaries.length > 0
+  );
+  const isAgencyNetwork = !hasSubsidiariesWithBranches && agencyNetworks.some(sub => 
+    sub.Team && sub.Team.length > 0
+  );
+
+  // Transform agencies into the row format
+  const agencyRowData = filteredAgencies.map(agency => ({
+    id: agency.id,
+    name: agency.name,
+    logoUrl: agency.logoUrl,
+    verified: agency.verified,
+    branches: (agency.subsidiaries || []).map(sub => ({
+      id: sub.id,
+      name: sub.name
+    })),
+    totalBranches: agency._count?.subsidiaries || agency.subsidiaries?.length || 0,
+    lastActivity: '23 hrs'
+  }));
+
+  // Transform branches into the row format (with their teams) - for agency networks
+  const branchRowData = filteredAgencies.map(branch => {
+    const teams = (branch.Team || []).map(team => ({
+      id: team.clientCompany.id,
+      name: team.clientCompany.name,
+      logoUrl: team.clientCompany.logoUrl,
+      color: '#2575FC'
+    }));
+    
+    return {
+      id: branch.id,
+      name: branch.name,
+      teams,
+      peopleCount: branch._count?.contacts || 0,
+      lastActivity: '23 hrs'
+    };
+  });
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-surface-light dark:bg-dark-bg">
       {/* Header */}
-      <div className="bg-card border-b border-border">
+      <div className="bg-white dark:bg-dark-surface border-b border-[#E6EAF2] dark:border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
-            {/* Back Button & Breadcrumb */}
+            {/* Breadcrumb */}
             <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <Link href="/organizations" className="hover:text-foreground">
+              <Link href="/organizations" className="hover:text-foreground transition-colors">
                 Agencies
               </Link>
               {company.parentChain && company.parentChain.length > 0 && (
@@ -253,7 +250,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   {company.parentChain.map((parent) => (
                     <span key={parent.id} className="flex items-center gap-2">
                       <span>›</span>
-                      <Link href={`/companies/${parent.id}`} className="hover:text-foreground">
+                      <Link href={`/companies/${parent.id}`} className="hover:text-foreground transition-colors">
                         {parent.name}
                       </Link>
                     </span>
@@ -271,14 +268,14 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   logoUrl={company.logoUrl}
                   companyName={company.name}
                   size="lg"
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 w-16 h-16"
                 />
                 <div>
-                  <h1 className="text-3xl font-bold text-foreground mb-2">{company.name}</h1>
+                  <h1 className="text-3xl font-bold text-brand-ink dark:text-white mb-2">{company.name}</h1>
                   {company.description && (
                     <p className="text-muted-foreground mb-3">{company.description}</p>
                   )}
-                  <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Building2 className="h-4 w-4" />
                       <span>{company.subsidiaries.length} {company.subsidiaries.length === 1 ? 'agency' : 'agencies'}</span>
@@ -294,15 +291,17 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   </div>
                 </div>
               </div>
-              <div className="relative" ref={searchRef}>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              
+              {/* Global Search */}
+              <div className="relative w-full sm:w-80" ref={searchRef}>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search companies, people..."
                   value={globalSearchQuery}
                   onChange={(e) => setGlobalSearchQuery(e.target.value)}
                   onFocus={() => globalSearchQuery.length >= 2 && setShowSearchResults(true)}
-                  className="pl-10 pr-10 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent w-80"
+                  className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
                 />
                 {globalSearchQuery && (
                   <button
@@ -310,7 +309,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                       setGlobalSearchQuery('');
                       setShowSearchResults(false);
                     }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -318,10 +317,10 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
                 {/* Search Results Dropdown */}
                 {showSearchResults && (
-                  <div className="absolute top-full mt-2 w-full bg-card rounded-lg shadow-2xl border border-border max-h-96 overflow-y-auto z-[100] backdrop-blur-sm">
+                  <div className="absolute top-full mt-2 w-full bg-white dark:bg-dark-surface rounded-lg shadow-2xl border border-border dark:border-dark-border max-h-96 overflow-y-auto z-[100]">
                     {searchLoading ? (
                       <div className="p-4 text-center text-muted-foreground">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary mx-auto"></div>
                       </div>
                     ) : searchSuggestions.length > 0 ? (
                       <div className="py-2">
@@ -329,9 +328,9 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                           <button
                             key={`${suggestion.type}-${suggestion.id}`}
                             onClick={() => handleSearchSuggestionClick(suggestion)}
-                            className="w-full px-4 py-3 hover:bg-muted flex items-start gap-3 text-left transition-colors"
+                            className="w-full px-4 py-3 hover:bg-surface-subtle dark:hover:bg-dark-surfaceAlt flex items-start gap-3 text-left transition-colors"
                           >
-                            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-muted rounded-lg text-lg overflow-hidden">
+                            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-surface-subtle dark:bg-dark-surfaceAlt rounded-lg text-lg overflow-hidden">
                               {suggestion.icon.startsWith('http') ? (
                                 <img
                                   src={suggestion.icon}
@@ -352,7 +351,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                                   {suggestion.title}
                                 </span>
                                 {suggestion.metadata?.verified && (
-                                  <span className="flex-shrink-0 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
+                                  <span className="flex-shrink-0 text-xs bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 px-2 py-0.5 rounded-full">
                                     Verified
                                   </span>
                                 )}
@@ -386,39 +385,16 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
             </div>
 
             {/* Tabs */}
-            <div className="border-t border-border pt-4">
-              <div className="flex gap-1">
-                <button
-                  onClick={() => setActiveTab('agencies')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                    activeTab === 'agencies'
-                      ? 'bg-muted text-primary border-t-2 border-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Agencies
-                </button>
-                <button
-                  onClick={() => setActiveTab('intel')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                    activeTab === 'intel'
-                      ? 'bg-muted text-primary border-t-2 border-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Intel
-                </button>
-                <button
-                  onClick={() => setActiveTab('overview')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                    activeTab === 'overview'
-                      ? 'bg-muted text-primary border-t-2 border-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Overview
-                </button>
-              </div>
+            <div className="border-t border-border dark:border-dark-border pt-4">
+              <GradientPillTabs
+                tabs={[
+                  { id: 'agencies', label: 'Agencies', count: company.subsidiaries.length },
+                  { id: 'intel', label: 'Intel' },
+                  { id: 'overview', label: 'Overview' }
+                ]}
+                activeTab={activeTab}
+                onTabChange={(tabId) => setActiveTab(tabId as 'agencies' | 'intel' | 'overview')}
+              />
             </div>
           </div>
         </div>
@@ -426,284 +402,94 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Main Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {activeTab === 'agencies' && (
               <div>
-                {/* Agencies List */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-foreground">
-                      All Agencies ({agencyNetworks.length})
+                {/* Search Bar */}
+                <div className="mb-6">
+                  <SearchInput
+                    placeholder="Search agencies..."
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                  />
+                </div>
+
+                {/* Agencies/Branches List */}
+                <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                  <div className="px-6 py-5 border-b border-[#E6EAF2] dark:border-dark-border">
+                    <h2 className="text-lg font-bold text-[#162B54] dark:text-[#EAF0FF]">
+                      {isAgencyNetwork ? 'Branch Locations' : 'Agency Directory'}
                     </h2>
+                    <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">
+                      {isAgencyNetwork 
+                        ? `Explore ${company.name}'s locations and their teams`
+                        : `Discover and connect with ${company.name}'s agencies`
+                      }
+                    </p>
                   </div>
-
-                  {/* Show each branch as a rich card */}
-                  {company.subsidiaries.flatMap(network =>
-                    (network.subsidiaries && network.subsidiaries.length > 0 ? network.subsidiaries : [network])
-                  ).map((branch) => {
-                    const isBookmarked = bookmarkedAgencies.has(branch.id);
-                    const clients = branch.Team?.map(t => t.clientCompany).filter(Boolean) || [];
-                    const visibleClients = clients.slice(0, 3);
-                    const hiddenClientsCount = clients.length - visibleClients.length;
-                    const duties = branch.CompanyDuty?.map(cd => cd.duty.name) || [];
-                    const visibleDuties = duties.slice(0, 3);
-                    const hiddenDutiesCount = duties.length - visibleDuties.length;
-                    const contactCount = branch._count?.contacts || 0;
-                    const locationString = branch.city && branch.state
-                      ? `${branch.city}, ${branch.state}`
-                      : branch.city || branch.state || '';
-
-                    return (
-                      <div key={branch.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-sm transition-shadow">
-                        <div className="flex items-start gap-3">
-                          {/* Logo */}
-                          <CompanyLogo
-                            logoUrl={branch.logoUrl}
-                            companyName={branch.name}
-                            size="sm"
-                            className="flex-shrink-0 mt-0.5"
-                          />
-
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            {/* Agency Name */}
-                            <div className="flex items-center gap-2 mb-2">
-                              <Link
-                                href={`/companies/${branch.id}`}
-                                className="font-semibold text-foreground hover:text-primary"
-                              >
-                                {branch.name}
-                              </Link>
-                            </div>
-
-                            {/* Clients */}
-                            {clients.length > 0 && (
-                              <div className="text-sm text-muted-foreground mb-2 flex flex-wrap items-center gap-1">
-                                {(expandedTeams.has(branch.id) ? clients : visibleClients).map((client, index) => (
-                                  <span key={client.id}>
-                                    <CompanyLogo
-                                      logoUrl={client.logoUrl}
-                                      companyName={client.name}
-                                      size="xs"
-                                      className="inline-block align-middle mr-1"
-                                    />
-                                    <Link
-                                      href={`/companies/${client.id}`}
-                                      className="hover:text-primary hover:underline align-middle"
-                                    >
-                                      {client.name}
-                                    </Link>
-                                    {index < (expandedTeams.has(branch.id) ? clients.length - 1 : visibleClients.length - 1) && ', '}
-                                  </span>
-                                ))}
-                                {hiddenClientsCount > 0 && (
-                                  <button
-                                    onClick={() => toggleTeams(branch.id)}
-                                    className="text-primary hover:text-primary/80 font-medium ml-1"
-                                  >
-                                    {expandedTeams.has(branch.id)
-                                      ? 'Show fewer'
-                                      : `+${hiddenClientsCount} teams`
-                                    }
-                                  </button>
-                                )}
-                              </div>
-                            )}
-
-                            {/* Duties */}
-                            {duties.length > 0 && (
-                              <div className="text-sm text-muted-foreground mb-2">
-                                <span className="font-medium">Handles:</span> {(expandedDuties.has(branch.id) ? duties : visibleDuties).join(', ')}
-                                {hiddenDutiesCount > 0 && (
-                                  <button
-                                    onClick={() => toggleDuties(branch.id)}
-                                    className="text-primary hover:text-primary/80 font-medium ml-1"
-                                  >
-                                    {expandedDuties.has(branch.id)
-                                      ? 'Show fewer'
-                                      : `+${hiddenDutiesCount} duties`
-                                    }
-                                  </button>
-                                )}
-                              </div>
-                            )}
-
-                            {/* Location */}
-                            {locationString && (
-                              <div className="text-sm text-muted-foreground mb-1">
-                                {locationString}
-                              </div>
-                            )}
-
-                            {/* Last Activity */}
-                            <div className="text-xs text-muted-foreground">
-                              Last activity: 23 hrs
-                            </div>
-                          </div>
-
-                          {/* Right side: People count and action icons */}
-                          <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                            {contactCount > 0 && (
-                              <div className="text-sm text-muted-foreground flex items-center gap-1">
-                                <Users className="h-4 w-4" />
-                                <span>{contactCount} {contactCount === 1 ? 'person' : 'people'}</span>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <Link
-                                href={`/admin/orgs/companies/${branch.id}/edit`}
-                                className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-muted"
-                              >
-                                <Edit3 className="h-4 w-4" />
-                              </Link>
-                              <button
-                                onClick={() => {
-                                  const newBookmarked = new Set(bookmarkedAgencies);
-                                  if (newBookmarked.has(branch.id)) {
-                                    newBookmarked.delete(branch.id);
-                                  } else {
-                                    newBookmarked.add(branch.id);
-                                  }
-                                  setBookmarkedAgencies(newBookmarked);
-                                }}
-                                className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-muted"
-                              >
-                                {isBookmarked ? (
-                                  <BookmarkCheck className="h-4 w-4 fill-current" />
-                                ) : (
-                                  <Bookmark className="h-4 w-4" />
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {agencyNetworks.length === 0 && (
-                    <div className="bg-card border border-border rounded-lg p-12 text-center">
-                      <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No agencies found</p>
-                    </div>
-                  )}
+                  <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                    {isAgencyNetwork ? (
+                      branchRowData.map((branch) => (
+                        <AgencyBranchRow key={branch.id} branch={branch} />
+                      ))
+                    ) : (
+                      agencyRowData.map((agency) => (
+                        <HoldingCompanyAgencyRow key={agency.id} agency={agency} />
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
             {activeTab === 'intel' && (
-              <div className="bg-card border border-border rounded-lg p-12 text-center">
-                <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Intel Coming Soon</h3>
-                <p className="text-muted-foreground">News and updates about {company.name} agencies will appear here</p>
+              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                <div className="px-6 py-5 border-b border-[#E6EAF2] dark:border-dark-border">
+                  <h2 className="text-lg font-bold text-[#162B54] dark:text-[#EAF0FF]">Intel</h2>
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">Latest news and updates</p>
+                </div>
+                <div className="p-6">
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Coming soon...</p>
+                </div>
               </div>
             )}
 
             {activeTab === 'overview' && (
-              <div className="bg-card border border-border rounded-lg p-12 text-center">
-                <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Overview Coming Soon</h3>
-                <p className="text-muted-foreground">Detailed overview of {company.name} will appear here</p>
+              <div className="space-y-4">
+                {company.description && (
+                  <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                    <div className="px-6 py-5 border-b border-[#E6EAF2] dark:border-dark-border">
+                      <h2 className="text-lg font-bold text-[#162B54] dark:text-[#EAF0FF]">About</h2>
+                      <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">Company overview</p>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-sm text-[#162B54] dark:text-[#EAF0FF] whitespace-pre-wrap">{company.description}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Right Sidebar */}
-          <div className="w-80 flex-shrink-0 space-y-6">
+          <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
             {/* Suggest Edit Panel */}
-            <div className="bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-lg overflow-hidden">
-              <div
-                className="flex items-center justify-between p-5 cursor-pointer hover:bg-card/50 transition-colors"
-                onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0">
-                    <Lightbulb className="h-6 w-6 text-yellow-500" />
-                  </div>
-                  <h3 className="font-bold text-foreground text-lg">
-                    Suggest an edit for this company
-                  </h3>
-                </div>
-                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform flex-shrink-0 ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
-              </div>
+            <SuggestEditCardGradient />
 
-              {!isSuggestEditExpanded && (
-                <p className="px-5 pb-5 text-sm text-muted-foreground">
-                  Click to expand
-                </p>
-              )}
-
-              {isSuggestEditExpanded && (
-                <div className="px-5 pb-5">
-                  <div className="space-y-2 mb-4">
-                    <label className="flex items-start gap-2 text-sm">
-                      <input type="checkbox" className="mt-0.5" />
-                      <span className="text-foreground">Should we add or remove people?</span>
-                    </label>
-                    <label className="flex items-start gap-2 text-sm">
-                      <input type="checkbox" className="mt-0.5" />
-                      <span className="text-foreground">Are any teams no longer active?</span>
-                    </label>
-                    <label className="flex items-start gap-2 text-sm">
-                      <input type="checkbox" className="mt-0.5" />
-                      <span className="text-foreground">Are there other agencies we should add?</span>
-                    </label>
-                  </div>
-
-                  <textarea
-                    placeholder="Write your suggestion here..."
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-                    rows={3}
-                  />
-
-                  <button className="w-full py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm font-medium mb-3">
-                    Submit
-                  </button>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    Share information with the community and obtain rewards when you do.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Company Stats */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <h3 className="font-semibold text-foreground mb-4">Quick Stats</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Total Agencies</span>
-                  <span className="font-semibold text-foreground">{company.subsidiaries.length}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Total People</span>
-                  <span className="font-semibold text-foreground">{subsidiaryStats.totalPeople}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Locations</span>
-                  <span className="font-semibold text-foreground">{topLocations.length}</span>
-                </div>
-              </div>
-            </div>
+            {/* Quick Stats */}
+            <QuickStatsCard
+              stats={[
+                { label: 'Agencies', value: company.subsidiaries.length },
+                { label: 'People', value: subsidiaryStats.totalPeople },
+                { label: 'Locations', value: topLocations.length }
+              ]}
+            />
 
             {/* Top Locations */}
             {topLocations.length > 0 && (
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="font-semibold text-foreground mb-4">Top Locations</h3>
-                <div className="space-y-3">
-                  {topLocations.map(([location, count]) => (
-                    <div key={location} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-foreground">{location}</span>
-                      </div>
-                      <span className="text-muted-foreground">{count} {count === 1 ? 'person' : 'people'}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <TopLocationsCard locations={topLocations} />
             )}
           </div>
         </div>

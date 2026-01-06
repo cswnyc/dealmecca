@@ -4,17 +4,18 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
-import { Badge } from '@/components/ui/badge';
+import { GradientPillTabs } from '@/components/ui/GradientPillTabs';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { QuickStatsCard } from '@/components/organizations/QuickStatsCard';
+import { TopLocationsCard } from '@/components/organizations/TopLocationsCard';
+import { SuggestEditCardGradient } from '@/components/organizations/SuggestEditCardGradient';
+import { HoldingCompanyAgencyRow } from '@/components/organizations/HoldingCompanyAgencyRow';
+import { AgencyBranchRow } from '@/components/organizations/AgencyBranchRow';
 import {
   Building2,
   MapPin,
   Users,
   Search,
-  Plus,
-  Edit3,
-  ExternalLink,
-  ChevronDown,
-  Lightbulb,
   X
 } from 'lucide-react';
 
@@ -44,6 +45,15 @@ interface Subsidiary {
     subsidiaries?: number;
   };
   subsidiaries?: SubsidiaryLocation[];
+  Team?: Array<{
+    id: string;
+    clientCompany: {
+      id: string;
+      name: string;
+      logoUrl?: string;
+      verified: boolean;
+    };
+  }>;
 }
 
 interface HoldingCompanyViewProps {
@@ -92,12 +102,13 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const [activeTab, setActiveTab] = useState<'agencies' | 'intel' | 'overview'>('agencies');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Global search state
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [isSuggestEditExpanded, setIsSuggestEditExpanded] = useState(false);
-  const [expandedAgencies, setExpandedAgencies] = useState<Set<string>>(new Set());
 
   // Global search functionality
   useEffect(() => {
@@ -154,52 +165,12 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
     }
   };
 
-  const toggleAgencyLocations = (agencyId: string) => {
-    setExpandedAgencies(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(agencyId)) {
-        newSet.delete(agencyId);
-      } else {
-        newSet.add(agencyId);
-      }
-      return newSet;
-    });
-  };
-
-  // Helper function to get location emoji
-  const getLocationEmoji = (country?: string) => {
-    const emojiMap: Record<string, string> = {
-      'United States': '🇺🇸',
-      'USA': '🇺🇸',
-      'United Kingdom': '🇬🇧',
-      'UK': '🇬🇧',
-      'Canada': '🇨🇦',
-      'Australia': '🇦🇺',
-      'Germany': '🇩🇪',
-      'France': '🇫🇷',
-      'Spain': '🇪🇸',
-      'Italy': '🇮🇹',
-      'Netherlands': '🇳🇱',
-      'Belgium': '🇧🇪',
-      'Switzerland': '🇨🇭',
-      'Singapore': '🇸🇬',
-      'Japan': '🇯🇵',
-      'China': '🇨🇳',
-      'India': '🇮🇳',
-      'Brazil': '🇧🇷',
-      'Mexico': '🇲🇽',
-      'Argentina': '🇦🇷',
-      'South Africa': '🇿🇦'
-    };
-    return emojiMap[country || ''] || '🌍';
-  };
-
-  // Group subsidiaries by location and calculate stats
+  // Calculate stats
   const subsidiaryStats = company.subsidiaries.reduce((acc, sub) => {
     const peopleCount = sub._count?.contacts || 0;
     acc.totalPeople += peopleCount;
 
-    const location = sub.city && sub.state ? `${sub.city}, ${sub.state}` : 'Unknown';
+    const location = sub.city && sub.state ? `${sub.city}, ${sub.state}` : sub.city || 'Unknown';
     if (!acc.locationCounts[location]) {
       acc.locationCounts[location] = 0;
     }
@@ -210,17 +181,70 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
   const topLocations = Object.entries(subsidiaryStats.locationCounts)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 5);
+    .slice(0, 5)
+    .map(([name, count]) => ({ name, count: `${count} people` }));
+
+  // Filter branches based on search
+  const filteredBranches = searchQuery.trim()
+    ? company.subsidiaries.filter(branch =>
+        branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        branch.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        branch.state?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : company.subsidiaries;
+
+  // Determine if this is an agency network (ALL subsidiaries have no sub-subsidiaries)
+  // vs a holding company (subsidiaries have their own subsidiaries/branches)
+  const hasSubsidiariesWithBranches = company.subsidiaries.some(sub => 
+    sub.subsidiaries && sub.subsidiaries.length > 0
+  );
+  const isAgencyNetwork = !hasSubsidiariesWithBranches && company.subsidiaries.some(sub => 
+    sub.Team && sub.Team.length > 0
+  );
+
+  // Transform agencies into the row format (with their branches) - for holding companies
+  const agencyRowData = filteredBranches.map(agency => {
+    return {
+      id: agency.id,
+      name: agency.name,
+      logoUrl: agency.logoUrl,
+      verified: agency.verified,
+      branches: (agency.subsidiaries || []).map(sub => ({
+        id: sub.id,
+        name: sub.name
+      })),
+      totalBranches: agency._count?.subsidiaries || agency.subsidiaries?.length || 0,
+      lastActivity: '23 hrs'
+    };
+  });
+
+  // Transform branches into the row format (with their teams) - for agency networks
+  const branchRowData = filteredBranches.map(branch => {
+    const teams = (branch.Team || []).map(team => ({
+      id: team.clientCompany.id,
+      name: team.clientCompany.name,
+      logoUrl: team.clientCompany.logoUrl,
+      color: '#2575FC' // Default color, could be derived from company
+    }));
+    
+    return {
+      id: branch.id,
+      name: branch.name,
+      teams,
+      peopleCount: branch._count?.contacts || 0,
+      lastActivity: '23 hrs'
+    };
+  });
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-surface-light dark:bg-dark-bg">
       {/* Header */}
-      <div className="bg-card border-b border-border">
+      <div className="bg-white dark:bg-dark-surface border-b border-border dark:border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
-            {/* Back Button & Breadcrumb */}
+            {/* Breadcrumb */}
             <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <Link href="/organizations" className="hover:text-foreground">
+              <Link href="/organizations" className="hover:text-foreground transition-colors">
                 Agencies
               </Link>
               {company.parentChain && company.parentChain.length > 0 && (
@@ -228,7 +252,7 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   {company.parentChain.map((parent) => (
                     <span key={parent.id} className="flex items-center gap-2">
                       <span>›</span>
-                      <Link href={`/companies/${parent.id}`} className="hover:text-foreground">
+                      <Link href={`/companies/${parent.id}`} className="hover:text-foreground transition-colors">
                         {parent.name}
                       </Link>
                     </span>
@@ -246,146 +270,141 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
                   logoUrl={company.logoUrl}
                   companyName={company.name}
                   size="lg"
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 w-16 h-16"
                 />
-                <div>
+                <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl font-bold text-foreground">{company.name}</h1>
-                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                    <h1 className="text-3xl font-bold text-brand-ink dark:text-[#EAF0FF] font-headline">{company.name}</h1>
+                    <span className="px-3 py-1 bg-brand-primary/10 text-brand-primary dark:bg-[#5B8DFF]/10 dark:text-[#5B8DFF] rounded-full text-xs font-semibold">
                       Holding Company
-                    </Badge>
+                    </span>
                   </div>
                   {company.description && (
-                    <p className="text-muted-foreground mb-3">{company.description}</p>
+                    <p className="text-[#64748B] dark:text-[#9AA7C2] mb-3 max-w-2xl">{company.description}</p>
                   )}
-                  <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
+                  <div className="flex flex-wrap items-center gap-6 text-sm text-[#64748B] dark:text-[#9AA7C2]">
+                    <div className="flex items-center gap-1.5">
                       <Building2 className="h-4 w-4" />
-                      <span>{company.subsidiaries.length} {company.subsidiaries.length === 1 ? 'agency' : 'agencies'}</span>
+                      <span className="font-medium text-brand-ink dark:text-[#EAF0FF]">{company.subsidiaries.length}</span>
+                      <span>{company.subsidiaries.length === 1 ? 'agency' : 'agencies'}</span>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <Users className="h-4 w-4" />
-                      <span>{subsidiaryStats.totalPeople} people</span>
+                      <span className="font-medium text-brand-ink dark:text-[#EAF0FF]">{subsidiaryStats.totalPeople}</span>
+                      <span>people</span>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <MapPin className="h-4 w-4" />
-                      <span>{topLocations.length} locations</span>
+                      <span className="font-medium text-brand-ink dark:text-[#EAF0FF]">{topLocations.length}</span>
+                      <span>locations</span>
                     </div>
                   </div>
                 </div>
               </div>
+              
               {/* Global Search */}
-              <div className="w-96 relative" ref={searchRef}>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search companies, people, events..."
-                    value={globalSearchQuery}
-                    onChange={(e) => setGlobalSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-10 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
-                  />
-                  {globalSearchQuery && (
-                    <button
-                      onClick={() => {
-                        setGlobalSearchQuery('');
-                        setShowSearchResults(false);
-                      }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Search Results Dropdown */}
-                {showSearchResults && searchSuggestions.length > 0 && (
-                  <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
-                    {searchSuggestions.map((suggestion) => (
-                      <button
-                        key={`${suggestion.type}-${suggestion.id}`}
-                        onClick={() => handleSearchSuggestionClick(suggestion)}
-                        className="w-full px-4 py-3 text-left hover:bg-muted border-b border-border last:border-b-0 transition-colors"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-muted rounded-lg overflow-hidden">
-                            {suggestion.icon.startsWith('http') ? (
-                              <img
-                                src={suggestion.icon}
-                                alt=""
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
-                                  target.parentElement!.textContent = '🏢';
-                                }}
-                              />
-                            ) : (
-                              <span className="text-lg">{suggestion.icon}</span>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-medium text-foreground truncate">{suggestion.title}</p>
-                              {suggestion.metadata?.verified && (
-                                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                  Verified
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-xs text-muted-foreground">{suggestion.category}</p>
-                            {suggestion.metadata?.location && (
-                              <p className="text-xs text-muted-foreground mt-1">{suggestion.metadata.location}</p>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+              <div className="relative w-full sm:w-80" ref={searchRef}>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search companies, people..."
+                  value={globalSearchQuery}
+                  onChange={(e) => setGlobalSearchQuery(e.target.value)}
+                  onFocus={() => globalSearchQuery.length >= 2 && setShowSearchResults(true)}
+                  className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+                />
+                {globalSearchQuery && (
+                  <button
+                    onClick={() => {
+                      setGlobalSearchQuery('');
+                      setShowSearchResults(false);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 )}
 
-                {showSearchResults && searchSuggestions.length === 0 && !searchLoading && globalSearchQuery.length >= 2 && (
-                  <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg z-50 p-4">
-                    <p className="text-sm text-muted-foreground text-center">No results found</p>
+                {/* Search Results Dropdown */}
+                {showSearchResults && (
+                  <div className="absolute top-full mt-2 w-full bg-white dark:bg-dark-surface rounded-lg shadow-2xl border border-border dark:border-dark-border max-h-96 overflow-y-auto z-[100]">
+                    {searchLoading ? (
+                      <div className="p-4 text-center text-muted-foreground">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary mx-auto"></div>
+                      </div>
+                    ) : searchSuggestions.length > 0 ? (
+                      <div className="py-2">
+                        {searchSuggestions.map((suggestion) => (
+                          <button
+                            key={`${suggestion.type}-${suggestion.id}`}
+                            onClick={() => handleSearchSuggestionClick(suggestion)}
+                            className="w-full px-4 py-3 hover:bg-surface-subtle dark:hover:bg-dark-surfaceAlt flex items-start gap-3 text-left transition-colors"
+                          >
+                            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-surface-subtle dark:bg-dark-surfaceAlt rounded-lg text-lg overflow-hidden">
+                              {suggestion.icon.startsWith('http') ? (
+                                <img
+                                  src={suggestion.icon}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement!.textContent = suggestion.type === 'company' ? '🏢' : '👤';
+                                  }}
+                                />
+                              ) : (
+                                suggestion.icon
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-foreground truncate">
+                                  {suggestion.title}
+                                </span>
+                                {suggestion.metadata?.verified && (
+                                  <span className="flex-shrink-0 text-xs bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 px-2 py-0.5 rounded-full">
+                                    Verified
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-xs text-muted-foreground">{suggestion.category}</span>
+                                {suggestion.metadata?.location && (
+                                  <>
+                                    <span className="text-muted-foreground">•</span>
+                                    <span className="text-xs text-muted-foreground">{suggestion.metadata.location}</span>
+                                  </>
+                                )}
+                              </div>
+                              {suggestion.metadata?.description && (
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                  {suggestion.metadata.description}
+                                </p>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : globalSearchQuery.length >= 2 ? (
+                      <div className="p-4 text-center text-muted-foreground text-sm">
+                        No results found for "{globalSearchQuery}"
+                      </div>
+                    ) : null}
                   </div>
                 )}
               </div>
             </div>
 
             {/* Tabs */}
-            <div className="border-t border-border pt-4">
-              <div className="flex gap-1">
-                <button
-                  onClick={() => setActiveTab('agencies')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                    activeTab === 'agencies'
-                      ? 'bg-muted text-primary border-t-2 border-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Agencies
-                </button>
-                <button
-                  onClick={() => setActiveTab('intel')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                    activeTab === 'intel'
-                      ? 'bg-muted text-primary border-t-2 border-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Intel
-                </button>
-                <button
-                  onClick={() => setActiveTab('overview')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                    activeTab === 'overview'
-                      ? 'bg-muted text-primary border-t-2 border-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Overview
-                </button>
-              </div>
+            <div className="border-t border-border dark:border-dark-border pt-4">
+              <GradientPillTabs
+                tabs={[
+                  { id: 'agencies', label: 'Agencies', count: company.subsidiaries.length },
+                  { id: 'intel', label: 'Intel' },
+                  { id: 'overview', label: 'Overview' }
+                ]}
+                activeTab={activeTab}
+                onTabChange={(tabId) => setActiveTab(tabId as 'agencies' | 'intel' | 'overview')}
+              />
             </div>
           </div>
         </div>
@@ -393,227 +412,94 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Main Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {activeTab === 'agencies' && (
               <div>
-                {/* Agencies List */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-foreground">
-                      All Agencies ({company.subsidiaries.length})
+                {/* Search Bar */}
+                <div className="mb-6">
+                  <SearchInput
+                    placeholder="Search branches..."
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                  />
+                </div>
+
+                {/* Agencies/Branches List */}
+                <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                  <div className="px-6 py-5 border-b border-[#E6EAF2] dark:border-dark-border">
+                    <h2 className="text-lg font-bold text-[#162B54] dark:text-[#EAF0FF]">
+                      {isAgencyNetwork ? 'Branch Locations' : 'Agency Directory'}
                     </h2>
+                    <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">
+                      {isAgencyNetwork 
+                        ? `Explore ${company.name}'s locations and their teams`
+                        : `Discover and connect with ${company.name}'s agencies`
+                      }
+                    </p>
                   </div>
-
-                  {company.subsidiaries.map((agency) => (
-                    <div key={agency.id} className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                      {/* Agency Header */}
-                      <div className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-3 flex-1">
-                            <CompanyLogo
-                              logoUrl={agency.logoUrl}
-                              companyName={agency.name}
-                              size="md"
-                              className="flex-shrink-0"
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <Link
-                                  href={`/companies/${agency.id}`}
-                                  className="text-xl font-semibold text-foreground hover:text-primary transition-colors"
-                                >
-                                  {agency.name}
-                                </Link>
-                                {agency.verified && (
-                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                    Verified
-                                  </Badge>
-                                )}
-                              </div>
-
-                              {/* Locations */}
-                              {agency.subsidiaries && agency.subsidiaries.length > 0 && (
-                                <div className="mt-3">
-                                  <div className="flex flex-wrap items-center gap-2 text-sm">
-                                    {(expandedAgencies.has(agency.id)
-                                      ? agency.subsidiaries
-                                      : agency.subsidiaries.slice(0, 4)
-                                    ).map((location, idx) => {
-                                      const locationName = location.name || [location.city, location.state].filter(Boolean).join(', ') || location.country || 'Unknown';
-                                      return (
-                                        <Link
-                                          key={location.id}
-                                          href={`/companies/${location.id}`}
-                                          className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
-                                        >
-                                          <span>{getLocationEmoji(location.country)}</span>
-                                          <span>{locationName}</span>
-                                          {idx < (expandedAgencies.has(agency.id) ? agency.subsidiaries!.length - 1 : Math.min(3, agency.subsidiaries!.length - 1)) && (
-                                            <span className="text-muted-foreground">,</span>
-                                          )}
-                                        </Link>
-                                      );
-                                    })}
-                                    {agency.subsidiaries.length > 4 && (
-                                      <button
-                                        onClick={() => toggleAgencyLocations(agency.id)}
-                                        className="text-primary hover:text-primary/80 font-medium"
-                                      >
-                                        {expandedAgencies.has(agency.id)
-                                          ? 'Hide branches'
-                                          : `+${agency.subsidiaries.length - 4} branches`
-                                        }
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Last activity */}
-                              <div className="mt-3 text-xs text-muted-foreground">
-                                Last activity: 1 day
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Link
-                              href={`/companies/${agency.id}`}
-                              className="p-2 text-muted-foreground hover:text-primary rounded hover:bg-primary/10"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {company.subsidiaries.length === 0 && (
-                    <div className="bg-card border border-border rounded-lg p-12 text-center">
-                      <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No agencies found</p>
-                    </div>
-                  )}
+                  <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                    {isAgencyNetwork ? (
+                      branchRowData.map((branch) => (
+                        <AgencyBranchRow key={branch.id} branch={branch} />
+                      ))
+                    ) : (
+                      agencyRowData.map((agency) => (
+                        <HoldingCompanyAgencyRow key={agency.id} agency={agency} />
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
             {activeTab === 'intel' && (
-              <div className="bg-card border border-border rounded-lg p-12 text-center">
-                <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Intel Coming Soon</h3>
-                <p className="text-muted-foreground">News and updates about {company.name} agencies will appear here</p>
+              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                <div className="px-6 py-5 border-b border-[#E6EAF2] dark:border-dark-border">
+                  <h2 className="text-lg font-bold text-[#162B54] dark:text-[#EAF0FF]">Intel</h2>
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">Latest news and updates</p>
+                </div>
+                <div className="p-6">
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Coming soon...</p>
+                </div>
               </div>
             )}
 
             {activeTab === 'overview' && (
-              <div className="bg-card border border-border rounded-lg p-12 text-center">
-                <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Overview Coming Soon</h3>
-                <p className="text-muted-foreground">Detailed overview of {company.name} will appear here</p>
+              <div className="space-y-4">
+                {company.description && (
+                  <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
+                    <div className="px-6 py-5 border-b border-[#E6EAF2] dark:border-dark-border">
+                      <h2 className="text-lg font-bold text-[#162B54] dark:text-[#EAF0FF]">About</h2>
+                      <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">Company overview</p>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-sm text-[#162B54] dark:text-[#EAF0FF] whitespace-pre-wrap">{company.description}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Right Sidebar */}
-          <div className="w-80 flex-shrink-0 space-y-6">
-            {/* Suggest Edit Panel - Now First */}
-            <div className="bg-gradient-to-br from-primary/10 via-accent/10 to-pink-50 border border-border rounded-lg overflow-hidden">
-              <button
-                onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
-                className="w-full p-4 flex items-center justify-between hover:bg-card/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
-                    <Lightbulb className="h-4 w-4 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="font-semibold text-foreground text-sm">
-                      Suggest an edit
-                    </h3>
-                    {!isSuggestEditExpanded && (
-                      <p className="text-xs text-muted-foreground">Click to expand</p>
-                    )}
-                  </div>
-                </div>
-                <ChevronDown
-                  className={`h-4 w-4 text-muted-foreground transition-transform ${
-                    isSuggestEditExpanded ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
+          <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
+            {/* Suggest Edit Panel */}
+            <SuggestEditCardGradient />
 
-              {isSuggestEditExpanded && (
-                <div className="px-4 pb-4 space-y-4">
-                  <p className="text-xs text-muted-foreground">
-                    Know agencies or people we're missing?
-                  </p>
-
-                  <div className="space-y-3">
-                    <label className="flex items-start gap-2 text-sm text-foreground">
-                      <input type="checkbox" className="mt-1 rounded" />
-                      <span>Missing agencies</span>
-                    </label>
-                    <label className="flex items-start gap-2 text-sm text-foreground">
-                      <input type="checkbox" className="mt-1 rounded" />
-                      <span>Missing people</span>
-                    </label>
-                    <label className="flex items-start gap-2 text-sm text-foreground">
-                      <input type="checkbox" className="mt-1 rounded" />
-                      <span>Wrong information</span>
-                    </label>
-                  </div>
-
-                  <textarea
-                    placeholder="Write your suggestions here..."
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm resize-none bg-card"
-                    rows={4}
-                  />
-
-                  <button className="w-full px-4 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-lg hover:from-primary/90 hover:to-accent/90 transition-colors text-sm font-medium">
-                    Submit
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Company Stats */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <h3 className="font-semibold text-foreground mb-4">Quick Stats</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Total Agencies</span>
-                  <span className="font-semibold text-foreground">{company.subsidiaries.length}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Total People</span>
-                  <span className="font-semibold text-foreground">{subsidiaryStats.totalPeople}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Locations</span>
-                  <span className="font-semibold text-foreground">{topLocations.length}</span>
-                </div>
-              </div>
-            </div>
+            {/* Quick Stats */}
+            <QuickStatsCard
+              stats={[
+                { label: 'Agencies', value: company.subsidiaries.length },
+                { label: 'People', value: subsidiaryStats.totalPeople },
+                { label: 'Locations', value: topLocations.length }
+              ]}
+            />
 
             {/* Top Locations */}
             {topLocations.length > 0 && (
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="font-semibold text-foreground mb-4">Top Locations</h3>
-                <div className="space-y-3">
-                  {topLocations.map(([location, count]) => (
-                    <div key={location} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-foreground">{location}</span>
-                      </div>
-                      <span className="text-muted-foreground">{count} {count === 1 ? 'person' : 'people'}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <TopLocationsCard locations={topLocations} />
             )}
           </div>
         </div>

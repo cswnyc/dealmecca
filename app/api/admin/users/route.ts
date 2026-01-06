@@ -73,6 +73,9 @@ export async function GET(request: NextRequest) {
         companyId: true,
         provider: true,
         verifiedSeller: true,
+        accountStatus: true,
+        approvedAt: true,
+        approvalNotes: true,
         company: {
           select: {
             id: true,
@@ -267,6 +270,14 @@ export async function PATCH(request: NextRequest) {
     if (updates.subscriptionTier) allowedUpdates.subscriptionTier = updates.subscriptionTier;
     if (updates.subscriptionStatus) allowedUpdates.subscriptionStatus = updates.subscriptionStatus;
     if (updates.verifiedSeller !== undefined) allowedUpdates.verifiedSeller = updates.verifiedSeller;
+    if (updates.accountStatus) {
+      allowedUpdates.accountStatus = updates.accountStatus;
+      if (updates.accountStatus === 'APPROVED' && !updates.approvedAt) {
+        allowedUpdates.approvedAt = new Date();
+      }
+    }
+    if (updates.approvalNotes !== undefined) allowedUpdates.approvalNotes = updates.approvalNotes;
+    if (updates.approvedByUserId) allowedUpdates.approvedByUserId = updates.approvedByUserId;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
@@ -281,6 +292,9 @@ export async function PATCH(request: NextRequest) {
         role: true,
         subscriptionTier: true,
         subscriptionStatus: true,
+        accountStatus: true,
+        approvedAt: true,
+        approvalNotes: true,
         updatedAt: true
       }
     });

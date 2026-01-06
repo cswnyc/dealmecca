@@ -53,6 +53,33 @@ export function AuthGuard({
         return;
       }
 
+      // Check account approval status for authenticated users
+      if (user) {
+        try {
+          const response = await fetch('/api/auth/firebase-sync', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.user?.accountStatus === 'PENDING') {
+              // User is pending approval, redirect to pending page
+              console.log('AuthGuard: User account is pending approval');
+              router.replace('/auth/pending-approval');
+              return;
+            } else if (data.user?.accountStatus === 'REJECTED') {
+              // User account was rejected
+              console.log('AuthGuard: User account was rejected');
+              router.replace('/auth/pending-approval');
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('AuthGuard: Error checking account status:', error);
+        }
+      }
+
       // Check for LinkedIn session first (prioritize over Firebase to avoid conflicts)
       try {
         const linkedinSession = localStorage.getItem('linkedin-session');

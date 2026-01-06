@@ -13,25 +13,25 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('light');
+  // Initialize theme from document class (already set by inline script)
+  const getInitialTheme = (): Theme => {
+    if (typeof window === 'undefined') {
+      return 'light';
+    }
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  };
+
+  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
   const [mounted, setMounted] = useState(false);
 
-  // Handle hydration
+  // Sync with actual DOM on mount
   useEffect(() => {
     setMounted(true);
-
-    // Check localStorage for saved theme
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-    } else {
-      // Check system preference
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      setThemeState(systemTheme);
-    }
+    const actualTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    setThemeState(actualTheme);
   }, []);
 
-  // Apply theme to document
+  // Apply theme changes to document
   useEffect(() => {
     if (mounted) {
       document.documentElement.classList.remove('light', 'dark');
@@ -47,11 +47,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
-
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return <div className="opacity-0">{children}</div>;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>

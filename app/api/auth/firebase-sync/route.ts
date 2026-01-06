@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Create new user in database
+      // Create new user in database with PENDING status (requires admin approval)
       user = await prisma.user.create({
         data: {
           firebaseUid: uid,
@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
           isAnonymous: !displayName, // Anonymous if no display name
           anonymousUsername: anonymousProfile.username,
           avatarSeed: uid,
+          accountStatus: 'PENDING', // New users require admin approval
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -96,7 +97,8 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
-        subscriptionTier: user.subscriptionTier
+        subscriptionTier: user.subscriptionTier,
+        accountStatus: user.accountStatus
       }
     });
 
@@ -137,6 +139,7 @@ export async function GET(request: NextRequest) {
         role: true,
         subscriptionTier: true,
         subscriptionStatus: true,
+        accountStatus: true,
         createdAt: true,
         updatedAt: true
       }

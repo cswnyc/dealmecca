@@ -112,10 +112,10 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
         width: isCollapsed ? '4rem' : '16rem',
       }}
       transition={reducedMotion ? { duration: 0 } : designTokens.transitions.spring}
-      className="hidden md:flex flex-col bg-card border-r border-border h-screen overflow-hidden"
+      className="hidden md:flex flex-col bg-white dark:bg-[#0F1A2E] border-r border-[#E6EAF2] dark:border-[#22304A] h-screen overflow-hidden"
     >
       {/* Logo and Collapse Toggle */}
-      <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-4 border-b border-border`}>
+      <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-4 border-b border-[#E6EAF2] dark:border-[#22304A]`}>
         <AnimatePresence mode="wait">
           {isCollapsed ? (
             <motion.button
@@ -167,15 +167,15 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
                 w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
                 transition-all duration-200
                 ${active
-                  ? 'bg-gradient-brand-subtle border-l-[3px] border-brand-primary dark:border-[#5B8DFF] text-brand-primary dark:text-[#5B8DFF]'
-                  : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF] hover:bg-muted'
+                  ? 'bg-gradient-brand-subtle border-l-[3px] border-[#2575FC] dark:border-[#5B8DFF] text-[#2575FC] dark:text-[#5B8DFF]'
+                  : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38]'
                 }
                 ${isCollapsed ? 'justify-center' : ''}
               `}
             >
               <Icon className={`
                 flex-shrink-0 w-5 h-5
-                ${active ? 'text-brand-primary dark:text-[#5B8DFF]' : 'text-[#64748B] dark:text-[#9AA7C2]'}
+                ${active ? 'text-[#2575FC] dark:text-[#5B8DFF]' : 'text-[#64748B] dark:text-[#9AA7C2]'}
               `} />
 
               <AnimatePresence mode="wait">
@@ -195,7 +195,7 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
       </nav>
 
       {/* Theme Toggle and User Profile Section */}
-      <div className="border-t border-border p-3 space-y-3">
+      <div className="border-t border-[#E6EAF2] dark:border-[#22304A] p-3 space-y-3">
         {/* Theme Toggle */}
         <div className={`flex ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
           <ThemeToggle />

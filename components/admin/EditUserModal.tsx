@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, ShieldCheck } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { motionVariants, designTokens } from '@/lib/design-tokens';
 
@@ -19,6 +19,9 @@ interface EditUserModalProps {
     linkedinVerified: boolean;
     forumGems: number;
     verifiedSeller: boolean;
+    accountStatus?: string;
+    approvedAt?: string | null;
+    approvalNotes?: string | null;
   };
   onSave: (userId: string, updates: any) => Promise<void>;
 }
@@ -33,7 +36,9 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
     role: user.role,
     subscriptionTier: user.subscriptionTier,
     subscriptionStatus: user.subscriptionStatus,
-    verifiedSeller: user.verifiedSeller
+    verifiedSeller: user.verifiedSeller,
+    accountStatus: user.accountStatus || 'APPROVED',
+    approvalNotes: user.approvalNotes || ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,6 +129,80 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
                         placeholder="user@example.com"
                       />
                     </div>
+                  </div>
+                </div>
+
+                {/* Account Approval Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground">Account Approval</h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Account Status
+                      </label>
+                      <div className="grid grid-cols-3 gap-3">
+                        <button
+                          type="button"
+                          onClick={(): void => setFormData({ ...formData, accountStatus: 'APPROVED' })}
+                          className={`flex items-center justify-center space-x-2 px-4 py-3 border-2 rounded-lg transition-all ${
+                            formData.accountStatus === 'APPROVED'
+                              ? 'border-green-500 bg-green-50 text-green-700'
+                              : 'border-border hover:border-green-300'
+                          }`}
+                        >
+                          <CheckCircle className="w-5 h-5" />
+                          <span className="font-semibold">Approved</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(): void => setFormData({ ...formData, accountStatus: 'PENDING' })}
+                          className={`flex items-center justify-center space-x-2 px-4 py-3 border-2 rounded-lg transition-all ${
+                            formData.accountStatus === 'PENDING'
+                              ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
+                              : 'border-border hover:border-yellow-300'
+                          }`}
+                        >
+                          <Clock className="w-5 h-5" />
+                          <span className="font-semibold">Pending</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(): void => setFormData({ ...formData, accountStatus: 'REJECTED' })}
+                          className={`flex items-center justify-center space-x-2 px-4 py-3 border-2 rounded-lg transition-all ${
+                            formData.accountStatus === 'REJECTED'
+                              ? 'border-red-500 bg-red-50 text-red-700'
+                              : 'border-border hover:border-red-300'
+                          }`}
+                        >
+                          <XCircle className="w-5 h-5" />
+                          <span className="font-semibold">Rejected</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Approval Notes (Optional)
+                      </label>
+                      <textarea
+                        value={formData.approvalNotes}
+                        onChange={(e): void => setFormData({ ...formData, approvalNotes: e.target.value })}
+                        className="w-full px-3 py-2 border border-border rounded-md text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Add notes about the approval decision..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {user.approvedAt && (
+                      <div className="bg-muted p-3 rounded-lg">
+                        <p className="text-xs text-muted-foreground">
+                          Previously approved on: {new Date(user.approvedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

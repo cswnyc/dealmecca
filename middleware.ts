@@ -48,7 +48,9 @@ const publicRoutes = [
 const authRoutes = [
   '/auth/signup',
   '/auth/signin',
-  '/auth/login'
+  '/auth/login',
+  '/auth/pending-approval',
+  '/auth/linkedin-verify'
 ];
 
 export function middleware(request: NextRequest) {

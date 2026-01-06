@@ -65,9 +65,9 @@ export default function SignUpPage(): JSX.Element {
       const result = await signInWithGoogle();
       if (result) {
         if (result.isNewUser) {
-          // New user needs LinkedIn verification
-          setSuccess('Account created! Please verify your LinkedIn profile...');
-          setTimeout(() => router.push('/auth/linkedin-verify'), 1500);
+          // New user - check approval status
+          setSuccess('Account created! Checking approval status...');
+          setTimeout(() => router.push('/auth/pending-approval'), 1500);
         } else {
           // Existing user
           setSuccess('Welcome back! Redirecting...');
@@ -141,8 +141,8 @@ export default function SignUpPage(): JSX.Element {
           console.warn('Failed to save LinkedIn URL, but account was created');
         }
 
-        setSuccess('Account created successfully! Redirecting...');
-        setTimeout(() => router.push('/forum'), 1500);
+        setSuccess('Account created successfully! Checking approval status...');
+        setTimeout(() => router.push('/auth/pending-approval'), 1500);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to create account. Please try again.');

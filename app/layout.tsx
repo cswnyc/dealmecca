@@ -112,7 +112,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-background text-foreground transition-colors duration-300`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const savedTheme = localStorage.getItem('theme');
+                  const theme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                  document.documentElement.classList.add(theme);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.className} min-h-screen bg-[#F7F9FC] dark:bg-[#0B1220] text-[#162B54] dark:text-[#EAF0FF] transition-colors duration-300`}>
         <ThemeProvider>
           <FirebaseProvider>
             <ConditionalUserProvider>

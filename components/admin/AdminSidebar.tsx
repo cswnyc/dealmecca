@@ -173,20 +173,20 @@ export function AdminSidebar() {
   const NavContent = () => (
     <>
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-[#E6EAF2] dark:border-[#22304A]">
         <div className="flex items-center justify-between">
           <Link href="/admin" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-brand rounded-lg flex items-center justify-center">
               <LayoutDashboard className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-foreground">Admin Panel</h2>
-              <p className="text-xs text-muted-foreground">DealMecca</p>
+              <h2 className="text-lg font-bold text-[#162B54] dark:text-[#EAF0FF]">Admin Panel</h2>
+              <p className="text-xs text-[#64748B] dark:text-[#9AA7C2]">DealMecca</p>
             </div>
           </Link>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="lg:hidden text-muted-foreground hover:text-foreground"
+            className="lg:hidden text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF]"
           >
             <X className="w-6 h-6" />
           </button>
@@ -209,11 +209,11 @@ export function AdminSidebar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                   isActive(item.href)
-                    ? 'bg-gradient-brand-subtle border-l-[3px] border-brand-primary dark:border-[#5B8DFF] text-brand-primary dark:text-[#5B8DFF] font-medium'
-                    : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF] hover:bg-muted'
+                    ? 'bg-gradient-brand-subtle border-l-[3px] border-[#2575FC] dark:border-[#5B8DFF] text-[#2575FC] dark:text-[#5B8DFF] font-medium'
+                    : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#162B54] dark:hover:text-[#EAF0FF] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38]'
                 }`}
               >
-                <Icon className={`w-5 h-5 ${isActive(item.href) ? 'text-brand-primary dark:text-[#5B8DFF]' : ''}`} />
+                <Icon className={`w-5 h-5 ${isActive(item.href) ? 'text-[#2575FC] dark:text-[#5B8DFF]' : ''}`} />
                 <span>{item.title}</span>
               </Link>
             );
@@ -224,7 +224,7 @@ export function AdminSidebar() {
             <div key={item.title}>
               <button
                 onClick={() => toggleSection(item.title)}
-                className="w-full flex items-center justify-between px-3 py-2 text-foreground hover:bg-muted rounded-lg transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 text-[#162B54] dark:text-[#EAF0FF] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] rounded-lg transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <Icon className="w-5 h-5" />
@@ -238,7 +238,7 @@ export function AdminSidebar() {
               </button>
 
               {isOpen && item.children && (
-                <div className="ml-4 mt-1 space-y-1 border-l-2 border-border pl-4">
+                <div className="ml-4 mt-1 space-y-1 border-l-2 border-[#E6EAF2] dark:border-[#22304A] pl-4">
                   {item.children.map((child) => {
                     const ChildIcon = child.icon;
                     return (
@@ -248,11 +248,11 @@ export function AdminSidebar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                           isActive(child.href!)
-                            ? 'bg-gradient-brand-subtle text-brand-primary dark:text-[#5B8DFF] font-medium'
-                            : 'text-[#64748B] dark:text-[#9AA7C2] hover:bg-muted hover:text-[#162B54] dark:hover:text-[#EAF0FF]'
+                            ? 'bg-gradient-brand-subtle border-l-[3px] border-[#2575FC] dark:border-[#5B8DFF] text-[#2575FC] dark:text-[#5B8DFF] font-medium'
+                            : 'text-[#64748B] dark:text-[#9AA7C2] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] hover:text-[#162B54] dark:hover:text-[#EAF0FF]'
                         }`}
                       >
-                        <ChildIcon className={`w-4 h-4 ${isActive(child.href!) ? 'text-brand-primary dark:text-[#5B8DFF]' : ''}`} />
+                        <ChildIcon className={`w-4 h-4 ${isActive(child.href!) ? 'text-[#2575FC] dark:text-[#5B8DFF]' : ''}`} />
                         <span>{child.title}</span>
                       </Link>
                     );
@@ -265,7 +265,7 @@ export function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border space-y-2">
+      <div className="p-4 border-t border-[#E6EAF2] dark:border-[#22304A] space-y-2">
         <button
           onClick={handleSignOut}
           className="w-full flex items-center space-x-3 px-3 py-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
@@ -276,16 +276,16 @@ export function AdminSidebar() {
         <Link
           href="/"
           onClick={() => setIsMobileMenuOpen(false)}
-          className="flex items-center space-x-3 px-3 py-2 text-foreground hover:bg-muted rounded-lg transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 text-[#162B54] dark:text-[#EAF0FF] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] rounded-lg transition-colors"
         >
           <Home className="w-5 h-5" />
           <span>Exit Admin</span>
         </Link>
-        <div className="px-3 py-2 bg-muted rounded-lg">
-          <p className="text-xs text-muted-foreground">
+        <div className="px-3 py-2 bg-[#F3F6FB] dark:bg-[#101E38] rounded-lg">
+          <p className="text-xs text-[#64748B] dark:text-[#9AA7C2]">
             <span className="font-semibold">22</span> admin pages
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-[#64748B] dark:text-[#9AA7C2] mt-1">
             Phase 6 Consolidation Complete
           </p>
         </div>
@@ -298,9 +298,9 @@ export function AdminSidebar() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-background rounded-lg shadow-lg border border-border hover:bg-muted"
+        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white dark:bg-[#0F1A2E] rounded-lg shadow-lg border border-[#E6EAF2] dark:border-[#22304A] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38]"
       >
-        <Menu className="w-6 h-6 text-foreground" />
+        <Menu className="w-6 h-6 text-[#162B54] dark:text-[#EAF0FF]" />
       </button>
 
       {/* Mobile Overlay */}
@@ -312,13 +312,13 @@ export function AdminSidebar() {
       )}
 
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-background border-r border-border z-30">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white dark:bg-[#0F1A2E] border-r border-[#E6EAF2] dark:border-[#22304A] z-30">
         <NavContent />
       </aside>
 
       {/* Sidebar - Mobile */}
       <aside
-        className={`lg:hidden fixed inset-y-0 left-0 w-64 bg-background border-r border-border z-50 transform transition-transform duration-200 ease-in-out ${
+        className={`lg:hidden fixed inset-y-0 left-0 w-64 bg-white dark:bg-[#0F1A2E] border-r border-[#E6EAF2] dark:border-[#22304A] z-50 transform transition-transform duration-200 ease-in-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } flex flex-col`}
       >

@@ -15,6 +15,11 @@ import { ContactCard } from '@/components/companies/ContactCard';
 import { RelationshipGraph } from '@/components/companies/RelationshipGraph';
 import { BasicHoldingCompanyView } from '@/components/companies/BasicHoldingCompanyView';
 import { MediaHoldingCompanyView } from '@/components/companies/MediaHoldingCompanyView';
+import { AgencyDetailHeader } from '@/components/organizations/AgencyDetailHeader';
+import { DetailTabs } from '@/components/ui/DetailTabs';
+import { SuggestEditCard } from '@/components/organizations/SuggestEditCard';
+import { ContactInfoCard } from '@/components/organizations/ContactInfoCard';
+import { QuickStatsCard } from '@/components/organizations/QuickStatsCard';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import {
   Building2,
@@ -535,24 +540,29 @@ export default function CompanyDetailPage() {
     return <BasicHoldingCompanyView company={company} />;
   }
 
+  // Show agency network view for agencies with subsidiaries (branches)
+  if ((company.companyType === 'AGENCY' || company.companyType === 'NETWORK_AGENCY') && company._count?.subsidiaries > 0) {
+    return <BasicHoldingCompanyView company={company} />;
+  }
+
   return (
     <MainLayout>
-      <div className="min-h-screen bg-muted">
+      <div className="min-h-screen bg-surface-light dark:bg-dark-bg">
         {company.companyType === 'MEDIA_HOLDING_COMPANY' ? (
           <>
             {/* Header Section */}
-            <div className="bg-white border-b">
+            <div className="bg-white dark:bg-dark-surface border-b border-border dark:border-dark-border">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="py-6">
                   {/* Breadcrumb Navigation */}
                   <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-                    <Link href="/organizations" className="hover:text-foreground">Agencies</Link>
+                    <Link href="/organizations" className="hover:text-foreground transition-colors">Agencies</Link>
                     {company.parentChain && company.parentChain.length > 0 && (
                       <>
                         {company.parentChain.map((parent) => (
                           <span key={parent.id} className="flex items-center gap-2">
                             <span>›</span>
-                            <Link href={`/companies/${parent.id}`} className="hover:text-foreground">
+                            <Link href={`/companies/${parent.id}`} className="hover:text-foreground transition-colors">
                               {parent.name}
                             </Link>
                           </span>
@@ -570,13 +580,13 @@ export default function CompanyDetailPage() {
                         logoUrl={company.logoUrl}
                         companyName={company.name}
                         size="lg"
-                        className="rounded-lg flex-shrink-0"
+                        className="rounded-lg flex-shrink-0 w-16 h-16"
                       />
                       <div>
                         <div className="flex items-center gap-2 mb-2">
-                          <h1 className="text-3xl font-bold text-foreground">{company.name}</h1>
+                          <h1 className="text-3xl font-bold text-brand-ink dark:text-white">{company.name}</h1>
                           {company.verified && (
-                            <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                            <span className="text-xs bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full">
                               Verified
                             </span>
                           )}
@@ -608,14 +618,14 @@ export default function CompanyDetailPage() {
                         <input
                           type="text"
                           placeholder="Search..."
-                          className="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                          className="pl-10 pr-4 py-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-transparent w-64 text-foreground"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Tabs Navigation */}
-                  <div className="border-t pt-4">
+                  <div className="border-t border-border dark:border-dark-border pt-4">
                     <nav className="flex gap-1">
                       {[
                         ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Agencies' }] : []),
@@ -627,7 +637,7 @@ export default function CompanyDetailPage() {
                           onClick={() => setActiveTab(tab.id as any)}
                           className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
                             activeTab === tab.id
-                              ? 'bg-white text-blue-600 border-t-2 border-blue-600'
+                              ? 'bg-white dark:bg-dark-surface text-brand-primary dark:text-[#5B8DFF] border-t-2 border-brand-primary dark:border-[#5B8DFF]'
                               : 'text-muted-foreground hover:text-foreground'
                           }`}
                         >
@@ -649,8 +659,8 @@ export default function CompanyDetailPage() {
                   {activeTab === 'overview' && (
                     <div className="space-y-4">
                       {company.description && (
-                        <div className="bg-white rounded-lg border border-border p-6">
-                          <h2 className="text-lg font-semibold text-foreground mb-4">About</h2>
+                        <div className="bg-white dark:bg-dark-surface rounded-xl border border-border dark:border-dark-border p-6">
+                          <h2 className="text-lg font-semibold text-brand-ink dark:text-white mb-4">About</h2>
                           <p className="text-foreground whitespace-pre-wrap">{company.description}</p>
                         </div>
                       )}
@@ -679,7 +689,7 @@ export default function CompanyDetailPage() {
                         </h2>
                       </div>
                       {filteredSubsidiaries.map((subsidiary) => (
-                        <div key={subsidiary.id} className="bg-white border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div key={subsidiary.id} className="bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                           {/* Agency Header - Clickable */}
                           <div
                             className="p-6 cursor-pointer hover:bg-muted transition-colors"
@@ -745,9 +755,9 @@ export default function CompanyDetailPage() {
 
                   {activeTab === 'intel' && (
                     <div className="space-y-4">
-                      <div className="bg-white rounded-lg border border-border p-6">
-                        <h2 className="text-lg font-semibold text-foreground mb-4">Intel</h2>
-                        <p className="text-muted-foreground">Coming soon...</p>
+                      <div className="bg-white dark:bg-[#0F1A2E] rounded-xl border border-[#E6EAF2] dark:border-[#22304A] p-6">
+                        <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF] mb-4">Intel</h2>
+                        <p className="text-[#64748B] dark:text-[#9AA7C2]">Coming soon...</p>
                       </div>
                     </div>
                   )}
@@ -756,76 +766,18 @@ export default function CompanyDetailPage() {
                 {/* Right Sidebar for HOLDING COMPANIES */}
                 <div className="w-80 flex-shrink-0 space-y-6">
                   {/* Suggest Edit Panel */}
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg overflow-hidden">
-                    <div
-                      className="flex items-center justify-between p-5 cursor-pointer hover:bg-white/50 transition-colors"
-                      onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0">
-                          <Lightbulb className="h-6 w-6 text-yellow-500" />
-                        </div>
-                        <h3 className="font-bold text-foreground text-lg">
-                          Suggest an edit for this company
-                        </h3>
-                      </div>
-                      <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform flex-shrink-0 ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
-                    </div>
-
-                    {!isSuggestEditExpanded && (
-                      <p className="px-5 pb-5 text-sm text-muted-foreground">
-                        Click to expand
-                      </p>
-                    )}
-
-                    {isSuggestEditExpanded && (
-                      <div className="px-5 pb-5">
-                        <div className="space-y-2 mb-4">
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="checkbox" className="mt-0.5" />
-                            <span className="text-foreground">Should we add or remove people?</span>
-                          </label>
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="checkbox" className="mt-0.5" />
-                            <span className="text-foreground">Are any teams no longer active?</span>
-                          </label>
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="checkbox" className="mt-0.5" />
-                            <span className="text-foreground">Are there other agencies we should add?</span>
-                          </label>
-                        </div>
-
-                        <textarea
-                          placeholder="Write your suggestion here..."
-                          className="w-full px-3 py-2 border border-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          rows={3}
-                        />
-
-                        <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium mb-3">
-                          Submit
-                        </button>
-
-                        <p className="text-xs text-muted-foreground text-center">
-                          Share information with the community and obtain rewards when you do.
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                  <SuggestEditCard />
 
                   {/* Quick Stats */}
-                  <div className="bg-white border border-border rounded-lg p-6">
-                    <h3 className="font-semibold text-foreground mb-4">Quick Stats</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Agencies</span>
-                        <span className="font-semibold text-foreground">{company._count.subsidiaries}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <QuickStatsCard
+                    stats={[
+                      { label: 'Agencies', value: company._count.subsidiaries }
+                    ]}
+                  />
 
                   {/* Contact Info */}
                   {(company.address || company.website || company.linkedinUrl) && (
-                    <div className="bg-white border border-border rounded-lg p-6">
+                    <div className="bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-lg p-6">
                       <h3 className="font-semibold text-foreground mb-4">Contact Info</h3>
                       <div className="space-y-3">
                         {company.address && (
@@ -866,7 +818,7 @@ export default function CompanyDetailPage() {
           /* NON-HOLDING COMPANY LAYOUT - Compact card design */
           <>
             {/* Breadcrumb outside card */}
-            <div className="bg-white border-b border-border">
+            <div className="bg-white dark:bg-dark-surface border-b border-border dark:border-dark-border">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div className="text-sm text-muted-foreground flex items-center gap-2">
                   <Link href="/organizations" className="hover:text-foreground">
@@ -895,10 +847,10 @@ export default function CompanyDetailPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                   {/* Company Header Card */}
-                  <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl p-6">
+                  <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-xl bg-white dark:bg-dark-surfaceAlt border border-[#E6EAF2] dark:border-dark-border flex items-center justify-center overflow-hidden">
+                        <div className="w-16 h-16 rounded-xl bg-white dark:bg-dark-surfaceAlt border border-border dark:border-dark-border flex items-center justify-center overflow-hidden">
                           <CompanyLogo
                             logoUrl={company.logoUrl}
                             companyName={company.name}
@@ -908,7 +860,7 @@ export default function CompanyDetailPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-bold text-[#162B54] dark:text-[#EAF0FF] font-display">{company.name}</h1>
+                            <h1 className="text-2xl font-bold text-brand-ink dark:text-white font-display">{company.name}</h1>
                             {company.verified && (
                               <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs font-medium">
                                 <CheckCircle className="w-3 h-3" />
@@ -916,7 +868,7 @@ export default function CompanyDetailPage() {
                               </span>
                             )}
                           </div>
-                          <p className="text-[#64748B] dark:text-[#9AA7C2] mt-1">
+                          <p className="text-muted-foreground mt-1">
                             {getCompanyTypeLabel(company.companyType)}
                             {(company.city || company.state) && (
                               <> • {[company.city, company.state].filter(Boolean).join(', ')}</>
@@ -928,12 +880,11 @@ export default function CompanyDetailPage() {
                         <button
                           onClick={handleToggleFollow}
                           disabled={followLoading}
-                          className="px-4 py-2 border border-[#E6EAF2] dark:border-dark-border rounded-lg text-sm font-medium text-[#64748B] dark:text-[#9AA7C2] hover:border-[#2575FC] dark:hover:border-[#5B8DFF] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] transition-all"
+                          className="px-4 py-2 border border-border dark:border-dark-border rounded-lg text-sm font-medium text-muted-foreground hover:border-brand-primary dark:hover:border-[#5B8DFF] hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-all"
                         >
                           {followLoading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
                         </button>
-                        <button className="text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
-                          style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}>
+                        <button className="text-white px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-br from-brand-primary to-brand-violet hover:opacity-90 transition-opacity">
                           Save
                         </button>
                       </div>
@@ -961,8 +912,8 @@ export default function CompanyDetailPage() {
                   </div>
 
                   {/* Tabs Navigation + Content Card */}
-                  <div className="bg-white dark:bg-dark-surface rounded-xl border border-[#E6EAF2] dark:border-dark-border">
-                    <div className="border-b border-[#E6EAF2] dark:border-dark-border">
+                  <div className="bg-white dark:bg-dark-surface rounded-xl border border-border dark:border-dark-border">
+                    <div className="border-b border-border dark:border-dark-border">
                       <nav className="flex px-6">
                         {[
                           { id: 'overview', label: 'Overview', count: null },
@@ -978,8 +929,8 @@ export default function CompanyDetailPage() {
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`px-5 py-3 text-sm font-medium transition-colors ${
                               activeTab === tab.id
-                                ? 'text-[#2575FC] dark:text-[#5B8DFF] border-b-2 border-[#2575FC] dark:border-[#5B8DFF]'
-                                : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF]'
+                                ? 'text-brand-primary dark:text-[#5B8DFF] border-b-2 border-brand-primary dark:border-[#5B8DFF]'
+                                : 'text-muted-foreground hover:text-brand-primary dark:hover:text-[#5B8DFF]'
                             }`}
                           >
                             {tab.label}{tab.count !== null && ` (${tab.count})`}
@@ -991,7 +942,7 @@ export default function CompanyDetailPage() {
                     {/* Overview Tab Content */}
                     {activeTab === 'overview' && (
                       <div className="p-6">
-                        <h2 className="text-lg font-semibold text-foreground mb-4">Company Overview</h2>
+                        <h2 className="text-lg font-semibold text-brand-ink dark:text-white mb-4">Company Overview</h2>
                         {company.description ? (
                           <p className="text-foreground leading-relaxed whitespace-pre-wrap">{company.description}</p>
                         ) : (
@@ -1005,7 +956,7 @@ export default function CompanyDetailPage() {
                     {/* People Tab */}
                     {activeTab === 'people' && (
                       <div className="p-6">
-                        <h2 className="text-lg font-semibold text-foreground mb-4">People ({company._count.contacts})</h2>
+                        <h2 className="text-lg font-semibold text-brand-ink dark:text-white mb-4">People ({company._count.contacts})</h2>
                       {company.contacts.length === 0 ? (
                         <div className="text-center py-12">
                           <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -1021,9 +972,9 @@ export default function CompanyDetailPage() {
                     </div>
                   )}
 
-                  {/* Teams Tab - Shows company teams */}
-                  {activeTab === 'teams' && (
-                    <div className="bg-white rounded-lg border border-border p-6">
+          {/* Teams Tab - Shows company teams */}
+          {activeTab === 'teams' && (
+            <div className="bg-white dark:bg-dark-surface rounded-xl border border-border dark:border-dark-border p-6">
                       {/* Group teams by type */}
                       {(() => {
                         const inHouseTeams = company.teams.filter(t => t.type !== 'ADVERTISER_TEAM');
@@ -1153,7 +1104,7 @@ export default function CompanyDetailPage() {
                           : subsidiary.city || subsidiary.state || '';
 
                         return (
-                          <div key={subsidiary.id} className="bg-white border border-border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                          <div key={subsidiary.id} className="bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-lg p-4 hover:shadow-sm transition-shadow">
                             <div className="flex items-start gap-3">
                               {/* Logo */}
                               <CompanyLogo
@@ -1261,12 +1212,12 @@ export default function CompanyDetailPage() {
                     </div>
                   )}
 
-                  {/* Activity Tab */}
-                  {activeTab === 'activity' && (
-                    <div className="bg-white rounded-lg border border-border p-6">
-                      <h2 className="text-lg font-semibold text-foreground mb-4">
-                        Recent Activity {activitiesTotal > 0 && `(${activitiesTotal})`}
-                      </h2>
+          {/* Activity Tab */}
+          {activeTab === 'activity' && (
+            <div className="bg-white dark:bg-dark-surface rounded-xl border border-border dark:border-dark-border p-6">
+              <h2 className="text-lg font-semibold text-brand-ink dark:text-white mb-4">
+                Recent Activity {activitiesTotal > 0 && `(${activitiesTotal})`}
+              </h2>
                       <div className="space-y-4">
                         {/* Loading state */}
                         {activitiesLoading && activities.length === 0 && (
@@ -1328,7 +1279,7 @@ export default function CompanyDetailPage() {
 
                   {/* Teams Card - Separate card for Overview tab */}
                   {activeTab === 'overview' && totalTeams > 0 && (
-                    <div className="bg-white rounded-lg border border-border p-6">
+                    <div className="bg-white dark:bg-[#0F1A2E] rounded-lg border border-[#E6EAF2] dark:border-[#22304A] p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-foreground">
                           What does {company.name} do? ({totalTeams} {totalTeams === 1 ? 'team' : 'teams'})
@@ -1361,7 +1312,7 @@ export default function CompanyDetailPage() {
 
                   {/* People Card - Separate card for Overview tab */}
                   {activeTab === 'overview' && company.contacts.length > 0 && (
-                    <div className="bg-white rounded-lg border border-border p-6">
+                    <div className="bg-white dark:bg-[#0F1A2E] rounded-lg border border-[#E6EAF2] dark:border-[#22304A] p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-foreground">
                           People ({company._count.contacts})
@@ -1384,7 +1335,7 @@ export default function CompanyDetailPage() {
 
                   {/* Latest Activity Card - Separate card for Overview tab */}
                   {activeTab === 'overview' && (
-                    <div className="bg-white rounded-lg border border-border p-6">
+                    <div className="bg-white dark:bg-[#0F1A2E] rounded-lg border border-[#E6EAF2] dark:border-[#22304A] p-6">
                       <h2 className="text-xl font-bold text-foreground mb-6">
                         Latest Activity {activitiesTotal > 0 && `(${activitiesTotal} items)`}
                       </h2>
@@ -1450,62 +1401,11 @@ export default function CompanyDetailPage() {
                 {/* Right Sidebar for NON-HOLDING companies */}
                 <div className="space-y-6">
                   {/* Suggest Edit Panel */}
-                  <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden hover:border-[#2575FC] dark:hover:border-[#5B8DFF] transition-all">
-                    <div
-                      className="flex items-start gap-3 p-5 cursor-pointer"
-                      onClick={() => setIsSuggestEditExpanded(!isSuggestEditExpanded)}
-                    >
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center"
-                        style={{ background: 'linear-gradient(135deg, rgba(37, 117, 252, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)' }}>
-                        <Lightbulb className="w-5 h-5 text-[#2575FC] dark:text-[#5B8DFF]" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-[#162B54] dark:text-[#EAF0FF]">Suggest an edit</h3>
-                        {!isSuggestEditExpanded && (
-                          <p className="text-sm text-[#64748B] dark:text-[#9AA7C2] mt-1">Click to expand</p>
-                        )}
-                      </div>
-                      <ChevronDown className={`w-5 h-5 text-[#9AA7C2] transition-transform ${isSuggestEditExpanded ? 'rotate-180' : ''}`} />
-                    </div>
-
-                    {isSuggestEditExpanded && (
-                      <div className="px-5 pb-5 border-t border-[#E6EAF2] dark:border-dark-border pt-5">
-                        <div className="space-y-2 mb-4">
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="checkbox" className="mt-0.5" />
-                            <span className="text-[#162B54] dark:text-[#EAF0FF]">Should we add or remove people?</span>
-                          </label>
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="checkbox" className="mt-0.5" />
-                            <span className="text-[#162B54] dark:text-[#EAF0FF]">Are any teams no longer active?</span>
-                          </label>
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="checkbox" className="mt-0.5" />
-                            <span className="text-[#162B54] dark:text-[#EAF0FF]">Are there other agencies we should add?</span>
-                          </label>
-                        </div>
-
-                        <textarea
-                          placeholder="Write your suggestion here..."
-                          className="w-full px-3 py-2 border border-[#E6EAF2] dark:border-dark-border rounded-lg text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#2575FC] dark:focus:ring-[#5B8DFF] bg-white dark:bg-dark-surface"
-                          rows={3}
-                        />
-
-                        <button className="w-full py-2 text-white rounded-lg text-sm font-medium mb-3 hover:opacity-90 transition-opacity"
-                          style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}>
-                          Submit
-                        </button>
-
-                        <p className="text-xs text-[#64748B] dark:text-[#9AA7C2] text-center">
-                          Share information with the community and obtain rewards when you do.
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                  <SuggestEditCard />
 
                   {/* Contact Info */}
                   {(company.address || company.website || company.linkedinUrl) && (
-                    <div className="bg-white border border-border rounded-lg p-6">
+                    <div className="bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-lg p-6">
                       <h3 className="font-semibold text-foreground mb-4">Contact Info</h3>
                       <div className="space-y-3">
                         {company.address && (
@@ -1549,8 +1449,8 @@ export default function CompanyDetailPage() {
 
                   {/* Top Locations */}
                   {(company.city || company.state) && (
-                    <div className="bg-white border border-border rounded-lg p-6">
-                      <h3 className="font-semibold text-foreground mb-4">Top Locations</h3>
+                    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-6">
+                      <h3 className="font-semibold text-brand-ink dark:text-white mb-4">Top Locations</h3>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">

@@ -58,6 +58,9 @@ interface UserData {
   forumGems?: number;
   forumContributions?: number;
   verifiedSeller: boolean;
+  accountStatus?: string;
+  approvedAt?: string | null;
+  approvalNotes?: string | null;
   _count: {
     comments: number;
     posts: number;
@@ -225,6 +228,15 @@ export default function UsersAdminPage() {
       case 'INACTIVE': return 'bg-gray-100 text-gray-800';
       case 'CANCELLED': return 'bg-red-100 text-red-800';
       case 'PAST_DUE': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getAccountStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'APPROVED': return 'bg-green-100 text-green-800';
+      case 'PENDING': return 'bg-yellow-100 text-yellow-800';
+      case 'REJECTED': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -436,6 +448,9 @@ export default function UsersAdminPage() {
                     User
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Account Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Verification
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -492,6 +507,16 @@ export default function UsersAdminPage() {
                           )}
                         </div>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getAccountStatusBadgeColor(user.accountStatus || 'APPROVED')}`}>
+                        {user.accountStatus || 'APPROVED'}
+                      </span>
+                      {user.accountStatus === 'PENDING' && (
+                        <div className="text-xs text-yellow-600 mt-1">
+                          Awaiting review
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="space-y-1">
