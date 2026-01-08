@@ -17,10 +17,24 @@ export async function POST(request: NextRequest) {
 
     // Normalize email to prevent case-sensitivity duplicates
     const normalizedEmail = email.trim().toLowerCase();
+    
+    console.log('🔍 Firebase-sync POST:', {
+      originalEmail: email,
+      normalizedEmail,
+      uid,
+      isNewUser
+    });
 
     // Check if user already exists in database
     let user = await prisma.user.findUnique({
       where: { email: normalizedEmail }
+    });
+    
+    console.log('📊 User lookup result:', {
+      found: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      accountStatus: user?.accountStatus
     });
 
     if (!user) {
@@ -91,6 +105,12 @@ export async function POST(request: NextRequest) {
       
       console.log('🔥 Firebase user updated in database:', { uid, email: normalizedEmail });
     }
+
+    console.log('✅ Returning user data:', {
+      userId: user.id,
+      email: user.email,
+      accountStatus: user.accountStatus
+    });
 
     // Set session cookie
     const response = NextResponse.json({ 

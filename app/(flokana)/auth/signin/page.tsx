@@ -121,13 +121,23 @@ export default function SignInPage(): JSX.Element {
           const syncData = await syncResponse.json();
           const accountStatus = syncData.user?.accountStatus;
 
+          console.log('🔍 Google sign-in - Account status check:', {
+            email: result.user.email,
+            syncResponseStatus: syncResponse.status,
+            accountStatus,
+            fullSyncData: syncData
+          });
+
           // Redirect based on account status - no delay needed
           if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
+            console.log('🚫 Redirecting to pending-approval because status is:', accountStatus);
             router.replace('/auth/pending-approval');
           } else {
+            console.log('✅ Redirecting to forum because status is:', accountStatus);
             router.replace('/forum');
           }
         } else {
+          console.error('⚠️ Google sync failed with status:', syncResponse.status);
           router.replace('/forum');
         }
       }
@@ -181,18 +191,25 @@ export default function SignInPage(): JSX.Element {
           const syncData = await syncResponse.json();
           const accountStatus = syncData.user?.accountStatus;
 
-          console.log('🔍 Account status after sign-in:', accountStatus);
+          console.log('🔍 Email sign-in - Account status check:', {
+            email: result.user.email,
+            syncResponseStatus: syncResponse.status,
+            accountStatus,
+            fullSyncData: syncData
+          });
 
           // Redirect based on account status - immediate redirect, no delay
           if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
-            console.log('🚫 Redirecting to pending-approval');
+            console.log('🚫 Redirecting to pending-approval because status is:', accountStatus);
             router.replace('/auth/pending-approval');
           } else {
-            console.log('✅ Redirecting to forum');
+            console.log('✅ Redirecting to forum because status is:', accountStatus);
             router.replace('/forum');
           }
         } else {
-          console.warn('⚠️ Sync failed, redirecting to forum as fallback');
+          console.error('⚠️ Sync failed with status:', syncResponse.status);
+          const errorText = await syncResponse.text();
+          console.error('Sync error details:', errorText);
           router.replace('/forum');
         }
       }
