@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, getPriceId } from '@/lib/stripe'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/firebase-admin'
 
 export async function POST(request: NextRequest) {

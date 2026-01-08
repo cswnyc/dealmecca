@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, PRICE_TO_TIER } from '@/lib/stripe'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { updateUserTierInConvertKit } from '@/lib/convertkit'
 import Stripe from 'stripe'
 

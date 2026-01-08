@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { subscribeUserToNewsletter } from '@/lib/convertkit'
 import { auth } from '@/lib/firebase-admin'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {

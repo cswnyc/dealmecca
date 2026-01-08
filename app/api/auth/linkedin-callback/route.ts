@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { exchangeLinkedInCode, getLinkedInProfile } from '@/lib/auth/linkedin-oauth'
 import { auth } from '@/lib/firebase-admin'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { generateUsername } from '@/lib/user-generator'
 import { subscribeUserToNewsletter } from '@/lib/convertkit'
 import { randomBytes } from 'crypto'
