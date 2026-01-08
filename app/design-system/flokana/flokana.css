@@ -111,12 +111,7 @@
 /* Reset global button styles within Flokana scope */
 .flk button {
   font-family: 'Helvetica Neue', 'Inter', 'DM Sans', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
-  border-radius: 0 !important;
-  border: none !important;
-  padding: 0 !important;
-  background-color: transparent !important;
   cursor: pointer !important;
-  transition: none !important;
 }
 
 .flk button:hover {
