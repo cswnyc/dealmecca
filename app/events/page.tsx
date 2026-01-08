@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PageFrame, PageContent, PageCard } from '@/components/layout/PageFrame';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -329,6 +330,7 @@ export default function EventsPage() {
   }
 
   return (
+    <AuthGuard>
     <PageFrame maxWidth="full" className="p-0">
       <div className="bg-background">
         {/* Featured Event Hero */}
@@ -836,5 +838,6 @@ export default function EventsPage() {
         </DialogContent>
       </Dialog>
     </PageFrame>
+    </AuthGuard>
   );
 }

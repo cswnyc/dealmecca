@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 export default function DashboardPage() {
   return (
+    <AuthGuard>
     <div className="min-h-screen bg-background">
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,5 +92,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+    </AuthGuard>
   )
 }

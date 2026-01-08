@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { CountdownTimer, CountdownBadge } from '@/components/events/CountdownTimer';
 import { RatingProgressBars, RatingHero, StarRating } from '@/components/events/RatingProgressBars';
 import { AttendeePreview } from '@/components/events/AttendeePreview';
@@ -222,6 +223,7 @@ export default function EventDetailPage() {
   const isOngoing = !isUpcoming && !isPast;
 
   return (
+    <AuthGuard>
     <MainLayout>
       <div className="min-h-screen bg-background">
         {/* Immersive Hero Section */}
@@ -592,5 +594,6 @@ export default function EventDetailPage() {
         />
       </div>
     </MainLayout>
+    </AuthGuard>
   );
 }
