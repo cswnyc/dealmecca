@@ -23,6 +23,7 @@ export function AuthGuard({
 }: AuthGuardProps) {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
 
   // Try to get Firebase auth, but handle errors gracefully
@@ -39,6 +40,12 @@ export function AuthGuard({
 
   useEffect(() => {
     const checkAccess = async () => {
+      // Skip if already redirecting to prevent loops
+      if (isRedirecting) {
+        console.log('AuthGuard: Already redirecting, skipping check');
+        return;
+      }
+
       console.log('AuthGuard: Checking access...', {
         requireAuth,
         user: !!user,
@@ -53,45 +60,21 @@ export function AuthGuard({
         return;
       }
 
-      // Check account approval status for authenticated users
-      if (user) {
-        try {
-          const response = await fetch('/api/auth/firebase-sync', {
-            method: 'GET',
-            credentials: 'include',
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.user?.accountStatus === 'PENDING') {
-              // User is pending approval, redirect to pending page
-              console.log('AuthGuard: User account is pending approval');
-              router.replace('/auth/pending-approval');
-              return;
-            } else if (data.user?.accountStatus === 'REJECTED') {
-              // User account was rejected
-              console.log('AuthGuard: User account was rejected');
-              router.replace('/auth/pending-approval');
-              return;
-            }
-          }
-        } catch (error) {
-          console.error('AuthGuard: Error checking account status:', error);
-        }
+      // Wait for Firebase auth to load first (if available)
+      if (loading) {
+        console.log('AuthGuard: Waiting for Firebase auth to load...');
+        return;
       }
 
       // Check for LinkedIn session first (prioritize over Firebase to avoid conflicts)
+      let hasLinkedInAuth = false;
       try {
         const linkedinSession = localStorage.getItem('linkedin-session');
         if (linkedinSession) {
           const sessionData = JSON.parse(linkedinSession);
-
-          // Validate session token hasn't expired
           if (sessionData.exp && Date.now() < sessionData.exp) {
             console.log('AuthGuard: LinkedIn user authenticated');
-            setIsAuthorized(true);
-            setIsChecking(false);
-            return;
+            hasLinkedInAuth = true;
           } else {
             console.log('AuthGuard: LinkedIn session expired, removing');
             localStorage.removeItem('linkedin-session');
@@ -102,29 +85,91 @@ export function AuthGuard({
         localStorage.removeItem('linkedin-session');
       }
 
-      // Wait for Firebase auth to load (if available)
-      if (loading) {
-        console.log('AuthGuard: Waiting for Firebase auth to load...');
-        return;
-      }
+      // Check if user is authenticated (Firebase or LinkedIn)
+      const isAuthenticated = !!user || hasLinkedInAuth;
 
-      // Check for Firebase user as fallback
-      if (user) {
-        console.log('AuthGuard: Firebase user authenticated');
-        setIsAuthorized(true);
+      if (!isAuthenticated) {
+        // No authenticated user found
+        if (!showSignUpPage) {
+          setIsRedirecting(true);
+          router.replace(fallbackUrl);
+          return;
+        }
+        // Show sign-up page instead of redirecting
+        setIsAuthorized(false);
         setIsChecking(false);
         return;
       }
 
-      // No authenticated user found
-      if (!showSignUpPage) {
-        // Redirect immediately
-        router.replace(fallbackUrl);
-        return;
+      // User is authenticated - now check account approval status
+      // This MUST complete before showing any protected content
+      try {
+        const response = await fetch('/api/auth/firebase-sync', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // If no user returned (cookie not set yet), check via user profile API
+          if (!data.user && user) {
+            console.log('AuthGuard: No session cookie, checking via profile API...');
+            const profileResponse = await fetch('/api/users/profile', {
+              credentials: 'include',
+            });
+
+            if (profileResponse.ok) {
+              const profileData = await profileResponse.json();
+              const accountStatus = profileData.accountStatus;
+
+              if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
+                console.log(`AuthGuard: User account status is ${accountStatus}`);
+                setIsRedirecting(true);
+                router.replace('/auth/pending-approval');
+                return;
+              }
+
+              if (accountStatus === 'APPROVED') {
+                console.log('AuthGuard: User authenticated and approved');
+                setIsAuthorized(true);
+                setIsChecking(false);
+                return;
+              }
+            }
+
+            // If we still can't determine status, redirect to pending as a safe default
+            console.log('AuthGuard: Could not determine account status, redirecting to pending');
+            setIsRedirecting(true);
+            router.replace('/auth/pending-approval');
+            return;
+          }
+
+          const accountStatus = data.user?.accountStatus;
+
+          if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
+            console.log(`AuthGuard: User account status is ${accountStatus}`);
+            setIsRedirecting(true);
+            router.replace('/auth/pending-approval');
+            return;
+          }
+
+          // Account is approved (or no status = legacy approved)
+          console.log('AuthGuard: User authenticated and approved');
+          setIsAuthorized(true);
+          setIsChecking(false);
+        } else {
+          // API error - redirect to pending as safe default
+          console.warn('AuthGuard: Could not verify account status, redirecting to pending');
+          setIsRedirecting(true);
+          router.replace('/auth/pending-approval');
+        }
+      } catch (error) {
+        console.error('AuthGuard: Error checking account status:', error);
+        // On error, redirect to pending as safe default
+        setIsRedirecting(true);
+        router.replace('/auth/pending-approval');
       }
-      // Show sign-up page instead of redirecting
-      setIsAuthorized(false);
-      setIsChecking(false);
     };
 
     checkAccess();
@@ -140,7 +185,7 @@ export function AuthGuard({
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [user, loading, router, fallbackUrl, requireAuth, showSignUpPage]);
+  }, [user, loading, router, fallbackUrl, requireAuth, showSignUpPage, isRedirecting]);
 
   // Show loading state while checking
   if (isChecking) {

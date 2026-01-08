@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import IdentityTab from '@/components/settings/IdentityTab';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { PageFrame, PageHeader, PageContent, PageCard } from '@/components/layout/PageFrame';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -238,6 +239,7 @@ export default function SettingsPage() {
   }
 
   return (
+    <AuthGuard>
     <PageFrame maxWidth="4xl">
       <PageHeader
         title="Settings"
@@ -500,5 +502,6 @@ export default function SettingsPage() {
 
       </PageContent>
     </PageFrame>
+    </AuthGuard>
   );
 }

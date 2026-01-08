@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
         anonymousUsername: true,
         avatarSeed: true,
         isAnonymous: true,
+        accountStatus: true,
         // Include some statistics
         _count: {
           select: {
@@ -82,6 +83,7 @@ export async function GET(request: NextRequest) {
       anonymousUsername: user.anonymousUsername,
       avatarSeed: user.avatarSeed,
       isAnonymous: user.isAnonymous,
+      accountStatus: user.accountStatus,
       stats: {
         forumPosts: user._count.ForumPost,
         forumComments: user._count.ForumComment,
