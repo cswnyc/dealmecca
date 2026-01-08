@@ -22,6 +22,7 @@ export default function SignInPage(): JSX.Element {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false); // Prevent useEffect redirect during sign-in
 
   const router = useRouter();
 
@@ -43,27 +44,96 @@ export default function SignInPage(): JSX.Element {
     console.log('Auth context not available during build');
   }
 
-  // Redirect if already logged in
+  // Redirect if already logged in - check approval status first
+  // Skip this check if we're actively signing in (handler will do the redirect)
   useEffect(() => {
-    if (user && !authLoading) {
-      router.push('/forum');
-    }
-  }, [user, authLoading, router]);
+    const checkAndRedirect = async (): Promise<void> => {
+      if (user && !authLoading && !isSigningIn) {
+        try {
+          // Sync user and get account status
+          const syncResponse = await fetch('/api/auth/firebase-sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              providerId: user.providerId,
+              isNewUser: false
+            }),
+            credentials: 'include'
+          });
+
+          if (syncResponse.ok) {
+            const syncData = await syncResponse.json();
+            const accountStatus = syncData.user?.accountStatus;
+
+            // Redirect based on account status
+            if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
+              router.replace('/auth/pending-approval');
+            } else {
+              // APPROVED or null (legacy users)
+              router.replace('/forum');
+            }
+          } else {
+            // Fallback to forum if sync fails
+            router.replace('/forum');
+          }
+        } catch (err) {
+          console.error('Error checking account status:', err);
+          router.replace('/forum');
+        }
+      }
+    };
+
+    checkAndRedirect();
+  }, [user, authLoading, router, isSigningIn]);
 
   const handleGoogleSignIn = async (): Promise<void> => {
     if (!signInWithGoogle) return;
 
     setLoading(true);
+    setIsSigningIn(true);
     setError('');
 
     try {
       const result = await signInWithGoogle();
       if (result) {
-        setSuccess('Signed in successfully! Redirecting...');
-        setTimeout(() => router.push('/forum'), 1500);
+        setSuccess('Signed in successfully! Checking account status...');
+        
+        // Sync user and check account status
+        const syncResponse = await fetch('/api/auth/firebase-sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL,
+            providerId: result.user.providerId,
+            isNewUser: result.isNewUser
+          }),
+          credentials: 'include'
+        });
+
+        if (syncResponse.ok) {
+          const syncData = await syncResponse.json();
+          const accountStatus = syncData.user?.accountStatus;
+
+          // Redirect based on account status - no delay needed
+          if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
+            router.replace('/auth/pending-approval');
+          } else {
+            router.replace('/forum');
+          }
+        } else {
+          router.replace('/forum');
+        }
       }
     } catch (err) {
       setError('Failed to sign in with Google. Please try again.');
+      setIsSigningIn(false);
     } finally {
       setLoading(false);
     }
@@ -86,16 +156,49 @@ export default function SignInPage(): JSX.Element {
     if (!signInWithEmail) return;
 
     setLoading(true);
+    setIsSigningIn(true);
     setError('');
 
     try {
       const result = await signInWithEmail(email, password);
       if (result) {
-        setSuccess('Signed in successfully! Redirecting...');
-        setTimeout(() => router.push('/forum'), 1500);
+        // Sync user and check account status
+        const syncResponse = await fetch('/api/auth/firebase-sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL,
+            providerId: result.user.providerId,
+            isNewUser: result.isNewUser
+          }),
+          credentials: 'include'
+        });
+
+        if (syncResponse.ok) {
+          const syncData = await syncResponse.json();
+          const accountStatus = syncData.user?.accountStatus;
+
+          console.log('🔍 Account status after sign-in:', accountStatus);
+
+          // Redirect based on account status - immediate redirect, no delay
+          if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
+            console.log('🚫 Redirecting to pending-approval');
+            router.replace('/auth/pending-approval');
+          } else {
+            console.log('✅ Redirecting to forum');
+            router.replace('/forum');
+          }
+        } else {
+          console.warn('⚠️ Sync failed, redirecting to forum as fallback');
+          router.replace('/forum');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Failed to sign in. Please check your credentials.');
+      setIsSigningIn(false);
     } finally {
       setLoading(false);
     }

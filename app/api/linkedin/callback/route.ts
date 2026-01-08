@@ -101,17 +101,32 @@ export async function GET(req: NextRequest) {
 
     const cookieState = req.cookies.get('li_oauth_state')?.value || null;
 
-    if (!cookieState || cookieState !== state) {
+    // Strict state validation in production, lenient in development
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const stateMatches = cookieState && cookieState === state;
+    
+    if (!stateMatches) {
       console.error('LinkedIn OAuth state mismatch:', {
         cookieState: cookieState?.substring(0, 10) + '...',
         receivedState: state?.substring(0, 10) + '...',
         hasCookie: !!cookieState,
         hasState: !!state,
+        isDevelopment,
+        origin: req.nextUrl.origin,
         allCookies: Object.fromEntries(
           Array.from(req.cookies.entries()).map(([key, cookie]) => [key, cookie.value?.substring(0, 10) + '...'])
         )
       });
-      return NextResponse.json({ error: 'Invalid state parameter' }, { status: 400 });
+      
+      // In production, fail hard on state mismatch (security)
+      if (!isDevelopment) {
+        return NextResponse.json({ error: 'Invalid state parameter' }, { status: 400 });
+      }
+      
+      // In development, log warning but continue (allows localhost/127.0.0.1 mismatches)
+      console.warn('⚠️ Development mode: Continuing despite state mismatch (this would fail in production)');
+    } else {
+      console.log('✅ LinkedIn OAuth state validated successfully');
     }
 
     // Validate environment variables
@@ -264,7 +279,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Create or find user in database
-    const userEmail = emailAddr?.toLowerCase();
+    // Normalize email to prevent case-sensitivity duplicates
+    const userEmail = emailAddr?.trim().toLowerCase();
     const userIdentifier = userEmail || `linkedin:${linkedinId}`;
 
     console.log('Creating/finding database user:', { userIdentifier, hasEmail: !!userEmail });

@@ -15,9 +15,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Normalize email to prevent case-sensitivity duplicates
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Check if user already exists in database
     let user = await prisma.user.findUnique({
-      where: { email }
+      where: { email: normalizedEmail }
     });
 
     if (!user) {
@@ -45,7 +48,7 @@ export async function POST(request: NextRequest) {
       user = await prisma.user.create({
         data: {
           firebaseUid: uid,
-          email,
+          email: normalizedEmail,
           name: displayName || null,
           role: 'FREE',
           subscriptionTier: 'FREE',
@@ -59,17 +62,17 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      console.log('🔥 Firebase user synced to database:', { uid, email, isNewUser: true });
+      console.log('🔥 Firebase user synced to database:', { uid, email: normalizedEmail, isNewUser: true });
 
       // Subscribe user to ConvertKit newsletter if they provided an email
-      if (email && isNewUser) {
+      if (normalizedEmail && isNewUser) {
         try {
           await subscribeUserToNewsletter(
-            email,
+            normalizedEmail,
             displayName || undefined,
             'FREE'
           );
-          console.log('✅ User subscribed to ConvertKit newsletter:', email);
+          console.log('✅ User subscribed to ConvertKit newsletter:', normalizedEmail);
         } catch (convertKitError) {
           console.warn('⚠️ ConvertKit subscription failed (non-critical):', convertKitError);
           // Don't fail the user registration if ConvertKit fails
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
         }
       });
       
-      console.log('🔥 Firebase user updated in database:', { uid, email });
+      console.log('🔥 Firebase user updated in database:', { uid, email: normalizedEmail });
     }
 
     // Set session cookie

@@ -53,9 +53,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(errorUrl)
     }
 
+    // Normalize email to prevent case-sensitivity duplicates
+    const normalizedEmail = linkedInProfile.email.trim().toLowerCase();
+
     // Check if user already exists
     let user = await prisma.user.findUnique({
-      where: { email: linkedInProfile.email },
+      where: { email: normalizedEmail },
       select: {
         id: true,
         email: true,
@@ -111,7 +114,7 @@ export async function GET(request: NextRequest) {
         user = await prisma.user.create({
           data: {
             id: userId,
-            email: linkedInProfile.email,
+            email: normalizedEmail,
             name: linkedInProfile.name || null,
             isAnonymous: false,
             anonymousUsername,
@@ -148,11 +151,11 @@ export async function GET(request: NextRequest) {
       // Subscribe new user to ConvertKit newsletter
       try {
         await subscribeUserToNewsletter(
-          linkedInProfile.email,
+          normalizedEmail,
           linkedInProfile.given_name || linkedInProfile.name || undefined,
           'FREE'
         );
-        console.log('✅ LinkedIn user subscribed to ConvertKit newsletter:', linkedInProfile.email);
+        console.log('✅ LinkedIn user subscribed to ConvertKit newsletter:', normalizedEmail);
       } catch (convertKitError) {
         console.warn('⚠️ ConvertKit subscription failed for LinkedIn user (non-critical):', convertKitError);
         // Don't fail the OAuth flow if ConvertKit fails

@@ -14,19 +14,13 @@ export default function PendingApprovalPage(): JSX.Element {
 
   useEffect(() => {
     const checkStatus = async (): Promise<void> => {
+      // Give Firebase auth a moment to load if still initializing
       if (authLoading) {
+        console.log('Waiting for Firebase auth to load...');
         return;
       }
 
-      if (!user) {
-        // Not authenticated, redirect to login
-        router.push('/auth/signin');
-        return;
-      }
-
-      setUserEmail(user.email || '');
-
-      // Check current account status
+      // Check for auth via cookies even if Firebase user isn't loaded yet
       try {
         const response = await fetch('/api/auth/firebase-sync', {
           method: 'GET',
@@ -37,28 +31,59 @@ export default function PendingApprovalPage(): JSX.Element {
           const data = await response.json();
           console.log('Account status check:', data.user?.accountStatus);
           
-          if (data.user?.accountStatus === 'APPROVED') {
-            // User has been approved! Redirect to forum
-            console.log('User is approved, redirecting to forum');
-            router.push('/forum');
-            return;
-          } else if (data.user?.accountStatus === 'REJECTED') {
-            // Account was rejected
-            console.log('User account is rejected');
+          if (data.user) {
+            setUserEmail(data.user.email || '');
+            
+            if (data.user.accountStatus === 'APPROVED') {
+              // User has been approved! Redirect to forum
+              console.log('User is approved, redirecting to forum');
+              router.push('/forum');
+              return;
+            } else if (data.user.accountStatus === 'REJECTED') {
+              // Account was rejected
+              console.log('User account is rejected');
+              setLoading(false);
+              return;
+            } else if (data.user.accountStatus === 'PENDING') {
+              // User is pending - show the pending page
+              console.log('User is pending approval');
+              setLoading(false);
+              return;
+            }
+          } else {
+            // No user found via cookie auth, check Firebase user
+            if (!user) {
+              console.log('No authenticated user found, redirecting to sign-in');
+              router.push('/auth/signin');
+              return;
+            }
+            setUserEmail(user.email || '');
             setLoading(false);
-            return;
-          } else if (data.user?.accountStatus === 'PENDING') {
-            // User is pending - show the pending page
-            console.log('User is pending approval');
+          }
+        } else if (response.status === 401) {
+          // Not authenticated at all
+          console.log('Not authenticated, redirecting to sign-in');
+          router.push('/auth/signin');
+          return;
+        } else {
+          // Other error - show pending page anyway if we have a Firebase user
+          if (user) {
+            setUserEmail(user.email || '');
             setLoading(false);
-            return;
+          } else {
+            router.push('/auth/signin');
           }
         }
       } catch (error) {
         console.error('Error checking account status:', error);
+        // On error, check if we at least have a Firebase user
+        if (user) {
+          setUserEmail(user.email || '');
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
       }
-
-      setLoading(false);
     };
 
     checkStatus();

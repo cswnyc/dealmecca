@@ -3,6 +3,24 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * LinkedIn OAuth Start Route
+ * 
+ * IMPORTANT: LinkedIn OAuth testing in local development
+ * -------------------------------------------------------
+ * LinkedIn requires exact redirect URI whitelisting in their Developer Console.
+ * By default, only production URLs are whitelisted.
+ * 
+ * For LOCAL TESTING: You must add http://localhost:3000/api/linkedin/callback
+ * to your LinkedIn App's "Authorized redirect URLs" in the LinkedIn Developer Console.
+ * 
+ * RECOMMENDED APPROACH: Test LinkedIn OAuth in production/staging only.
+ * - Test Google/Email auth locally
+ * - Test LinkedIn auth in production environment
+ * 
+ * This is a common practice for OAuth providers with strict URI policies.
+ */
+
 // Generate random state for OAuth security
 function randomString(length: number): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -15,9 +33,17 @@ function randomString(length: number): string {
 
 export async function GET(req: NextRequest) {
   const clientId = process.env.LINKEDIN_CLIENT_ID!;
+  
   // Use dynamic redirect URI based on current domain
   const baseUrl = req.nextUrl.origin;
-  const redirectUri = process.env.LINKEDIN_REDIRECT_URI || `${baseUrl}/api/linkedin/callback`;
+  let redirectUri = process.env.LINKEDIN_REDIRECT_URI || `${baseUrl}/api/linkedin/callback`;
+  
+  // If LINKEDIN_REDIRECT_URI is just a path, rebase it to current origin
+  // This prevents localhost vs 127.0.0.1 mismatches in development
+  if (redirectUri.startsWith('/')) {
+    redirectUri = `${baseUrl}${redirectUri}`;
+  }
+  
   const scope = (process.env.LINKEDIN_SCOPES || 'openid profile email').trim();
 
   // Generate state for security (no PKCE)
@@ -33,8 +59,33 @@ export async function GET(req: NextRequest) {
 
   const url = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
 
+  console.log('🔗 LinkedIn OAuth start:', {
+    baseUrl,
+    redirectUri,
+    state: state.substring(0, 10) + '...',
+    isSecure: req.nextUrl.protocol === 'https:'
+  });
+
   const res = NextResponse.redirect(url);
-  // Only store state for validation (no PKCE verifier)
-  res.cookies.set('li_oauth_state', state, { httpOnly: true, secure: false, path: '/', maxAge: 300 });
+  
+  // Set cookie with appropriate security settings
+  const isSecure = req.nextUrl.protocol === 'https:';
+  res.cookies.set('li_oauth_state', state, { 
+    httpOnly: true, 
+    secure: isSecure, 
+    sameSite: 'lax',
+    path: '/', 
+    maxAge: 300 
+  });
+  
+  console.log('🍪 Set li_oauth_state cookie:', {
+    value: state.substring(0, 10) + '...',
+    httpOnly: true,
+    secure: isSecure,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 300
+  });
+  
   return res;
 }
