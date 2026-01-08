@@ -55,7 +55,13 @@ export async function GET(request: NextRequest) {
 
     // Check if user already exists
     let user = await prisma.user.findUnique({
-      where: { email: linkedInProfile.email }
+      where: { email: linkedInProfile.email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        accountStatus: true
+      }
     })
 
     if (user) {
@@ -63,7 +69,13 @@ export async function GET(request: NextRequest) {
       if (!user.name && linkedInProfile.name) {
         user = await prisma.user.update({
           where: { id: user.id },
-          data: { name: linkedInProfile.name }
+          data: { name: linkedInProfile.name },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            accountStatus: true
+          }
         })
       }
 
@@ -105,11 +117,18 @@ export async function GET(request: NextRequest) {
             anonymousUsername,
             role: 'FREE',
             subscriptionTier: 'FREE',
-            subscriptionStatus: 'ACTIVE'
+            subscriptionStatus: 'ACTIVE',
+            accountStatus: 'PENDING' // New users require admin approval
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            accountStatus: true
           }
         })
 
-        console.log('✅ User created successfully:', user.id);
+        console.log('✅ User created successfully:', user.id, 'with PENDING status');
       } catch (createError) {
         console.error('❌ Failed to create user:', createError);
         throw createError;
@@ -147,14 +166,23 @@ export async function GET(request: NextRequest) {
       exp: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
     })).toString('base64')
 
-    console.log('LinkedIn auth successful, creating session and redirecting to forum:', {
+    // Determine redirect URL based on account status
+    // null/undefined status = legacy user, treated as approved
+    // APPROVED status = explicitly approved
+    // PENDING/REJECTED = needs approval
+    const isApproved = user.accountStatus === 'APPROVED' || user.accountStatus === null || user.accountStatus === undefined;
+    const redirectUrl = isApproved ? '/forum' : '/auth/pending-approval';
+
+    console.log('LinkedIn auth successful, creating session:', {
       userId: user.id,
       email: user.email,
+      accountStatus: user.accountStatus,
+      redirectUrl,
       sessionTokenLength: sessionToken.length
     })
 
     // Set HTTP-only cookie server-side
-    const response = NextResponse.redirect(new URL('/forum', request.nextUrl.origin))
+    const response = NextResponse.redirect(new URL(redirectUrl, request.nextUrl.origin))
 
     // Set linkedin-auth cookie with user ID
     const cookieValue = `linkedin-${user.id}`

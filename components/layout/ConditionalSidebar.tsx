@@ -30,6 +30,11 @@ export default function ConditionalSidebar() {
     return null;
   }
 
+  // Don't render sidebar if user account is pending approval or rejected
+  if (user.accountStatus === 'PENDING' || user.accountStatus === 'REJECTED') {
+    return null;
+  }
+
   // Don't render sidebar on landing page, auth pages, admin pages, or invite-only page
   const isLandingPage = pathname === '/';
   const isAuthPage = pathname?.startsWith('/auth/') ||

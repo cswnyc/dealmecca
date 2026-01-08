@@ -13,6 +13,7 @@ export interface User {
   teamId?: string;
   teamName?: string;
   profilePicture?: string;
+  accountStatus?: string;
 }
 
 interface UserContextType {
@@ -76,7 +77,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
           isActive: true,
           teamId: userData.teamId,
           teamName: userData.teamName,
-          profilePicture: userData.profilePicture
+          profilePicture: userData.profilePicture,
+          accountStatus: userData.accountStatus
         };
 
         console.log('✅ useUser: Mapped user object:', mappedUser);
