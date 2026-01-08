@@ -108,15 +108,22 @@ export function AuthGuard({
 
         // For Firebase users, use firebase-sync which already returns account status
         if (user) {
-          console.log('AuthGuard: Checking status via firebase-sync...');
+          console.log('AuthGuard: Checking status via firebase-sync for user:', user.email);
           const syncResponse = await fetch('/api/auth/firebase-sync', {
             method: 'GET',
             credentials: 'include',
           });
+          console.log('AuthGuard: firebase-sync response status:', syncResponse.status);
           if (syncResponse.ok) {
             const syncData = await syncResponse.json();
             accountStatus = syncData.user?.accountStatus ?? null;
-            console.log('AuthGuard: Got status from firebase-sync:', accountStatus);
+            console.log('AuthGuard: Got status from firebase-sync:', {
+              accountStatus,
+              userEmail: syncData.user?.email,
+              fullUserData: syncData.user
+            });
+          } else {
+            console.error('AuthGuard: firebase-sync failed:', syncResponse.status);
           }
         }
 
@@ -137,8 +144,10 @@ export function AuthGuard({
         console.log('AuthGuard: Final account status:', accountStatus);
 
         // Check the status
+        console.log('AuthGuard: Final decision - accountStatus:', accountStatus, 'for email:', user?.email);
+        
         if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
-          console.log(`AuthGuard: User account status is ${accountStatus} - redirecting to pending`);
+          console.log(`❌ AuthGuard: User account status is ${accountStatus} - redirecting to pending`);
           setIsRedirecting(true);
           router.replace('/auth/pending-approval');
           return;
@@ -146,7 +155,7 @@ export function AuthGuard({
 
         // APPROVED or null (legacy users) = allowed
         if (accountStatus === 'APPROVED' || accountStatus === null) {
-          console.log('AuthGuard: User authenticated and approved');
+          console.log('✅ AuthGuard: User authenticated and approved, allowing access');
           setIsAuthorized(true);
           setIsChecking(false);
           return;

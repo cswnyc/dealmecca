@@ -149,7 +149,13 @@ export async function GET(request: NextRequest) {
   try {
     const firebaseUid = request.cookies.get('dealmecca-session')?.value;
 
+    console.log('🔍 Firebase-sync GET:', {
+      hasFirebaseUid: !!firebaseUid,
+      firebaseUid: firebaseUid?.substring(0, 20) + '...'
+    });
+
     if (!firebaseUid) {
+      console.log('❌ No firebaseUid cookie found');
       return NextResponse.json({ user: null });
     }
 
@@ -166,6 +172,13 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         updatedAt: true
       }
+    });
+
+    console.log('📊 GET User lookup result:', {
+      found: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      accountStatus: user?.accountStatus
     });
 
     return NextResponse.json({ user });
