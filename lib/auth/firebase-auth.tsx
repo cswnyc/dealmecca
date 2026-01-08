@@ -143,9 +143,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   // Error handling
   const handleAuthError = (authError: AuthError) => {
     console.error('🔥 Firebase Auth Error:', authError);
-    
+
     let errorMessage = 'Authentication failed. Please try again.';
-    
+
     switch (authError.code) {
       case 'auth/popup-closed-by-user':
         errorMessage = 'Sign-in was cancelled. Please try again.';
@@ -160,7 +160,15 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         errorMessage = 'An account with this email already exists with a different sign-in method.';
         break;
       case 'auth/invalid-credential':
-        errorMessage = 'Invalid credentials. Please try again.';
+      case 'auth/invalid-login-credentials':
+      case 'auth/wrong-password':
+        errorMessage = 'Incorrect email or password. Please check your credentials and try again.';
+        break;
+      case 'auth/user-not-found':
+        errorMessage = 'No account found with this email. Please check your email or create a new account.';
+        break;
+      case 'auth/too-many-requests':
+        errorMessage = 'Too many failed login attempts. Please wait a few minutes before trying again.';
         break;
       case 'auth/operation-not-allowed':
         errorMessage = 'This sign-in method is not enabled. Please contact support.';
@@ -175,7 +183,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         errorMessage = 'An account with this email already exists. Please sign in instead or use a different email.';
         break;
       case 'auth/weak-password':
-        errorMessage = 'Password is too weak. Please choose a stronger password.';
+        errorMessage = 'Password is too weak. Please use at least 6 characters.';
         break;
       case 'auth/invalid-email':
         errorMessage = 'Please enter a valid email address.';
@@ -183,7 +191,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       default:
         errorMessage = `Authentication error: ${authError.message}`;
     }
-    
+
     setError(errorMessage);
   };
 
@@ -314,8 +322,32 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       return { user: authUser, isNewUser };
 
     } catch (error) {
-      handleAuthError(error as AuthError);
-      throw error; // Re-throw the error so calling functions can handle it
+      const authError = error as AuthError;
+
+      // Map Firebase error codes to user-friendly messages
+      let friendlyMessage = 'Authentication failed. Please try again.';
+      switch (authError.code) {
+        case 'auth/invalid-credential':
+        case 'auth/invalid-login-credentials':
+        case 'auth/wrong-password':
+          friendlyMessage = 'Incorrect email or password. Please check your credentials and try again.';
+          break;
+        case 'auth/user-not-found':
+          friendlyMessage = 'No account found with this email. Please check your email or create a new account.';
+          break;
+        case 'auth/too-many-requests':
+          friendlyMessage = 'Too many failed login attempts. Please wait a few minutes before trying again.';
+          break;
+        case 'auth/user-disabled':
+          friendlyMessage = 'This account has been disabled. Please contact support.';
+          break;
+        case 'auth/invalid-email':
+          friendlyMessage = 'Please enter a valid email address.';
+          break;
+      }
+
+      handleAuthError(authError);
+      throw new Error(friendlyMessage);
     } finally {
       setLoading(false);
     }
@@ -342,8 +374,27 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       return { user: authUser, isNewUser };
 
     } catch (error) {
-      handleAuthError(error as AuthError);
-      return null;
+      const authError = error as AuthError;
+
+      // Map Firebase error codes to user-friendly messages
+      let friendlyMessage = 'Failed to create account. Please try again.';
+      switch (authError.code) {
+        case 'auth/email-already-in-use':
+          friendlyMessage = 'An account with this email already exists. Please sign in instead.';
+          break;
+        case 'auth/weak-password':
+          friendlyMessage = 'Password is too weak. Please use at least 6 characters.';
+          break;
+        case 'auth/invalid-email':
+          friendlyMessage = 'Please enter a valid email address.';
+          break;
+        case 'auth/operation-not-allowed':
+          friendlyMessage = 'Email/password sign-up is not enabled. Please contact support.';
+          break;
+      }
+
+      handleAuthError(authError);
+      throw new Error(friendlyMessage);
     } finally {
       setLoading(false);
     }
