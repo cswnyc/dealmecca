@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { convertKit } from '@/lib/convertkit'
+import { mailerLite } from '@/lib/mailerlite'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
     }
 
-    // Unsubscribe from ConvertKit
-    await convertKit.unsubscribe(email)
+    // Unsubscribe from MailerLite
+    await mailerLite.unsubscribe(email)
 
     return NextResponse.json({
       success: true,
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    await convertKit.unsubscribe(email)
+    await mailerLite.unsubscribe(email)
 
     return new Response(`
       <html>

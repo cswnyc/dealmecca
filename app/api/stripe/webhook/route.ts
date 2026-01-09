@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, PRICE_TO_TIER } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
-import { updateUserTierInConvertKit } from '@/lib/convertkit'
+import { updateUserTierInMailerLite } from '@/lib/mailerlite'
 import Stripe from 'stripe'
 
 // Disable body parser for webhook
@@ -106,14 +106,14 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       }
     })
 
-    // Update user tier in ConvertKit if they have an email
+    // Update user tier in MailerLite if they have an email
     if (user.email) {
       try {
-        await updateUserTierInConvertKit(user.email, tier)
-        console.log(`Updated ConvertKit tier for user ${user.email}: ${tier}`)
+        await updateUserTierInMailerLite(user.email, tier)
+        console.log(`Updated MailerLite tier for user ${user.email}: ${tier}`)
       } catch (error) {
-        console.error(`Failed to update ConvertKit tier for user ${user.email}:`, error)
-        // Don't fail the webhook if ConvertKit update fails
+        console.error(`Failed to update MailerLite tier for user ${user.email}:`, error)
+        // Don't fail the webhook if MailerLite update fails
       }
     }
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { subscribeUserToNewsletter } from '@/lib/convertkit'
+import { subscribeUserToNewsletter } from '@/lib/mailerlite'
 import { auth } from '@/lib/firebase-admin'
 import { prisma } from '@/lib/prisma'
 
@@ -40,23 +40,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Subscribe to ConvertKit
-    const subscriber = await subscribeUserToNewsletter(email, firstName, userTier)
+    // Subscribe to MailerLite
+    const subscriber = await subscribeUserToNewsletter(email, userTier)
 
     return NextResponse.json({
       success: true,
       message: 'Successfully subscribed to newsletter',
       subscriber: {
         id: subscriber.id,
-        email: subscriber.email_address,
-        state: subscriber.state
+        email: subscriber.email,
+        status: subscriber.status
       }
     })
 
   } catch (error) {
     console.error('Newsletter subscription error:', error)
 
-    // Handle specific ConvertKit errors
+    // Handle specific MailerLite errors
     if (error instanceof Error && error.message.includes('already subscribed')) {
       return NextResponse.json({
         success: true,

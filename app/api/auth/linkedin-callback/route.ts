@@ -3,7 +3,7 @@ import { exchangeLinkedInCode, getLinkedInProfile } from '@/lib/auth/linkedin-oa
 import { auth } from '@/lib/firebase-admin'
 import { prisma } from '@/lib/prisma'
 import { generateUsername } from '@/lib/user-generator'
-import { subscribeUserToNewsletter } from '@/lib/convertkit'
+import { subscribeUserToNewsletter } from '@/lib/mailerlite'
 import { randomBytes } from 'crypto'
 
 // Generate a random ID similar to CUID format
@@ -148,17 +148,13 @@ export async function GET(request: NextRequest) {
         }
       })
 
-      // Subscribe new user to ConvertKit newsletter
+      // Subscribe new user to MailerLite newsletter
       try {
-        await subscribeUserToNewsletter(
-          normalizedEmail,
-          linkedInProfile.given_name || linkedInProfile.name || undefined,
-          'FREE'
-        );
-        console.log('✅ LinkedIn user subscribed to ConvertKit newsletter:', normalizedEmail);
-      } catch (convertKitError) {
-        console.warn('⚠️ ConvertKit subscription failed for LinkedIn user (non-critical):', convertKitError);
-        // Don't fail the OAuth flow if ConvertKit fails
+        await subscribeUserToNewsletter(normalizedEmail, 'FREE');
+        console.log('✅ LinkedIn user subscribed to MailerLite newsletter:', normalizedEmail);
+      } catch (mailerLiteError) {
+        console.warn('⚠️ MailerLite subscription failed for LinkedIn user (non-critical):', mailerLiteError);
+        // Don't fail the OAuth flow if MailerLite fails
       }
     }
 

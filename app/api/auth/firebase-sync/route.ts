@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateAnonymousProfile } from '@/lib/user-generator';
-import { subscribeUserToNewsletter } from '@/lib/convertkit';
+import { subscribeUserToNewsletter } from '@/lib/mailerlite';
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,18 +78,14 @@ export async function POST(request: NextRequest) {
 
       console.log('🔥 Firebase user synced to database:', { uid, email: normalizedEmail, isNewUser: true });
 
-      // Subscribe user to ConvertKit newsletter if they provided an email
+      // Subscribe user to MailerLite newsletter if they provided an email
       if (normalizedEmail && isNewUser) {
         try {
-          await subscribeUserToNewsletter(
-            normalizedEmail,
-            displayName || undefined,
-            'FREE'
-          );
-          console.log('✅ User subscribed to ConvertKit newsletter:', normalizedEmail);
-        } catch (convertKitError) {
-          console.warn('⚠️ ConvertKit subscription failed (non-critical):', convertKitError);
-          // Don't fail the user registration if ConvertKit fails
+          await subscribeUserToNewsletter(normalizedEmail, 'FREE');
+          console.log('✅ User subscribed to MailerLite newsletter:', normalizedEmail);
+        } catch (mailerLiteError) {
+          console.warn('⚠️ MailerLite subscription failed (non-critical):', mailerLiteError);
+          // Don't fail the user registration if MailerLite fails
         }
       }
     } else if (user.firebaseUid !== uid) {

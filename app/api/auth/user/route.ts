@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { generateAnonymousProfile } from '@/lib/user-generator';
-import { subscribeUserToNewsletter } from '@/lib/convertkit';
+import { subscribeUserToNewsletter } from '@/lib/mailerlite';
 
 const prisma = new PrismaClient();
 
@@ -61,18 +61,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Subscribe user to ConvertKit newsletter if they provided an email and aren't anonymous
+    // Subscribe user to MailerLite newsletter if they provided an email and aren't anonymous
     if (email && !isAnonymous) {
       try {
-        await subscribeUserToNewsletter(
-          email,
-          undefined, // No first name available in this flow
-          'FREE'
-        );
-        console.log('✅ User subscribed to ConvertKit newsletter:', email);
-      } catch (convertKitError) {
-        console.warn('⚠️ ConvertKit subscription failed (non-critical):', convertKitError);
-        // Don't fail the user creation if ConvertKit fails
+        await subscribeUserToNewsletter(email, 'FREE');
+        console.log('✅ User subscribed to MailerLite newsletter:', email);
+      } catch (mailerLiteError) {
+        console.warn('⚠️ MailerLite subscription failed (non-critical):', mailerLiteError);
+        // Don't fail the user creation if MailerLite fails
       }
     }
 
