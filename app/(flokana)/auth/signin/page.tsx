@@ -50,7 +50,10 @@ export default function SignInPage(): JSX.Element {
     const checkAndRedirect = async (): Promise<void> => {
       if (user && !authLoading && !isSigningIn) {
         try {
-          // Sync user and get account status
+          console.log('🔄 Already logged in useEffect: Syncing user', user.email);
+          
+          // ALWAYS sync user to ensure cookie is up-to-date
+          // This is critical because cookies can be stale from previous sessions
           const syncResponse = await fetch('/api/auth/firebase-sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -65,9 +68,17 @@ export default function SignInPage(): JSX.Element {
             credentials: 'include'
           });
 
+          console.log('🔄 Sync response status:', syncResponse.status);
+
           if (syncResponse.ok) {
             const syncData = await syncResponse.json();
             const accountStatus = syncData.user?.accountStatus;
+
+            console.log('🔄 Already logged in - got account status:', {
+              email: user.email,
+              accountStatus,
+              cookieShouldBeUpdated: true
+            });
 
             // Redirect based on account status
             if (accountStatus === 'PENDING' || accountStatus === 'REJECTED') {
@@ -77,11 +88,12 @@ export default function SignInPage(): JSX.Element {
               router.replace('/forum');
             }
           } else {
+            console.error('🔄 Sync failed, fallback to forum');
             // Fallback to forum if sync fails
             router.replace('/forum');
           }
         } catch (err) {
-          console.error('Error checking account status:', err);
+          console.error('🔄 Error in already-logged-in sync:', err);
           router.replace('/forum');
         }
       }
