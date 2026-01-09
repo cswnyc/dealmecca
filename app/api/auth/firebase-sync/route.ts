@@ -109,7 +109,8 @@ export async function POST(request: NextRequest) {
     console.log('✅ Returning user data:', {
       userId: user.id,
       email: user.email,
-      accountStatus: user.accountStatus
+      accountStatus: user.accountStatus,
+      settingCookieForUID: uid
     });
 
     // Set session cookie
@@ -125,7 +126,8 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Set a session cookie for server-side authentication
+    // ALWAYS set/update session cookie for this user's UID
+    // This overwrites any stale cookies from previous sessions
     response.cookies.set('dealmecca-session', uid, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -133,6 +135,8 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/'
     });
+
+    console.log('🍪 Set dealmecca-session cookie for UID:', uid.substring(0, 20) + '...');
 
     return response;
 
@@ -148,10 +152,14 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const firebaseUid = request.cookies.get('dealmecca-session')?.value;
+    
+    // Log ALL cookies to debug stale session issues
+    const allCookies = Array.from(request.cookies.getAll()).map(c => `${c.name}=${c.value.substring(0, 20)}...`);
 
     console.log('🔍 Firebase-sync GET:', {
       hasFirebaseUid: !!firebaseUid,
-      firebaseUid: firebaseUid?.substring(0, 20) + '...'
+      firebaseUidFull: firebaseUid,
+      allCookies: allCookies
     });
 
     if (!firebaseUid) {
@@ -175,6 +183,7 @@ export async function GET(request: NextRequest) {
     });
 
     console.log('📊 GET User lookup result:', {
+      searchedByFirebaseUid: firebaseUid,
       found: !!user,
       userId: user?.id,
       userEmail: user?.email,
