@@ -33,7 +33,7 @@ interface QuickAction {
 }
 
 interface PageHeaderProps {
-  title: string;
+  title: string | React.ReactNode;
   subtitle?: string;
   breadcrumbs?: BreadcrumbItem[];
   showBackToDashboard?: boolean;
@@ -132,11 +132,11 @@ export function PageHeader({
             )}
             
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+              <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-muted-foreground mt-1">{subtitle}</p>
+                <p className="hidden md:block text-muted-foreground mt-1">{subtitle}</p>
               )}
             </div>
           </div>

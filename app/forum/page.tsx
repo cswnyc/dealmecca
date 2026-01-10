@@ -13,6 +13,7 @@ import { PageFrame, PageHeader, PageContent, PageCard } from '@/components/layou
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Logo } from '@/components/ui/Logo';
 import { cn } from '@/lib/utils';
 import {
   Search,
@@ -427,7 +428,14 @@ export default function ForumPage() {
     <AuthGuard>
       <PageFrame maxWidth="6xl">
         <PageHeader
-          title="Community Forum"
+          title={
+            <div className="flex items-center gap-3">
+              <div className="md:hidden">
+                <Logo size="xl" iconOnly={true} animated={true} />
+              </div>
+              <span>Community Forum</span>
+            </div>
+          }
           description="Connect and share insights with media sellers. Ask questions, share intel, and build relationships."
           actions={
             <GlobalSearchInput
@@ -514,9 +522,10 @@ export default function ForumPage() {
                   {!showCreateForm ? (
                     <div
                       onClick={() => setShowCreateForm(true)}
-                      className="w-full text-left p-5 bg-gradient-brand-subtle border border-[#D7DEEA] dark:border-[#22304A] rounded-xl cursor-pointer hover:border-brand-primary/50 dark:hover:border-[#5B8DFF]/50 transition-all duration-200"
+                      className="relative w-full text-left p-5 bg-gradient-brand-subtle border border-[#D7DEEA] dark:border-[#22304A] rounded-xl cursor-pointer hover:border-brand-primary/50 dark:hover:border-[#5B8DFF]/50 transition-all duration-200 overflow-hidden group"
                     >
-                      <p className="text-[#64748B] dark:text-[#9AA7C2] font-medium">
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"></div>
+                      <p className="relative text-[#64748B] dark:text-[#9AA7C2] font-medium">
                         Share intel, ask a question, or start a discussion...
                       </p>
                     </div>

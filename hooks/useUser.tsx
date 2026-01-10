@@ -26,7 +26,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export function UserProvider({ children }: { children: ReactNode }) {
+export function UserProvider({ children }: { children: ReactNode }): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,15 +34,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Get Firebase auth state
   const { user: firebaseUser, idToken, loading: authLoading } = useAuth();
 
-  const fetchUser = async () => {
+  const fetchUser = async (): Promise<void> => {
     // Don't fetch if Firebase auth is still loading or user not authenticated
     if (authLoading) {
-      console.log('🔍 useUser: Waiting for Firebase auth to initialize');
       return;
     }
 
     if (!firebaseUser || !idToken) {
-      console.log('🔍 useUser: No Firebase user or token, skipping profile fetch');
       setUser(null);
       setLoading(false);
       return;
@@ -52,8 +50,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      console.log('🔍 useUser: Fetching profile from /api/users/profile with Firebase token');
-
       // Use Firebase Authorization header
       const response = await fetch('/api/users/profile', {
         headers: {
@@ -62,11 +58,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       });
 
-      console.log('🔍 useUser: Profile API response status:', response.status);
-
       if (response.ok) {
         const userData = await response.json();
-        console.log('✅ useUser: Profile data received:', userData);
 
         // Map profile data to User interface
         const mappedUser = {
@@ -81,7 +74,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
           accountStatus: userData.accountStatus
         };
 
-        console.log('✅ useUser: Mapped user object:', mappedUser);
         setUser(mappedUser);
       } else if (response.status === 401) {
         // User not authenticated
@@ -101,11 +93,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const refreshUser = async () => {
+  const refreshUser = async (): Promise<void> => {
     await fetchUser();
   };
 
-  const updateUser = (updates: Partial<User>) => {
+  const updateUser = (updates: Partial<User>): void => {
     if (user) {
       setUser({ ...user, ...updates });
     }
@@ -130,7 +122,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useUser() {
+export function useUser(): UserContextType {
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');

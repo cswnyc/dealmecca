@@ -1,132 +1,100 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
 import { 
-  Search, Star, Users, User, Plus, Home, 
-  Building2, Bell, Settings, Activity
-} from 'lucide-react'
+  Search, MessageSquare, Building2, Calendar, Settings
+} from 'lucide-react';
 
 interface NavItem {
-  id: string
-  label: string
-  icon: React.ComponentType<any>
-  path: string
-  badge?: number
-  color: string
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  path: string;
+  badge?: number;
+  color: string;
 }
 
 interface MobileBottomNavProps {
-  onNewSearch?: () => void
-  notifications?: number
+  onNewSearch?: () => void;
+  notifications?: number;
 }
 
 export default function MobileBottomNav({ 
   onNewSearch, 
   notifications = 0 
 }: MobileBottomNavProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [activeTab, setActiveTab] = useState('search')
-  const [showFAB, setShowFAB] = useState(false)
+  const router = useRouter();
+  const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState('forum');
 
   const navItems: NavItem[] = [
     {
-      id: 'home',
-      label: 'Dashboard',
-      icon: Home,
-      path: '/dashboard',
+      id: 'forum',
+      label: 'Forum',
+      icon: MessageSquare,
+      path: '/forum',
       color: 'text-primary'
+    },
+    {
+      id: 'organizations',
+      label: 'Orgs',
+      icon: Building2,
+      path: '/organizations',
+      color: 'text-accent-foreground'
     },
     {
       id: 'search',
       label: 'Search',
       icon: Search,
-      path: '/search/intelligence',
-      color: 'text-accent-foreground'
-    },
-    {
-      id: 'saved',
-      label: 'Saved',
-      icon: Star,
-      path: '/search/saved',
+      path: '/search',
       color: 'text-yellow-600'
     },
     {
-      id: 'contacts',
-      label: 'Contacts',
-      icon: Users,
-      path: '/organizations/contacts',
+      id: 'events',
+      label: 'Events',
+      icon: Calendar,
+      path: '/events',
       color: 'text-green-600'
     },
     {
-      id: 'profile',
-      label: 'Profile',
-      icon: User,
-      path: '/profile',
+      id: 'settings',
+      label: 'Settings',
+      icon: Settings,
+      path: '/settings',
       badge: notifications,
       color: 'text-muted-foreground'
     }
-  ]
+  ];
 
   // Update active tab based on current path
   useEffect(() => {
-    const currentItem = navItems.find(item => 
-      pathname.startsWith(item.path) || 
-      (item.path === '/search/intelligence' && pathname.includes('search'))
-    )
-    
-    if (currentItem) {
-      setActiveTab(currentItem.id)
+    // Special handling for routes with aliases or variations
+    if (pathname === '/' || pathname === '/forum' || pathname?.startsWith('/forum/')) {
+      setActiveTab('forum');
+    } else if (pathname === '/organizations' || pathname === '/orgs' || pathname?.startsWith('/orgs/') || pathname?.startsWith('/organizations/')) {
+      setActiveTab('organizations');
+    } else if (pathname?.startsWith('/search')) {
+      setActiveTab('search');
+    } else if (pathname?.startsWith('/events')) {
+      setActiveTab('events');
+    } else if (pathname?.startsWith('/settings')) {
+      setActiveTab('settings');
+    } else {
+      // Fallback: try to match by path prefix
+      const currentItem = navItems.find(item => pathname?.startsWith(item.path));
+      if (currentItem) {
+        setActiveTab(currentItem.id);
+      }
     }
   }, [pathname])
 
-  // Show/hide FAB based on scroll position
-  useEffect(() => {
-    let lastScrollY = window.scrollY
-    let ticking = false
 
-    const updateFAB = () => {
-      const currentScrollY = window.scrollY
-      
-      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
-        // Scrolling down
-        setShowFAB(false)
-      } else {
-        // Scrolling up or at top
-        setShowFAB(true)
-      }
-      
-      lastScrollY = currentScrollY
-      ticking = false
-    }
-
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(updateFAB)
-        ticking = true
-      }
-    }
-
-    window.addEventListener('scroll', onScroll)
-    setShowFAB(true) // Show initially
-
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  const handleNavClick = (item: NavItem) => {
-    setActiveTab(item.id)
-    router.push(item.path)
-  }
-
-  const handleFABClick = () => {
-    if (onNewSearch) {
-      onNewSearch()
-    } else {
-      router.push('/search/intelligence')
-    }
-  }
+  const handleNavClick = (item: NavItem): void => {
+    setActiveTab(item.id);
+    router.push(item.path);
+  };
 
   return (
     <>
@@ -134,8 +102,8 @@ export default function MobileBottomNav({
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border safe-area-bottom">
         <div className="grid grid-cols-5 h-16">
           {navItems.map((item) => {
-            const IconComponent = item.icon
-            const isActive = activeTab === item.id
+            const IconComponent = item.icon;
+            const isActive = activeTab === item.id;
             
             return (
               <button
@@ -164,29 +132,15 @@ export default function MobileBottomNav({
                   {item.label}
                 </span>
               </button>
-            )
+            );
           })}
         </div>
-      </div>
-
-      {/* Floating Action Button */}
-      <div 
-        className={`fixed bottom-20 right-4 z-40 transition-all duration-300 ${
-          showFAB ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
-        }`}
-      >
-        <button
-          onClick={handleFABClick}
-          className="w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-full shadow-lg flex items-center justify-center hover:shadow-xl active:scale-95 transition-all duration-200"
-        >
-          <Plus className="w-6 h-6 text-white" />
-        </button>
       </div>
 
       {/* Safe area spacer for content */}
       <div className="h-16" />
     </>
-  )
+  );
 }
 
 // Enhanced FAB with expandable actions

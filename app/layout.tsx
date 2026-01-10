@@ -7,6 +7,7 @@ import AuthHeader from '@/components/navigation/AuthHeader';
 import ConditionalUserProvider from '@/components/providers/conditional-user-provider';
 import { ThemeProvider } from '@/lib/theme-context';
 import ConditionalSidebar from '@/components/layout/ConditionalSidebar';
+import ConditionalMobileBottomNav from '@/components/layout/ConditionalMobileBottomNav';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -143,6 +144,8 @@ export default function RootLayout({
                   {/* Scrollable Main Content */}
                   <main className="flex-1 overflow-y-auto">
                     {children}
+                    {/* Mobile Bottom Navigation - Only shown for authenticated users on app pages */}
+                    <ConditionalMobileBottomNav />
                   </main>
                 </div>
               </div>

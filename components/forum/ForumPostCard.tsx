@@ -671,8 +671,8 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             )}
           </Link>
         ) : (
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 border border-border flex items-center justify-center">
-            <span className="text-xl">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 border border-border flex items-center justify-center">
+            <span className="text-base">
               {['🎯', '💡', '🚀', '🎨', '📊', '🔥', '⭐', '💎'][Math.floor(Math.random() * 8)]}
                 </span>
           </div>
@@ -776,25 +776,26 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             </div>
             <button
               onClick={handleFollow}
-              className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 ${
+              className={`px-2 py-1 sm:px-3 sm:py-1.5 text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 ${
                 isFollowing
                   ? 'bg-gradient-to-r from-brand-primary to-brand-violet text-white hover:opacity-90'
                   : 'border border-brand-primary dark:border-[#5B8DFF] text-brand-primary dark:text-[#5B8DFF] hover:bg-[#EAF1FF] dark:hover:bg-[#162449]'
               }`}
+              aria-label={isFollowing ? 'Unfollow' : 'Follow'}
             >
               {isFollowing ? (
                 <>
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  <span>Following</span>
+                  <span className="hidden sm:inline">Following</span>
                 </>
               ) : (
                 <>
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
-                  <span>Follow</span>
+                  <span className="hidden sm:inline">Follow</span>
                 </>
               )}
             </button>
@@ -976,50 +977,49 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
 
       {/* User Attribution & Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-border">
-        <div className="flex items-center space-x-3">
-          {/* User Avatar who posted */}
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full flex items-center justify-center border border-border">
-              <span className="text-xs">
-                {['🎭', '👤', '🕶️', '🎪', '🎨', '🔮'][Math.floor(Math.random() * 6)]}
-              </span>
-            </div>
-            <span className="text-sm text-foreground">
-              {post.isAnonymous
-                ? (post.anonymousHandle || 'Anonymous')
-                : (post.author.anonymousUsername || post.author.publicHandle || post.author.name)}
-            </span>
-            <span className="text-sm text-muted-foreground">•</span>
-            <span className="text-sm text-foreground">
-              {formatDistanceToNow(new Date(post.createdAt))} ago
+        {/* Left side: User Avatar and Timestamp */}
+        <div className="flex items-center space-x-2">
+          <div className="w-6 h-6 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full flex items-center justify-center border border-border">
+            <span className="text-xs">
+              {['🎭', '👤', '🕶️', '🎪', '🎨', '🔮'][Math.floor(Math.random() * 6)]}
             </span>
           </div>
+          <span className="hidden sm:inline text-sm text-muted-foreground">Anonymous</span>
+          <span className="hidden sm:inline text-sm text-muted-foreground">•</span>
+          <span className="text-sm text-muted-foreground">
+            {formatDistanceToNow(new Date(post.createdAt), { addSuffix: false }).replace('about ', '')}
+          </span>
+        </div>
 
+        {/* Right side: Action Buttons */}
+        <div className="flex items-center space-x-1">
           {/* Bookmark Button */}
           <button
             onClick={handleBookmark}
-            className={`flex items-center space-x-1.5 transition-colors ${
+            className={`flex items-center space-x-1.5 px-2 py-1.5 rounded-lg transition-all active:scale-95 ${
               isBookmarked
-                ? 'text-brand-primary dark:text-[#5B8DFF]'
-                : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
+                ? 'text-brand-primary dark:text-[#5B8DFF] bg-brand-primary/10 dark:bg-[#5B8DFF]/10'
+                : 'text-[#64748B] dark:text-[#9AA7C2] bg-muted/50 hover:bg-muted hover:text-brand-primary dark:hover:text-[#5B8DFF]'
             }`}
             title={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
+            aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
           >
             <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-            <span className="text-xs">{isBookmarked ? 'Saved' : 'Save'}</span>
+            <span className="hidden sm:inline text-xs">{isBookmarked ? 'Saved' : 'Save'}</span>
           </button>
 
           {/* Share Button */}
           <div className="relative">
             <button
               onClick={() => setShowShareMenu(!showShareMenu)}
-              className="flex items-center space-x-1.5 text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors"
+              className="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg text-[#64748B] dark:text-[#9AA7C2] bg-muted/50 hover:bg-muted hover:text-brand-primary dark:hover:text-[#5B8DFF] active:scale-95 transition-all"
               title="Share post"
+              aria-label="Share post"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
               </svg>
-              <span className="text-xs">Share</span>
+              <span className="hidden sm:inline text-xs">Share</span>
             </button>
             
             {/* Share Menu */}
@@ -1105,7 +1105,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                     setShowMentions(false);
                   }
                 }}
-                placeholder="Add a comment... Use @topic to mention categories"
+                placeholder="Add a comment..."
                 className="w-full p-3 border border-[#E6EAF2] dark:border-[#22304A] rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] bg-white dark:bg-[#0F1A2E] placeholder-[#9AA7C2] resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary/20 dark:focus:ring-[#5B8DFF]/20 focus:border-brand-primary dark:focus:border-[#5B8DFF] transition-all duration-200 hover:border-[#D7DEEA] dark:hover:border-[#2C3C5C]"
                 rows={2}
                 disabled={submittingComment}

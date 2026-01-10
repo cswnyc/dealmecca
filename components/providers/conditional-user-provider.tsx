@@ -7,8 +7,7 @@ interface Props {
   children: ReactNode;
 }
 
-export default function ConditionalUserProvider({ children }: Props) {
+export default function ConditionalUserProvider({ children }: Props): JSX.Element {
   // UserProvider updated to use Firebase-compatible profile endpoint
-  console.log('🔥 Using Firebase-compatible UserProvider');
   return <UserProvider>{children}</UserProvider>;
 }

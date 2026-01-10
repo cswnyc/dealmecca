@@ -53,7 +53,7 @@ export function PageFrame({ children, className, maxWidth = '7xl' }: PageFramePr
 }
 
 interface PageHeaderProps {
-  title: string;
+  title: string | React.ReactNode;
   description?: string;
   actions?: React.ReactNode;
   className?: string;
@@ -64,9 +64,9 @@ export function PageHeader({ title, description, actions, className }: PageHeade
     <div className={cn('mb-8', className)}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight leading-tight">{title}</h1>
+          <h1 className="text-xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">{title}</h1>
           {description && (
-            <p className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
+            <p className="hidden md:block mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
           )}
         </div>
         {actions && (
