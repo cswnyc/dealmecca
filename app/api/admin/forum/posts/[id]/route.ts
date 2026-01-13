@@ -52,6 +52,29 @@ export async function GET(
             }
           }
         },
+        TopicMention: {
+          include: {
+            Topic: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                context: true,
+                categoryId: true,
+                ForumCategory: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: {
+            order: 'asc'
+          }
+        },
         _count: {
           select: {
             ForumComment: true
@@ -146,6 +169,7 @@ export async function GET(
       category: post.ForumCategory,
       companyMentions: post.CompanyMention,
       contactMentions: post.ContactMention,
+      topicMentions: post.TopicMention,
       _count: {
         comments: post._count.ForumComment
       }
@@ -184,9 +208,11 @@ export async function PUT(
       primaryTopicId
     } = body;
 
-    // Process topicIds to separate companies, contacts, and regular topics
+    // Process topicIds to separate companies, contacts, categories, manual topics, and regular topics
     const companyIds: string[] = [];
     const contactIds: string[] = [];
+    const categoryIds: string[] = [];
+    const manualTopics: string[] = [];
     const regularTopicIds: string[] = [];
 
     // Company-type entity prefixes (all stored in Company table)
@@ -208,7 +234,12 @@ export async function PUT(
           companyIds.push(topicId.replace(companyPrefix, ''));
         } else if (topicId.startsWith('entity-contact-')) {
           contactIds.push(topicId.replace('entity-contact-', ''));
-        } else if (!topicId.startsWith('manual-') && !topicId.startsWith('entity-')) {
+        } else if (topicId.startsWith('entity-category-')) {
+          categoryIds.push(topicId.replace('entity-category-', ''));
+        } else if (topicId.startsWith('manual-')) {
+          manualTopics.push(topicId);
+        } else if (!topicId.startsWith('entity-')) {
+          // Regular topic IDs (actual Topic table records)
           regularTopicIds.push(topicId);
         }
       });
@@ -258,12 +289,13 @@ export async function PUT(
     // Delete existing mentions
     await prisma.companyMention.deleteMany({ where: { postId: id } });
     await prisma.contactMention.deleteMany({ where: { postId: id } });
+    await prisma.topicMention.deleteMany({ where: { postId: id } });
 
     // Create new company mentions
     if (companyIds.length > 0) {
       await prisma.companyMention.createMany({
         data: companyIds.map(companyId => ({
-          id: `cmg${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
+          id: `cmg${Date.now()}${Math.random().toString(36).substring(2, 11)}`,
           postId: id,
           companyId,
           mentionedBy: post.authorId
@@ -275,10 +307,84 @@ export async function PUT(
     if (contactIds.length > 0) {
       await prisma.contactMention.createMany({
         data: contactIds.map(contactId => ({
-          id: `cmg${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
+          id: `cmg${Date.now()}${Math.random().toString(36).substring(2, 11)}`,
           postId: id,
           contactId,
           mentionedBy: post.authorId
+        }))
+      });
+    }
+
+    // Handle category topics - create/reuse Topic records for categories
+    const categoryTopicIds: string[] = [];
+    for (const categoryId of categoryIds) {
+      const category = await prisma.forumCategory.findUnique({
+        where: { id: categoryId },
+        select: { id: true, name: true, slug: true }
+      });
+      
+      if (category) {
+        const topicId = `cat_${categoryId}`;
+        // Upsert topic for this category
+        await prisma.topic.upsert({
+          where: { id: topicId },
+          create: {
+            id: topicId,
+            name: category.name,
+            description: `Category: ${category.name}`,
+            context: 'category',
+            categoryId: categoryId,
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          update: {
+            name: category.name,
+            description: `Category: ${category.name}`,
+            updatedAt: new Date()
+          }
+        });
+        categoryTopicIds.push(topicId);
+      }
+    }
+
+    // Handle manual topics - create/reuse Topic records
+    const manualTopicIds: string[] = [];
+    for (const manualTopicId of manualTopics) {
+      // Extract the name from manual-{slug} format
+      const slug = manualTopicId.replace('manual-', '');
+      const name = slug.replace(/-/g, ' ');
+      const topicId = `manual_${slug}`;
+      
+      // Upsert topic for this manual entry
+      await prisma.topic.upsert({
+        where: { id: topicId },
+        create: {
+          id: topicId,
+          name: name,
+          description: 'Custom topic',
+          context: 'manual',
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        update: {
+          updatedAt: new Date()
+        }
+      });
+      manualTopicIds.push(topicId);
+    }
+
+    // Create TopicMention records for all topics (regular + category + manual)
+    const allTopicIds = [...regularTopicIds, ...categoryTopicIds, ...manualTopicIds];
+    if (allTopicIds.length > 0) {
+      await prisma.topicMention.createMany({
+        data: allTopicIds.map((topicId, index) => ({
+          id: `tmg${Date.now()}${Math.random().toString(36).substring(2, 11)}`,
+          postId: id,
+          topicId,
+          order: index,
+          createdAt: new Date()
         }))
       });
     }
@@ -326,6 +432,29 @@ export async function PUT(
                 title: true
               }
             }
+          }
+        },
+        TopicMention: {
+          include: {
+            Topic: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                context: true,
+                categoryId: true,
+                ForumCategory: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: {
+            order: 'asc'
           }
         },
         _count: {

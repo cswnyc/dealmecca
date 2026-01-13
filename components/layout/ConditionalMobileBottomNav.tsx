@@ -44,8 +44,9 @@ export default function ConditionalMobileBottomNav(): JSX.Element | null {
   const isAdminPage = pathname?.startsWith('/admin');
   const isInviteOnlyPage = pathname?.startsWith('/invite-only');
   const isDesignSystemPage = pathname?.startsWith('/design-system');
+  const isDevPage = pathname?.startsWith('/dev');
 
-  if (isLandingPage || isAuthPage || isAdminPage || isInviteOnlyPage || isDesignSystemPage) {
+  if (isLandingPage || isAuthPage || isAdminPage || isInviteOnlyPage || isDesignSystemPage || isDevPage) {
     return null;
   }
 

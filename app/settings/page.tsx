@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/lib/theme-context';
+import { useMobileOptimization } from '@/lib/mobile-performance';
 import {
   User,
   Mail,
@@ -54,6 +55,7 @@ export default function SettingsPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const { isMobile } = useMobileOptimization();
   const [settings, setSettings] = useState<UserSettings>({
     displayName: '',
     email: '',
@@ -238,6 +240,14 @@ export default function SettingsPage() {
     return null;
   }
 
+  const tabOptions = [
+    { value: 'identity', label: 'Identity', icon: User },
+    { value: 'profile', label: 'Profile', icon: Mail },
+    { value: 'notifications', label: 'Notifications', icon: Bell },
+    { value: 'preferences', label: 'Preferences', icon: Globe },
+    { value: 'security', label: 'Security', icon: Shield },
+  ];
+
   return (
     <AuthGuard>
     <PageFrame maxWidth="4xl">
@@ -246,19 +256,20 @@ export default function SettingsPage() {
         description="Manage your account preferences and settings"
         actions={
           <>
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" asChild className="md:inline-flex">
               <Link href="/forum">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
+                <ArrowLeft className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">Back</span>
               </Link>
             </Button>
             {activeTab !== 'identity' && saved && (
-              <span className="text-green-600 text-sm font-medium">Saved!</span>
+              <span className="text-green-600 text-sm font-medium hidden sm:inline">Saved!</span>
             )}
             {activeTab !== 'identity' && (
               <Button
                 onClick={handleSave}
                 disabled={saving}
+                className="w-full sm:w-auto"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? 'Saving...' : 'Save Changes'}
@@ -268,30 +279,45 @@ export default function SettingsPage() {
         }
       />
 
-      <PageContent>
+      <PageContent className="pb-24 sm:pb-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 flex border-b border-[#E6EAF2] dark:border-dark-border bg-transparent p-0 h-auto rounded-none">
-            <TabsTrigger value="identity" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
-              <User className="w-4 h-4" />
-              <span>Identity</span>
-            </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
-              <Mail className="w-4 h-4" />
-              <span>Profile</span>
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
-              <Bell className="w-4 h-4" />
-              <span>Notifications</span>
-            </TabsTrigger>
-            <TabsTrigger value="preferences" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
-              <Globe className="w-4 h-4" />
-              <span>Preferences</span>
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
-              <Shield className="w-4 h-4" />
-              <span>Security</span>
-            </TabsTrigger>
-          </TabsList>
+          {/* Mobile: Dropdown selector */}
+          {isMobile ? (
+            <div className="mb-6 sm:hidden">
+              <Label htmlFor="section-select" className="text-sm font-medium mb-2 block">Section</Label>
+              <Select id="section-select" className="w-full" value={activeTab} onValueChange={setActiveTab}>
+                {tabOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          ) : (
+            /* Desktop: Horizontal tab bar */
+            <TabsList className="mb-6 hidden sm:flex border-b border-[#E6EAF2] dark:border-dark-border bg-transparent p-0 h-auto rounded-none">
+              <TabsTrigger value="identity" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+                <User className="w-4 h-4" />
+                <span>Identity</span>
+              </TabsTrigger>
+              <TabsTrigger value="profile" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+                <Mail className="w-4 h-4" />
+                <span>Profile</span>
+              </TabsTrigger>
+              <TabsTrigger value="notifications" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+                <Bell className="w-4 h-4" />
+                <span>Notifications</span>
+              </TabsTrigger>
+              <TabsTrigger value="preferences" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+                <Globe className="w-4 h-4" />
+                <span>Preferences</span>
+              </TabsTrigger>
+              <TabsTrigger value="security" className="flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors bg-transparent shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#2575FC] dark:data-[state=active]:text-[#5B8DFF] data-[state=active]:border-b-2 data-[state=active]:border-[#2575FC] dark:data-[state=active]:border-[#5B8DFF] text-[#64748B] dark:text-[#9AA7C2] hover:text-[#2575FC] dark:hover:text-[#5B8DFF] rounded-none border-b-2 border-transparent">
+                <Shield className="w-4 h-4" />
+                <span>Security</span>
+              </TabsTrigger>
+            </TabsList>
+          )}
 
           <TabsContent value="identity">
             <PageCard>
@@ -304,7 +330,7 @@ export default function SettingsPage() {
           <TabsContent value="profile">
             <PageCard>
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-base sm:text-lg">
                   <User className="w-5 h-5 mr-2" />
                   Profile Information
                 </CardTitle>
@@ -317,19 +343,20 @@ export default function SettingsPage() {
                     value={settings.displayName}
                     onChange={(e) => handleSettingChange('displayName', e.target.value)}
                     placeholder="Enter your display name"
+                    className="w-full"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
-                  <div className="flex items-center space-x-2">
-                    <Mail className="w-5 h-5 text-muted-foreground" />
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                    <Mail className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                     <Input
                       id="email"
                       type="email"
                       value={settings.email}
                       disabled
-                      className="flex-1"
+                      className="flex-1 w-full"
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -343,15 +370,15 @@ export default function SettingsPage() {
           <TabsContent value="notifications">
             <PageCard>
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-base sm:text-lg">
                   <Bell className="w-5 h-5 mr-2" />
                   Notification Preferences
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Email Notifications</Label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-2">
+                  <div className="space-y-0.5 flex-1">
+                    <Label className="text-sm sm:text-base">Email Notifications</Label>
                     <p className="text-sm text-muted-foreground">
                       Receive notifications about new messages and updates
                     </p>
@@ -359,12 +386,13 @@ export default function SettingsPage() {
                   <Switch
                     checked={settings.emailNotifications}
                     onCheckedChange={(checked) => handleSettingChange('emailNotifications', checked)}
+                    className="self-start sm:self-center"
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Push Notifications</Label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-2">
+                  <div className="space-y-0.5 flex-1">
+                    <Label className="text-sm sm:text-base">Push Notifications</Label>
                     <p className="text-sm text-muted-foreground">
                       Get notified about important updates on your device
                     </p>
@@ -372,12 +400,13 @@ export default function SettingsPage() {
                   <Switch
                     checked={settings.pushNotifications}
                     onCheckedChange={(checked) => handleSettingChange('pushNotifications', checked)}
+                    className="self-start sm:self-center"
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Marketing Emails</Label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-2">
+                  <div className="space-y-0.5 flex-1">
+                    <Label className="text-sm sm:text-base">Marketing Emails</Label>
                     <p className="text-sm text-muted-foreground">
                       Receive emails about new features and promotions
                     </p>
@@ -385,6 +414,7 @@ export default function SettingsPage() {
                   <Switch
                     checked={settings.marketingEmails}
                     onCheckedChange={(checked) => handleSettingChange('marketingEmails', checked)}
+                    className="self-start sm:self-center"
                   />
                 </div>
               </CardContent>
@@ -394,15 +424,15 @@ export default function SettingsPage() {
           <TabsContent value="preferences">
             <PageCard>
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-base sm:text-lg">
                   <Globe className="w-5 h-5 mr-2" />
                   Appearance & Preferences
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Dark Mode</Label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-2">
+                  <div className="space-y-0.5 flex-1">
+                    <Label className="text-sm sm:text-base">Dark Mode</Label>
                     <p className="text-sm text-muted-foreground">
                       Switch between light and dark theme
                     </p>
@@ -413,43 +443,38 @@ export default function SettingsPage() {
                       toggleTheme();
                       handleSettingChange('darkMode', !settings.darkMode);
                     }}
+                    className="self-start sm:self-center"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="language">Language</Label>
                   <Select
+                    id="language"
+                    className="w-full"
                     value={settings.language}
                     onValueChange={(value) => handleSettingChange('language', value)}
                   >
-                    <SelectTrigger id="language">
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Spanish</SelectItem>
-                      <SelectItem value="fr">French</SelectItem>
-                      <SelectItem value="de">German</SelectItem>
-                    </SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="es">Spanish</SelectItem>
+                    <SelectItem value="fr">French</SelectItem>
+                    <SelectItem value="de">German</SelectItem>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Timezone</Label>
                   <Select
+                    id="timezone"
+                    className="w-full"
                     value={settings.timezone}
                     onValueChange={(value) => handleSettingChange('timezone', value)}
                   >
-                    <SelectTrigger id="timezone">
-                      <SelectValue placeholder="Select timezone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="UTC">UTC</SelectItem>
-                      <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                      <SelectItem value="America/Chicago">Central Time</SelectItem>
-                      <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                      <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                    </SelectContent>
+                    <SelectItem value="UTC">UTC</SelectItem>
+                    <SelectItem value="America/New_York">Eastern Time</SelectItem>
+                    <SelectItem value="America/Chicago">Central Time</SelectItem>
+                    <SelectItem value="America/Denver">Mountain Time</SelectItem>
+                    <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
                   </Select>
                 </div>
               </CardContent>
@@ -459,39 +484,39 @@ export default function SettingsPage() {
           <TabsContent value="security">
             <PageCard>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <CardTitle className="flex items-center text-base sm:text-lg">
                     <Shield className="w-5 h-5 mr-2" />
                     Account Security
                   </CardTitle>
-                  <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full font-medium">
+                  <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full font-medium self-start sm:self-center">
                     Coming Soon
                   </span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Key className="w-5 h-5 text-muted-foreground" />
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-border rounded-lg gap-3">
+                  <div className="flex items-start sm:items-center space-x-3">
+                    <Key className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5 sm:mt-0" />
                     <div>
                       <p className="text-sm font-medium">Password</p>
                       <p className="text-xs text-muted-foreground">Last changed 30 days ago</p>
                     </div>
                   </div>
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     Change Password
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Smartphone className="w-5 h-5 text-muted-foreground" />
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-border rounded-lg gap-3">
+                  <div className="flex items-start sm:items-center space-x-3">
+                    <Smartphone className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5 sm:mt-0" />
                     <div>
                       <p className="text-sm font-medium">Two-Factor Authentication</p>
                       <p className="text-xs text-muted-foreground">Not enabled</p>
                     </div>
                   </div>
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     Enable 2FA
                   </Button>
                 </div>

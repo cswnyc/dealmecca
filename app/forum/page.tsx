@@ -1,19 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { ForumPostCard } from '@/components/forum/ForumPostCard';
+import { PostCardSkeleton } from '@/components/forum/PostCardSkeleton';
 import { SmartPostForm } from '@/components/forum/SmartPostForm';
 import { IntelligenceSharing } from '@/components/forum/IntelligenceSharing';
 import { ForumSidebar } from '@/components/forum/ForumSidebar';
+import { ForumNavigation } from '@/components/forum/ForumNavigation';
 import { GlobalSearchInput } from '@/components/navigation/GlobalSearchInput';
 import { PageFrame, PageHeader, PageContent, PageCard } from '@/components/layout/PageFrame';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Logo } from '@/components/ui/Logo';
+import { useUser } from '@/hooks/useUser';
 import { cn } from '@/lib/utils';
 import {
   Search,
@@ -147,6 +149,7 @@ export default function ForumPage() {
   const highlightPostId = searchParams.get('post'); // Post to highlight from notification
 
   const { user: firebaseUser, loading: authLoading } = useFirebaseAuth();
+  const { user: currentUser, loading: currentUserLoading } = useUser();
 
   // Check Firebase session
   const hasFirebaseSession = Boolean(firebaseUser);
@@ -173,6 +176,53 @@ export default function ForumPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [postType, setPostType] = useState<'post' | 'poll'>('post');
+
+  const postTriggerText = `What's on your mind? Share intel, ask questions...`;
+
+  const getUserInitials = (name: string | null | undefined): string => {
+    const safeName = (name ?? '').trim();
+    if (!safeName) {
+      return 'U';
+    }
+
+    const parts = safeName.split(/\s+/).filter(Boolean);
+    const first = parts[0]?.[0] ?? 'U';
+    const last = parts.length > 1 ? parts[parts.length - 1]?.[0] : '';
+    return `${first}${last}`.toUpperCase();
+  };
+
+  const handleOpenComposer = useCallback((): void => {
+    setShowCreateForm(true);
+  }, []);
+
+  const handleCloseComposer = useCallback((): void => {
+    setShowCreateForm(false);
+  }, []);
+
+  const handleComposerTriggerKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>): void => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setShowCreateForm(true);
+    }
+  }, []);
+
+  const handlePostButtonClick = useCallback((e: MouseEvent<HTMLButtonElement>): void => {
+    e.stopPropagation();
+    setShowCreateForm(true);
+  }, []);
+
+  const handleSelectPostTypePost = useCallback((): void => {
+    setPostType('post');
+  }, []);
+
+  const handleSelectPostTypePoll = useCallback((): void => {
+    setPostType('poll');
+  }, []);
+
+  const handlePostSuccess = useCallback((): void => {
+    setShowCreateForm(false);
+    fetchPosts();
+  }, []);
 
   useEffect(() => {
     fetchCategories();
@@ -399,24 +449,26 @@ export default function ForumPage() {
               ))}
             </div>
 
-            {/* Skeleton for posts */}
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <PageCard key={i}>
-                  <div className="p-6 animate-pulse">
-                    <div className="flex items-start space-x-3 mb-4">
-                      <div className="w-12 h-12 bg-muted-foreground/20 rounded-lg"></div>
-                      <div className="flex-1">
-                        <div className="h-4 bg-muted-foreground/20 rounded w-32 mb-2"></div>
-                        <div className="h-3 bg-muted-foreground/20 rounded w-48"></div>
-                      </div>
-                    </div>
-                    <div className="h-6 bg-muted-foreground/20 rounded w-3/4 mb-3"></div>
-                    <div className="h-4 bg-muted-foreground/20 rounded w-full mb-2"></div>
-                    <div className="h-4 bg-muted-foreground/20 rounded w-2/3"></div>
+            {/* Main Content Area with Sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Posts Feed Skeleton */}
+              <div className="lg:col-span-2 space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <PostCardSkeleton key={i} showCompanyHeader={i % 2 === 0} />
+                ))}
+              </div>
+
+              {/* Sidebar skeleton */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="h-6 bg-gray-200 rounded w-32 mb-4 animate-pulse"></div>
+                  <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="h-4 bg-gray-100 rounded animate-pulse"></div>
+                    ))}
                   </div>
-                </PageCard>
-              ))}
+                </div>
+              </div>
             </div>
           </div>
         </PageFrame>
@@ -447,87 +499,64 @@ export default function ForumPage() {
         />
 
         <PageContent>
-          {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={(value) => handleTabChange(value as 'all' | 'my')}>
-            <TabsList className="mb-8 bg-muted/60">
-              <TabsTrigger value="all" className="flex items-center space-x-2 rounded-md">
-                <Globe className="w-4 h-4" />
-                <span>All Posts</span>
-              </TabsTrigger>
-              <TabsTrigger value="my" className="flex items-center space-x-2 rounded-md">
-                <User className="w-4 h-4" />
-                <span>My Posts</span>
-              </TabsTrigger>
-            </TabsList>
+          {/* Forum Navigation */}
+          <ForumNavigation
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            selectedCategoryId={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            categories={categories}
+            totalPosts={pagination?.total || 0}
+            showAllCategories={showAllCategories}
+            onToggleShowAllCategories={() => setShowAllCategories(!showAllCategories)}
+          />
 
-            {/* Category Filters */}
-            <div className="flex flex-wrap items-center gap-2.5 mb-8">
-              <button
-                onClick={() => handleCategoryChange('')}
-                className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
-                  selectedCategory === ''
-                    ? 'bg-gradient-brand text-white'
-                    : 'bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:border-brand-primary dark:hover:border-[#5B8DFF] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
-                }`}
-              >
-                All
-                <span className={`ml-2 px-1.5 py-0.5 rounded-full text-xs ${
-                  selectedCategory === ''
-                    ? 'bg-white/20'
-                    : 'text-[#9AA7C2]'
-                }`}>
-                  {pagination?.total || 0}
-                </span>
-              </button>
-
-              {/* Show categories based on state */}
-              {(showAllCategories ? categories : (categories || []).slice(0, 6)).map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
-                    selectedCategory === category.id
-                      ? 'bg-gradient-brand text-white'
-                      : 'bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] text-[#64748B] dark:text-[#9AA7C2] hover:border-brand-primary dark:hover:border-[#5B8DFF] hover:text-brand-primary dark:hover:text-[#5B8DFF]'
-                  }`}
-                >
-                  {category.name}
-                  <span className={`ml-2 text-xs ${
-                    selectedCategory === category.id
-                      ? 'bg-white/20 px-1.5 py-0.5 rounded-full'
-                      : 'text-[#9AA7C2]'
-                  }`}>
-                    {category._count.posts}
-                  </span>
-                </button>
-              ))}
-
-              {(categories || []).length > 6 && (
-                <button
-                  onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="h-9 px-4 text-sm font-medium rounded-full text-[#64748B] dark:text-[#9AA7C2] hover:text-brand-primary dark:hover:text-[#5B8DFF] transition-colors"
-                >
-                  {showAllCategories ? 'Show less' : `+${(categories || []).length - 6} more`}
-                </button>
-              )}
-            </div>
-
-
-            {/* Main Content Area */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content Area */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Posts Feed */}
               <div className="lg:col-span-2 space-y-4">
                 {/* Create Post Section */}
                 <div className="mb-4">
                   {!showCreateForm ? (
                     <div
-                      onClick={() => setShowCreateForm(true)}
-                      className="relative w-full text-left p-5 bg-gradient-brand-subtle border border-[#D7DEEA] dark:border-[#22304A] rounded-xl cursor-pointer hover:border-brand-primary/50 dark:hover:border-[#5B8DFF]/50 transition-all duration-200 overflow-hidden group"
+                      className="bg-white dark:bg-[#0F1A2E] rounded-xl p-4 border border-gray-200 dark:border-[#22304A] shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={handleOpenComposer}
+                      onKeyDown={handleComposerTriggerKeyDown}
+                      role="button"
+                      tabIndex={0}
                     >
-                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"></div>
-                      <p className="relative text-[#64748B] dark:text-[#9AA7C2] font-medium">
-                        Share intel, ask a question, or start a discussion...
-                      </p>
+                      <div className="flex items-center gap-3">
+                        {/* User Avatar */}
+                        {currentUser?.profilePicture ? (
+                          <img
+                            src={currentUser.profilePicture}
+                            alt={currentUser?.name ?? 'User'}
+                            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            {getUserInitials(currentUser?.name)}
+                          </div>
+                        )}
+
+                        {/* Input Trigger */}
+                        <div className="flex-1 bg-gray-50 dark:bg-[#0B1220] rounded-lg px-4 py-3 text-gray-400 dark:text-[#9AA7C2] hover:bg-gray-100 dark:hover:bg-[#12203A] transition-colors text-sm">
+                          {postTriggerText}
+                        </div>
+
+                        {/* Post Button */}
+                        <button
+                          type="button"
+                          disabled={currentUserLoading}
+                          onClick={handlePostButtonClick}
+                          className={cn(
+                            'px-4 py-2 bg-gradient-to-r from-blue-500 to-violet-500 text-white text-sm font-medium rounded-lg transition-opacity',
+                            currentUserLoading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90',
+                          )}
+                        >
+                          Post
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <PageCard>
@@ -537,7 +566,7 @@ export default function ForumPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => setShowCreateForm(false)}
+                            onClick={handleCloseComposer}
                             className="rounded-full"
                           >
                             <X className="w-4 h-4" />
@@ -547,7 +576,7 @@ export default function ForumPage() {
                         {/* Post Type Selector */}
                         <div className="flex space-x-2 mb-6">
                           <button
-                            onClick={() => setPostType('post')}
+                            onClick={handleSelectPostTypePost}
                             className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
                               postType === 'post'
                                 ? 'bg-gradient-brand text-white'
@@ -558,7 +587,7 @@ export default function ForumPage() {
                             Post
                           </button>
                           <button
-                            onClick={() => setPostType('poll')}
+                            onClick={handleSelectPostTypePoll}
                             className={`h-9 px-4 text-sm font-medium rounded-full transition-all flex items-center ${
                               postType === 'poll'
                                 ? 'bg-gradient-brand text-white'
@@ -573,10 +602,8 @@ export default function ForumPage() {
                         <SmartPostForm
                           categories={categories as any}
                           postType={postType}
-                          onSuccess={() => {
-                            setShowCreateForm(false);
-                            fetchPosts();
-                          }}
+                          onSuccess={handlePostSuccess}
+                          onCancel={handleCloseComposer}
                         />
                       </div>
                     </PageCard>
@@ -632,7 +659,6 @@ export default function ForumPage() {
                 <ForumSidebar />
               </div>
             </div>
-          </Tabs>
         </PageContent>
       </PageFrame>
     </AuthGuard>

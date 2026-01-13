@@ -206,9 +206,9 @@ export function EnhancedMentionTextarea({
       case 'company':
         return 'bg-primary/10';
       case 'contact':
-        return 'bg-green-100';
+        return 'bg-green-100 dark:bg-green-900/30';
       case 'topic':
-        return 'bg-purple-100';
+        return 'bg-purple-100 dark:bg-purple-900/30';
       default:
         return 'bg-muted';
     }
@@ -235,10 +235,10 @@ export function EnhancedMentionTextarea({
           <span className="font-mono bg-primary/10 text-primary px-2 py-1 rounded text-xs">
             @company [name]
           </span>
-          <span className="font-mono bg-green-50 text-green-700 px-2 py-1 rounded text-xs">
+          <span className="font-mono bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200 px-2 py-1 rounded text-xs">
             @contact [name]
           </span>
-          <span className="font-mono bg-purple-50 text-purple-700 px-2 py-1 rounded text-xs">
+          <span className="font-mono bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-200 px-2 py-1 rounded text-xs">
             @topic [category]
           </span>
         </div>

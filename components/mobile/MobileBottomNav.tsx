@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Search, MessageSquare, Building2, Calendar, Settings
+  MessageSquare, Building2, Calendar, Settings
 } from 'lucide-react';
 
 interface NavItem {
@@ -45,13 +45,6 @@ export default function MobileBottomNav({
       color: 'text-accent-foreground'
     },
     {
-      id: 'search',
-      label: 'Search',
-      icon: Search,
-      path: '/search',
-      color: 'text-yellow-600'
-    },
-    {
       id: 'events',
       label: 'Events',
       icon: Calendar,
@@ -76,7 +69,8 @@ export default function MobileBottomNav({
     } else if (pathname === '/organizations' || pathname === '/orgs' || pathname?.startsWith('/orgs/') || pathname?.startsWith('/organizations/')) {
       setActiveTab('organizations');
     } else if (pathname?.startsWith('/search')) {
-      setActiveTab('search');
+      // Search redirects to Orgs, so don't highlight any tab during redirect
+      setActiveTab('');
     } else if (pathname?.startsWith('/events')) {
       setActiveTab('events');
     } else if (pathname?.startsWith('/settings')) {
@@ -100,7 +94,7 @@ export default function MobileBottomNav({
     <>
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border safe-area-bottom">
-        <div className="grid grid-cols-5 h-16">
+        <div className="grid grid-cols-4 h-16">
           {navItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = activeTab === item.id;
@@ -109,26 +103,26 @@ export default function MobileBottomNav({
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item)}
-                className={`flex flex-col items-center justify-center space-y-1 transition-colors ${
+                className={`flex h-full w-full flex-col items-center justify-center gap-1 transition-colors ${
                   isActive
                     ? 'text-primary'
                     : 'text-muted-foreground hover:text-foreground active:text-foreground'
                 }`}
               >
-                <div className="relative">
+                <div className="relative flex h-7 w-7 items-center justify-center">
                   <IconComponent
-                    className={`w-5 h-5 ${isActive ? item.color : ''}`}
+                    className={`h-6 w-6 ${isActive ? item.color : ''}`}
                   />
-                  {item.badge && item.badge > 0 && (
+                  {item.badge && item.badge > 0 ? (
                     <Badge
                       variant="destructive"
-                      className="absolute -top-2 -right-2 h-4 w-4 text-xs p-0 flex items-center justify-center rounded-full"
+                      className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center rounded-full"
                     >
                       {item.badge > 9 ? '9+' : item.badge}
                     </Badge>
-                  )}
+                  ) : null}
                 </div>
-                <span className={`text-xs font-medium ${isActive ? 'text-primary' : ''}`}>
+                <span className={`text-[11px] font-medium leading-none ${isActive ? 'text-primary' : ''}`}>
                   {item.label}
                 </span>
               </button>

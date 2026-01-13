@@ -23,9 +23,10 @@ interface SmartPostFormProps {
   categories: ForumCategory[];
   postType?: 'post' | 'list' | 'poll' | 'code';
   onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-export function SmartPostForm({ categories, postType = 'post', onSuccess }: SmartPostFormProps) {
+export function SmartPostForm({ categories, postType = 'post', onSuccess, onCancel }: SmartPostFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
@@ -220,6 +221,14 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
       ...prev,
       mediaType: prev.mediaType.filter(m => m !== mediaType)
     }));
+  };
+
+  const handleCancel = (): void => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      router.push('/forum');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -470,7 +479,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 placeholder="E.g., How do you commute to work?"
                 rows={3}
                 maxLength={140}
-                className="w-full px-4 py-3 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
               <div className="text-right text-sm text-muted-foreground mt-1">
@@ -498,7 +507,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                         }}
                         placeholder={index === 0 ? "E.g., Public transportation" : index === 1 ? "E.g., Drive myself" : `Option ${index + 1}`}
                         maxLength={30}
-                        className="w-full px-4 py-3 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
+                        className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                         required
                       />
                       <div className="text-right text-sm text-muted-foreground mt-1">
@@ -537,12 +546,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 id="pollDuration"
                 value={formData.pollDuration}
                 onChange={(e) => setFormData(prev => ({ ...prev, pollDuration: parseInt(e.target.value) }))}
-                className="w-full px-4 py-3 border border-border rounded-lg text-foreground focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-card"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 1rem center'
-                }}
+                className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value={1}>1 day</option>
                 <option value={3}>3 days</option>
@@ -561,7 +565,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 id="category"
                 value={formData.categoryId}
                 onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                className="w-full px-4 py-3 border border-border rounded-lg text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               >
                 <option value="">Select category</option>
@@ -668,7 +672,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                   id="category"
                   value={formData.categoryId}
                   onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                   required
                 >
                   <option value="">Select category</option>
@@ -693,7 +697,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                 value={formData.location}
                 onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                 placeholder="City, state, or region"
-                className="w-full px-3 py-2 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
@@ -769,7 +773,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
                     e.currentTarget.value = '';
                   }
                 }}
-                className="w-full px-3 py-2 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
@@ -811,7 +815,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess }: Smar
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={handleCancel}
             className="px-6 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
           >
             Cancel

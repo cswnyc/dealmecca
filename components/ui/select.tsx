@@ -75,13 +75,22 @@ SelectItem.displayName = "SelectItem"
 
 // SelectTrigger and SelectValue are no longer needed as separate components
 // since we're using a native select element
-const SelectTrigger = ({ className, children }: SelectTriggerProps) => {
-  return <>{children}</>
-}
+const SelectTrigger = ({ children }: SelectTriggerProps) => {
+  return <>{children}</>;
+};
 
-const SelectValue = ({ placeholder, children }: SelectValueProps) => {
-  if (children) return <>{children}</>
-  return <option value="" disabled>{placeholder}</option>
-}
+const SelectValue = ({ placeholder }: SelectValueProps): JSX.Element | null => {
+  if (!placeholder) {
+    return null;
+  }
 
-export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } 
+  // Native <select> elements may only contain <option>/<optgroup>.
+  // We ignore children to avoid introducing invalid nodes (which can cause hydration errors).
+  return (
+    <option value="" disabled hidden>
+      {placeholder}
+    </option>
+  );
+};
+
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue };

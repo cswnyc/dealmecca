@@ -182,6 +182,15 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
                 context: true,
                 color: true,
                 icon: true,
+                categoryId: true,
+                ForumCategory: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    color: true
+                  }
+                },
                 TopicCompany: {
                   include: {
                     company: {
@@ -372,6 +381,8 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
               context: mention.Topic.context,
               color: mention.Topic.color,
               icon: mention.Topic.icon,
+              categoryId: mention.Topic.categoryId,
+              category: mention.Topic.ForumCategory,
               companies: mention.Topic.TopicCompany
                 .filter(tc => tc.company)
                 .map(tc => ({
