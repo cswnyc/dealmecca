@@ -123,7 +123,30 @@ export async function GET(request: NextRequest) {
           createdAt: true,
         },
       });
-      response.emails = emails;
+
+      // Check each email against existing users to flag duplicates
+      const emailsWithDuplicateCheck = await Promise.all(
+        emails.map(async (entry) => {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: entry.email },
+            select: {
+              id: true,
+              role: true,
+              accountStatus: true,
+              createdAt: true,
+            },
+          });
+
+          return {
+            ...entry,
+            isDuplicate: !!existingUser,
+            existingUser: existingUser || undefined,
+          };
+        })
+      );
+
+      response.emails = emailsWithDuplicateCheck;
+      response.duplicateCount = emailsWithDuplicateCheck.filter(e => e.isDuplicate).length;
     }
 
     return NextResponse.json(response);
@@ -136,6 +159,112 @@ export async function GET(request: NextRequest) {
         error: 'Internal server error',
         message: 'Failed to fetch waitlist data'
       },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Waitlist entry ID is required' },
+        { status: 400 }
+      );
+    }
+
+    await prisma.waitlistEmail.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({ success: true, message: 'Waitlist entry deleted successfully' });
+  } catch (error) {
+    console.error('Delete waitlist entry error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete waitlist entry' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, action } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Waitlist entry ID is required' },
+        { status: 400 }
+      );
+    }
+
+    if (action === 'convert') {
+      // Get the waitlist entry
+      const waitlistEntry = await prisma.waitlistEmail.findUnique({
+        where: { id }
+      });
+
+      if (!waitlistEntry) {
+        return NextResponse.json(
+          { error: 'Waitlist entry not found' },
+          { status: 404 }
+        );
+      }
+
+      // Check if user already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email: waitlistEntry.email }
+      });
+
+      if (existingUser) {
+        return NextResponse.json(
+          { error: 'User with this email already exists', userId: existingUser.id },
+          { status: 400 }
+        );
+      }
+
+      // Create user account
+      const newUser = await prisma.user.create({
+        data: {
+          email: waitlistEntry.email,
+          role: 'FREE',
+          subscriptionTier: 'FREE',
+          subscriptionStatus: 'ACTIVE',
+          accountStatus: 'APPROVED',
+          approvedAt: new Date(),
+          isAnonymous: false,
+          publicHandle: `user-${Date.now()}`,
+        }
+      });
+
+      // Update waitlist status
+      await prisma.waitlistEmail.update({
+        where: { id },
+        data: { status: 'REGISTERED' }
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: 'User created successfully',
+        user: {
+          id: newUser.id,
+          email: newUser.email
+        }
+      });
+    }
+
+    return NextResponse.json(
+      { error: 'Invalid action' },
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error('Convert waitlist entry error:', error);
+    return NextResponse.json(
+      { error: 'Failed to convert waitlist entry' },
       { status: 500 }
     );
   }

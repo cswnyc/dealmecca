@@ -69,6 +69,8 @@ interface ForumPost {
     id: string;
     name: string;
     email: string;
+    anonymousUsername?: string;
+    publicHandle?: string;
     company?: {
       id: string;
       name: string;
@@ -1035,8 +1037,16 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
           {/* Left side: Author info */}
           <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
-            <User className="w-4 h-4" />
-            <span>Anonymous</span>
+            <AvatarDisplay
+              avatarId={!post.isAnonymous ? (currentUserIdentity?.avatarId || undefined) : undefined}
+              username={post.isAnonymous ? 'Anonymous' : 'User'}
+              size={16}
+            />
+            <span>
+              {post.isAnonymous
+                ? (post.anonymousHandle || post.author.anonymousUsername || 'Anonymous')
+                : (post.author.anonymousUsername || post.author.publicHandle || post.author.name || 'Member')}
+            </span>
             <span>•</span>
             <span>{formatDistanceToNowStrict(new Date(post.createdAt), { addSuffix: true })}</span>
           </div>
@@ -1293,17 +1303,11 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                     <div key={comment.id} className="flex space-x-3">
                       {/* Avatar */}
                       <div className="flex-shrink-0">
-                        {comment.isAnonymous ? (
-                          <AvatarDisplay
-                            avatarId={comment.anonymousAvatarId}
-                            username={comment.anonymousHandle || 'Anonymous'}
-                            size={32}
-                          />
-                        ) : (
-                          <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                            <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          </div>
-                        )}
+                        <AvatarDisplay
+                          avatarId={!comment.isAnonymous ? (currentUserIdentity?.avatarId || undefined) : undefined}
+                          username={comment.isAnonymous ? 'Anonymous' : (comment.author?.name || 'User')}
+                          size={32}
+                        />
                       </div>
                       <div className="flex-1">
                         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">

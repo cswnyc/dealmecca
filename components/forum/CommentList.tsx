@@ -129,23 +129,11 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
           <div className="flex items-center space-x-3">
             {/* Avatar */}
             <div className="flex-shrink-0">
-              {comment.isAnonymous ? (
-                <AvatarDisplay
-                  avatarId={comment.anonymousAvatarId}
-                  username={comment.anonymousHandle || 'Anonymous'}
-                  size={32}
-                />
-              ) : currentUserIdentity && comment.author.name === 'Christopher Wong' ? (
-                <AvatarDisplay
-                  avatarId={currentUserIdentity.avatarId}
-                  username={currentUserIdentity.username}
-                  size={32}
-                />
-              ) : (
-                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                  <UserIcon className="w-4 h-4 text-muted-foreground" />
-                </div>
-              )}
+              <AvatarDisplay
+                avatarId={!comment.isAnonymous && currentUserIdentity ? currentUserIdentity.avatarId : undefined}
+                username={comment.isAnonymous ? 'Anonymous' : (comment.author?.name || 'User')}
+                size={32}
+              />
             </div>
 
             {/* Author Info */}

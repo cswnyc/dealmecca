@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 // Firebase imports removed to prevent authentication conflicts with LinkedIn OAuth
+import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { generateMetadata } from '@/lib/ai-tagging';
 import { parseMentions } from '@/lib/mention-utils';
 import { authedFetch } from '@/lib/authedFetch';
 import { EnhancedMentionTextarea } from './EnhancedMentionTextarea';
 import { CodeGenerationInterface } from '@/components/code/CodeGenerationInterface';
+import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
 import { TagIcon, MapPinIcon, ExclamationTriangleIcon, BuildingOfficeIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { useUser } from '@/hooks/useUser';
 
@@ -32,6 +34,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess, onCanc
   const eventId = searchParams.get('eventId');
   // Use backend session authentication instead of Firebase
   const { user, loading: authLoading } = useUser();
+  const { user: firebaseUser } = useFirebaseAuth();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -73,6 +76,7 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess, onCanc
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAiSuggestions, setShowAiSuggestions] = useState(false);
+  const [anonymousAvatarId, setAnonymousAvatarId] = useState<string | null>(null);
 
   // Functions for handling list items
   const addListItem = () => {
@@ -121,6 +125,27 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess, onCanc
       }));
     }
   };
+
+  // Fetch current user's anonymous identity
+  useEffect(() => {
+    const fetchAnonymousIdentity = async (): Promise<void> => {
+      if (firebaseUser?.uid) {
+        try {
+          const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.currentAvatarId) {
+              setAnonymousAvatarId(data.currentAvatarId);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching anonymous identity:', error);
+        }
+      }
+    };
+
+    fetchAnonymousIdentity();
+  }, [firebaseUser?.uid]);
 
   // Fetch event information if eventId is present
   useEffect(() => {
@@ -795,9 +820,11 @@ export function SmartPostForm({ categories, postType = 'post', onSuccess, onCanc
               {formData.isAnonymous && (
                 <div className="ml-6 p-3 bg-primary/10 border border-primary/30 rounded-lg">
                   <div className="flex items-center space-x-2 text-sm">
-                    <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-muted-foreground">?</span>
-                    </div>
+                    <AvatarDisplay
+                      avatarId={undefined}
+                      username="Anonymous"
+                      size={24}
+                    />
                     <span className="text-muted-foreground">Will be posted as:</span>
                     <span className="font-medium text-foreground">Anonymous User</span>
                     <span className="text-xs bg-[#EAF1FF] dark:bg-[#162449] text-brand-primary dark:text-[#5B8DFF] px-2 py-1 rounded-full">Anonymous</span>

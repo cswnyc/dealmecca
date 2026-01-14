@@ -15,7 +15,9 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            anonymousUsername: true,
+            publicHandle: true
           }
         },
         ForumCategory: {

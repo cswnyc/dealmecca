@@ -252,9 +252,12 @@ export function EditUserModal({ isOpen, onClose, user, onSave }: EditUserModalPr
                         className="w-full px-3 py-2 border border-border rounded-md text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                       >
                         <option value="ACTIVE">Active</option>
-                        <option value="INACTIVE">Inactive</option>
-                        <option value="CANCELLED">Cancelled</option>
+                        <option value="CANCELED">Canceled</option>
+                        <option value="TRIALING">Trialing</option>
                         <option value="PAST_DUE">Past Due</option>
+                        <option value="UNPAID">Unpaid</option>
+                        <option value="INCOMPLETE">Incomplete</option>
+                        <option value="INCOMPLETE_EXPIRED">Incomplete Expired</option>
                       </select>
                     </div>
                   </div>

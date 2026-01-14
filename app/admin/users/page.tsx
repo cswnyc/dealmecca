@@ -21,7 +21,8 @@ import {
   Linkedin,
   Gem,
   Award,
-  ShieldCheck
+  ShieldCheck,
+  Trash2
 } from 'lucide-react';
 import { EditUserModal } from '@/components/admin/EditUserModal';
 import { motionVariants, designTokens, shouldReduceMotion } from '@/lib/design-tokens';
@@ -33,7 +34,7 @@ interface UserData {
   firebaseUid: string;
   role: 'FREE' | 'PREMIUM' | 'PRO' | 'ADMIN';
   subscriptionTier: 'FREE' | 'PREMIUM' | 'ENTERPRISE';
-  subscriptionStatus: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'PAST_DUE';
+  subscriptionStatus: 'ACTIVE' | 'CANCELED' | 'INCOMPLETE' | 'INCOMPLETE_EXPIRED' | 'PAST_DUE' | 'UNPAID' | 'TRIALING';
   isAnonymous: boolean;
   anonymousUsername: string;
   searchesUsed: number;
@@ -102,18 +103,22 @@ export default function UsersAdminPage() {
   const [roleFilter, setRoleFilter] = useState('');
   const [subscriptionFilter, setSubscriptionFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [accountStatusFilter, setAccountStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  // Delete state
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+
   // Accessibility
   const reducedMotion = shouldReduceMotion();
 
   useEffect(() => {
     fetchUsers();
-  }, [searchTerm, roleFilter, subscriptionFilter, statusFilter, currentPage]);
+  }, [searchTerm, roleFilter, subscriptionFilter, statusFilter, accountStatusFilter, currentPage]);
 
   const fetchUsers = async () => {
     try {
@@ -128,6 +133,7 @@ export default function UsersAdminPage() {
       if (roleFilter) params.append('role', roleFilter);
       if (subscriptionFilter) params.append('subscriptionTier', subscriptionFilter);
       if (statusFilter) params.append('subscriptionStatus', statusFilter);
+      if (accountStatusFilter) params.append('accountStatus', accountStatusFilter);
 
       const response = await fetch(`/api/admin/users?${params.toString()}`);
 
@@ -206,6 +212,49 @@ export default function UsersAdminPage() {
     }
   };
 
+  const handleDeleteUser = async (user: UserData): Promise<void> => {
+    const userIdentifier = user.email || user.name || user.anonymousUsername || 'this user';
+    const confirmed = window.confirm(
+      `Are you sure you want to delete/disable ${userIdentifier}?\n\n` +
+      `This will set the Account Status to REJECTED, which will:\n` +
+      `- Prevent the user from accessing protected features\n` +
+      `- Keep all user data in the system\n` +
+      `- Block the user from signing in\n\n` +
+      `This action can be reversed by changing their status back to APPROVED.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingUserId(user.id);
+      setError('');
+
+      const response = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          updates: { accountStatus: 'REJECTED' }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete user');
+      }
+
+      // Refresh the users list
+      await fetchUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete user');
+      console.error('Delete user failed:', err);
+    } finally {
+      setDeletingUserId(null);
+    }
+  };
+
   const getRoleIcon = (role: string) => {
     switch (role) {
       case 'ADMIN': return <Crown className="w-4 h-4 text-yellow-600" />;
@@ -225,9 +274,12 @@ export default function UsersAdminPage() {
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case 'ACTIVE': return 'bg-green-100 text-green-800';
-      case 'INACTIVE': return 'bg-gray-100 text-gray-800';
-      case 'CANCELLED': return 'bg-red-100 text-red-800';
+      case 'TRIALING': return 'bg-blue-100 text-blue-800';
+      case 'CANCELED': return 'bg-red-100 text-red-800';
       case 'PAST_DUE': return 'bg-orange-100 text-orange-800';
+      case 'UNPAID': return 'bg-red-100 text-red-800';
+      case 'INCOMPLETE': return 'bg-yellow-100 text-yellow-800';
+      case 'INCOMPLETE_EXPIRED': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -302,68 +354,63 @@ export default function UsersAdminPage() {
 
         {/* Stats Cards */}
         {data?.stats && (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={reducedMotion ? {} : designTokens.hover.card}
+              className="bg-gradient-to-br from-emerald-50 to-white p-6 rounded-xl shadow-sm border border-emerald-100 hover:shadow-md transition-shadow"
+              whileHover={reducedMotion ? {} : { scale: 1.02 }}
             >
-              <div className="flex items-center">
-                <Users className="w-8 h-8 text-emerald-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-muted-foreground">Total Users</p>
-                  <p className="text-2xl font-bold text-foreground">{data.stats.total}</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-medium text-emerald-600 uppercase tracking-wide mb-1">Total Users</p>
+                  <p className="text-3xl font-bold text-foreground">{data.stats.total}</p>
+                </div>
+                <div className="p-3 bg-emerald-100 rounded-lg">
+                  <Users className="w-6 h-6 text-emerald-600" />
                 </div>
               </div>
             </motion.div>
 
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={reducedMotion ? {} : designTokens.hover.card}
+              className="bg-gradient-to-br from-purple-50 to-white p-6 rounded-xl shadow-sm border border-purple-100 hover:shadow-md transition-shadow"
+              whileHover={reducedMotion ? {} : { scale: 1.02 }}
             >
-              <div className="flex items-center">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-muted-foreground">Verified Users</p>
-                  <p className="text-2xl font-bold text-foreground">{data.stats.verifiedUsers}</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-medium text-purple-600 uppercase tracking-wide mb-1">Active (30d)</p>
+                  <p className="text-3xl font-bold text-foreground">{data.stats.activeUsers}</p>
+                </div>
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <Activity className="w-6 h-6 text-purple-600" />
                 </div>
               </div>
             </motion.div>
 
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={reducedMotion ? {} : designTokens.hover.card}
+              className="bg-gradient-to-br from-amber-50 to-white p-6 rounded-xl shadow-sm border border-amber-100 hover:shadow-md transition-shadow"
+              whileHover={reducedMotion ? {} : { scale: 1.02 }}
             >
-              <div className="flex items-center">
-                <Activity className="w-8 h-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-muted-foreground">Active (30 days)</p>
-                  <p className="text-2xl font-bold text-foreground">{data.stats.activeUsers}</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-medium text-amber-600 uppercase tracking-wide mb-1">Forum Gems</p>
+                  <p className="text-3xl font-bold text-foreground">{data.stats.totalForumGems.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-amber-100 rounded-lg">
+                  <Gem className="w-6 h-6 text-amber-600" />
                 </div>
               </div>
             </motion.div>
 
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={reducedMotion ? {} : designTokens.hover.card}
+              className="bg-gradient-to-br from-yellow-50 to-white p-6 rounded-xl shadow-sm border border-yellow-100 hover:shadow-md transition-shadow"
+              whileHover={reducedMotion ? {} : { scale: 1.02 }}
             >
-              <div className="flex items-center">
-                <Gem className="w-8 h-8 text-amber-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-muted-foreground">Total Forum Gems</p>
-                  <p className="text-2xl font-bold text-foreground">{data.stats.totalForumGems.toLocaleString()}</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-medium text-yellow-600 uppercase tracking-wide mb-1">Admins</p>
+                  <p className="text-3xl font-bold text-foreground">{data.stats.byRole.ADMIN || 0}</p>
                 </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="bg-white p-6 rounded-lg shadow-sm border"
-              whileHover={reducedMotion ? {} : designTokens.hover.card}
-            >
-              <div className="flex items-center">
-                <Crown className="w-8 h-8 text-yellow-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-muted-foreground">Admin Users</p>
-                  <p className="text-2xl font-bold text-foreground">{data.stats.byRole.ADMIN || 0}</p>
+                <div className="p-3 bg-yellow-100 rounded-lg">
+                  <Crown className="w-6 h-6 text-yellow-600" />
                 </div>
               </div>
             </motion.div>
@@ -372,7 +419,7 @@ export default function UsersAdminPage() {
 
         {/* Search and Filters */}
         <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <input
@@ -391,6 +438,7 @@ export default function UsersAdminPage() {
             >
               <option value="">All Roles</option>
               <option value="FREE">Free</option>
+              <option value="PRO">Pro</option>
               <option value="PREMIUM">Premium</option>
               <option value="ADMIN">Admin</option>
             </select>
@@ -411,11 +459,25 @@ export default function UsersAdminPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="border border-input rounded-md px-3 py-2 text-sm text-foreground"
             >
-              <option value="">All Statuses</option>
+              <option value="">All Subscription Statuses</option>
               <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="CANCELED">Canceled</option>
+              <option value="TRIALING">Trialing</option>
               <option value="PAST_DUE">Past Due</option>
+              <option value="UNPAID">Unpaid</option>
+              <option value="INCOMPLETE">Incomplete</option>
+              <option value="INCOMPLETE_EXPIRED">Incomplete Expired</option>
+            </select>
+
+            <select
+              value={accountStatusFilter}
+              onChange={(e) => setAccountStatusFilter(e.target.value)}
+              className="border border-input rounded-md px-3 py-2 text-sm text-foreground"
+            >
+              <option value="">All Account Statuses</option>
+              <option value="APPROVED">Approved</option>
+              <option value="PENDING">Pending Approval</option>
+              <option value="REJECTED">Rejected/Deleted</option>
             </select>
 
             <button
@@ -424,6 +486,7 @@ export default function UsersAdminPage() {
                 setRoleFilter('');
                 setSubscriptionFilter('');
                 setStatusFilter('');
+                setAccountStatusFilter('');
               }}
               className="px-3 py-2 text-muted-foreground border border-input rounded-md hover:bg-muted text-sm"
             >
@@ -591,13 +654,33 @@ export default function UsersAdminPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleEditUser(user)}
-                        className="inline-flex items-center space-x-1 px-3 py-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
-                      >
-                        <Edit className="w-4 h-4" />
-                        <span>Edit</span>
-                      </button>
+                      <div className="flex items-center justify-end space-x-2">
+                        <button
+                          onClick={() => handleEditUser(user)}
+                          className="inline-flex items-center space-x-1 px-3 py-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                          disabled={deletingUserId === user.id}
+                        >
+                          <Edit className="w-4 h-4" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user)}
+                          disabled={deletingUserId === user.id}
+                          className="inline-flex items-center space-x-1 px-3 py-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {deletingUserId === user.id ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                              <span>Deleting...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Trash2 className="w-4 h-4" />
+                              <span>Delete</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </td>
                   </motion.tr>
                 ))}

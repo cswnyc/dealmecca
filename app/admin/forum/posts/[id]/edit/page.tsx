@@ -11,6 +11,8 @@ interface Author {
   id: string;
   name: string;
   email: string;
+  anonymousUsername?: string;
+  publicHandle?: string;
 }
 
 interface Category {
@@ -1157,7 +1159,9 @@ export default function EditForumPost() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
               <span className="font-medium text-muted-foreground">Author:</span>
-              <p className="text-muted-foreground">{post.author?.name || 'Unknown'}</p>
+              <p className="text-muted-foreground">
+                {post.author?.anonymousUsername || post.author?.publicHandle || post.author?.name || 'Unknown'}
+              </p>
             </div>
             <div>
               <span className="font-medium text-muted-foreground">Views:</span>

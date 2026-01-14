@@ -39,6 +39,7 @@ export const GET = safeHandler(async (
           id: true,
           publicHandle: true,
           name: true,
+          anonymousUsername: true,
         }
       },
       ForumCategory: true,
@@ -136,6 +137,7 @@ export const PATCH = safeHandler(async (
           id: true,
           publicHandle: true,
           name: true,
+          anonymousUsername: true,
         }
       },
       ForumCategory: true,

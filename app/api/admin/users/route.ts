@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const role = searchParams.get('role') || '';
     const subscriptionTier = searchParams.get('subscriptionTier') || '';
     const subscriptionStatus = searchParams.get('subscriptionStatus') || '';
+    const accountStatus = searchParams.get('accountStatus') || '';
     const includeStats = searchParams.get('include_stats') === 'true';
 
     // Build filter conditions
@@ -33,6 +34,10 @@ export async function GET(request: NextRequest) {
 
     if (subscriptionStatus) {
       whereConditions.subscriptionStatus = subscriptionStatus;
+    }
+
+    if (accountStatus) {
+      whereConditions.accountStatus = accountStatus;
     }
 
     // Get total count for pagination

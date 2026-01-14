@@ -15,6 +15,7 @@ import { PageFrame, PageHeader, PageContent, PageCard } from '@/components/layou
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Logo } from '@/components/ui/Logo';
+import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
 import { useUser } from '@/hooks/useUser';
 import { cn } from '@/lib/utils';
 import {
@@ -67,6 +68,8 @@ interface ForumPost {
     id: string;
     name: string;
     email: string;
+    anonymousUsername?: string;
+    publicHandle?: string;
     company?: {
       id: string;
       name: string;
@@ -176,6 +179,9 @@ export default function ForumPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [postType, setPostType] = useState<'post' | 'poll'>('post');
+  
+  // Anonymous identity state
+  const [anonymousAvatarId, setAnonymousAvatarId] = useState<string | null>(null);
 
   const postTriggerText = `What's on your mind? Share intel, ask questions...`;
 
@@ -227,6 +233,27 @@ export default function ForumPage() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // Fetch current user's anonymous identity
+  useEffect(() => {
+    const fetchAnonymousIdentity = async (): Promise<void> => {
+      if (firebaseUser?.uid) {
+        try {
+          const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.currentAvatarId) {
+              setAnonymousAvatarId(data.currentAvatarId);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching anonymous identity:', error);
+        }
+      }
+    };
+
+    fetchAnonymousIdentity();
+  }, [firebaseUser?.uid]);
 
   // Initialize state from URL parameters
   useEffect(() => {
@@ -526,18 +553,13 @@ export default function ForumPage() {
                       tabIndex={0}
                     >
                       <div className="flex items-center gap-3">
-                        {/* User Avatar */}
-                        {currentUser?.profilePicture ? (
-                          <img
-                            src={currentUser.profilePicture}
-                            alt={currentUser?.name ?? 'User'}
-                            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                            {getUserInitials(currentUser?.name)}
-                          </div>
-                        )}
+                        {/* User Avatar - Always show anonymous avatar in Forum composer */}
+                        <AvatarDisplay
+                          avatarId={anonymousAvatarId || undefined}
+                          username="Anonymous"
+                          size={40}
+                          className="flex-shrink-0"
+                        />
 
                         {/* Input Trigger */}
                         <div className="flex-1 bg-gray-50 dark:bg-[#0B1220] rounded-lg px-4 py-3 text-gray-400 dark:text-[#9AA7C2] hover:bg-gray-100 dark:hover:bg-[#12203A] transition-colors text-sm">

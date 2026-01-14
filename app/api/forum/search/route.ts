@@ -45,7 +45,13 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         author: {
-          select: { id: true, name: true, email: true }
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            anonymousUsername: true,
+            publicHandle: true
+          }
         },
         category: {
           select: { 
