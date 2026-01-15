@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, SlidersHorizontal, Moon, Sun, ChevronDown } from 'lucide-react';
+import { Search, SlidersHorizontal, MoonStar, SunMedium, ChevronDown } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
 import { cn } from '@/lib/utils';
 import { CategoryTabs, CategoryType } from './CategoryTabs';
@@ -94,7 +94,7 @@ export function OrganizationsHeader({
               className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors"
               aria-label="Toggle dark mode"
             >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {isDarkMode ? <SunMedium className="w-5 h-5" /> : <MoonStar className="w-5 h-5" />}
             </button>
           )}
         </div>

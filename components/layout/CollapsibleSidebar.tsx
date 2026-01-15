@@ -14,7 +14,6 @@ import {
 import { AnimatedIconButton } from '@/components/ui/animated-components';
 import { UserProfileCard } from './UserProfileCard';
 import { Logo, LogoMark } from '@/components/ui/Logo';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useTheme } from '@/lib/theme-context';
 import { designTokens, motionVariants, shouldReduceMotion } from '@/lib/design-tokens';
 
@@ -194,13 +193,8 @@ export default function CollapsibleSidebar({ defaultCollapsed = false }: Collaps
         })}
       </nav>
 
-      {/* Theme Toggle and User Profile Section */}
-      <div className="border-t border-[#E6EAF2] dark:border-[#22304A] p-3 space-y-3">
-        {/* Theme Toggle */}
-        <div className={`flex ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
-          <ThemeToggle />
-        </div>
-
+      {/* User Profile Section */}
+      <div className="border-t border-[#E6EAF2] dark:border-[#22304A] p-3">
         {/* User Profile */}
         <AnimatePresence mode="wait">
           {!isCollapsed ? (
