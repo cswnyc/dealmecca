@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { authedFetch } from '@/lib/authedFetch';
 import {
   ArrowLeft,
   Calendar,
@@ -302,7 +303,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
       setParseError('');
       setParseSuccess(false);
 
-      const response = await fetch('/api/admin/events/parse-url', {
+      const response = await authedFetch('/api/admin/events/parse-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: urlToParse })
@@ -414,7 +415,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
         const url = mode === 'create' ? '/api/admin/events' : `/api/admin/events/${event?.id}`;
         const method = mode === 'create' ? 'POST' : 'PUT';
 
-        const response = await fetch(url, {
+        const response = await authedFetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(eventData)
@@ -450,7 +451,7 @@ export default function EventForm({ mode, event, onSave, onDelete, onCancel }: E
       if (onDelete) {
         await onDelete();
       } else {
-        const response = await fetch(`/api/admin/events/${event.id}`, {
+        const response = await authedFetch(`/api/admin/events/${event.id}`, {
           method: 'DELETE'
         });
 

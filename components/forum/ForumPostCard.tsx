@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceToNowStrict, formatDistanceToNow } from 'date-fns';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import {
   ChatBubbleLeftIcon,
@@ -71,6 +71,7 @@ interface ForumPost {
     email: string;
     anonymousUsername?: string;
     publicHandle?: string;
+    avatarSeed?: string;
     company?: {
       id: string;
       name: string;
@@ -1038,8 +1039,10 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           {/* Left side: Author info */}
           <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
             <AvatarDisplay
-              avatarId={!post.isAnonymous ? (currentUserIdentity?.avatarId || undefined) : undefined}
-              username={post.isAnonymous ? 'Anonymous' : 'User'}
+              avatarId={post.author.avatarSeed}
+              username={post.isAnonymous 
+                ? (post.anonymousHandle || post.author.anonymousUsername || 'Anonymous')
+                : (post.author.anonymousUsername || post.author.publicHandle || post.author.name || 'Member')}
               size={16}
             />
             <span>
@@ -1304,8 +1307,10 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                       {/* Avatar */}
                       <div className="flex-shrink-0">
                         <AvatarDisplay
-                          avatarId={!comment.isAnonymous ? (currentUserIdentity?.avatarId || undefined) : undefined}
-                          username={comment.isAnonymous ? 'Anonymous' : (comment.author?.name || 'User')}
+                          avatarId={comment.author?.avatarSeed}
+                          username={comment.isAnonymous 
+                            ? (comment.anonymousHandle || 'Anonymous')
+                            : (comment.author?.anonymousUsername || comment.author?.name || 'User')}
                           size={32}
                         />
                       </div>
@@ -1315,8 +1320,8 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                             <div className="flex items-center space-x-2">
                               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {comment.isAnonymous
-                                  ? 'Anonymous'
-                                  : (comment.author?.name || 'User')
+                                  ? (comment.anonymousHandle || 'Anonymous')
+                                  : (comment.author?.anonymousUsername || comment.author?.name || 'User')
                                 }
                               </span>
                               <span className="text-xs text-gray-400 dark:text-gray-500">

@@ -3,28 +3,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { FileParser } from '@/lib/bulk-import/parsers';
-import { requireAuth } from '@/server/requireAuth';
+import { requireAdmin } from '@/server/requireAdmin';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication and ensure user exists in database
-    const auth = await requireAuth(request);
-    if (auth instanceof NextResponse) return auth; // Auth failed
-
-    // Check if user is admin
-    const user = await prisma.user.findUnique({
-      where: { id: auth.dbUserId },
-      select: { role: true }
-    });
-
-    if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json({
-        error: 'Unauthorized - Admin access required for bulk import'
-      }, { status: 403 });
-    }
-
-    console.log('📤 File upload started by user:', auth.dbUserId);
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
 
     // Get the uploaded file
     const formData = await request.formData();

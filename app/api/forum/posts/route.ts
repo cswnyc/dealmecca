@@ -124,7 +124,8 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
             email: true,
             anonymousUsername: true,
             anonymousHandle: true,
-            publicHandle: true
+            publicHandle: true,
+            avatarSeed: true
           }
         },
         ForumCategory: {
@@ -332,7 +333,8 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
           email: post.User.email,
           anonymousUsername: post.User.anonymousUsername,
           anonymousHandle: post.User.anonymousHandle,
-          publicHandle: post.User.publicHandle
+          publicHandle: post.User.publicHandle,
+          avatarSeed: post.User.avatarSeed
         },
         category: {
           id: post.ForumCategory.id,
@@ -563,7 +565,8 @@ export const POST = safeHandler(async (request: NextRequest, ctx: any, { request
             email: true,
             anonymousUsername: true,
             anonymousHandle: true,
-            publicHandle: true
+            publicHandle: true,
+            avatarSeed: true
           }
         },
         ForumCategory: true

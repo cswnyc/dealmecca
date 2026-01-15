@@ -22,6 +22,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import MentionText from '@/components/ui/MentionText';
+import { authedFetch } from '@/lib/authedFetch';
 
 interface ForumPost {
   id: string;
@@ -95,7 +96,7 @@ export default function ForumPostsAdmin() {
         ...(categoryFilter && { category: categoryFilter })
       });
 
-      const response = await fetch(`/api/admin/forum/posts?${params}`);
+      const response = await authedFetch(`/api/admin/forum/posts?${params}`);
       if (!response.ok) throw new Error('Failed to fetch posts');
 
       const data = await response.json();
@@ -141,7 +142,7 @@ export default function ForumPostsAdmin() {
     if (selectedPosts.length === 0) return;
 
     try {
-      const response = await fetch('/api/admin/forum/posts/bulk', {
+      const response = await authedFetch('/api/admin/forum/posts/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -553,7 +554,7 @@ export default function ForumPostsAdmin() {
                             onClick={async () => {
                               if (confirm('Are you sure you want to delete this post?')) {
                                 try {
-                                  const response = await fetch(`/api/admin/forum/posts/${post.id}`, {
+                                  const response = await authedFetch(`/api/admin/forum/posts/${post.id}`, {
                                     method: 'DELETE',
                                   });
                                   if (response.ok) {

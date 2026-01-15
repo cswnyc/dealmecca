@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { CheckCircle, AlertCircle, BarChart3, Upload } from 'lucide-react'
+import { authedFetch } from '@/lib/authedFetch'
 
 interface ImportResults {
   companiesCreated: number
@@ -62,13 +63,11 @@ export default function EnhancedBulkImport() {
         return record
       })
 
-      console.log('📊 Parsed CSV data:', data)
-
       // Simulate progress
       setProgress(25)
 
       // Send to enhanced bulk import API
-      const response = await fetch('/api/admin/bulk-import/enhanced', {
+      const response = await authedFetch('/api/admin/bulk-import/enhanced', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,8 +86,6 @@ export default function EnhancedBulkImport() {
       setProgress(100)
       setResults(result.results)
       setSummary(result.summary)
-      
-      console.log('✅ Enhanced bulk import completed:', result)
 
     } catch (err) {
       console.error('❌ Enhanced bulk import error:', err)

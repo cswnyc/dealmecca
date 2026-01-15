@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/server/requireAdmin';
 
 // DELETE /api/admin/duties/[id] - Delete a duty
 export async function DELETE(
@@ -7,6 +8,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const { id } = await params;
 
     // Check if duty exists and get usage counts

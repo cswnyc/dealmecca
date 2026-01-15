@@ -91,6 +91,10 @@ export default function IdentityTab() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('[IdentityTab] Identity data loaded:', {
+          username: data.currentUsername,
+          avatarId: data.currentAvatarId
+        });
         setIdentityData(data);
         setSelectedUsername(data.currentUsername || '');
         setSelectedAvatarId(data.currentAvatarId || '');
@@ -99,7 +103,7 @@ export default function IdentityTab() {
         setError(errorData.error || 'Failed to load identity data');
       }
     } catch (err) {
-      console.error('Error fetching identity data:', err);
+      console.error('[IdentityTab] Error fetching identity data:', err);
       setError('Failed to load identity data');
     } finally {
       setLoading(false);

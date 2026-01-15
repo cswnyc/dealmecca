@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { TopicParser } from '@/lib/forum/topic-parser';
+import { requireAdmin } from '@/server/requireAdmin';
 
 interface TopicSuggestion {
   id: string;
@@ -13,6 +14,9 @@ interface TopicSuggestion {
 
 export async function POST(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const body = await request.json();
     const { content, title, categoryId } = body;
 

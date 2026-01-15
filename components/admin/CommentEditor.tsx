@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -18,6 +18,7 @@ import {
   UserX
 } from 'lucide-react';
 import MentionEditor from '@/components/ui/MentionEditor';
+import { authedFetch } from '@/lib/authedFetch';
 import MentionText from '@/components/ui/MentionText';
 
 interface Author {
@@ -86,7 +87,7 @@ export default function CommentEditor({
     try {
       setSaving(true);
 
-      const response = await fetch(`/api/admin/forum/comments/${comment.id}`, {
+      const response = await authedFetch(`/api/admin/forum/comments/${comment.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +123,7 @@ export default function CommentEditor({
     }
 
     try {
-      const response = await fetch(`/api/admin/forum/comments/${comment.id}`, {
+      const response = await authedFetch(`/api/admin/forum/comments/${comment.id}`, {
         method: 'DELETE',
       });
 

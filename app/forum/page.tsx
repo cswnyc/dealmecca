@@ -236,19 +236,34 @@ export default function ForumPage() {
 
   // Fetch current user's anonymous identity
   useEffect(() => {
+    // Reset avatar to prevent showing stale avatar from previous user
+    setAnonymousAvatarId(null);
+    
     const fetchAnonymousIdentity = async (): Promise<void> => {
       if (firebaseUser?.uid) {
         try {
+          console.log('[Forum Composer] Fetching identity for UID:', firebaseUser.uid.substring(0, 8) + '...');
           const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`);
           if (response.ok) {
             const data = await response.json();
+            console.log('[Forum Composer] Identity API returned:', {
+              username: data.currentUsername,
+              avatarId: data.currentAvatarId
+            });
             if (data.currentAvatarId) {
+              console.log('[Forum Composer] ✅ Setting composer avatar:', data.currentAvatarId);
               setAnonymousAvatarId(data.currentAvatarId);
+            } else {
+              console.warn('[Forum Composer] ⚠️ No avatarId in response');
             }
+          } else {
+            console.error('[Forum Composer] Identity API failed:', response.status);
           }
         } catch (error) {
-          console.error('Error fetching anonymous identity:', error);
+          console.error('[Forum Composer] Error fetching anonymous identity:', error);
         }
+      } else {
+        console.log('[Forum Composer] No firebaseUser.uid available');
       }
     };
 

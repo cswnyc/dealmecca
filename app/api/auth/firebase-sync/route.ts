@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
           subscriptionStatus: 'ACTIVE',
           isAnonymous: !displayName, // Anonymous if no display name
           anonymousUsername: anonymousProfile.username,
-          avatarSeed: uid,
+          avatarSeed: anonymousProfile.avatarId, // Use valid avatar library ID instead of UID
           accountStatus: 'PENDING', // New users require admin approval
           createdAt: new Date(),
           updatedAt: new Date()

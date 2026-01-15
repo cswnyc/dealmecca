@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getRateLimiter, BULK_IMPORT_RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limit';
+import { requireAdmin } from '@/server/requireAdmin';
 
 export async function POST(request: NextRequest) {
-
-  const userId = request.headers.get('x-user-id');
-  const userRole = request.headers.get('x-user-role');
-  if (!userId || userRole !== 'ADMIN') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const admin = await requireAdmin(request);
+  if (admin instanceof NextResponse) return admin;
+  const userId = admin.user.id;
 
   // Rate limiting check for enhanced import
   const rateLimiter = getRateLimiter();

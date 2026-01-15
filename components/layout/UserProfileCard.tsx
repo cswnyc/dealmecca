@@ -97,13 +97,19 @@ function UserProfileContent() {
       if (firebaseUser || backendUser) {
         fetchUserStats();
       }
-      if (firebaseUser && !anonymousIdentity) {
-        fetchAnonymousIdentity();
-      }
     } else if (!anyLoading && !hasSession) {
       setLoading(false);
     }
-  }, [firebaseUser, backendUser, hasSession, anyLoading, anonymousIdentity, profile]);
+  }, [firebaseUser, backendUser, hasSession, anyLoading, profile]);
+
+  // Separate effect for anonymous identity to properly reset on user change
+  useEffect(() => {
+    if (firebaseUser?.uid) {
+      fetchAnonymousIdentity();
+    } else {
+      setAnonymousIdentity(null);
+    }
+  }, [firebaseUser?.uid]);
 
   const fetchProfile = async () => {
     try {
@@ -173,12 +179,15 @@ function UserProfileContent() {
   };
 
   const fetchAnonymousIdentity = async () => {
+    // Reset identity to prevent showing stale avatar from previous user
+    setAnonymousIdentity(null);
+    
     if (!firebaseUser?.uid) {
       console.log('[UserProfileCard] fetchAnonymousIdentity: No firebaseUser.uid available');
       return;
     }
 
-    console.log('[UserProfileCard] Fetching anonymous identity for uid:', firebaseUser.uid);
+    console.log('[UserProfileCard] Fetching anonymous identity for uid:', firebaseUser.uid.substring(0, 8) + '...');
 
     try {
       const response = await fetch(`/api/users/identity?firebaseUid=${firebaseUser.uid}`, {
@@ -189,37 +198,32 @@ function UserProfileContent() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('[UserProfileCard] Identity API data:', data);
+        console.log('[UserProfileCard] Identity API full response:', data);
 
         if (data.currentUsername && data.currentAvatarId) {
-          console.log('[UserProfileCard] Setting identity from API:', data.currentUsername, data.currentAvatarId);
+          console.log('[UserProfileCard] ✅ Setting identity:', data.currentUsername, '→', data.currentAvatarId);
           setAnonymousIdentity({
             username: data.currentUsername,
             avatarId: data.currentAvatarId
           });
         } else {
-          // API returned incomplete data, use fallback
-          console.warn('[UserProfileCard] API returned incomplete data, using fallback');
-          setAnonymousIdentity({
-            username: 'Cloud Hawk',
-            avatarId: 'avatar_2'
+          // API returned incomplete data - DO NOT use fallback, let it remain null
+          // This allows the component to keep showing the generated avatar
+          console.warn('[UserProfileCard] ⚠️ API returned incomplete data:', {
+            hasUsername: !!data.currentUsername,
+            hasAvatarId: !!data.currentAvatarId
           });
+          console.warn('[UserProfileCard] Keeping anonymousIdentity null - will use generated avatar');
         }
       } else {
-        // API error, use fallback
-        console.warn('[UserProfileCard] API error, using fallback. Status:', response.status);
-        setAnonymousIdentity({
-          username: 'Cloud Hawk',
-          avatarId: 'avatar_2'
-        });
+        // API error - keep null to use generated avatar
+        console.error('[UserProfileCard] ❌ API error, status:', response.status);
+        console.log('[UserProfileCard] Keeping anonymousIdentity null - will use generated avatar');
       }
     } catch (error) {
-      console.error('[UserProfileCard] Error fetching anonymous identity (Safari ITP might be blocking):', error);
-      // Use fallback data if API fails - critical for Safari compatibility
-      setAnonymousIdentity({
-        username: 'Cloud Hawk',
-        avatarId: 'avatar_2'
-      });
+      console.error('[UserProfileCard] Error fetching anonymous identity:', error);
+      // Keep null to use generated avatar - don't set fallback
+      console.log('[UserProfileCard] Keeping anonymousIdentity null - will use generated avatar');
     }
   };
 

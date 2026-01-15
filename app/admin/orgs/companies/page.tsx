@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { authedFetch } from '@/lib/authedFetch';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -105,7 +106,7 @@ export default function CompaniesAdmin() {
       if (selectedIndustry) params.append('industry', selectedIndustry);
       if (verifiedFilter) params.append('verified', verifiedFilter);
 
-      const response = await fetch(`/api/admin/companies?${params}`);
+      const response = await authedFetch(`/api/admin/companies?${params}`);
       const data = await response.json();
 
       if (response.ok) {
@@ -181,7 +182,7 @@ export default function CompaniesAdmin() {
     if (selectedCompanies.length === 0) return;
 
     try {
-      const response = await fetch('/api/admin/companies', {
+      const response = await authedFetch('/api/admin/companies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

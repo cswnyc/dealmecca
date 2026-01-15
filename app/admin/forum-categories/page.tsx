@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
+import { authedFetch } from '@/lib/authedFetch';
 
 interface Category {
   id: string;
@@ -49,7 +50,7 @@ export default function ForumCategoriesAdmin() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/admin/forum/categories');
+      const response = await authedFetch('/api/admin/forum/categories');
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -65,7 +66,7 @@ export default function ForumCategoriesAdmin() {
     e.preventDefault();
 
     try {
-      const response = await fetch('/api/admin/forum/categories', {
+      const response = await authedFetch('/api/admin/forum/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -112,7 +113,7 @@ export default function ForumCategoriesAdmin() {
 
     try {
       const { id, ...updates } = editFormData;
-      const response = await fetch(`/api/admin/forum/categories/${id}`, {
+      const response = await authedFetch(`/api/admin/forum/categories/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -142,7 +143,7 @@ export default function ForumCategoriesAdmin() {
 
   const handleUpdate = async (id: string, updates: Partial<Category>) => {
     try {
-      const response = await fetch(`/api/admin/forum/categories/${id}`, {
+      const response = await authedFetch(`/api/admin/forum/categories/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -164,7 +165,7 @@ export default function ForumCategoriesAdmin() {
     if (!confirm('Are you sure you want to delete this category?')) return;
 
     try {
-      const response = await fetch(`/api/admin/forum/categories/${id}`, {
+      const response = await authedFetch(`/api/admin/forum/categories/${id}`, {
         method: 'DELETE'
       });
 

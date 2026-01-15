@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/server/requireAdmin';
 
 export async function POST(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const { url } = await request.json();
 
     if (!url) {

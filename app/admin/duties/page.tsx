@@ -24,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motionVariants, designTokens, shouldReduceMotion } from '@/lib/design-tokens';
+import { authedFetch } from '@/lib/authedFetch';
 
 interface Duty {
   id: string;
@@ -82,7 +83,7 @@ export default function DutiesAdminPage() {
       const params = new URLSearchParams();
       if (categoryFilter) params.append('category', categoryFilter);
 
-      const response = await fetch(`/api/admin/duties?${params.toString()}`);
+      const response = await authedFetch(`/api/admin/duties?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch duties');
@@ -114,7 +115,7 @@ export default function DutiesAdminPage() {
       setSaving(true);
       setFormError('');
 
-      const response = await fetch('/api/admin/duties', {
+      const response = await authedFetch('/api/admin/duties', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newDuty)
@@ -144,7 +145,7 @@ export default function DutiesAdminPage() {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`/api/admin/duties/${dutyId}`, {
+      const response = await authedFetch(`/api/admin/duties/${dutyId}`, {
         method: 'DELETE'
       });
 

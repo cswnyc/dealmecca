@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
+import { requireAdmin } from '@/server/requireAdmin';
 
 // Generate a random ID similar to CUID format
 const generateId = () => {
@@ -10,6 +11,9 @@ const generateId = () => {
 // GET - List all categories
 export async function GET(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const categories = await prisma.forumCategory.findMany({
       include: {
         _count: {
@@ -36,6 +40,9 @@ export async function GET(request: NextRequest) {
 // POST - Create new category
 export async function POST(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const body = await request.json();
     const { name, description, slug, icon, color, order, isActive } = body;
 

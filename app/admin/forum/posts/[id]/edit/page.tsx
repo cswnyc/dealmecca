@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import MentionEditor from '@/components/ui/MentionEditor';
 import MentionText from '@/components/ui/MentionText';
 import CommentEditor from '@/components/admin/CommentEditor';
+import { authedFetch } from '@/lib/authedFetch';
 
 interface Author {
   id: string;
@@ -136,9 +137,9 @@ export default function EditForumPost() {
 
         // Fetch post, categories, and comments in parallel
         const [postResponse, categoriesResponse, commentsResponse] = await Promise.all([
-          fetch(`/api/admin/forum/posts/${postId}`),
+          authedFetch(`/api/admin/forum/posts/${postId}`),
           fetch('/api/forum/categories'),
-          fetch(`/api/admin/forum/posts/${postId}/comments`)
+          authedFetch(`/api/admin/forum/posts/${postId}/comments`)
         ]);
 
         if (!postResponse.ok) {
@@ -265,7 +266,7 @@ export default function EditForumPost() {
 
     try {
       setLoadingSuggestions(true);
-      const response = await fetch('/api/admin/topics/suggest', {
+      const response = await authedFetch('/api/admin/topics/suggest', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -358,7 +359,7 @@ export default function EditForumPost() {
 
     try {
       setSearchingEntities(true);
-      const response = await fetch('/api/admin/topics/search', {
+      const response = await authedFetch('/api/admin/topics/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -551,7 +552,7 @@ export default function EditForumPost() {
       setSaving(true);
       setError('');
 
-      const response = await fetch(`/api/admin/forum/posts/${postId}`, {
+      const response = await authedFetch(`/api/admin/forum/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -582,7 +583,7 @@ export default function EditForumPost() {
     try {
       setSaving(true);
 
-      const response = await fetch(`/api/admin/forum/posts/${postId}`, {
+      const response = await authedFetch(`/api/admin/forum/posts/${postId}`, {
         method: 'DELETE',
       });
 

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
+import { authedFetch } from '@/lib/authedFetch';
 import { 
   PhotoIcon, 
   XMarkIcon, 
@@ -78,7 +79,7 @@ export function LogoUpload({
       const uploadResult = await uploadResponse.json();
 
       // Update entity with new logo URL
-      const updateResponse = await fetch(`/api/admin/${entityType}s/${entityId}/logo`, {
+      const updateResponse = await authedFetch(`/api/admin/${entityType}s/${entityId}/logo`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +113,7 @@ export function LogoUpload({
   const handleRemoveLogo = async () => {
     setUploading(true);
     try {
-      const response = await fetch(`/api/admin/${entityType}s/${entityId}/logo`, {
+      const response = await authedFetch(`/api/admin/${entityType}s/${entityId}/logo`, {
         method: 'DELETE',
       });
 

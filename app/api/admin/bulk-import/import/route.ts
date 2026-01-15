@@ -7,22 +7,24 @@ import { prisma } from '@/lib/prisma';
 import { findCompanyDuplicates, findContactDuplicates } from '@/lib/bulk-import/duplicate-detection';
 import { prepareCompanyForDatabase } from '@/lib/normalization-utils';
 import { getCompanyLogoUrl, getContactPhotoUrl } from '@/lib/logo-utils';
-import { requireAuth } from '@/server/requireAuth';
+import { requireAdmin } from '@/server/requireAdmin';
 import { createId } from '@paralleldrive/cuid2';
 import { getRateLimiter, BULK_IMPORT_RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
+  let rateLimitKey: string | null = null;
 
   try {
-    // Verify authentication and ensure user exists in database
-    const auth = await requireAuth(request);
-    if (auth instanceof NextResponse) return auth; // Auth failed
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+    const adminUserId = admin.user.id;
+    rateLimitKey = `bulk-import:${adminUserId}`;
 
     // Rate limiting check
     const rateLimiter = getRateLimiter();
     const rateLimitResult = rateLimiter.check(
-      `bulk-import:${auth.dbUserId}`,
+      rateLimitKey,
       BULK_IMPORT_RATE_LIMITS.STANDARD
     );
 
@@ -30,23 +32,11 @@ export async function POST(request: NextRequest) {
       return createRateLimitResponse(rateLimitResult);
     }
 
-    // Check if user is admin
-    const user = await prisma.user.findUnique({
-      where: { id: auth.dbUserId },
-      select: { role: true }
-    });
-
-    if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json({
-        error: 'Unauthorized - Admin access required for bulk import'
-      }, { status: 403 });
-    }
-
-    console.log('🚀 Bulk import execution started by user:', auth.dbUserId);
+    console.log('🚀 Bulk import execution started by user:', adminUserId);
 
     // Mark import as in progress to prevent concurrent imports
     rateLimiter.markInProgress(
-      `bulk-import:${auth.dbUserId}`,
+      rateLimitKey,
       BULK_IMPORT_RATE_LIMITS.MAX_IMPORT_DURATION
     );
 
@@ -71,7 +61,7 @@ export async function POST(request: NextRequest) {
       warnings: [] as string[],
       processedAt: new Date().toISOString(),
       executionTime: 0,
-      uploadId: uploadId || `import_${Date.now()}_${auth.dbUserId}`
+      uploadId: uploadId || `import_${Date.now()}_${adminUserId}`
     };
 
     // =========================================================================
@@ -394,7 +384,7 @@ export async function POST(request: NextRequest) {
     const successRate = Math.round((successfulOperations / totalOperations) * 100);
 
     // Mark import as complete
-    rateLimiter.markComplete(`bulk-import:${auth.dbUserId}`);
+    rateLimiter.markComplete(`bulk-import:${adminUserId}`);
 
     return NextResponse.json({
       success: true,
@@ -417,13 +407,12 @@ export async function POST(request: NextRequest) {
     console.error('❌ Bulk import execution error:', error);
 
     // Mark import as complete even on error
-    try {
-      const auth = await requireAuth(request);
-      if (!(auth instanceof NextResponse)) {
-        getRateLimiter().markComplete(`bulk-import:${auth.dbUserId}`);
+    if (rateLimitKey) {
+      try {
+        getRateLimiter().markComplete(rateLimitKey);
+      } catch (e) {
+        // Ignore errors in cleanup
       }
-    } catch (e) {
-      // Ignore errors in cleanup
     }
 
     return NextResponse.json({

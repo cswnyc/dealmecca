@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { authedFetch } from '@/lib/authedFetch';
 import { 
   Plus, 
   Search, 
@@ -83,7 +84,7 @@ export function PartnershipManagement({
 
   const fetchPartnerships = async () => {
     try {
-      const response = await fetch(`/api/admin/companies/${companyId}/partnerships`);
+      const response = await authedFetch(`/api/admin/companies/${companyId}/partnerships`);
       if (response.ok) {
         const data = await response.json();
         setPartnerships(data.partnerships || []);
@@ -103,7 +104,7 @@ export function PartnershipManagement({
 
     setSearching(true);
     try {
-      const response = await fetch(`/api/admin/companies?q=${encodeURIComponent(query)}`);
+      const response = await authedFetch(`/api/admin/companies?q=${encodeURIComponent(query)}`);
       if (response.ok) {
         const data = await response.json();
         // Filter out current company and existing partners
@@ -126,7 +127,7 @@ export function PartnershipManagement({
     try {
       const isAgency = companyType.includes('AGENCY') || companyType === 'AGENCY';
       
-      const response = await fetch('/api/admin/partnerships', {
+      const response = await authedFetch('/api/admin/partnerships', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -163,7 +164,7 @@ export function PartnershipManagement({
     if (!confirm('Are you sure you want to delete this partnership?')) return;
 
     try {
-      const response = await fetch(`/api/admin/partnerships/${partnershipId}`, {
+      const response = await authedFetch(`/api/admin/partnerships/${partnershipId}`, {
         method: 'DELETE'
       });
 

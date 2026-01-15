@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { authedFetch } from '@/lib/authedFetch';
 import { useParams } from 'next/navigation';
 import EventForm from '@/components/admin/EventForm';
 
@@ -54,7 +55,7 @@ export default function EditEvent() {
     const fetchEvent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/admin/events/${eventId}`);
+        const response = await authedFetch(`/api/admin/events/${eventId}`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch event');

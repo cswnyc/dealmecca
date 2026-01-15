@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { authedFetch } from '@/lib/authedFetch';
 import {
   Calendar,
   Plus,
@@ -86,7 +87,7 @@ export default function AdminEventsPage() {
         ...(categoryFilter && { category: categoryFilter })
       });
 
-      const response = await fetch(`/api/admin/events?${params}`);
+      const response = await authedFetch(`/api/admin/events?${params}`);
       if (!response.ok) throw new Error('Failed to fetch events');
 
       const data = await response.json();
@@ -116,7 +117,7 @@ export default function AdminEventsPage() {
     if (selectedEvents.length === 0) return;
 
     try {
-      const response = await fetch('/api/admin/events/bulk', {
+      const response = await authedFetch('/api/admin/events/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -532,7 +533,7 @@ export default function AdminEventsPage() {
                             onClick={async () => {
                               if (confirm('Are you sure you want to delete this event?')) {
                                 try {
-                                  const response = await fetch(`/api/admin/events/${event.id}`, {
+                                  const response = await authedFetch(`/api/admin/events/${event.id}`, {
                                     method: 'DELETE',
                                   });
                                   if (response.ok) {

@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put, del } from '@vercel/blob';
 import sharp from 'sharp';
-import { requireAuth } from '@/server/requireAuth';
+import { requireAdmin } from '@/server/requireAdmin';
 import { prisma } from '@/lib/prisma';
 
 // Configuration
@@ -21,19 +21,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication and ensure user exists in database
-    const auth = await requireAuth(request);
-    if (auth instanceof NextResponse) return auth; // Auth failed
-
-    // Check if user is admin
-    const user = await prisma.user.findUnique({
-      where: { id: auth.dbUserId },
-      select: { role: true }
-    });
-
-    if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 403 });
-    }
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
 
@@ -155,19 +144,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify authentication and ensure user exists in database
-    const auth = await requireAuth(request);
-    if (auth instanceof NextResponse) return auth; // Auth failed
-
-    // Check if user is admin
-    const user = await prisma.user.findUnique({
-      where: { id: auth.dbUserId },
-      select: { role: true }
-    });
-
-    if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 403 });
-    }
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
 

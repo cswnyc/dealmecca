@@ -33,6 +33,7 @@ interface ForumComment {
     name: string;
     publicHandle?: string;
     anonymousUsername?: string;
+    avatarSeed?: string;
     company?: {
       id: string;
       name: string;
@@ -130,8 +131,10 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
             {/* Avatar */}
             <div className="flex-shrink-0">
               <AvatarDisplay
-                avatarId={!comment.isAnonymous && currentUserIdentity ? currentUserIdentity.avatarId : undefined}
-                username={comment.isAnonymous ? 'Anonymous' : (comment.author?.name || 'User')}
+                avatarId={comment.author?.avatarSeed}
+                username={comment.isAnonymous 
+                  ? (comment.anonymousHandle || 'Anonymous')
+                  : (comment.author?.anonymousUsername || comment.author?.name || 'User')}
                 size={32}
               />
             </div>
@@ -142,7 +145,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
                 <span className="font-medium text-foreground">
                   {comment.isAnonymous
                     ? (comment.anonymousHandle || 'Anonymous')
-                    : (comment.author.anonymousUsername || comment.author.publicHandle || 'User')
+                    : (comment.author?.anonymousUsername || comment.author?.publicHandle || comment.author?.name || 'User')
                   }
                 </span>
 

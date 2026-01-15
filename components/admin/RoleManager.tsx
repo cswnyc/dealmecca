@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserRole, getRoleDefinition, permissionSystem } from '@/lib/permissions';
 import { featureGates } from '@/lib/feature-gates';
+import { authedFetch } from '@/lib/authedFetch';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -112,8 +113,8 @@ export default function RoleManager() {
       setError(null);
       
       const [usersResponse, teamsResponse] = await Promise.all([
-        fetch('/api/admin/users'),
-        fetch('/api/admin/teams')
+        authedFetch('/api/admin/users'),
+        authedFetch('/api/admin/teams')
       ]);
 
       if (!usersResponse.ok) throw new Error('Failed to load users');
@@ -143,7 +144,7 @@ export default function RoleManager() {
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
       setError(null);
-      const response = await fetch(`/api/admin/users/${userId}/role`, {
+      const response = await authedFetch(`/api/admin/users/${userId}/role`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: newRole })
@@ -166,7 +167,7 @@ export default function RoleManager() {
   const handleToggleActive = async (userId: string, isActive: boolean) => {
     try {
       setError(null);
-      const response = await fetch(`/api/admin/users/${userId}/status`, {
+      const response = await authedFetch(`/api/admin/users/${userId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive })
@@ -191,7 +192,7 @@ export default function RoleManager() {
 
     try {
       setError(null);
-      const response = await fetch('/api/admin/users/bulk', {
+      const response = await authedFetch('/api/admin/users/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -218,7 +219,7 @@ export default function RoleManager() {
   // Export users
   const handleExport = async () => {
     try {
-      const response = await fetch('/api/admin/users/export');
+      const response = await authedFetch('/api/admin/users/export');
       if (!response.ok) throw new Error('Export failed');
       
       const blob = await response.blob();

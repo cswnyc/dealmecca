@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/server/requireAdmin';
 
 /**
  * GET - Fetch organization analytics and statistics (Admin)
  */
 export async function GET(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     // Get total counts
     const [
       totalCompanies,

@@ -87,11 +87,6 @@ export function middleware(request: NextRequest) {
 
   // For protected routes, apply authentication checks
   if (isProtectedRoute) {
-    // Skip auth checks for admin routes in development
-    if (pathname.startsWith('/admin') && process.env.NODE_ENV === 'development') {
-      return NextResponse.next();
-    }
-
     // Check for authentication token/session
     const authToken = request.cookies.get('auth-token');
     const firebaseToken = request.cookies.get('__session'); // Firebase session cookie

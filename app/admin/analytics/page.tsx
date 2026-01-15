@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { authedFetch } from '@/lib/authedFetch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   TrendingUp,
@@ -89,7 +90,7 @@ export default function AnalyticsDashboard() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/admin/analytics');
+      const response = await authedFetch('/api/admin/analytics');
 
       if (response.ok) {
         const data = await response.json();

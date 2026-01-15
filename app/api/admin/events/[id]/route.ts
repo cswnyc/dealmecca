@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/server/requireAdmin';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const event = await prisma.event.findUnique({
       where: { id: params.id },
       include: {
@@ -94,6 +98,9 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const body = await request.json();
     const {
       name,
@@ -176,6 +183,9 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     await prisma.event.delete({
       where: { id: params.id }
     });

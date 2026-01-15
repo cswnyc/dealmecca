@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/server/requireAdmin';
 
 // GET /api/admin/duties - List all duties
 export async function GET(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const isGlobal = searchParams.get('isGlobal');
@@ -46,6 +50,9 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/duties - Create a new duty
 export async function POST(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const body = await request.json();
     const { name, category, description, isGlobal } = body;
 

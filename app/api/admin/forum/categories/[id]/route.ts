@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/server/requireAdmin';
 
 // GET - Get single category
 export async function GET(
@@ -7,6 +8,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const category = await prisma.forumCategory.findUnique({
       where: { id: params.id },
       include: {
@@ -41,6 +45,9 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const body = await request.json();
     const { name, description, slug, icon, color, order, isActive } = body;
 
@@ -106,6 +113,9 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     // Check if category exists
     const category = await prisma.forumCategory.findUnique({
       where: { id: params.id },

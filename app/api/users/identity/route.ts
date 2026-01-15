@@ -95,9 +95,50 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // Auto-repair invalid avatarSeed values for existing users
+    let currentAvatarId = user.avatarSeed;
+    let currentUsername = user.anonymousUsername;
+    let needsUpdate = false;
+    const updateData: any = {};
+    
+    // Validate the avatar exists in the library
+    const isValidAvatar = currentAvatarId && getAvatarById(currentAvatarId);
+    
+    if (!isValidAvatar) {
+      // IMPORTANT: Use user.id as the seed to ensure each user gets a unique, stable avatar
+      // This prevents collisions where different users might get the same avatar
+      const { generateAnonymousProfile } = await import('@/lib/user-generator');
+      const profile = generateAnonymousProfile(user.id);
+      currentAvatarId = profile.avatarId;
+      updateData.avatarSeed = currentAvatarId;
+      needsUpdate = true;
+      
+      console.log(`✅ Auto-repairing avatarSeed for user ${user.id}: ${user.avatarSeed} → ${currentAvatarId}`);
+    }
+
+    // Also repair missing anonymousUsername
+    if (!currentUsername) {
+      const { generateAnonymousProfile } = await import('@/lib/user-generator');
+      const profile = generateAnonymousProfile(user.id);
+      currentUsername = profile.username;
+      updateData.anonymousUsername = currentUsername;
+      needsUpdate = true;
+      
+      console.log(`✅ Auto-repairing anonymousUsername for user ${user.id}: null → ${currentUsername}`);
+    }
+
+    // Persist repairs if needed
+    if (needsUpdate) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: updateData,
+      });
+      console.log(`✅ Auto-repair complete for user ${user.id} (${currentUsername})`);
+    }
+
     return NextResponse.json({
-      currentUsername: user.anonymousUsername,
-      currentAvatarId: user.avatarSeed,
+      currentUsername: currentUsername,
+      currentAvatarId: currentAvatarId,
       availableAvatars: AVATAR_LIBRARY.map(avatar => ({
         id: avatar.id,
         name: avatar.name,

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { authedFetch } from '@/lib/authedFetch';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -134,7 +135,7 @@ export default function ContactsAdmin() {
       if (verifiedFilter) params.append('verified', verifiedFilter);
       if (activeFilter) params.append('isActive', activeFilter);
 
-      const response = await fetch(`/api/admin/contacts?${params}`);
+      const response = await authedFetch(`/api/admin/contacts?${params}`);
       const data = await response.json();
 
       if (response.ok) {
@@ -216,7 +217,7 @@ export default function ContactsAdmin() {
     if (selectedContacts.length === 0) return;
 
     try {
-      const response = await fetch('/api/admin/contacts', {
+      const response = await authedFetch('/api/admin/contacts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

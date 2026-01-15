@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 // Removed getServerSession - using Firebase auth via middleware headers
 import { PrismaClient } from '@prisma/client';
+import { requireAdmin } from '@/server/requireAdmin';
 
 const prisma = new PrismaClient();
 
@@ -9,12 +10,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    
-  const userId = request.headers.get('x-user-id');
-  const userRole = request.headers.get('x-user-role');
-    if (!userId || userRole !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
     const { logoUrl } = await request.json();

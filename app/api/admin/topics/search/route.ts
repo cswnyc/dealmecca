@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/server/requireAdmin';
 
 interface EntitySuggestion {
   id: string;
@@ -19,6 +20,9 @@ interface EntitySuggestion {
 
 export async function POST(request: NextRequest) {
   try {
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const { query, limit = 20 } = await request.json();
 
     if (!query || query.trim().length < 2) {

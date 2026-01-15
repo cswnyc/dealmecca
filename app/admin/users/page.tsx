@@ -25,7 +25,10 @@ import {
   Trash2
 } from 'lucide-react';
 import { EditUserModal } from '@/components/admin/EditUserModal';
+import { AvatarDisplay } from '@/components/ui/AvatarDisplay';
+import { getAvatarById, getRandomAvatar } from '@/lib/avatar-library';
 import { motionVariants, designTokens, shouldReduceMotion } from '@/lib/design-tokens';
+import { authedFetch } from '@/lib/authedFetch';
 
 interface UserData {
   id: string;
@@ -37,6 +40,7 @@ interface UserData {
   subscriptionStatus: 'ACTIVE' | 'CANCELED' | 'INCOMPLETE' | 'INCOMPLETE_EXPIRED' | 'PAST_DUE' | 'UNPAID' | 'TRIALING';
   isAnonymous: boolean;
   anonymousUsername: string;
+  avatarSeed?: string;
   searchesUsed: number;
   dashboardVisits: number;
   searchesThisMonth: number;
@@ -135,7 +139,7 @@ export default function UsersAdminPage() {
       if (statusFilter) params.append('subscriptionStatus', statusFilter);
       if (accountStatusFilter) params.append('accountStatus', accountStatusFilter);
 
-      const response = await fetch(`/api/admin/users?${params.toString()}`);
+      const response = await authedFetch(`/api/admin/users?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch users');
@@ -152,7 +156,7 @@ export default function UsersAdminPage() {
 
   const exportCSV = async () => {
     try {
-      const response = await fetch('/api/admin/users', {
+      const response = await authedFetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'export' })
@@ -197,7 +201,7 @@ export default function UsersAdminPage() {
 
   const handleSaveUser = async (userId: string, updates: any) => {
     try {
-      const response = await fetch('/api/admin/users', {
+      const response = await authedFetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, updates })
@@ -231,7 +235,7 @@ export default function UsersAdminPage() {
       setDeletingUserId(user.id);
       setError('');
 
-      const response = await fetch('/api/admin/users', {
+      const response = await authedFetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -540,9 +544,17 @@ export default function UsersAdminPage() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
-                          {getRoleIcon(user.role)}
-                        </div>
+                        <AvatarDisplay
+                          avatarId={(() => {
+                            const hasValidSeed = user.avatarSeed && getAvatarById(user.avatarSeed);
+                            const avatarId = hasValidSeed ? user.avatarSeed : getRandomAvatar(user.id).id;
+                            console.log(`[Admin Users] User ${user.email}: avatarSeed=${user.avatarSeed}, using=${avatarId}`);
+                            return avatarId;
+                          })()}
+                          username={user.anonymousUsername || user.name || 'Anonymous'}
+                          size={40}
+                          className="flex-shrink-0"
+                        />
                         <div className="ml-4">
                           <div className="flex items-center space-x-2">
                             <div className="text-sm font-medium text-foreground">

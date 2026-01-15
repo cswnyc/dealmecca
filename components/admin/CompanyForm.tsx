@@ -29,6 +29,7 @@ import {
   Plus
 } from 'lucide-react';
 import Link from 'next/link';
+import { authedFetch } from '@/lib/authedFetch';
 
 // Validation rules
 interface ValidationRule {
@@ -326,7 +327,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
 
   const fetchDuties = async () => {
     try {
-      const response = await fetch('/api/admin/duties');
+      const response = await authedFetch('/api/admin/duties');
       const data = await response.json();
       setAvailableDuties(data || []);
     } catch (error) {
@@ -775,7 +776,7 @@ export default function CompanyForm({ mode, company, onSave, onDelete, onCancel,
       if (onDelete) {
         await onDelete();
       } else {
-        const response = await fetch(`/api/admin/companies/${company.id}`, {
+        const response = await authedFetch(`/api/admin/companies/${company.id}`, {
           method: 'DELETE'
         });
 

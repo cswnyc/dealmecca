@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from "@/lib/auth/firebase-auth";
+import { authedFetch } from '@/lib/authedFetch';
 import { X, Upload, Info } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -103,7 +104,7 @@ export function AddEntityModal({ isOpen, onClose, entityType, onEntityAdded }: A
         formData.append('file', file);
       }
 
-      const response = await fetch('/api/admin/entities/conversational', {
+      const response = await authedFetch('/api/admin/entities/conversational', {
         method: 'POST',
         body: formData,
       });

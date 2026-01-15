@@ -5,6 +5,7 @@ import { Users, Building2, MessageSquare, TrendingUp, Plus, Settings, Upload, Ba
 import { PageFrame, PageHeader, PageContent, PageCard, PageGrid } from '@/components/layout/PageFrame';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { authedFetch } from '@/lib/authedFetch';
 import Link from 'next/link';
 
 interface DashboardStats {
@@ -37,15 +38,15 @@ export default function AdminDashboard() {
         const contactsData = await contactsRes.json();
 
         // Fetch real user stats
-        const usersRes = await fetch('/api/admin/users?include_stats=true&limit=1');
+        const usersRes = await authedFetch('/api/admin/users?include_stats=true&limit=1');
         const usersData = await usersRes.json();
 
         // Fetch forum posts count
-        const forumPostsRes = await fetch('/api/admin/forum/posts?limit=1');
+        const forumPostsRes = await authedFetch('/api/admin/forum/posts?limit=1');
         const forumPostsData = await forumPostsRes.json();
 
         // Fetch events count
-        const eventsRes = await fetch('/api/admin/events?limit=1');
+        const eventsRes = await authedFetch('/api/admin/events?limit=1');
         const eventsData = await eventsRes.json();
 
         setStats({

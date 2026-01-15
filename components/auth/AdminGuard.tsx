@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/firebase-auth';
+import { authedFetch } from '@/lib/authedFetch';
 
 interface AdminGuardProps {
   children: React.ReactNode;
@@ -25,24 +26,47 @@ export function AdminGuard({ children, fallbackUrl = '/auth/signup' }: AdminGuar
       // No user - redirect to login
       if (!user) {
         router.replace(fallbackUrl);
+        setIsAuthorized(false);
+        setIsChecking(false);
         return;
       }
 
-      // Check if user has admin privileges
-      // For now, we'll check if the email matches admin patterns
-      // Later this can be enhanced with proper role management
-      const adminEmails = [
-        'admin@dealmecca.pro',
-        'chris@dealmecca.com',
-        'csw@dealmecca.com',
-        'cswnyc@gmail.com'
-      ];
+      try {
+        const response = await authedFetch('/api/users/profile', { method: 'GET' });
 
-      const isAdmin = adminEmails.includes(user.email || '');
+        if (response.status === 401) {
+          router.replace(fallbackUrl);
+          setIsAuthorized(false);
+          setIsChecking(false);
+          return;
+        }
 
-      if (!isAdmin) {
-        // Not an admin - redirect to forum or organizations
-        router.replace('/forum');
+        if (!response.ok) {
+          router.replace('/forum');
+          setIsAuthorized(false);
+          setIsChecking(false);
+          return;
+        }
+
+        const profile: { role?: string } = await response.json();
+        const role = profile.role;
+        const isAdmin = role === 'ADMIN';
+
+        if (!isAdmin) {
+          router.replace('/forum');
+          setIsAuthorized(false);
+          setIsChecking(false);
+          return;
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '';
+        if (message === 'not_signed_in') {
+          router.replace(fallbackUrl);
+        } else {
+          router.replace('/forum');
+        }
+        setIsAuthorized(false);
+        setIsChecking(false);
         return;
       }
 

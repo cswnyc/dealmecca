@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ContactPhotoUpload } from '@/components/admin/ContactPhotoUpload';
 import ImageUpload from '@/components/admin/ImageUpload';
+import { authedFetch } from '@/lib/authedFetch';
 import {
   ArrowLeft,
   Building2,
@@ -261,7 +262,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
 
   const fetchDuties = async () => {
     try {
-      const response = await fetch('/api/admin/duties');
+      const response = await authedFetch('/api/admin/duties');
       const data = await response.json();
       setAvailableDuties(data || []);
     } catch (error) {
@@ -501,7 +502,7 @@ export default function ContactForm({ mode, contact, onSave, onDelete, onCancel 
       if (onDelete) {
         await onDelete();
       } else {
-        const response = await fetch(`/api/admin/contacts/${contact.id}`, {
+        const response = await authedFetch(`/api/admin/contacts/${contact.id}`, {
           method: 'DELETE'
         });
 

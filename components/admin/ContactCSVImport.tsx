@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import { authedFetch } from '@/lib/authedFetch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,7 +87,7 @@ export function ContactCSVImport() {
   // Load companies for matching
   const loadCompanies = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/companies');
+      const response = await authedFetch('/api/admin/companies');
       if (response.ok) {
         const data = await response.json();
         setCompanies(data.companies || []);
@@ -285,7 +286,7 @@ export function ContactCSVImport() {
     setIsImporting(true);
     
     try {
-      const response = await fetch('/api/admin/contacts/bulk-import', {
+      const response = await authedFetch('/api/admin/contacts/bulk-import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contacts: validContacts }),

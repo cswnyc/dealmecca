@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { requireAdmin } from '@/server/requireAdmin';
 
 // API endpoint to handle conversational entity submissions
 export async function POST(request: NextRequest) {
   try {
-    // Get the session from Firebase auth via cookies
+    const admin = await requireAdmin(request);
+    if (admin instanceof NextResponse) return admin;
+
     const formData = await request.formData();
 
     const content = formData.get('content') as string;
@@ -22,15 +24,6 @@ export async function POST(request: NextRequest) {
     // TODO: Process the conversational input with AI/NLP to extract structured data
     // TODO: Store in database with status 'pending_review'
     // TODO: If file is provided, upload to storage and link to submission
-
-    // For now, just return success
-    console.log('Conversational entity submission:', {
-      entityType,
-      content: content.substring(0, 100) + '...',
-      hideUsername,
-      hasFile: !!file,
-      fileName: file?.name
-    });
 
     return NextResponse.json({
       success: true,
