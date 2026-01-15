@@ -1039,15 +1039,13 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
           {/* Left side: Author info */}
           <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
             <AvatarDisplay
-              avatarId={post.author.avatarSeed}
-              username={post.isAnonymous 
-                ? (post.anonymousHandle || post.author.anonymousUsername || 'Anonymous')
-                : (post.author.anonymousUsername || post.author.publicHandle || post.author.name || 'Member')}
+              avatarId={post.isAnonymous ? undefined : post.author.avatarSeed}
+              username={post.isAnonymous ? 'Anonymous' : (post.author.anonymousUsername || post.author.publicHandle || post.author.name || 'Member')}
               size={16}
             />
             <span>
               {post.isAnonymous
-                ? (post.anonymousHandle || post.author.anonymousUsername || 'Anonymous')
+                ? 'Anonymous'
                 : (post.author.anonymousUsername || post.author.publicHandle || post.author.name || 'Member')}
             </span>
             <span>•</span>
@@ -1307,10 +1305,8 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                       {/* Avatar */}
                       <div className="flex-shrink-0">
                         <AvatarDisplay
-                          avatarId={comment.author?.avatarSeed}
-                          username={comment.isAnonymous 
-                            ? (comment.anonymousHandle || 'Anonymous')
-                            : (comment.author?.anonymousUsername || comment.author?.name || 'User')}
+                          avatarId={comment.isAnonymous ? undefined : comment.author?.avatarSeed}
+                          username={comment.isAnonymous ? 'Anonymous' : (comment.author?.anonymousUsername || comment.author?.name || 'User')}
                           size={32}
                         />
                       </div>
@@ -1319,10 +1315,7 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center space-x-2">
                               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {comment.isAnonymous
-                                  ? (comment.anonymousHandle || 'Anonymous')
-                                  : (comment.author?.anonymousUsername || comment.author?.name || 'User')
-                                }
+                                {comment.isAnonymous ? 'Anonymous' : (comment.author?.anonymousUsername || comment.author?.name || 'User')}
                               </span>
                               <span className="text-xs text-gray-400 dark:text-gray-500">
                                 {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}

@@ -131,10 +131,8 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
             {/* Avatar */}
             <div className="flex-shrink-0">
               <AvatarDisplay
-                avatarId={comment.author?.avatarSeed}
-                username={comment.isAnonymous 
-                  ? (comment.anonymousHandle || 'Anonymous')
-                  : (comment.author?.anonymousUsername || comment.author?.name || 'User')}
+                avatarId={comment.isAnonymous ? undefined : comment.author?.avatarSeed}
+                username={comment.isAnonymous ? 'Anonymous' : (comment.author?.anonymousUsername || comment.author?.name || 'User')}
                 size={32}
               />
             </div>
@@ -144,7 +142,7 @@ function CommentItem({ comment, onReply, onVote, maxDepth = 5 }: CommentItemProp
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-foreground">
                   {comment.isAnonymous
-                    ? (comment.anonymousHandle || 'Anonymous')
+                    ? 'Anonymous'
                     : (comment.author?.anonymousUsername || comment.author?.publicHandle || comment.author?.name || 'User')
                   }
                 </span>
