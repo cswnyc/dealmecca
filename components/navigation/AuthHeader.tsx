@@ -47,6 +47,7 @@ export default function AuthHeader() {
       pathname === '/forum' ||
       pathname.startsWith('/forum/') ||
       pathname === '/organizations' ||
+      pathname.startsWith('/organizations') ||
       pathname.startsWith('/companies/') ||
       pathname.startsWith('/people/') ||
       pathname === '/events' ||
