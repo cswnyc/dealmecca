@@ -48,23 +48,37 @@ function MentionChip({ type, id, name, data, resolved }: MentionChipProps) {
 
   useEffect(() => {
     if (!data && !resolved) {
+      const abortController = new AbortController();
+
       // Fetch the entity data
       const fetchData = async () => {
         try {
           const endpoint = type === 'company' ? `/api/companies/${id}` : `/api/contacts/${id}`;
-          const response = await fetch(endpoint);
+          const response = await fetch(endpoint, { signal: abortController.signal });
           if (response.ok) {
             const result = await response.json();
-            setMentionData(result);
+            if (!abortController.signal.aborted) {
+              setMentionData(result);
+            }
           }
         } catch (error) {
-          console.error(`Failed to fetch ${type} data:`, error);
+          // Ignore abort errors (component unmounted)
+          if (error instanceof Error && error.name === 'AbortError') {
+            return;
+          }
+          // Silently handle network errors - mention will show without additional data
         } finally {
-          setLoading(false);
+          if (!abortController.signal.aborted) {
+            setLoading(false);
+          }
         }
       };
 
       fetchData();
+
+      return () => {
+        abortController.abort();
+      };
     }
   }, [type, id, data, resolved]);
 
