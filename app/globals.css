@@ -1188,3 +1188,25 @@ select option {
   color: #f3f4f6 !important;
   -webkit-text-fill-color: #f3f4f6 !important;
 }
+
+
+/* ==================== ORGANIZATIONS PAGE UTILITIES ==================== */
+/* Brand gradient for active tabs and buttons */
+.brand-gradient {
+  background: linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%);
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Compact header transition */
+.header-compact-transition {
+  transition: all 200ms ease-in-out;
+}
+
