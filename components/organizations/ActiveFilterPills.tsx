@@ -15,6 +15,7 @@ interface ActiveFilterPillsProps {
   onRemoveFilter: (id: string) => void;
   onClearAll?: () => void;
   compact?: boolean;
+  showClearAll?: boolean;
   className?: string;
 }
 
@@ -23,6 +24,7 @@ export function ActiveFilterPills({
   onRemoveFilter,
   onClearAll,
   compact = false,
+  showClearAll = true,
   className,
 }: ActiveFilterPillsProps) {
   if (filters.length === 0) {
@@ -31,16 +33,21 @@ export function ActiveFilterPills({
 
   if (compact) {
     return (
-      <div className={cn('flex items-center gap-1.5 overflow-x-auto hide-scrollbar', className)}>
+      <div className={cn('flex items-center gap-1.5 overflow-x-auto hide-scrollbar flex-shrink-0', className)}>
         {filters.map((filter) => (
-          <button
+          <span
             key={filter.id}
-            onClick={() => onRemoveFilter(filter.id)}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20 transition-colors whitespace-nowrap"
+            className="px-2.5 py-1 bg-blue-100 dark:bg-blue-900/50 text-brand-blue text-xs font-medium rounded-full flex items-center gap-1.5"
           >
-            <span>{filter.label}</span>
-            <X className="w-3 h-3" />
-          </button>
+            {filter.label}
+            <button
+              onClick={() => onRemoveFilter(filter.id)}
+              className="hover:text-blue-900 dark:hover:text-blue-300 transition-colors"
+              aria-label={`Remove ${filter.label} filter`}
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </span>
         ))}
       </div>
     );
@@ -48,26 +55,31 @@ export function ActiveFilterPills({
 
   return (
     <div className={cn('flex items-center gap-2 flex-wrap', className)}>
-      <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Active:</span>
+      <span className="text-xs text-[#64748B] dark:text-[#9AA7C2]">Active:</span>
 
       {filters.map((filter) => (
-        <button
+        <span
           key={filter.id}
-          onClick={() => onRemoveFilter(filter.id)}
-          className="group flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20 transition-colors"
+          className="px-2.5 py-1 bg-[#2575FC]/10 dark:bg-[#5B8DFF]/20 text-[#2575FC] dark:text-[#5B8DFF] text-xs font-medium rounded-full flex items-center gap-1.5"
         >
           {filter.type && (
-            <span className="text-xs text-brand-primary/60">{filter.type}:</span>
+            <span className="text-[10px] text-[#2575FC]/60 dark:text-[#5B8DFF]/60">{filter.type}:</span>
           )}
-          <span>{filter.label}</span>
-          <X className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
-        </button>
+          {filter.label}
+          <button
+            onClick={() => onRemoveFilter(filter.id)}
+            className="hover:text-[#1a5fd4] dark:hover:text-[#8bb4ff] transition-colors"
+            aria-label={`Remove ${filter.label} filter`}
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </span>
       ))}
 
-      {onClearAll && filters.length > 1 && (
+      {showClearAll && onClearAll && filters.length > 1 && (
         <button
           onClick={onClearAll}
-          className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline underline-offset-2 transition-colors"
+          className="text-xs text-[#64748B] hover:text-[#162B54] dark:text-[#9AA7C2] dark:hover:text-[#EAF0FF] transition-colors"
         >
           Clear all
         </button>

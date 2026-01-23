@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Info, Network, Plus } from 'lucide-react';
+import { Info, Network, Plus, Link2 } from 'lucide-react';
 import PartnershipModal from '@/components/admin/PartnershipModal';
+import AddSubsidiaryModal from '@/components/admin/AddSubsidiaryModal';
 
 interface Company {
   id: string;
@@ -103,6 +104,7 @@ export default function CompanyViewPage() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'partnerships' | 'people' | 'teams' | 'subsidiaries' | 'duties'>('overview');
   const [showPartnershipModal, setShowPartnershipModal] = useState(false);
+  const [showAddSubsidiaryModal, setShowAddSubsidiaryModal] = useState(false);
   const [partnershipSaving, setPartnershipSaving] = useState(false);
   const [partnershipError, setPartnershipError] = useState('');
 
@@ -611,13 +613,22 @@ export default function CompanyViewPage() {
                 Companies owned by this organization in the corporate hierarchy. For example, WPP owns GroupM, which owns Mindshare.
               </p>
             </div>
-            <Link
-              href={`/admin/orgs/companies/create?parentCompanyId=${company.id}&parentName=${encodeURIComponent(company.name)}`}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 text-sm whitespace-nowrap"
-            >
-              <Plus className="w-4 h-4" />
-              Add Subsidiary
-            </Link>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowAddSubsidiaryModal(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 text-sm whitespace-nowrap"
+              >
+                <Link2 className="w-4 h-4" />
+                Add Existing
+              </button>
+              <Link
+                href={`/admin/orgs/companies/create?parentCompanyId=${company.id}&parentName=${encodeURIComponent(company.name)}`}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 text-sm whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4" />
+                Create New
+              </Link>
+            </div>
           </div>
           {company.subsidiaries.length === 0 ? (
             <div className="p-12 text-center">
@@ -626,13 +637,22 @@ export default function CompanyViewPage() {
               <p className="text-muted-foreground mb-6">
                 Add regional offices, agency brands, or other subsidiary companies to build out your corporate hierarchy.
               </p>
-              <Link
-                href={`/admin/orgs/companies/create?parentCompanyId=${company.id}&parentName=${encodeURIComponent(company.name)}`}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                <Plus className="w-4 h-4" />
-                Add First Subsidiary
-              </Link>
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={() => setShowAddSubsidiaryModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  <Link2 className="w-4 h-4" />
+                  Add Existing Company
+                </button>
+                <Link
+                  href={`/admin/orgs/companies/create?parentCompanyId=${company.id}&parentName=${encodeURIComponent(company.name)}`}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create New Company
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="divide-y divide-border">
@@ -674,6 +694,18 @@ export default function CompanyViewPage() {
         companyType={company.companyType}
         onSuccess={() => {
           setShowPartnershipModal(false);
+          fetchCompany(company.id);
+        }}
+      />
+
+      {/* Add Subsidiary Modal */}
+      <AddSubsidiaryModal
+        isOpen={showAddSubsidiaryModal}
+        onClose={() => setShowAddSubsidiaryModal(false)}
+        parentCompanyId={company.id}
+        parentCompanyName={company.name}
+        existingSubsidiaryIds={company.subsidiaries.map(s => s.id)}
+        onSuccess={() => {
           fetchCompany(company.id);
         }}
       />

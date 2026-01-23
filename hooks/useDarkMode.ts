@@ -1,47 +1,49 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-export function useDarkMode(): {
+interface UseDarkModeReturn {
   isDark: boolean;
   toggle: () => void;
   setDark: (value: boolean) => void;
-} {
+}
+
+export function useDarkMode(): UseDarkModeReturn {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Check initial dark mode state
-    const isDarkMode = document.documentElement.classList.contains('dark');
-    setIsDark(isDarkMode);
+    // Check for saved preference or system preference
+    const savedPreference = localStorage.getItem('darkMode');
+    const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    // Listen for changes to the dark class
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          const isDarkNow = document.documentElement.classList.contains('dark');
-          setIsDark(isDarkNow);
-        }
-      });
-    });
+    const shouldBeDark = savedPreference !== null
+      ? savedPreference === 'true'
+      : systemPreference;
 
-    observer.observe(document.documentElement, { attributes: true });
+    setIsDark(shouldBeDark);
 
-    return () => observer.disconnect();
+    // Apply to document
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, []);
 
-  const toggle = () => {
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
-  };
+  const setDark = useCallback((value: boolean) => {
+    setIsDark(value);
+    localStorage.setItem('darkMode', String(value));
 
-  const setDark = (value: boolean) => {
     if (value) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    setIsDark(value);
-  };
+  }, []);
+
+  const toggle = useCallback(() => {
+    setDark(!isDark);
+  }, [isDark, setDark]);
 
   return { isDark, toggle, setDark };
 }

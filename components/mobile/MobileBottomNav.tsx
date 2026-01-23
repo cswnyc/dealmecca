@@ -111,7 +111,8 @@ export default function MobileBottomNav({
               >
                 <div className="relative flex h-7 w-7 items-center justify-center">
                   <IconComponent
-                    className={`h-6 w-6 ${isActive ? item.color : ''}`}
+                    className="h-6 w-6"
+                    strokeWidth={isActive ? 2.5 : 2}
                   />
                   {item.badge && item.badge > 0 ? (
                     <Badge

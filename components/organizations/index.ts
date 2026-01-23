@@ -1,7 +1,19 @@
-// New header components
+// Header components
 export { OrganizationsHeader } from './OrganizationsHeader';
-export { CategoryTabs, type CategoryType } from './CategoryTabs';
-export { ActiveFilterPills, type Filter } from './ActiveFilterPills';
+export { CompactHeader } from './CompactHeader';
+export { CategoryTabs } from './CategoryTabs';
+export { ActiveFilterPills } from './ActiveFilterPills';
+export { FilterDrawer } from './FilterDrawer';
+export { MobileBottomNav } from './MobileBottomNav';
+
+// Card and list components
+export { OrganizationCard, getColorFromString } from './OrganizationCard';
+export { OrganizationsList } from './OrganizationsList';
+
+// Types
+export type { CategoryType } from './CategoryTabs';
+export type { Filter } from './ActiveFilterPills';
+export type { OrganizationCardProps, ColorScheme } from './OrganizationCard';
 
 // Existing detail page components
 export { AgencyDetailHeader } from './AgencyDetailHeader';

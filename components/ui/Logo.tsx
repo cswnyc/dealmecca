@@ -26,11 +26,11 @@ const sizes = {
 export function Logo({ size = 'md', iconOnly = false, dark = false, animated = true, className }: LogoProps) {
   const { icon, text, gap } = sizes[size];
 
-  // Gradient colors based on theme
-  const gradientStart = dark ? '#5B8DFF' : '#2575FC';
-  const gradientEnd = dark ? '#A78BFA' : '#8B5CF6';
-  const textColor = dark ? '#EAF0FF' : '#162B54';
-  const accentColor = dark ? '#5B8DFF' : '#2575FC';
+  // Gradient colors based on theme (brighter in dark mode for visibility)
+  const gradientStart = dark ? '#7BA4FF' : '#2575FC';
+  const gradientEnd = dark ? '#C4B5FD' : '#8B5CF6';
+  const textColor = dark ? '#FFFFFF' : '#162B54';
+  const accentColor = dark ? '#7BA4FF' : '#2575FC';
 
   // Unique gradient ID to avoid conflicts when multiple logos are on the page
   const gradientId = `logo-gradient-${dark ? 'dark' : 'light'}-${size}`;
@@ -50,7 +50,7 @@ export function Logo({ size = 'md', iconOnly = false, dark = false, animated = t
               {animated && (
                 <animate
                   attributeName="stop-color"
-                  values={dark ? '#5B8DFF;#A78BFA;#5B8DFF' : '#2575FC;#8B5CF6;#2575FC'}
+                  values={dark ? '#7BA4FF;#C4B5FD;#7BA4FF' : '#2575FC;#8B5CF6;#2575FC'}
                   dur="3s"
                   repeatCount="indefinite"
                 />
@@ -60,7 +60,7 @@ export function Logo({ size = 'md', iconOnly = false, dark = false, animated = t
               {animated && (
                 <animate
                   attributeName="stop-color"
-                  values={dark ? '#A78BFA;#5B8DFF;#A78BFA' : '#8B5CF6;#2575FC;#8B5CF6'}
+                  values={dark ? '#C4B5FD;#7BA4FF;#C4B5FD' : '#8B5CF6;#2575FC;#8B5CF6'}
                   dur="3s"
                   repeatCount="indefinite"
                 />
@@ -142,8 +142,9 @@ export function LogoMark({
   animated?: boolean;
   className?: string;
 }) {
-  const gradientStart = dark ? '#5B8DFF' : '#2575FC';
-  const gradientEnd = dark ? '#A78BFA' : '#8B5CF6';
+  // Brighter colors in dark mode for better visibility
+  const gradientStart = dark ? '#7BA4FF' : '#2575FC';
+  const gradientEnd = dark ? '#C4B5FD' : '#8B5CF6';
   const gradientId = `logomark-gradient-${dark ? 'dark' : 'light'}-${size}`;
 
   return (
@@ -160,7 +161,7 @@ export function LogoMark({
             {animated && (
               <animate
                 attributeName="stop-color"
-                values={dark ? '#5B8DFF;#A78BFA;#5B8DFF' : '#2575FC;#8B5CF6;#2575FC'}
+                values={dark ? '#7BA4FF;#C4B5FD;#7BA4FF' : '#2575FC;#8B5CF6;#2575FC'}
                 dur="3s"
                 repeatCount="indefinite"
               />
@@ -170,7 +171,7 @@ export function LogoMark({
             {animated && (
               <animate
                 attributeName="stop-color"
-                values={dark ? '#A78BFA;#5B8DFF;#A78BFA' : '#8B5CF6;#2575FC;#8B5CF6'}
+                values={dark ? '#C4B5FD;#7BA4FF;#C4B5FD' : '#8B5CF6;#2575FC;#8B5CF6'}
                 dur="3s"
                 repeatCount="indefinite"
               />
@@ -184,7 +185,7 @@ export function LogoMark({
         r="42"
         fill="none"
         stroke={`url(#${gradientId})`}
-        strokeWidth="4"
+        strokeWidth="5"
         strokeDasharray="8 4"
       >
         {animated && (

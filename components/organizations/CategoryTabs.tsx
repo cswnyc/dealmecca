@@ -39,23 +39,19 @@ export function CategoryTabs({
 }: CategoryTabsProps) {
   if (compact) {
     return (
-      <div className={cn('flex items-center gap-1.5 overflow-x-auto hide-scrollbar', className)}>
+      <div className={cn('flex items-center gap-1.5 overflow-x-auto hide-scrollbar flex-shrink-0', className)}>
         {categoryConfigs.map((category) => (
           <button
             key={category.id}
             onClick={() => onCategoryChange(category.id)}
             className={cn(
-              'flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all',
+              'px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors',
               activeCategory === category.id
-                ? 'bg-brand-primary text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+                ? 'brand-gradient text-white'
+                : 'text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
             )}
           >
-            {category.icon}
-            <span>{category.label}</span>
-            {counts[category.id] !== undefined && (
-              <span className="ml-0.5 opacity-70">{counts[category.id]}</span>
-            )}
+            {category.label}
           </button>
         ))}
       </div>
@@ -63,34 +59,35 @@ export function CategoryTabs({
   }
 
   return (
-    <div className={cn('overflow-x-auto hide-scrollbar', className)}>
-      <div className="flex items-center gap-1 min-w-max">
-        {categoryConfigs.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => onCategoryChange(category.id)}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap',
+    <div className={cn(
+      'flex items-center gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0',
+      className
+    )}>
+      {categoryConfigs.map((category) => (
+        <button
+          key={category.id}
+          onClick={() => onCategoryChange(category.id)}
+          className={cn(
+            'px-3 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm font-medium rounded-lg flex items-center gap-1.5 lg:gap-2 whitespace-nowrap flex-shrink-0 transition-colors',
+            activeCategory === category.id
+              ? 'brand-gradient text-white shadow-sm'
+              : 'text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+          )}
+        >
+          {category.icon}
+          {category.label}
+          {counts[category.id] !== undefined && (
+            <span className={cn(
+              'px-1.5 py-0.5 text-[10px] lg:text-xs rounded-full',
               activeCategory === category.id
-                ? 'brand-gradient text-white shadow-md'
-                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-            )}
-          >
-            {category.icon}
-            <span>{category.label}</span>
-            {counts[category.id] !== undefined && (
-              <span className={cn(
-                'px-1.5 py-0.5 rounded-full text-xs',
-                activeCategory === category.id
-                  ? 'bg-white/20'
-                  : 'bg-gray-200 dark:bg-gray-700'
-              )}>
-                {counts[category.id]}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+                ? 'bg-white/20 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+            )}>
+              {counts[category.id]?.toLocaleString()}
+            </span>
+          )}
+        </button>
+      ))}
     </div>
   );
 }

@@ -40,7 +40,7 @@ export function OrgListItem({
   showOrgChart = true
 }: OrgListItemProps) {
   return (
-    <div className="px-6 py-4 flex items-center justify-between hover:bg-[#F7F9FC] dark:hover:bg-[#101E38] cursor-pointer transition-all border-l-2 border-transparent hover:border-[#2575FC] dark:hover:border-[#5B8DFF]">
+    <div className="p-4 lg:p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer flex items-center justify-between">
       <div className="flex items-center gap-4 flex-1">
         <div className="w-12 h-12 rounded-xl icon-gradient-bg flex items-center justify-center">
           <svg className="w-6 h-6 text-[#2575FC] dark:text-[#5B8DFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

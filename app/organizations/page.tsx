@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth/firebase-auth';
 import { AuthGuard } from '@/components/auth/AuthGuard';
-import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network, Filter, Plus, MapPin, ChevronDown, X, Globe, User, Briefcase, BarChart3, Tv, Satellite, Monitor } from 'lucide-react';
+import { Building2, Users, Search, Upload, FileText, CheckCircle, XCircle, Network, Filter, Plus, MapPin, ChevronDown, X, Globe, User, Briefcase, BarChart3, Tv, Satellite, Monitor, SlidersHorizontal, ArrowUp } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PageFrame, PageHeader, PageContent, PageCard, PageGrid } from '@/components/layout/PageFrame';
@@ -29,6 +29,11 @@ import { StatsBar } from '@/components/orgs/StatsBar';
 import { OrgListItem, RelatedItems } from '@/components/orgs/OrgListItem';
 import { TeamChip, MoreTeamsLink } from '@/components/orgs/TeamChip';
 import { Linkedin } from 'lucide-react';
+import { CompactHeader, FilterDrawer, ActiveFilterPills, type Filter as FilterType } from '@/components/organizations';
+import { DarkModeToggle } from '@/components/ui/DarkModeToggle';
+import { LogoMark } from '@/components/ui/Logo';
+import { useScrollPosition } from '@/hooks/useScrollPosition';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 // Force dynamic rendering for user-specific content
 export const dynamic = 'force-dynamic'
@@ -431,6 +436,20 @@ export default function OrganizationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // New enhancement state and hooks
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
+  const [sortBy, setSortBy] = useState<string>('recently-active');
+  const [drawerFilters, setDrawerFilters] = useState({
+    agencyTypes: [] as string[],
+    locations: [] as string[],
+    clients: [] as string[],
+    verified: null as boolean | null,
+    teamSize: null as string | null,
+  });
+  const { showCompactHeader, scrollProgress, scrollToTop } = useScrollPosition(300);
+  const { isDark, toggle: toggleDarkMode } = useDarkMode();
+
   // Agency view state - Start with empty, will fetch from API
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>([]);
@@ -480,7 +499,10 @@ export default function OrganizationsPage() {
     department: [] as string[],
 
     // Industry filter (for advertisers)
-    industry: [] as string[]
+    industry: [] as string[],
+
+    // Geography filter (for publishers, platforms, adtech)
+    geography: 'all' as string
   });
 
   // UI state
@@ -534,6 +556,58 @@ export default function OrganizationsPage() {
 
   const handleTabChange = (tabValue: string) => {
     setActiveTab(tabValue as any);
+  };
+
+  // Filter management helpers
+  const handleRemoveFilter = (filterId: string) => {
+    setActiveFilters(prev => prev.filter(f => f.id !== filterId));
+  };
+
+  const handleClearAllFilters = () => {
+    setActiveFilters([]);
+    setDrawerFilters({
+      agencyTypes: [],
+      locations: [],
+      clients: [],
+      verified: null,
+      teamSize: null,
+    });
+    // Also clear filterState
+    setFilterState(prev => ({
+      ...prev,
+      holdingCompany: [],
+      states: [],
+      cities: [],
+      regions: [],
+    }));
+  };
+
+  const handleDrawerFilterChange = (newFilters: typeof drawerFilters) => {
+    setDrawerFilters(newFilters);
+
+    // Convert drawer filters to active filter pills
+    const newActiveFilters: FilterType[] = [];
+    newFilters.agencyTypes.forEach(type => {
+      newActiveFilters.push({ id: `type-${type}`, label: type, value: type, type: 'Agency Type' });
+    });
+    newFilters.locations.forEach(loc => {
+      newActiveFilters.push({ id: `loc-${loc}`, label: loc, value: loc, type: 'Location' });
+    });
+    setActiveFilters(newActiveFilters);
+
+    // Also update filterState so actual filtering works
+    // Map holding company names to filterState
+    setFilterState(prev => ({
+      ...prev,
+      holdingCompany: newFilters.agencyTypes,
+      states: newFilters.locations.filter(loc =>
+        ['New York', 'California', 'Illinois', 'Texas', 'New Jersey', 'Massachusetts', 'Georgia', 'Washington', 'Ohio', 'Pennsylvania'].includes(loc)
+      ),
+      cities: newFilters.locations.filter(loc => loc.includes(', ')), // Cities have format "City, ST"
+      regions: newFilters.locations.filter(loc =>
+        ['USA', 'Northeast', 'West', 'Midwest', 'Southeast', 'Southwest', 'Mid-Atlantic', 'Europe', 'Canada', 'United Kingdom'].includes(loc)
+      ),
+    }));
   };
 
   // Set admin status based on Firebase user
@@ -696,6 +770,20 @@ export default function OrganizationsPage() {
       filtered = filtered.filter(agency => filterState.agencyType.includes(agency.type));
     }
 
+    // Holding company filter (from drawer)
+    if (filterState.holdingCompany.length > 0) {
+      filtered = filtered.filter(agency => {
+        // Check for "Independent Agency" type match
+        if (filterState.holdingCompany.includes('Independent Agency') && agency.type === 'INDEPENDENT_AGENCY') {
+          return true;
+        }
+        // Check if agency name matches any selected holding company/network
+        return filterState.holdingCompany.some(hc =>
+          hc !== 'Independent Agency' && agency.name.toLowerCase().includes(hc.toLowerCase())
+        );
+      });
+    }
+
     // State filter (multi-select)
     if (filterState.states.length > 0) {
       filtered = filtered.filter(agency => agency.state && filterState.states.includes(agency.state));
@@ -724,8 +812,28 @@ export default function OrganizationsPage() {
       );
     }
 
+    // Sort the filtered results
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name-asc':
+          return (a.name || '').localeCompare(b.name || '');
+        case 'name-desc':
+          return (b.name || '').localeCompare(a.name || '');
+        case 'most-people':
+          return (b.teamCount || 0) - (a.teamCount || 0);
+        case 'most-clients':
+          return (b.clients?.length || 0) - (a.clients?.length || 0);
+        case 'recently-active':
+        default:
+          // Parse lastActivity dates and sort descending (most recent first)
+          const dateA = a.lastActivity ? new Date(a.lastActivity).getTime() : 0;
+          const dateB = b.lastActivity ? new Date(b.lastActivity).getTime() : 0;
+          return dateB - dateA;
+      }
+    });
+
     setFilteredAgencies(filtered);
-  }, [searchQuery, agencies, filterState.agencyType, filterState.states, filterState.cities, filterState.client, filterState.clientIndustry]);
+  }, [searchQuery, agencies, filterState.agencyType, filterState.holdingCompany, filterState.states, filterState.cities, filterState.client, filterState.clientIndustry, sortBy]);
 
   // Advertiser filtering
   useEffect(() => {
@@ -935,13 +1043,36 @@ export default function OrganizationsPage() {
 
   return (
     <AuthGuard>
-      <PageFrame maxWidth="7xl">
-        <PageHeader
-          title="Organizations"
-          description="Explore deal connections and partnership opportunities"
-        />
+      {/* Compact Header - appears on scroll (outside PageFrame for proper sticky) */}
+      <CompactHeader
+        visible={showCompactHeader}
+        activeCategory={activeTab as 'agencies' | 'advertisers' | 'people' | 'industries' | 'publishers' | 'dsp-ssp' | 'adtech'}
+        onCategoryChange={(category) => setActiveTab(category as typeof activeTab)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        activeFilters={activeFilters}
+        onRemoveFilter={handleRemoveFilter}
+        onOpenFilters={() => setFilterDrawerOpen(true)}
+        stats={{ filtered: filteredAgencies.length, total: agencies.length }}
+        scrollProgress={scrollProgress}
+      />
 
-        <PageContent>
+      <PageFrame maxWidth="7xl">
+        <div className="flex items-center justify-between -mt-5">
+          <div className="flex items-center gap-3">
+            {/* Mobile Logo - animated circle icon */}
+            <div className="lg:hidden">
+              <LogoMark size={52} animated={true} />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-[28px] font-bold text-[#162B54] dark:text-[#EAF0FF] tracking-tight leading-tight">Organizations</h1>
+              <p className="hidden lg:block text-[15px] text-[#64748B] dark:text-[#9AA7C2] mt-2">Explore deal connections and partnership opportunities</p>
+            </div>
+          </div>
+          <DarkModeToggle isDark={isDark} onToggle={toggleDarkMode} />
+        </div>
+
+        <PageContent className="pb-20 lg:pb-0 mt-6">
           {/* Tab Navigation */}
           <BrandTabs
             tabs={[
@@ -955,11 +1086,11 @@ export default function OrganizationsPage() {
             ]}
             activeTab={activeTab}
             onTabChange={handleTabChange}
-            className="mb-6"
+            className="mb-4"
           />
 
           {/* Search Bar and Action Buttons */}
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9AA7C2]" />
               <input
@@ -978,19 +1109,19 @@ export default function OrganizationsPage() {
                 className="w-full pl-12 pr-4 py-3 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] placeholder-[#9AA7C2] focus:outline-none focus:ring-2 focus:ring-[#2575FC]/20 focus:border-[#2575FC] dark:focus:ring-[#5B8DFF]/20 dark:focus:border-[#5B8DFF] transition-all"
               />
             </div>
-            {activeTab === 'agencies' && (
-              <button
-                onClick={() => {
-                  setSelectedEntityType('agency');
-                  setShowAddEntityModal(true);
-                }}
-                className="text-white px-5 py-3 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
-                style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
-              >
-                <Plus className="w-5 h-5" />
-                Add Agency
-              </button>
-            )}
+            {/* Filter Button */}
+            <button
+              onClick={() => setFilterDrawerOpen(true)}
+              className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] hover:border-[#2575FC] dark:hover:border-[#5B8DFF] transition-all"
+            >
+              <SlidersHorizontal className="w-5 h-5" />
+              <span className="hidden sm:inline">Filters</span>
+              {activeFilters.length > 0 && (
+                <span className="ml-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white rounded-full brand-gradient">
+                  {activeFilters.length}
+                </span>
+              )}
+            </button>
             {activeTab === 'advertisers' && (
               <button
                 onClick={() => {
@@ -1019,31 +1150,90 @@ export default function OrganizationsPage() {
             )}
           </div>
 
+          {/* Active Filter Pills */}
+          {activeFilters.length > 0 && (
+            <div className="mb-6">
+              <ActiveFilterPills
+                filters={activeFilters}
+                onRemoveFilter={handleRemoveFilter}
+                onClearAll={handleClearAllFilters}
+              />
+            </div>
+          )}
+
           {/* Agencies Tab */}
           {activeTab === 'agencies' && (
             <div className="space-y-6">
-              {/* Stats Bar */}
-              <StatsBar
-                stats={[
-                  { icon: Building2, label: 'Total Agencies', value: filteredAgencies.length, colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
-                  { icon: Users, label: 'Team Members', value: filteredAgencies.reduce((total, agency) => total + agency.teamCount, 0), colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
-                  { icon: CheckCircle, label: 'Verified Rate', value: `${filteredAgencies.length > 0 ? Math.round((filteredAgencies.filter(a => a.verified).length / filteredAgencies.length) * 100) : 0}%`, colorClass: 'bg-green-500/10 text-green-500' }
-                ]}
-              />
+              {/* Stats Row - horizontal bar */}
+              <div className="px-4 lg:px-6 py-3 bg-gradient-to-r from-slate-50 to-blue-50/30 dark:from-gray-800 dark:to-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 overflow-hidden">
+                {/* Left side - Stats */}
+                <div className="flex items-center gap-4 lg:gap-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                      <Building2 className="w-4 h-4 text-[#2575FC]" />
+                    </div>
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">Showing</span>
+                      <span className="font-bold text-gray-900 dark:text-white ml-1">{filteredAgencies.length.toLocaleString()}</span>
+                      <span className="text-gray-500 dark:text-gray-400 mx-1">of</span>
+                      <span className="font-bold text-gray-900 dark:text-white">{agencies.length.toLocaleString()}</span>
+                    </div>
+                  </div>
 
-              {/* Agencies List */}
-              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
-                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border flex items-center justify-between">
-                  <div>
-                    <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
-                      {searchQuery ? `Search Results (${filteredAgencies.length})` : 'Agency Directory'}
-                    </h2>
-                    <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">
-                      {searchQuery ? `Found ${filteredAgencies.length} agencies matching your search` : 'Discover and connect with leading agencies'}
-                    </p>
+                  <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-600" />
+
+                  <div className="hidden sm:flex items-center gap-2">
+                    <div className="w-8 h-8 bg-violet-100 dark:bg-violet-900/50 rounded-lg flex items-center justify-center">
+                      <Users className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">Team Members</span>
+                      <span className="font-bold text-gray-900 dark:text-white ml-1">{filteredAgencies.reduce((total, agency) => total + agency.teamCount, 0).toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+
+                {/* Right side - Sort + Add (hidden on mobile) */}
+                <div className="hidden sm:flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Sort by:</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#2575FC] focus:border-[#2575FC] outline-none cursor-pointer"
+                    >
+                      <option value="recently-active">Recently Active</option>
+                      <option value="name-asc">Name (A-Z)</option>
+                      <option value="name-desc">Name (Z-A)</option>
+                      <option value="most-people">Most People</option>
+                      <option value="most-clients">Most Clients</option>
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setSelectedEntityType('agency');
+                      setShowAddEntityModal(true);
+                    }}
+                    className="px-4 py-1.5 brand-gradient text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Agency
+                  </button>
+                </div>
+              </div>
+
+              {/* Agencies List */}
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 overflow-hidden">
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
+                    {searchQuery ? `Search Results (${filteredAgencies.length})` : 'Agency Directory'}
+                  </h2>
+                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">
+                    {searchQuery ? `Found ${filteredAgencies.length} agencies matching your search` : 'Discover and connect with leading agencies'}
+                  </p>
+                </div>
+                <div className="space-y-3 lg:space-y-4">
                   {filteredAgencies.map((agency) => {
                     const isExpanded = expandedAgencies.has(agency.id);
                     const displayedTeams = isExpanded ? agency.clientTeams : agency.clientTeams?.slice(0, 3) || [];
@@ -1113,14 +1303,14 @@ export default function OrganizationsPage() {
               />
 
               {/* Advertisers List */}
-              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
-                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 overflow-hidden">
+                <div className="mb-4">
                   <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
                     {searchQuery ? `Search Results (${filteredAdvertisers.length})` : 'Advertiser Directory'}
                   </h2>
                   <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover and connect with leading advertisers</p>
                 </div>
-                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                <div className="space-y-3 lg:space-y-4">
                   {filteredAdvertisers.map((advertiser) => {
                     const isExpanded = expandedAdvertisers.has(advertiser.id);
                     const displayedTeams = isExpanded ? advertiser.agencyTeams : advertiser.agencyTeams?.slice(0, 3) || [];
@@ -1191,16 +1381,16 @@ export default function OrganizationsPage() {
               />
 
               {/* People List */}
-              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
-                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 overflow-hidden">
+                <div className="mb-4">
                   <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
                     {searchQuery ? `Search Results (${filteredContacts.length})` : 'People Directory'}
                   </h2>
                   <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Connect with industry professionals</p>
                 </div>
-                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                <div className="space-y-3 lg:space-y-4">
                   {filteredContacts.map((contact) => (
-                    <div key={contact.id} className="px-6 py-4 hover:bg-[#F7F9FC] dark:hover:bg-[#101E38] cursor-pointer transition-all border-l-2 border-transparent hover:border-[#2575FC] dark:hover:border-[#5B8DFF]">
+                    <div key={contact.id} className="p-4 lg:p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4 flex-1">
                           <div className="w-12 h-12 rounded-full icon-gradient-bg flex items-center justify-center text-[#2575FC] dark:text-[#5B8DFF] font-bold text-lg flex-shrink-0">
@@ -1328,7 +1518,7 @@ export default function OrganizationsPage() {
                     <Link
                       key={industry.name}
                       href={`/industries/${encodeURIComponent(industry.name)}`}
-                      className="group bg-card border border-border rounded-lg p-4 hover:shadow-md hover:border-[#2575FC] dark:hover:border-[#5B8DFF] transition-all duration-200"
+                      className="group bg-card border border-border rounded-lg p-4 hover:shadow-md hover:border-[#2575FC] dark:hover:border-[#5B8DFF] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
@@ -1360,12 +1550,12 @@ export default function OrganizationsPage() {
               />
 
               {/* Publishers List */}
-              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
-                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 overflow-hidden">
+                <div className="mb-4">
                   <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">Publisher Directory</h2>
                   <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover media publishers</p>
                 </div>
-                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                <div className="space-y-3 lg:space-y-4">
                   {filteredPublishers.map((publisher) => (
                     <OrgListItem
                       key={publisher.id}
@@ -1397,12 +1587,12 @@ export default function OrganizationsPage() {
               />
 
               {/* Adtech List */}
-              <div className="bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl overflow-hidden">
-                <div className="px-6 py-4 border-b border-[#E6EAF2] dark:border-dark-border">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 overflow-hidden">
+                <div className="mb-4">
                   <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">Adtech Directory</h2>
                   <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover advertising technology platforms</p>
                 </div>
-                <div className="divide-y divide-[#E6EAF2] dark:divide-dark-border">
+                <div className="space-y-3 lg:space-y-4">
                   {filteredAdtech.map((company) => (
                     <OrgListItem
                       key={company.id}
@@ -1435,6 +1625,56 @@ export default function OrganizationsPage() {
               }}
             />
           )}
+
+          {/* Filter Drawer */}
+          <FilterDrawer
+            open={filterDrawerOpen}
+            onClose={() => setFilterDrawerOpen(false)}
+            filters={drawerFilters}
+            onFilterChange={handleDrawerFilterChange}
+            onClearAll={handleClearAllFilters}
+            resultCount={
+              activeTab === 'agencies' ? filteredAgencies.length :
+              activeTab === 'advertisers' ? filteredAdvertisers.length :
+              activeTab === 'people' ? filteredContacts.length :
+              activeTab === 'publisher' ? filteredPublishers.length :
+              activeTab === 'dsp-ssp' ? filteredPlatforms.length :
+              activeTab === 'adtech' ? filteredAdtech.length :
+              0
+            }
+          />
+
+          {/* Floating Action Buttons - appear with compact header on scroll (mobile & desktop) */}
+          <div
+            className={`fixed bottom-20 lg:bottom-8 right-4 lg:right-8 z-30 flex flex-col gap-3 transition-all duration-300 ${
+              showCompactHeader
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-4 pointer-events-none'
+            }`}
+          >
+            {/* Scroll to Top Button */}
+            <button
+              onClick={scrollToTop}
+              className="w-12 h-12 bg-white dark:bg-gray-800 text-[#162B54] dark:text-[#EAF0FF] rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all"
+              aria-label="Scroll to top"
+            >
+              <ArrowUp className="w-5 h-5" />
+            </button>
+
+            {/* Filter FAB */}
+            <button
+              onClick={() => setFilterDrawerOpen(true)}
+              className="relative w-14 h-14 brand-gradient text-white rounded-full shadow-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all animate-pulse-ring"
+              aria-label="Open filters"
+            >
+              <SlidersHorizontal className="w-6 h-6" />
+              {activeFilters.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {activeFilters.length}
+                </span>
+              )}
+            </button>
+          </div>
         </PageContent>
       </PageFrame>
     </AuthGuard>
