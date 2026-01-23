@@ -28,7 +28,7 @@ export default function InviteOnlyPage(): JSX.Element {
           <div className="container-premium">
             <div className="flex justify-center md:justify-start">
               <Logo
-                size="md"
+                size="xl"
                 dark={true}
                 className="drop-shadow-lg"
               />
@@ -57,22 +57,22 @@ export default function InviteOnlyPage(): JSX.Element {
           <div className="container-premium">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-6 text-sm">
-                <Link 
-                  href="/privacy" 
-                  className="link-secondary text-muted-foreground hover:text-foreground transition-colors"
+                <Link
+                  href="/privacy"
+                  className="text-slate-400 hover:text-white transition-colors"
                 >
                   Privacy Policy
                 </Link>
-                <Link 
-                  href="/terms" 
-                  className="link-secondary text-muted-foreground hover:text-foreground transition-colors"
+                <Link
+                  href="/terms"
+                  className="text-slate-400 hover:text-white transition-colors"
                 >
                   Terms of Service
                 </Link>
               </div>
 
               <div className="flex items-center">
-                <span className="text-muted-foreground text-sm">© 2024 DealMecca</span>
+                <span className="text-slate-400 text-sm">© 2025 DealMecca</span>
               </div>
             </div>
           </div>
