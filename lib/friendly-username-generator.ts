@@ -1,56 +1,15 @@
 /**
- * Friendly Username Generator
- * Creates approachable usernames in Adjective + Noun format (e.g., "Tan Hearts", "Loops Harley")
+ * Pop Culture Username Generator
+ * Generates usernames from 80s/90s/early 2000s pop culture references
+ * (music, movies, TV shows, video games, cartoons, and brands)
  */
 
-// Professional but friendly adjectives
-const ADJECTIVES = [
-  // Colors/Visual
-  'Azure', 'Sage', 'Coral', 'Mint', 'Pearl', 'Amber', 'Jade', 'Rose', 'Silver', 'Golden',
-  'Crimson', 'Violet', 'Tan', 'Olive', 'Navy', 'Cream', 'Steel', 'Ruby', 'Teal', 'Bronze',
+import popCultureData from '@/data/pop-culture-usernames.json';
 
-  // Positive qualities
-  'Swift', 'Bright', 'Sharp', 'Clear', 'Bold', 'Smart', 'Quick', 'Keen', 'Fresh', 'Smooth',
-  'Strong', 'Calm', 'Wise', 'Kind', 'Fair', 'True', 'Pure', 'Fine', 'Cool', 'Warm',
+// The pool of available pop culture usernames
+const USERNAME_POOL: string[] = popCultureData.usernames;
 
-  // Modern/Tech-friendly
-  'Digital', 'Modern', 'Elite', 'Prime', 'Ultra', 'Super', 'Mega', 'Pro', 'Max', 'Plus',
-  'Tech', 'Smart', 'Fast', 'Next', 'Core', 'Edge', 'Peak', 'Top', 'Star', 'Alpha',
-
-  // Abstract concepts
-  'Cosmic', 'Solar', 'Lunar', 'Storm', 'Ocean', 'River', 'Forest', 'Mountain', 'Cloud', 'Wind',
-  'Thunder', 'Lightning', 'Crystal', 'Diamond', 'Platinum', 'Titanium', 'Carbon', 'Quantum'
-];
-
-// Professional nouns with personality
-const NOUNS = [
-  // Nature
-  'Rivers', 'Mountains', 'Forests', 'Oceans', 'Valleys', 'Meadows', 'Gardens', 'Streams',
-  'Clouds', 'Stars', 'Moons', 'Suns', 'Winds', 'Storms', 'Waves', 'Trees', 'Flowers',
-
-  // Gemstones/Materials
-  'Diamonds', 'Crystals', 'Pearls', 'Gems', 'Stones', 'Metals', 'Silvers', 'Golds',
-  'Rubies', 'Emeralds', 'Sapphires', 'Opals', 'Jades', 'Ambers', 'Quartzes',
-
-  // Abstract concepts
-  'Dreams', 'Hopes', 'Visions', 'Ideas', 'Thoughts', 'Plans', 'Goals', 'Paths',
-  'Roads', 'Bridges', 'Doors', 'Windows', 'Lights', 'Shadows', 'Echoes', 'Whispers',
-
-  // Professional/Business
-  'Solutions', 'Strategies', 'Systems', 'Networks', 'Platforms', 'Frameworks', 'Models',
-  'Concepts', 'Methods', 'Approaches', 'Processes', 'Workflows', 'Pipelines', 'Channels',
-
-  // Personality traits
-  'Hearts', 'Minds', 'Souls', 'Spirits', 'Wills', 'Powers', 'Forces', 'Energies',
-  'Vibes', 'Moods', 'Feelings', 'Senses', 'Instincts', 'Intuitions', 'Insights',
-
-  // Names (like "Harley", "Penn" from your screenshot)
-  'Harper', 'Parker', 'Taylor', 'Morgan', 'Jordan', 'Casey', 'Riley', 'Quinn',
-  'Blake', 'Drew', 'Sage', 'Lane', 'Reed', 'Stone', 'Brook', 'Fox', 'Wolf',
-  'Bear', 'Hawk', 'Jay', 'Wren', 'Phoenix', 'Raven', 'Dove', 'Robin'
-];
-
-// Seeded random function for consistency
+// Seeded random function for consistent results based on user ID
 const seededRandom = (seed: string, offset = 0): number => {
   let hash = offset;
   for (let i = 0; i < seed.length; i++) {
@@ -62,67 +21,72 @@ const seededRandom = (seed: string, offset = 0): number => {
 };
 
 /**
- * Generate a friendly username in Adjective + Noun format
+ * Fisher-Yates shuffle with seed for reproducible shuffling
+ */
+const seededShuffle = <T>(array: T[], seed: string): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed, i) * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+/**
+ * Generate a consistent username for a given user ID
  */
 export const generateFriendlyUsername = (userId: string): string => {
-  const adjectiveIndex = Math.floor(seededRandom(userId, 1) * ADJECTIVES.length);
-  const nounIndex = Math.floor(seededRandom(userId, 2) * NOUNS.length);
-
-  const adjective = ADJECTIVES[adjectiveIndex];
-  const noun = NOUNS[nounIndex];
-
-  return `${adjective}${noun}`;
+  const index = Math.floor(seededRandom(userId, 1) * USERNAME_POOL.length);
+  return USERNAME_POOL[index];
 };
 
 /**
- * Generate multiple username options for user selection
+ * Generate multiple random username options for user selection
+ * Uses true randomness so each shuffle gives different results
  */
 export const generateUsernameOptions = (userId: string, count = 6): string[] => {
-  const options: string[] = [];
-  const usedCombinations = new Set<string>();
-
-  let attempts = 0;
-  while (options.length < count && attempts < count * 3) {
-    const adjectiveIndex = Math.floor(seededRandom(userId, attempts * 2 + 1) * ADJECTIVES.length);
-    const nounIndex = Math.floor(seededRandom(userId, attempts * 2 + 2) * NOUNS.length);
-
-    const adjective = ADJECTIVES[adjectiveIndex];
-    const noun = NOUNS[nounIndex];
-    const username = `${adjective}${noun}`;
-
-    if (!usedCombinations.has(username)) {
-      options.push(username);
-      usedCombinations.add(username);
-    }
-
-    attempts++;
-  }
-
-  return options;
+  // Use current timestamp + userId to get different results each time
+  const seed = `${userId}-${Date.now()}-${Math.random()}`;
+  const shuffled = seededShuffle(USERNAME_POOL, seed);
+  return shuffled.slice(0, count);
 };
 
 /**
- * Check if username follows friendly pattern
+ * Generate truly random username options (no seed)
  */
-export const isFriendlyUsername = (username: string): boolean => {
-  // Check if username is a combination of an adjective and noun (no spaces)
-  for (const adjective of ADJECTIVES) {
-    if (username.startsWith(adjective)) {
-      const remaining = username.slice(adjective.length);
-      if (NOUNS.includes(remaining)) {
-        return true;
-      }
-    }
-  }
-  return false;
+export const generateRandomUsernameOptions = (count = 6, exclude: string[] = []): string[] => {
+  const available = USERNAME_POOL.filter(u => !exclude.includes(u));
+  const shuffled = [...available].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
 };
 
 /**
- * Generate random friendly username (for real-time generation)
+ * Check if username is from our pop culture pool
+ */
+export const isPopCultureUsername = (username: string): boolean => {
+  return USERNAME_POOL.includes(username);
+};
+
+/**
+ * Generate a single random username
  */
 export const generateRandomFriendlyUsername = (): string => {
-  const adjective = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-
-  return `${adjective}${noun}`;
+  return USERNAME_POOL[Math.floor(Math.random() * USERNAME_POOL.length)];
 };
+
+/**
+ * Get total count of available usernames
+ */
+export const getUsernamePoolSize = (): number => {
+  return USERNAME_POOL.length;
+};
+
+/**
+ * Get metadata about the username pool
+ */
+export const getUsernameMetadata = () => {
+  return popCultureData.metadata;
+};
+
+// Legacy export for backwards compatibility
+export const isFriendlyUsername = isPopCultureUsername;
