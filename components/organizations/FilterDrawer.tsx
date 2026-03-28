@@ -23,12 +23,15 @@ interface FilterDrawerProps {
     agencyTypes: string[];
     locations: string[];
     clients: string[];
+    clientIndustries: string[];
+    duties: string[];
     verified: boolean | null;
     teamSize: string | null;
   };
   onFilterChange: (filters: FilterDrawerProps['filters']) => void;
   onClearAll: () => void;
   resultCount: number;
+  clientOptions?: string[]; // Dynamic client/advertiser names
   className?: string;
 }
 
@@ -147,8 +150,19 @@ export function FilterDrawer({
   onFilterChange,
   onClearAll,
   resultCount,
+  clientOptions = [],
   className,
 }: FilterDrawerProps) {
+  // Build dynamic filter sections with client options
+  const dynamicFilterSections = filterSections.map(section => {
+    if (section.id === 'client' && clientOptions.length > 0) {
+      return {
+        ...section,
+        subsections: [{ options: clientOptions }]
+      };
+    }
+    return section;
+  });
   // Track expanded sections
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     agencyType: true,
@@ -158,14 +172,14 @@ export function FilterDrawer({
     duty: false,
   });
 
-  // Track selected options per section
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({
-    agencyType: [],
-    geography: [],
-    client: [],
-    clientIndustry: [],
-    duty: [],
-  });
+  // Derive selected options from parent filters prop (single source of truth)
+  const selectedOptions: Record<string, string[]> = {
+    agencyType: filters.agencyTypes || [],
+    geography: filters.locations || [],
+    client: filters.clients || [],
+    clientIndustry: filters.clientIndustries || [],
+    duty: filters.duties || [],
+  };
 
   // Track search queries per section
   const [searchQueries, setSearchQueries] = useState<Record<string, string>>({
@@ -207,28 +221,32 @@ export function FilterDrawer({
   };
 
   const toggleOption = (sectionId: string, option: string) => {
-    setSelectedOptions(prev => {
-      const current = prev[sectionId] || [];
-      const isSelected = current.includes(option);
-      return {
-        ...prev,
-        [sectionId]: isSelected
-          ? current.filter(o => o !== option)
-          : [...current, option]
-      };
-    });
-  };
+    const current = selectedOptions[sectionId] || [];
+    const isSelected = current.includes(option);
+    const newSelected = isSelected
+      ? current.filter(o => o !== option)
+      : [...current, option];
 
-  // Sync selected options to parent when they change
-  useEffect(() => {
-    onFilterChange({
-      ...filters,
-      agencyTypes: selectedOptions.agencyType || [],
-      locations: selectedOptions.geography || [],
-      clients: selectedOptions.client || [],
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOptions]);
+    const updatedFilters = { ...filters };
+    switch (sectionId) {
+      case 'agencyType':
+        updatedFilters.agencyTypes = newSelected;
+        break;
+      case 'geography':
+        updatedFilters.locations = newSelected;
+        break;
+      case 'client':
+        updatedFilters.clients = newSelected;
+        break;
+      case 'clientIndustry':
+        updatedFilters.clientIndustries = newSelected;
+        break;
+      case 'duty':
+        updatedFilters.duties = newSelected;
+        break;
+    }
+    onFilterChange(updatedFilters);
+  };
 
   const isSelected = (sectionId: string, option: string) => {
     return (selectedOptions[sectionId] || []).includes(option);
@@ -243,13 +261,6 @@ export function FilterDrawer({
   };
 
   const handleClearAll = () => {
-    setSelectedOptions({
-      agencyType: [],
-      geography: [],
-      client: [],
-      clientIndustry: [],
-      duty: [],
-    });
     setSearchQueries({
       agencyType: '',
       geography: '',
@@ -323,7 +334,7 @@ export function FilterDrawer({
 
         {/* Filter Content */}
         <div className="flex-1 overflow-y-auto">
-          {filterSections.map((section, sectionIndex) => (
+          {dynamicFilterSections.map((section, sectionIndex) => (
             <div key={section.id}>
               {/* Section Header */}
               <button
@@ -366,8 +377,15 @@ export function FilterDrawer({
                   {/* Subsections */}
                   {section.subsections.map((subsection, subIndex) => {
                     const filteredOptions = getFilteredOptions(section.id, subsection.options);
+                    const searchQuery = searchQueries[section.id] || '';
 
-                    if (filteredOptions.length === 0) return null;
+                    // For client section: only show results when user types, limit to 10
+                    const isClientSection = section.id === 'client';
+                    const showOptions = isClientSection ? searchQuery.length >= 2 : true;
+                    const displayOptions = isClientSection ? filteredOptions.slice(0, 10) : filteredOptions;
+
+                    if (!showOptions) return null;
+                    if (displayOptions.length === 0) return null;
 
                     return (
                       <div key={subIndex} className="mb-4">
@@ -380,7 +398,7 @@ export function FilterDrawer({
 
                         {/* Pill Buttons */}
                         <div className="flex flex-wrap gap-2">
-                          {filteredOptions.map((option) => (
+                          {displayOptions.map((option) => (
                             <button
                               key={option}
                               onClick={() => toggleOption(section.id, option)}
@@ -395,12 +413,25 @@ export function FilterDrawer({
                             </button>
                           ))}
                         </div>
+                        {/* Show count if more results */}
+                        {isClientSection && filteredOptions.length > 10 && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            Showing 10 of {filteredOptions.length} matches
+                          </p>
+                        )}
                       </div>
                     );
                   })}
 
+                  {/* Helper text for client section */}
+                  {section.id === 'client' && (searchQueries[section.id] || '').length < 2 && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Type at least 2 characters to search clients
+                    </p>
+                  )}
+
                   {/* Empty state for sections with no options */}
-                  {section.subsections.length === 0 && (
+                  {section.id !== 'client' && section.subsections.length === 0 && (
                     <p className="text-sm text-gray-500 dark:text-gray-400 italic">
                       No options available
                     </p>
@@ -409,7 +440,7 @@ export function FilterDrawer({
               )}
 
               {/* Section Divider */}
-              {sectionIndex < filterSections.length - 1 && (
+              {sectionIndex < dynamicFilterSections.length - 1 && (
                 <div className="border-t border-gray-200 dark:border-gray-700 mx-4 lg:mx-6" />
               )}
             </div>

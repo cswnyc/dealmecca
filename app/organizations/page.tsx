@@ -444,6 +444,8 @@ export default function OrganizationsPage() {
     agencyTypes: [] as string[],
     locations: [] as string[],
     clients: [] as string[],
+    clientIndustries: [] as string[],
+    duties: [] as string[],
     verified: null as boolean | null,
     teamSize: null as string | null,
   });
@@ -560,7 +562,31 @@ export default function OrganizationsPage() {
 
   // Filter management helpers
   const handleRemoveFilter = (filterId: string) => {
-    setActiveFilters(prev => prev.filter(f => f.id !== filterId));
+    // Parse filter ID to determine category and value, then update drawer filters
+    const dashIndex = filterId.indexOf('-');
+    const prefix = filterId.substring(0, dashIndex);
+    const value = filterId.substring(dashIndex + 1);
+
+    const updatedDrawerFilters = { ...drawerFilters };
+    switch (prefix) {
+      case 'type':
+        updatedDrawerFilters.agencyTypes = drawerFilters.agencyTypes.filter(v => v !== value);
+        break;
+      case 'loc':
+        updatedDrawerFilters.locations = drawerFilters.locations.filter(v => v !== value);
+        break;
+      case 'client':
+        updatedDrawerFilters.clients = drawerFilters.clients.filter(v => v !== value);
+        break;
+      case 'industry':
+        updatedDrawerFilters.clientIndustries = drawerFilters.clientIndustries.filter(v => v !== value);
+        break;
+      case 'duty':
+        updatedDrawerFilters.duties = drawerFilters.duties.filter(v => v !== value);
+        break;
+    }
+
+    handleDrawerFilterChange(updatedDrawerFilters);
   };
 
   const handleClearAllFilters = () => {
@@ -569,6 +595,8 @@ export default function OrganizationsPage() {
       agencyTypes: [],
       locations: [],
       clients: [],
+      clientIndustries: [],
+      duties: [],
       verified: null,
       teamSize: null,
     });
@@ -579,6 +607,12 @@ export default function OrganizationsPage() {
       states: [],
       cities: [],
       regions: [],
+      client: [],
+      clientIndustry: [],
+      role: [],
+      mediaTypes: [],
+      goals: [],
+      audiences: [],
     }));
   };
 
@@ -593,10 +627,18 @@ export default function OrganizationsPage() {
     newFilters.locations.forEach(loc => {
       newActiveFilters.push({ id: `loc-${loc}`, label: loc, value: loc, type: 'Location' });
     });
+    newFilters.clients.forEach(client => {
+      newActiveFilters.push({ id: `client-${client}`, label: client, value: client, type: 'Client' });
+    });
+    newFilters.clientIndustries.forEach(industry => {
+      newActiveFilters.push({ id: `industry-${industry}`, label: industry, value: industry, type: 'Industry' });
+    });
+    newFilters.duties.forEach(duty => {
+      newActiveFilters.push({ id: `duty-${duty}`, label: duty, value: duty, type: 'Duty' });
+    });
     setActiveFilters(newActiveFilters);
 
     // Also update filterState so actual filtering works
-    // Map holding company names to filterState
     setFilterState(prev => ({
       ...prev,
       holdingCompany: newFilters.agencyTypes,
@@ -607,6 +649,13 @@ export default function OrganizationsPage() {
       regions: newFilters.locations.filter(loc =>
         ['USA', 'Northeast', 'West', 'Midwest', 'Southeast', 'Southwest', 'Mid-Atlantic', 'Europe', 'Canada', 'United Kingdom'].includes(loc)
       ),
+      client: newFilters.clients,
+      clientIndustry: newFilters.clientIndustries,
+      // Duty section includes multiple subsection types - we'll filter by all of them
+      role: newFilters.duties.filter(d => ['Buying', 'Planning', 'Strategy', 'Creative', 'AOR', 'PR', 'Analytics', 'CRM', 'Innovation', 'League Partnerships'].includes(d)),
+      mediaTypes: newFilters.duties.filter(d => ['Digital', 'OOH', 'Programmatic', 'TV', 'Video', 'Print', 'Social Media', 'Event Sponsorship', 'Mobile', 'Display'].includes(d)),
+      goals: newFilters.duties.filter(d => ['Direct Response', 'Branding', 'Lead Gen', 'Demand Gen', 'Lower-Funnel', 'Upper-Funnel', 'Mid-Funnel', 'Partnerships', 'Expansion Projects', 'Consumer Growth'].includes(d)),
+      audiences: newFilters.duties.filter(d => ['Holiday', 'Hispanic', 'Multicultural', 'Female', 'Back-to-School', 'Male', 'Millennials', 'Generation Z', 'Local', 'National'].includes(d)),
     }));
   };
 
@@ -1254,11 +1303,12 @@ export default function OrganizationsPage() {
                           <div className="space-y-2 mt-2">
                             <div className="flex items-center gap-2 flex-wrap">
                               {displayedTeams.map(team => (
-                                <TeamChip 
-                                  key={team.id} 
-                                  name={team.name} 
-                                  logo={team.logoUrl} 
+                                <TeamChip
+                                  key={team.id}
+                                  name={team.name}
+                                  logo={team.logoUrl}
                                   color={team.color}
+                                  href={`/companies/${team.id}`}
                                 />
                               ))}
                               {agency.totalTeams > 3 && (
@@ -1332,11 +1382,12 @@ export default function OrganizationsPage() {
                           <div className="space-y-2 mt-2">
                             <div className="flex items-center gap-2 flex-wrap">
                               {displayedTeams.map(team => (
-                                <TeamChip 
-                                  key={team.id} 
-                                  name={team.name} 
-                                  logo={team.logoUrl} 
+                                <TeamChip
+                                  key={team.id}
+                                  name={team.name}
+                                  logo={team.logoUrl}
                                   color={team.color}
+                                  href={`/companies/${team.id}`}
                                 />
                               ))}
                               {advertiser.totalTeams > 3 && (
@@ -1422,11 +1473,12 @@ export default function OrganizationsPage() {
                             {contact.teams && contact.teams.length > 0 && (
                               <div className="flex items-center gap-2 flex-wrap mb-2">
                                 {contact.teams.map(team => (
-                                  <TeamChip 
-                                    key={team.id} 
-                                    name={team.name} 
-                                    logo={team.logoUrl} 
+                                  <TeamChip
+                                    key={team.id}
+                                    name={team.name}
+                                    logo={team.logoUrl}
                                     color={team.color}
+                                    href={`/companies/${team.id}`}
                                   />
                                 ))}
                               </div>
@@ -1642,6 +1694,7 @@ export default function OrganizationsPage() {
               activeTab === 'adtech' ? filteredAdtech.length :
               0
             }
+            clientOptions={advertisers.map(a => a.name).sort()}
           />
 
           {/* Floating Action Buttons - appear with compact header on scroll (mobile & desktop) */}

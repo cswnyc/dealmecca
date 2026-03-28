@@ -1,12 +1,14 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 interface TeamChipProps {
   name: string;
   logo?: string;
   color?: string;
+  href?: string;
 }
 
 // Generate a deterministic color from a string
@@ -23,9 +25,9 @@ function stringToColor(str: string): string {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-export function TeamChip({ name, logo, color }: TeamChipProps) {
+export function TeamChip({ name, logo, color, href }: TeamChipProps) {
   const chipColor = color || stringToColor(name);
-  
+
   // Get initials from name (up to 2 letters)
   const initials = name
     .split(' ')
@@ -34,16 +36,16 @@ export function TeamChip({ name, logo, color }: TeamChipProps) {
     .slice(0, 2)
     .toUpperCase();
 
-  return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[#F3F6FB] dark:bg-[#162449] rounded-md text-xs text-[#64748B] dark:text-[#9AA7C2] transition-colors">
+  const content = (
+    <>
       {logo ? (
-        <img 
-          src={logo} 
-          alt={name} 
+        <img
+          src={logo}
+          alt={name}
           className="w-4 h-4 rounded object-cover"
         />
       ) : (
-        <span 
+        <span
           className="w-4 h-4 rounded flex items-center justify-center text-[9px] text-white font-bold flex-shrink-0"
           style={{ backgroundColor: chipColor }}
         >
@@ -51,6 +53,26 @@ export function TeamChip({ name, logo, color }: TeamChipProps) {
         </span>
       )}
       <span className="truncate max-w-[150px]">{name}</span>
+    </>
+  );
+
+  const className = "inline-flex items-center gap-1.5 px-2 py-1 bg-[#F3F6FB] dark:bg-[#162449] rounded-md text-xs text-[#64748B] dark:text-[#9AA7C2] transition-colors hover:bg-[#E8EDFB] dark:hover:bg-[#1D2D5A] hover:text-[#2575FC] dark:hover:text-[#5B8DFF]";
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        onClick={(e) => e.stopPropagation()}
+        className={className}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <span className={className}>
+      {content}
     </span>
   );
 }
