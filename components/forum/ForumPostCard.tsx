@@ -34,6 +34,7 @@ interface ForumPost {
   slug: string;
   isAnonymous: boolean;
   anonymousHandle?: string;
+  tags?: string;
   urgency: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   dealSize?: 'SMALL' | 'MEDIUM' | 'LARGE' | 'ENTERPRISE';
   location?: string;
@@ -1033,6 +1034,29 @@ export function ForumPostCard({ post, onBookmark, expandable = false }: ForumPos
             />
           </div>
         )}
+
+        {/* Tags */}
+        {(() => {
+          let parsedTags: string[] = [];
+          if (post.tags) {
+            try { parsedTags = JSON.parse(post.tags); } catch { /* ignore */ }
+          }
+          return parsedTags.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {parsedTags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/forum?tag=${encodeURIComponent(tag)}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950 rounded-full hover:bg-violet-100 dark:hover:bg-violet-900 transition-colors"
+                >
+                  <span>#</span>
+                  {tag}
+                </Link>
+              ))}
+            </div>
+          ) : null;
+        })()}
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">

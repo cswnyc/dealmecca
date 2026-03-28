@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, type KeyboardEvent, type MouseEvent } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 import { AuthGuard } from '@/components/auth/AuthGuard';
@@ -148,6 +149,7 @@ export default function ForumPage() {
   const companyId = searchParams.get('company');
   const eventId = searchParams.get('event');
   const topicFilter = searchParams.get('topic');
+  const tagFilter = searchParams.get('tag');
   const categoryFilter = searchParams.get('category');
   const highlightPostId = searchParams.get('post'); // Post to highlight from notification
 
@@ -308,7 +310,7 @@ export default function ForumPage() {
 
   useEffect(() => {
     fetchPosts();
-  }, [companyId, eventId, topicFilter, categoryFilter, activeTab, selectedCategory, sortBy, searchQuery]);
+  }, [companyId, eventId, topicFilter, tagFilter, categoryFilter, activeTab, selectedCategory, sortBy, searchQuery]);
 
   const fetchCategories = async () => {
     try {
@@ -346,6 +348,10 @@ export default function ForumPage() {
 
       if (topicFilter) {
         params.append('topic', topicFilter);
+      }
+
+      if (tagFilter) {
+        params.append('tag', tagFilter);
       }
 
       if (categoryFilter) {
@@ -552,6 +558,22 @@ export default function ForumPage() {
             showAllCategories={showAllCategories}
             onToggleShowAllCategories={() => setShowAllCategories(!showAllCategories)}
           />
+
+          {/* Active Tag Filter Banner */}
+          {tagFilter && (
+            <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-violet-50 dark:bg-violet-950 border border-violet-200 dark:border-violet-800 rounded-lg">
+              <span className="text-sm text-violet-700 dark:text-violet-300">
+                Filtering by tag: <span className="font-semibold">#{tagFilter}</span>
+              </span>
+              <Link
+                href="/forum"
+                className="ml-auto text-sm text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-200 flex items-center gap-1"
+              >
+                <X className="w-3.5 h-3.5" />
+                Clear
+              </Link>
+            </div>
+          )}
 
           {/* Main Content Area */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -46,6 +46,7 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
     const company = searchParams.get('company');
     const event = searchParams.get('event');
     const topic = searchParams.get('topic');
+    const tag = searchParams.get('tag');
     const sortBy = searchParams.get('sortBy') || 'latest';
     
     const skip = (page - 1) * limit;
@@ -90,6 +91,13 @@ export const GET = safeHandler(async (request: NextRequest, ctx: any, { requestI
             }
           }
         }
+      };
+    }
+
+    if (tag) {
+      where.tags = {
+        contains: tag,
+        mode: 'insensitive'
       };
     }
 
