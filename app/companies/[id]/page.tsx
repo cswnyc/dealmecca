@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
@@ -176,10 +176,13 @@ interface Company {
 export default function CompanyDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const companyId = params.id as string;
+  const fromAgencyId = searchParams.get('from');
   const { user: firebaseUser, idToken, loading: authLoading } = useFirebaseAuth();
 
   const [company, setCompany] = useState<Company | null>(null);
+  const [fromAgency, setFromAgency] = useState<{ id: string; name: string; logoUrl?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'people' | 'teams' | 'duties' | 'relationships' | 'subsidiaries' | 'activity' | 'intel'>('overview');
@@ -256,6 +259,21 @@ export default function CompanyDetailPage() {
       fetchCompany();
     }
   }, [companyId]);
+
+  // Fetch agency context when navigating from a team chip
+  useEffect(() => {
+    if (!fromAgencyId) return;
+    const fetchAgency = async () => {
+      try {
+        const response = await fetch(`/api/orgs/companies/${fromAgencyId}`, { credentials: 'include' });
+        if (response.ok) {
+          const data = await response.json();
+          setFromAgency({ id: data.id, name: data.name, logoUrl: data.logoUrl });
+        }
+      } catch { /* ignore */ }
+    };
+    fetchAgency();
+  }, [fromAgencyId]);
 
   // Fetch follow status
   useEffect(() => {
@@ -822,9 +840,17 @@ export default function CompanyDetailPage() {
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div className="text-sm text-muted-foreground flex items-center gap-2">
                   <Link href="/organizations" className="hover:text-foreground">
-                    {company.companyType === 'ADVERTISER' ? 'Advertisers' : 'Agencies'}
+                    {fromAgency ? 'Agencies' : (company.companyType === 'ADVERTISER' ? 'Advertisers' : 'Agencies')}
                   </Link>
-                  {company.parentChain && company.parentChain.length > 0 && (
+                  {fromAgency && (
+                    <>
+                      <span>›</span>
+                      <Link href={`/companies/${fromAgency.id}`} className="hover:text-foreground">
+                        {fromAgency.name}
+                      </Link>
+                    </>
+                  )}
+                  {!fromAgency && company.parentChain && company.parentChain.length > 0 && (
                     <>
                       {company.parentChain.map((parent) => (
                         <span key={parent.id} className="flex items-center gap-2">
@@ -860,7 +886,12 @@ export default function CompanyDetailPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-bold text-brand-ink dark:text-white font-display">{company.name}</h1>
+                            <h1 className="text-2xl font-bold text-brand-ink dark:text-white font-display">
+                              {company.name}
+                              {fromAgency && (
+                                <span className="text-muted-foreground font-normal text-lg"> @ {fromAgency.name}</span>
+                              )}
+                            </h1>
                             {company.verified && (
                               <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs font-medium">
                                 <CheckCircle className="w-3 h-3" />

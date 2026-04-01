@@ -1308,7 +1308,7 @@ export default function OrganizationsPage() {
                                   name={team.name}
                                   logo={team.logoUrl}
                                   color={team.color}
-                                  href={`/companies/${team.id}`}
+                                  href={`/companies/${team.id}?from=${agency.id}`}
                                 />
                               ))}
                               {agency.totalTeams > 3 && (
@@ -1387,7 +1387,7 @@ export default function OrganizationsPage() {
                                   name={team.name}
                                   logo={team.logoUrl}
                                   color={team.color}
-                                  href={`/companies/${team.id}`}
+                                  href={`/companies/${team.id}?from=${advertiser.id}`}
                                 />
                               ))}
                               {advertiser.totalTeams > 3 && (
@@ -1478,7 +1478,7 @@ export default function OrganizationsPage() {
                                     name={team.name}
                                     logo={team.logoUrl}
                                     color={team.color}
-                                    href={`/companies/${team.id}`}
+                                    href={`/companies/${team.id}?from=${contact.company?.id || ''}`}
                                   />
                                 ))}
                               </div>
