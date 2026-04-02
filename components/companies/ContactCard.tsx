@@ -50,9 +50,10 @@ interface ContactCardProps {
       name: string;
     } | null;
   };
+  agencyId?: string; // Agency context for breadcrumb navigation on team links
 }
 
-export function ContactCard({ contact }: ContactCardProps) {
+export function ContactCard({ contact, agencyId }: ContactCardProps) {
   const [teams, setTeams] = useState<ContactTeam[]>([]);
   const [duties, setDuties] = useState<Duty[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(false);
@@ -234,7 +235,7 @@ export function ContactCard({ contact }: ContactCardProps) {
                     <CompanyLogo logoUrl={team.logoUrl} name={team.name} />
                     {team.companyId ? (
                       <Link
-                        href={`/companies/${team.companyId}`}
+                        href={`/companies/${team.companyId}${agencyId ? `?from=${agencyId}` : ''}`}
                         className="ml-1 text-foreground hover:text-primary"
                       >
                         {team.name}

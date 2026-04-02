@@ -56,11 +56,13 @@ interface TeamCardProps {
     };
   };
   defaultExpanded?: boolean;
+  agencyId?: string; // Agency context for breadcrumb navigation
 }
 
 export function TeamCard({
   team,
-  defaultExpanded = false
+  defaultExpanded = false,
+  agencyId
 }: TeamCardProps) {
   const [showAllPeople, setShowAllPeople] = useState(false);
   const [showAllDuties, setShowAllDuties] = useState(false);
@@ -196,7 +198,7 @@ export function TeamCard({
             {/* Team Name with Active Indicator */}
             <div className="flex items-center gap-2 mb-1">
               <Link
-                href={displayCompany ? `/companies/${displayCompany.id}` : '#'}
+                href={displayCompany ? `/companies/${displayCompany.id}${agencyId ? `?from=${agencyId}` : ''}` : '#'}
                 className="font-semibold text-foreground hover:text-primary"
               >
                 {displayCompany?.name || team.name}

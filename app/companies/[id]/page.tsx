@@ -996,7 +996,7 @@ export default function CompanyDetailPage() {
                       ) : (
                         <div className="space-y-4">
                           {company.contacts.map((contact) => (
-                            <ContactCard key={contact.id} contact={contact} />
+                            <ContactCard key={contact.id} contact={contact} agencyId={companyId} />
                           ))}
                         </div>
                       )}
@@ -1019,7 +1019,7 @@ export default function CompanyDetailPage() {
                                 <h3 className="text-base font-semibold text-foreground mb-4">In-House Teams</h3>
                                 <div className="space-y-4">
                                   {inHouseTeams.map((team) => (
-                                    <TeamCard key={team.id} team={team} />
+                                    <TeamCard key={team.id} team={team} agencyId={companyId} />
                                   ))}
                                 </div>
                               </div>
@@ -1031,7 +1031,7 @@ export default function CompanyDetailPage() {
                                 <h3 className="text-base font-semibold text-foreground mb-4">Agency Client Teams</h3>
                                 <div className="space-y-4">
                                   {clientTeams.map((team) => (
-                                    <TeamCard key={team.id} team={team} />
+                                    <TeamCard key={team.id} team={team} agencyId={companyId} />
                                   ))}
                                 </div>
                               </div>
@@ -1358,7 +1358,7 @@ export default function CompanyDetailPage() {
 
                       <div className="space-y-4">
                         {company.contacts.slice(0, 3).map((contact) => (
-                          <ContactCard key={contact.id} contact={contact} />
+                          <ContactCard key={contact.id} contact={contact} agencyId={companyId} />
                         ))}
                       </div>
                     </div>
