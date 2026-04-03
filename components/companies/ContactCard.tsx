@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Building2, Linkedin } from 'lucide-react';
 import Link from 'next/link';
+import { EmailCopy } from '@/components/ui/EmailCopy';
 
 interface Team {
   id: string;
@@ -308,9 +309,9 @@ export function ContactCard({ contact, agencyId }: ContactCardProps) {
               </div>
             )}
 
-            {/* Email */}
+            {/* Email - Click to Copy */}
             {contact.email && (
-              <p className="text-sm text-muted-foreground mb-1">{contact.email}</p>
+              <EmailCopy email={contact.email} variant="inline" className="text-sm mb-1" />
             )}
 
             {/* Last Activity */}
