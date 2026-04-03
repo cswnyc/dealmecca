@@ -104,6 +104,13 @@ export default function AdminDashboard() {
       color: 'text-secondary bg-secondary/10'
     },
     {
+      title: 'Bulk Import Events',
+      description: 'Upload CSV data for industry events',
+      href: '/admin/bulk-import/events',
+      icon: Calendar,
+      color: 'text-accent bg-accent/10'
+    },
+    {
       title: 'Forum Posts',
       description: 'Manage all forum posts and moderation',
       href: '/admin/forum/posts',
