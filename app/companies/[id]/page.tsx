@@ -744,7 +744,7 @@ export default function CompanyDetailPage() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <Link
-                                  href={`/companies/${subsidiary.id}`}
+                                  href={`/companies/${subsidiary.id}?from=${companyId}`}
                                   className="p-2 text-muted-foreground hover:text-blue-600 rounded hover:bg-blue-50"
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -758,7 +758,7 @@ export default function CompanyDetailPage() {
                           {expandedAgencies.has(subsidiary.id) && (
                             <div className="border-t border-border bg-muted p-6">
                               <Link
-                                href={`/companies/${subsidiary.id}`}
+                                href={`/companies/${subsidiary.id}?from=${companyId}`}
                                 className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
                               >
                                 View {subsidiary.name} details
@@ -1150,7 +1150,7 @@ export default function CompanyDetailPage() {
                                 {/* Title with badges */}
                                 <div className="flex items-center gap-2 mb-2">
                                   <Link
-                                    href={`/companies/${subsidiary.id}`}
+                                    href={`/companies/${subsidiary.id}?from=${companyId}`}
                                     className="font-semibold text-foreground hover:text-blue-600"
                                   >
                                     {subsidiary.name}
@@ -1169,7 +1169,7 @@ export default function CompanyDetailPage() {
                                           className="inline-block align-middle mr-1"
                                         />
                                         <Link
-                                          href={`/companies/${client.id}`}
+                                          href={`/companies/${client.id}?from=${companyId}`}
                                           className="hover:text-blue-600 hover:underline align-middle"
                                         >
                                           {client.name}
@@ -1179,7 +1179,7 @@ export default function CompanyDetailPage() {
                                     ))}
                                     {hiddenClientsCount > 0 && (
                                       <Link
-                                        href={`/companies/${subsidiary.id}`}
+                                        href={`/companies/${subsidiary.id}?from=${companyId}`}
                                         className="text-blue-600 hover:text-blue-700 font-medium ml-1"
                                       >
                                         +{hiddenClientsCount} teams
@@ -1194,7 +1194,7 @@ export default function CompanyDetailPage() {
                                     <span className="font-medium">Handles:</span> {visibleDuties.join(', ')}
                                     {hiddenDutiesCount > 0 && (
                                       <Link
-                                        href={`/companies/${subsidiary.id}`}
+                                        href={`/companies/${subsidiary.id}?from=${companyId}`}
                                         className="text-blue-600 hover:text-blue-700 font-medium ml-1"
                                       >
                                         +{hiddenDutiesCount} duties
@@ -1326,7 +1326,7 @@ export default function CompanyDetailPage() {
                       <div className="space-y-4">
                         {/* Display Organization Teams */}
                         {company.teams.slice(0, 3).map((team) => (
-                          <TeamCard key={`org-team-${team.id}`} team={team} />
+                          <TeamCard key={`org-team-${team.id}`} team={team} agencyId={companyId} />
                         ))}
 
                         {/* Display Partnership Teams - show remaining slots up to 3 total */}
@@ -1335,6 +1335,7 @@ export default function CompanyDetailPage() {
                             key={`partnership-${partnership.id}`}
                             partnership={partnership}
                             companyName={company.name}
+                            agencyId={companyId}
                           />
                         ))}
                       </div>

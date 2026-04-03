@@ -57,12 +57,14 @@ interface PartnershipCardProps {
   };
   companyName: string;
   defaultExpanded?: boolean;
+  agencyId?: string;
 }
 
 export function PartnershipCard({
   partnership,
   companyName,
-  defaultExpanded = false
+  defaultExpanded = false,
+  agencyId
 }: PartnershipCardProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [teamMembers, setTeamMembers] = useState<Contact[]>([]);
@@ -159,7 +161,7 @@ export function PartnershipCard({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2 mb-1 flex-wrap">
                   <Link
-                    href={`/companies/${partner.id}`}
+                    href={`/companies/${partner.id}${agencyId ? `?from=${agencyId}` : ''}`}
                     className="font-semibold text-foreground hover:text-primary truncate"
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -309,7 +311,7 @@ export function PartnershipCard({
                         </Link>
                       ))}
                       <Link
-                        href={`/companies/${partner.id}?tab=team`}
+                        href={`/companies/${partner.id}?tab=team${agencyId ? `&from=${agencyId}` : ''}`}
                         className="block text-center py-2 text-sm text-primary hover:text-primary/80 font-medium"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -327,7 +329,7 @@ export function PartnershipCard({
                 {/* Action Buttons */}
                 <div className="flex items-center space-x-2 pt-2 border-t">
                   <Link
-                    href={`/companies/${partner.id}`}
+                    href={`/companies/${partner.id}${agencyId ? `?from=${agencyId}` : ''}`}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <Button variant="outline" size="sm" className="text-xs">
