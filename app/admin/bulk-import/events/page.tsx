@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import { ArrowLeft, Upload, Calendar, CheckCircle, AlertTriangle, FileText, X } from 'lucide-react';
 import Link from 'next/link';
 import { useDropzone } from 'react-dropzone';
-import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 
 interface ParsedEvent {
   name: string;
@@ -115,7 +114,6 @@ function validateEvent(row: Record<string, any>, index: number): ParsedEvent {
 }
 
 export default function BulkImportEventsPage() {
-  const { idToken } = useFirebaseAuth();
   const [step, setStep] = useState<'upload' | 'preview' | 'importing' | 'results'>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [parsedEvents, setParsedEvents] = useState<ParsedEvent[]>([]);
@@ -153,16 +151,25 @@ export default function BulkImportEventsPage() {
   const invalidEvents = parsedEvents.filter(e => !e._valid);
 
   const handleImport = async () => {
-    if (!idToken || validEvents.length === 0) return;
+    if (validEvents.length === 0) return;
     setImporting(true);
     setStep('importing');
 
     try {
+      // Get Firebase auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+      const token = await user.getIdToken();
+
       const response = await fetch('/api/admin/bulk-import/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ events: validEvents }),
       });
