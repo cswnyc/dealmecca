@@ -49,6 +49,7 @@ import {
   Plus,
   Lightbulb
 } from 'lucide-react';
+import { getCompanyTypeLabel, getDutyCategoryLabel, formatEnumLabel } from '@/lib/labels';
 
 interface Company {
   id: string;
@@ -399,23 +400,7 @@ export default function CompanyDetailPage() {
     }
   };
 
-  const getCompanyTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      AGENCY: 'Agency',
-      INDEPENDENT_AGENCY: 'Independent Agency',
-      HOLDING_COMPANY_AGENCY: 'Holding Company Agency',
-      NETWORK_AGENCY: 'Network Agency',
-      MEDIA_HOLDING_COMPANY: 'Media Holding Company',
-      ADVERTISER: 'Advertiser',
-      BRAND: 'Brand',
-      VENDOR: 'Vendor',
-      PUBLISHER: 'Publisher',
-      DSP: 'Demand Side Platform',
-      SSP: 'Supply Side Platform',
-      ADTECH: 'AdTech'
-    };
-    return labels[type] || type;
-  };
+  // getCompanyTypeLabel imported from @/lib/labels
 
   const getCompanyTypeBadgeColor = (type: string) => {
     const colors: Record<string, string> = {
@@ -935,10 +920,19 @@ export default function CompanyDetailPage() {
                         <div className="text-2xl font-bold text-foreground">{totalTeams}</div>
                         <div className="text-sm text-muted-foreground">Teams</div>
                       </div>
+                      {company.updatedAt && (
                       <div>
-                        <div className="text-2xl font-bold text-foreground">2 hrs</div>
+                        <div className="text-2xl font-bold text-foreground">{(() => {
+                          const diff = Date.now() - new Date(company.updatedAt).getTime();
+                          const hours = Math.floor(diff / 3600000);
+                          const days = Math.floor(hours / 24);
+                          if (days > 0) return `${days}d`;
+                          if (hours > 0) return `${hours}h`;
+                          return 'Now';
+                        })()}</div>
                         <div className="text-sm text-muted-foreground">Last activity</div>
                       </div>
+                      )}
                     </div>
                   </div>
 
@@ -1104,7 +1098,7 @@ export default function CompanyDetailPage() {
                               <div>
                                 <h4 className="font-semibold text-foreground">{duty.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  {duty.category.replace(/_/g, ' ')}
+                                  {getDutyCategoryLabel(duty.category)}
                                 </p>
                                 {duty.description && (
                                   <p className="text-sm text-muted-foreground mt-2">{duty.description}</p>
@@ -1210,10 +1204,19 @@ export default function CompanyDetailPage() {
                                   </div>
                                 )}
 
-                                {/* Last Activity */}
+                                {/* Last Activity - only show if real data exists */}
+                                {sub.updatedAt && (
                                 <div className="text-xs text-muted-foreground/70">
-                                  Last activity: 23 hrs
+                                  Last activity: {(() => {
+                                    const diff = Date.now() - new Date(sub.updatedAt).getTime();
+                                    const hours = Math.floor(diff / 3600000);
+                                    const days = Math.floor(hours / 24);
+                                    if (days > 0) return `${days}d ago`;
+                                    if (hours > 0) return `${hours}h ago`;
+                                    return 'Just now';
+                                  })()}
                                 </div>
+                                )}
                               </div>
 
                               {/* Right side: People count and action icons */}

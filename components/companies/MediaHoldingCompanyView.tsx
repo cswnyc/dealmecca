@@ -182,6 +182,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
   const topLocations = Object.entries(subsidiaryStats.locationCounts)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5)
+    .filter(([, count]) => count > 0)
     .map(([name, count]) => ({ name, count: `${count} people` }));
 
   // Filter agencies based on search
@@ -213,7 +214,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
       name: sub.name
     })),
     totalBranches: agency._count?.subsidiaries || agency.subsidiaries?.length || 0,
-    lastActivity: '23 hrs'
+    lastActivity: null
   }));
 
   // Transform branches into the row format (with their teams) - for agency networks
@@ -230,7 +231,7 @@ export function MediaHoldingCompanyView({ company }: HoldingCompanyViewProps) {
       name: branch.name,
       teams,
       peopleCount: branch._count?.contacts || 0,
-      lastActivity: '23 hrs'
+      lastActivity: null
     };
   });
 

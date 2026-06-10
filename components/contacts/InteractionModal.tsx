@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  X, Save, Clock, MessageSquare, Phone, Mail, Users, 
+import {
+  X, Save, Clock, MessageSquare, Phone, Mail, Users,
   Calendar, CheckCircle, AlertCircle, MessageCircle
 } from 'lucide-react'
+import { formatEnumLabel } from '@/lib/labels'
 
 interface Interaction {
   id: string
@@ -254,7 +255,7 @@ export default function InteractionModal({
                     <SelectContent>
                       {OUTCOMES.map((outcome) => (
                         <SelectItem key={outcome} value={outcome}>
-                          {outcome.replace(/_/g, ' ').toLowerCase()}
+                          {formatEnumLabel(outcome)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -370,7 +371,7 @@ export default function InteractionModal({
                             variant="outline" 
                             className={`text-xs ${getOutcomeColor(interaction.outcome)}`}
                           >
-                            {interaction.outcome.replace(/_/g, ' ')}
+                            {formatEnumLabel(interaction.outcome)}
                           </Badge>
                         )}
                       </div>

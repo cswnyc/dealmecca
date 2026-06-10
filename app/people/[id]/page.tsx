@@ -35,6 +35,7 @@ import {
   MessageSquare,
   Calendar
 } from 'lucide-react';
+import { getSeniorityLabel } from '@/lib/labels';
 
 interface Partnership {
   id: string;
@@ -212,7 +213,7 @@ export default function ContactDetailPage() {
 
   const formatSeniority = (seniority?: string) => {
     if (!seniority) return '';
-    return seniority.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return getSeniorityLabel(seniority);
   };
 
   const formatDate = (dateString?: string | null) => {

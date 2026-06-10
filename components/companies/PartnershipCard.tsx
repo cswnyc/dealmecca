@@ -18,6 +18,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import Link from 'next/link';
+import { getPartnershipTypeLabel, getCompanyTypeLabel, getDepartmentLabel, PARTNERSHIP_ROLE_LABELS } from '@/lib/labels';
 
 interface Partner {
   id: string;
@@ -182,12 +183,12 @@ export function PartnershipCard({
                     <Badge
                       className={`text-xs ${getRelationshipColor(partnership.relationshipType)}`}
                     >
-                      {partnership.relationshipType.replace(/_/g, ' ')}
+                      {getPartnershipTypeLabel(partnership.relationshipType)}
                     </Badge>
                   )}
 
                   <Badge variant="outline" className="text-xs">
-                    {partnerRole === 'agency' ? 'Agency Partner' : 'Client'}
+                    {PARTNERSHIP_ROLE_LABELS[partnerRole] || partnerRole}
                   </Badge>
 
                   {partnership.isActive !== undefined && (
@@ -205,7 +206,7 @@ export function PartnershipCard({
                   {partner.companyType && (
                     <div className="flex items-center space-x-1">
                       <Briefcase className="w-3 h-3" />
-                      <span>{partner.companyType.replace(/_/g, ' ')}</span>
+                      <span>{getCompanyTypeLabel(partner.companyType)}</span>
                     </div>
                   )}
 
@@ -296,7 +297,7 @@ export function PartnershipCard({
                             <p className="text-xs text-muted-foreground truncate">{contact.title}</p>
                             {contact.department && (
                               <p className="text-xs text-muted-foreground mt-0.5">
-                                {contact.department.replace(/_/g, ' ')}
+                                {getDepartmentLabel(contact.department)}
                               </p>
                             )}
                           </div>

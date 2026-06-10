@@ -13,6 +13,7 @@ import {
   Building2,
   Star
 } from 'lucide-react';
+import { getSeniorityLabel, getDepartmentLabel, formatEnumLabel } from '@/lib/labels';
 
 interface Contact {
   id: string;
@@ -125,7 +126,7 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
             </div>
           </div>
           <Badge className={getSeniorityColor(contact.seniority)}>
-            {displaySeniority.replace(/_/g, ' ')}
+            {getSeniorityLabel(displaySeniority)}
           </Badge>
         </div>
 
@@ -141,7 +142,7 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
         {contact.department && (
           <div className="mb-4">
             <Badge variant="outline" className="text-xs">
-              {contact.department.replace(/_/g, ' ')}
+              {getDepartmentLabel(contact.department)}
             </Badge>
           </div>
         )}
@@ -199,7 +200,7 @@ export function EnhancedContactCard({ contact, variant = 'grid' }: EnhancedConta
           <div className="mt-3 flex flex-wrap gap-1">
             {contact.roles.slice(0, 3).map((role, index) => (
               <Badge key={index} variant="outline" className="text-xs">
-                {role.replace(/_/g, ' ')}
+                {formatEnumLabel(role)}
               </Badge>
             ))}
             {contact.roles.length > 3 && (

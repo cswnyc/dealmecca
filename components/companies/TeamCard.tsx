@@ -290,8 +290,7 @@ export function TeamCard({
               </div>
             )}
 
-            {/* Last Activity */}
-            <p className="text-xs text-muted-foreground">Last activity: 3 days</p>
+            {/* Last Activity - only rendered when real data is available */}
           </div>
 
           {/* Right Side Actions */}

@@ -32,6 +32,7 @@ import { Linkedin } from 'lucide-react';
 import { CompactHeader, FilterDrawer, ActiveFilterPills, type Filter as FilterType } from '@/components/organizations';
 import { DarkModeToggle } from '@/components/ui/DarkModeToggle';
 import { LogoMark } from '@/components/ui/Logo';
+import { getCompanyTypeLabel, formatEnumLabel, AGENCY_TYPE_LABELS } from '@/lib/labels';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useDarkMode } from '@/hooks/useDarkMode';
 
@@ -523,14 +524,7 @@ export default function OrganizationsPage() {
 
   // Helper functions for agency view
   const getAgencyTypeLabel = (type: string) => {
-    switch (type) {
-      case 'HOLDING_COMPANY': return 'Holding Company';
-      case 'MEDIA_HOLDING_COMPANY': return 'Media Holding Company';
-      case 'HOLDING_COMPANY_AGENCY': return 'Agency';
-      case 'INDEPENDENT_AGENCY': return 'Independent Agency';
-      case 'NETWORK_AGENCY': return 'Network Agency';
-      default: return type;
-    }
+    return AGENCY_TYPE_LABELS[type] || formatEnumLabel(type);
   };
 
   const getAgencyTypeBadgeColor = (type: string) => {
@@ -1347,8 +1341,7 @@ export default function OrganizationsPage() {
               <StatsBar
                 stats={[
                   { icon: Globe, label: 'Total Advertisers', value: filteredAdvertisers.length, colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
-                  { icon: Users, label: 'Team Members', value: filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0), colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
-                  { icon: CheckCircle, label: 'Verified Rate', value: `${filteredAdvertisers.length > 0 ? Math.round((filteredAdvertisers.filter(a => a.verified).length / filteredAdvertisers.length) * 100) : 0}%`, colorClass: 'bg-green-500/10 text-green-500' }
+                  { icon: Users, label: 'Team Members', value: filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0), colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' }
                 ]}
               />
 

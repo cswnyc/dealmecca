@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   Mail, Phone, MessageSquare, Calendar, Star, Award,
   ExternalLink, Plus, Edit, Clock, CheckCircle, AlertCircle
 } from 'lucide-react'
+import { getSeniorityLabel, getDepartmentLabel } from '@/lib/labels'
 
 interface Contact {
   id: string
@@ -195,12 +196,12 @@ export default function ContactActions({
           <div className="flex items-center gap-2 mt-2">
             {contact.seniority && (
               <Badge variant="outline" className="text-xs">
-                {contact.seniority.replace(/_/g, ' ')}
+                {getSeniorityLabel(contact.seniority)}
               </Badge>
             )}
             {contact.department && (
               <Badge variant="outline" className="text-xs">
-                {contact.department.replace(/_/g, ' ')}
+                {getDepartmentLabel(contact.department)}
               </Badge>
             )}
             {contact.company.city && contact.company.state && (

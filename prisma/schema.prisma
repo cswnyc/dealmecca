@@ -151,6 +151,7 @@ model PartnershipContact {
   id              String             @id @default(cuid())
   partnershipId   String
   contactId       String
+  dutyId          String?
   role            String?
   responsibilities String?
   isPrimary       Boolean            @default(false)
@@ -158,11 +159,13 @@ model PartnershipContact {
   updatedAt       DateTime           @updatedAt
   partnership     CompanyPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
   contact         Contact            @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  duty            Duty?              @relation(fields: [dutyId], references: [id], onDelete: SetNull)
 
-  @@unique([partnershipId, contactId])
+  @@unique([partnershipId, contactId, dutyId])
   @@index([partnershipId])
   @@index([contactId])
   @@index([isPrimary])
+  @@index([dutyId])
 }
 
 model ContactInteraction {
@@ -1666,10 +1669,11 @@ model Duty {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
-  CompanyDuty     CompanyDuty[]
-  PartnershipDuty PartnershipDuty[]
-  ContactDuty     ContactDuty[]
-  TeamDuty        TeamDuty[]
+  CompanyDuty        CompanyDuty[]
+  PartnershipDuty    PartnershipDuty[]
+  PartnershipContact PartnershipContact[]
+  ContactDuty        ContactDuty[]
+  TeamDuty           TeamDuty[]
 
   @@unique([name, category])
   @@index([category])

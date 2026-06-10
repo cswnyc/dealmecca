@@ -214,6 +214,13 @@ export async function GET(
                     primaryRole: true,
                     updatedAt: true
                   }
+                },
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
+                  }
                 }
               },
               orderBy: {
@@ -256,6 +263,13 @@ export async function GET(
                     department: true,
                     primaryRole: true,
                     updatedAt: true
+                  }
+                },
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
                   }
                 }
               },
@@ -434,7 +448,9 @@ export async function GET(
           contactId: pc.contactId,
           role: pc.role,
           responsibilities: pc.responsibilities,
-          isPrimary: pc.isPrimary
+          isPrimary: pc.isPrimary,
+          dutyId: pc.dutyId || null,
+          duty: pc.duty || null
         }))
       })),
       ...company.CompanyPartnership_advertiserIdToCompany.map(p => ({
@@ -462,7 +478,9 @@ export async function GET(
           contactId: pc.contactId,
           role: pc.role,
           responsibilities: pc.responsibilities,
-          isPrimary: pc.isPrimary
+          isPrimary: pc.isPrimary,
+          dutyId: pc.dutyId || null,
+          duty: pc.duty || null
         }))
       }))
     ];
