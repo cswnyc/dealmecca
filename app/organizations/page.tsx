@@ -34,6 +34,7 @@ import { DarkModeToggle } from '@/components/ui/DarkModeToggle';
 import { LogoMark } from '@/components/ui/Logo';
 import { getCompanyTypeLabel, formatEnumLabel, AGENCY_TYPE_LABELS } from '@/lib/labels';
 import { DisciplineChip } from '@/components/ui/DisciplineChip';
+import { DirectoryTopNav } from '@/components/navigation/DirectoryTopNav';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useDarkMode } from '@/hooks/useDarkMode';
 
@@ -1088,185 +1089,81 @@ export default function OrganizationsPage() {
 
   return (
     <AuthGuard>
-      {/* Compact Header - appears on scroll (outside PageFrame for proper sticky) */}
-      <CompactHeader
-        visible={showCompactHeader}
-        activeCategory={activeTab as 'agencies' | 'advertisers' | 'people' | 'industries' | 'publishers' | 'dsp-ssp' | 'adtech'}
-        onCategoryChange={(category) => setActiveTab(category as typeof activeTab)}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        activeFilters={activeFilters}
-        onRemoveFilter={handleRemoveFilter}
-        onOpenFilters={() => setFilterDrawerOpen(true)}
-        stats={{ filtered: filteredAgencies.length, total: agencies.length }}
-        scrollProgress={scrollProgress}
-      />
+      {/* Top Nav */}
+      <DirectoryTopNav searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-      <PageFrame maxWidth="7xl">
-        <div className="flex items-center justify-between -mt-5">
-          <div className="flex items-center gap-3">
-            {/* Mobile Logo - animated circle icon */}
-            <div className="lg:hidden">
-              <LogoMark size={52} animated={true} />
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-[28px] font-bold text-[#162B54] dark:text-[#EAF0FF] tracking-tight leading-tight">Organizations</h1>
-              <p className="hidden lg:block text-[15px] text-[#64748B] dark:text-[#9AA7C2] mt-2">Explore deal connections and partnership opportunities</p>
-            </div>
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Page heading */}
+        <div className="flex items-end justify-between gap-4 flex-wrap pt-7 pb-0">
+          <div>
+            <h1 className="text-[clamp(24px,3vw,30px)] font-extrabold tracking-[-0.03em] text-[#0B1220] dark:text-[#EAF0FF] leading-tight m-0">
+              Directory
+            </h1>
+            <p className="text-[14.5px] text-[#64748B] dark:text-[#9AA7C2] mt-1.5 max-w-[60ch] m-0">
+              The advertising ecosystem — holding companies, agencies, and the advertiser accounts they work on, tagged by discipline.
+            </p>
           </div>
-          <DarkModeToggle isDark={isDark} onToggle={toggleDarkMode} />
+          <div className="relative hidden md:block w-full max-w-[320px]">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#64748B] dark:text-[#9AA7C2]" strokeWidth={2} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search organizations..."
+              className="w-full pl-11 pr-4 py-2.5 bg-[#F3F6FB] dark:bg-[#101E38] border border-[#E6EAF2] dark:border-[#22304A] rounded-xl text-sm text-[#0B1220] dark:text-[#EAF0FF] placeholder-[#94a3b8] dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2575FC]/20 transition-all"
+            />
+          </div>
         </div>
 
-        <PageContent className="pb-20 lg:pb-0 mt-6">
-          {/* Tab Navigation */}
-          <BrandTabs
-            tabs={[
-              { id: 'agencies', label: 'Agencies', icon: Building2 },
-              { id: 'advertisers', label: 'Advertisers', icon: Globe },
-              { id: 'people', label: 'People', icon: User },
-              { id: 'industries', label: 'Industries', icon: Briefcase },
-              { id: 'publisher', label: 'Publisher', icon: Monitor },
-              { id: 'dsp-ssp', label: 'DSP/SSP', icon: Satellite },
-              { id: 'adtech', label: 'Adtech', icon: BarChart3 }
-            ]}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            className="mb-4"
-          />
-
-          {/* Search Bar and Action Buttons */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9AA7C2]" />
-              <input
-                type="text"
-                placeholder={
-                  activeTab === 'agencies' ? 'Search agencies...' :
-                  activeTab === 'advertisers' ? 'Search advertisers...' :
-                  activeTab === 'people' ? 'Search people...' :
-                  activeTab === 'industries' ? 'Search industries...' :
-                  activeTab === 'publisher' ? 'Search publishers...' :
-                  activeTab === 'dsp-ssp' ? 'Search DSP/SSP...' :
-                  'Search adtech...'
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] placeholder-[#9AA7C2] focus:outline-none focus:ring-2 focus:ring-[#2575FC]/20 focus:border-[#2575FC] dark:focus:ring-[#5B8DFF]/20 dark:focus:border-[#5B8DFF] transition-all"
-              />
-            </div>
-            {/* Filter Button */}
-            <button
-              onClick={() => setFilterDrawerOpen(true)}
-              className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-dark-surface border border-[#E6EAF2] dark:border-dark-border rounded-xl text-sm text-[#162B54] dark:text-[#EAF0FF] hover:border-[#2575FC] dark:hover:border-[#5B8DFF] transition-all"
-            >
-              <SlidersHorizontal className="w-5 h-5" />
-              <span className="hidden sm:inline">Filters</span>
-              {activeFilters.length > 0 && (
-                <span className="ml-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white rounded-full brand-gradient">
-                  {activeFilters.length}
+        {/* Underline Tabs */}
+        <div className="flex gap-0.5 border-b border-[#E6EAF2] dark:border-[#22304A] mt-4 mb-0">
+          {[
+            { id: 'all', label: 'All', count: agencies.length + advertisers.length + publishers.length + platforms.length },
+            { id: 'advertisers', label: 'Advertisers', count: advertisers.length },
+            { id: 'agencies', label: 'Agencies', count: agencies.length },
+            { id: 'publisher', label: 'Publisher', count: publishers.length },
+            { id: 'dsp-ssp', label: 'DSP/SSP', count: platforms.filter(p => p.type === 'DSP' || p.type === 'SSP').length },
+            { id: 'adtech', label: 'Adtech', count: platforms.filter(p => p.type !== 'DSP' && p.type !== 'SSP').length },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`relative px-3.5 py-3 text-[14.5px] font-semibold transition-colors inline-flex items-center gap-2 ${
+                  isActive
+                    ? 'text-[#0B1220] dark:text-[#EAF0FF]'
+                    : 'text-[#64748B] dark:text-[#9AA7C2] hover:text-[#334155] dark:hover:text-[#C7D2FE]'
+                }`}
+              >
+                {tab.label}
+                <span
+                  className={`text-[11px] font-bold px-1.5 py-px rounded-full font-mono ${
+                    isActive
+                      ? 'bg-[#EAF1FF] dark:bg-[#162449] text-[#2575FC] dark:text-[#5B8DFF]'
+                      : 'bg-[#F3F6FB] dark:bg-[#101E38] text-[#64748B] dark:text-[#9AA7C2]'
+                  }`}
+                >
+                  {tab.count}
                 </span>
-              )}
-            </button>
-            {activeTab === 'advertisers' && (
-              <button
-                onClick={() => {
-                  setSelectedEntityType('advertiser');
-                  setShowAddEntityModal(true);
-                }}
-                className="text-white px-5 py-3 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
-                style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
-              >
-                <Plus className="w-5 h-5" />
-                Add Advertiser
+                {isActive && (
+                  <span
+                    className="absolute left-2.5 right-2.5 bottom-[-1px] h-[2.5px] rounded-sm"
+                    style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+                  />
+                )}
               </button>
-            )}
-            {activeTab === 'people' && (
-              <button
-                onClick={() => {
-                  setSelectedEntityType('person');
-                  setShowAddEntityModal(true);
-                }}
-                className="text-white px-5 py-3 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
-                style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
-              >
-                <Plus className="w-5 h-5" />
-                Add Person
-              </button>
-            )}
-          </div>
+            );
+          })}
+        </div>
 
-          {/* Active Filter Pills */}
-          {activeFilters.length > 0 && (
-            <div className="mb-6">
-              <ActiveFilterPills
-                filters={activeFilters}
-                onRemoveFilter={handleRemoveFilter}
-                onClearAll={handleClearAllFilters}
-              />
-            </div>
-          )}
+        <div className="py-5 pb-20">
+
+          {/* V1: filters removed, search is in the heading area */}
 
           {/* Agencies Tab */}
-          {activeTab === 'agencies' && (
-            <div className="space-y-6">
-              {/* Stats Row - horizontal bar */}
-              <div className="px-4 lg:px-6 py-3 bg-gradient-to-r from-slate-50 to-blue-50/30 dark:from-gray-800 dark:to-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 overflow-hidden">
-                {/* Left side - Stats */}
-                <div className="flex items-center gap-4 lg:gap-6 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
-                      <Building2 className="w-4 h-4 text-[#2575FC]" />
-                    </div>
-                    <div>
-                      <span className="text-gray-500 dark:text-gray-400">Showing</span>
-                      <span className="font-bold text-gray-900 dark:text-white ml-1">{filteredAgencies.length.toLocaleString()}</span>
-                      <span className="text-gray-500 dark:text-gray-400 mx-1">of</span>
-                      <span className="font-bold text-gray-900 dark:text-white">{agencies.length.toLocaleString()}</span>
-                    </div>
-                  </div>
-
-                  <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-600" />
-
-                  <div className="hidden sm:flex items-center gap-2">
-                    <div className="w-8 h-8 bg-violet-100 dark:bg-violet-900/50 rounded-lg flex items-center justify-center">
-                      <Users className="w-4 h-4 text-violet-600 dark:text-violet-400" />
-                    </div>
-                    <div>
-                      <span className="text-gray-500 dark:text-gray-400">Team Members</span>
-                      <span className="font-bold text-gray-900 dark:text-white ml-1">{filteredAgencies.reduce((total, agency) => total + agency.teamCount, 0).toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right side - Sort + Add (hidden on mobile) */}
-                <div className="hidden sm:flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Sort by:</span>
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#2575FC] focus:border-[#2575FC] outline-none cursor-pointer"
-                    >
-                      <option value="recently-active">Recently Active</option>
-                      <option value="name-asc">Name (A-Z)</option>
-                      <option value="name-desc">Name (Z-A)</option>
-                      <option value="most-people">Most People</option>
-                      <option value="most-clients">Most Clients</option>
-                    </select>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setSelectedEntityType('agency');
-                      setShowAddEntityModal(true);
-                    }}
-                    className="px-4 py-1.5 brand-gradient text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Agency
-                  </button>
-                </div>
-              </div>
+          {(activeTab === 'agencies' || activeTab === 'all') && (
+            <div>
 
               {/* Agencies Grid */}
               <div className="flex items-center gap-2.5 mb-4">
@@ -1651,8 +1548,8 @@ export default function OrganizationsPage() {
               )}
             </button>
           </div>
-        </PageContent>
-      </PageFrame>
+        </div>
+      </div>
     </AuthGuard>
   );
 }
