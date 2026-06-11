@@ -214,6 +214,81 @@ export const PARTNERSHIP_ROLE_LABELS: Record<string, string> = {
 };
 
 // ---------------------------------------------------------------------------
+// Discipline display config (fixed set for the AOR directory)
+// Maps duty names to a canonical discipline key for consistent display
+// ---------------------------------------------------------------------------
+
+export const DISCIPLINE_KEYS = [
+  'Media',
+  'Programmatic',
+  'Digital',
+  'Social',
+  'Creative',
+  'OOH',
+  'PR',
+  'Production',
+] as const;
+
+export type DisciplineKey = typeof DISCIPLINE_KEYS[number];
+
+/**
+ * Maps raw duty names (as stored in Duty.name) to a canonical discipline key.
+ * Duties that don't match remain as-is (displayed via formatEnumLabel).
+ */
+export const DUTY_TO_DISCIPLINE: Record<string, DisciplineKey> = {
+  // Role-category duties
+  'Buying': 'Media',
+  'Media Buying': 'Media',
+  'Media': 'Media',
+  'AOR': 'Media',
+  'Planning': 'Media',
+  'Media Planning': 'Media',
+  'Programmatic': 'Programmatic',
+  'Digital': 'Digital',
+  'Digital Marketing': 'Digital',
+  'Social Media': 'Social',
+  'Social': 'Social',
+  'Creative': 'Creative',
+  'OOH': 'OOH',
+  'Out of Home': 'OOH',
+  'DOOH': 'OOH',
+  'PR': 'PR',
+  'PR & Communications': 'PR',
+  'Production': 'Production',
+};
+
+/** Display labels for each discipline (used by DisciplineChip) */
+export const DISCIPLINE_LABELS: Record<DisciplineKey, string> = {
+  Media: 'Media / AOR',
+  Programmatic: 'Programmatic',
+  Digital: 'Digital',
+  Social: 'Social',
+  Creative: 'Creative',
+  OOH: 'OOH',
+  PR: 'PR',
+  Production: 'Production',
+};
+
+/** Color config per discipline for the chip component */
+export const DISCIPLINE_COLORS: Record<DisciplineKey, { bg: string; text: string; border: string; darkBg: string; darkText: string }> = {
+  Media:         { bg: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200',    darkBg: 'dark:bg-blue-950',    darkText: 'dark:text-blue-300' },
+  Programmatic:  { bg: 'bg-purple-50',  text: 'text-purple-700',  border: 'border-purple-200',  darkBg: 'dark:bg-purple-950',  darkText: 'dark:text-purple-300' },
+  Digital:       { bg: 'bg-teal-50',    text: 'text-teal-700',    border: 'border-teal-200',    darkBg: 'dark:bg-teal-950',    darkText: 'dark:text-teal-300' },
+  Social:        { bg: 'bg-pink-50',    text: 'text-pink-700',    border: 'border-pink-200',    darkBg: 'dark:bg-pink-950',    darkText: 'dark:text-pink-300' },
+  Creative:      { bg: 'bg-orange-50',  text: 'text-orange-700',  border: 'border-orange-200',  darkBg: 'dark:bg-orange-950',  darkText: 'dark:text-orange-300' },
+  OOH:           { bg: 'bg-green-50',   text: 'text-green-700',   border: 'border-green-200',   darkBg: 'dark:bg-green-950',   darkText: 'dark:text-green-300' },
+  PR:            { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',   darkBg: 'dark:bg-amber-950',   darkText: 'dark:text-amber-300' },
+  Production:    { bg: 'bg-slate-50',   text: 'text-slate-700',   border: 'border-slate-200',   darkBg: 'dark:bg-slate-900',   darkText: 'dark:text-slate-300' },
+};
+
+/**
+ * Resolve a duty name to its canonical discipline key, or null if unmapped.
+ */
+export function getDisciplineKey(dutyName: string): DisciplineKey | null {
+  return DUTY_TO_DISCIPLINE[dutyName] || null;
+}
+
+// ---------------------------------------------------------------------------
 // Master lookup by enum name
 // ---------------------------------------------------------------------------
 

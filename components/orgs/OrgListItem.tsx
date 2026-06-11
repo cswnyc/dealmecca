@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { MapPin, Users, CheckCircle, Network } from 'lucide-react';
+import { MapPin, Users, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { SearchHighlight } from '@/components/ui/SearchHighlight';
+import { DisciplineChipList } from '@/components/ui/DisciplineChip';
 import { cn } from '@/lib/utils';
 
 interface OrgListItemProps {
@@ -24,6 +25,7 @@ interface OrgListItemProps {
   children?: React.ReactNode;
   searchQuery?: string;
   showOrgChart?: boolean;
+  duties?: Array<{ id: string; name: string; category?: string }>;
 }
 
 export function OrgListItem({
@@ -37,36 +39,41 @@ export function OrgListItem({
   typeBadgeVariant = 'secondary',
   children,
   searchQuery,
-  showOrgChart = true
+  showOrgChart = true,
+  duties
 }: OrgListItemProps) {
   return (
-    <div className="p-4 lg:p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer flex items-center justify-between">
-      <div className="flex items-center gap-4 flex-1">
-        <div className="w-12 h-12 rounded-xl icon-gradient-bg flex items-center justify-center">
-          <svg className="w-6 h-6 text-[#2575FC] dark:text-[#5B8DFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-          </svg>
-        </div>
+    <div className="p-4 lg:p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-600 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        <CompanyLogo
+          logoUrl={logoUrl}
+          companyName={name}
+          size="md"
+          className="flex-shrink-0"
+        />
         <div className="min-w-0 flex-1">
-          <Link href={`/companies/${id}`} className="group">
-            <h3 className="text-sm font-semibold text-[#162B54] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors">
-              {searchQuery ? (
-                <SearchHighlight
-                  text={name}
-                  searchTerm={searchQuery}
-                  highlightClassName="bg-[#2575FC]/20 text-[#2575FC] px-1 rounded font-semibold"
-                />
-              ) : (
-                name
-              )}
-            </h3>
-          </Link>
-          <div className="flex items-center flex-wrap gap-2 mt-1">
-            <span className="px-2 py-0.5 bg-[#2575FC]/10 text-[#2575FC] dark:bg-[#5B8DFF]/10 dark:text-[#5B8DFF] rounded text-xs font-medium">
-              {type}
-            </span>
+          <div className="flex items-center gap-2 mb-0.5">
+            <Link href={`/companies/${id}`} className="group min-w-0">
+              <h3 className="text-sm font-semibold text-[#162B54] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors truncate">
+                {searchQuery ? (
+                  <SearchHighlight
+                    text={name}
+                    searchTerm={searchQuery}
+                    highlightClassName="bg-[#2575FC]/20 text-[#2575FC] px-1 rounded font-semibold"
+                  />
+                ) : (
+                  name
+                )}
+              </h3>
+            </Link>
+            {verified && (
+              <CheckCircle className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+            )}
+          </div>
+          <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5 text-xs text-[#64748B] dark:text-[#9AA7C2]">
+            <span className="font-medium">{type}</span>
             {location && (location.city || location.state) && (
-              <span className="flex items-center gap-1 text-xs text-[#64748B] dark:text-[#9AA7C2]">
+              <span className="flex items-center gap-0.5">
                 <MapPin className="w-3 h-3" />
                 {searchQuery ? (
                   <SearchHighlight
@@ -79,28 +86,22 @@ export function OrgListItem({
                 )}
               </span>
             )}
-            {showOrgChart && (
-              <span className="flex items-center gap-1 text-xs text-[#64748B] dark:text-[#9AA7C2]">
-                <Network className="w-3 h-3" />
-                Org Chart
-              </span>
-            )}
-            {verified && (
-              <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs font-medium">
-                <CheckCircle className="w-3 h-3" />
-                Verified
+            {teamCount !== undefined && teamCount > 0 && (
+              <span className="flex items-center gap-0.5">
+                <Users className="w-3 h-3" />
+                {teamCount} people
               </span>
             )}
           </div>
+          {/* Discipline chips */}
+          {duties && duties.length > 0 && (
+            <div className="mt-1.5">
+              <DisciplineChipList duties={duties} max={5} />
+            </div>
+          )}
           {children}
         </div>
       </div>
-      {teamCount !== undefined && (
-        <div className="flex items-center gap-2 text-xs text-[#64748B] dark:text-[#9AA7C2]">
-          <Users className="w-3.5 h-3.5" />
-          <span>{teamCount} people</span>
-        </div>
-      )}
     </div>
   );
 }

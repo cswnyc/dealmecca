@@ -33,6 +33,7 @@ import { CompactHeader, FilterDrawer, ActiveFilterPills, type Filter as FilterTy
 import { DarkModeToggle } from '@/components/ui/DarkModeToggle';
 import { LogoMark } from '@/components/ui/Logo';
 import { getCompanyTypeLabel, formatEnumLabel, AGENCY_TYPE_LABELS } from '@/lib/labels';
+import { DisciplineChip } from '@/components/ui/DisciplineChip';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useDarkMode } from '@/hooks/useDarkMode';
 
@@ -97,6 +98,7 @@ interface Agency {
     color: string
   }>
   totalTeams: number
+  duties?: Array<{ id: string; name: string; category: string }>
 }
 
 interface Advertiser {
@@ -1292,9 +1294,10 @@ export default function OrganizationsPage() {
                         verified={agency.verified}
                         teamCount={agency.teamCount}
                         searchQuery={searchQuery}
+                        duties={agency.duties}
                       >
                         {agency.clientTeams && agency.clientTeams.length > 0 && (
-                          <div className="space-y-2 mt-2">
+                          <div className="mt-2">
                             <div className="flex items-center gap-2 flex-wrap">
                               {displayedTeams.map(team => (
                                 <TeamChip
@@ -1306,7 +1309,7 @@ export default function OrganizationsPage() {
                                 />
                               ))}
                               {agency.totalTeams > 3 && (
-                                <MoreTeamsLink 
+                                <MoreTeamsLink
                                   count={agency.totalTeams - 3}
                                   expanded={isExpanded}
                                   onToggle={() => {
@@ -1323,7 +1326,6 @@ export default function OrganizationsPage() {
                                 />
                               )}
                             </div>
-                            <p className="text-xs text-[#9AA7C2]">Last activity: {agency.lastActivity}</p>
                           </div>
                         )}
                       </OrgListItem>
@@ -1401,7 +1403,6 @@ export default function OrganizationsPage() {
                                 />
                               )}
                             </div>
-                            <p className="text-xs text-[#9AA7C2]">Last activity: {advertiser.lastActivity}</p>
                           </div>
                         )}
                       </OrgListItem>
@@ -1477,13 +1478,15 @@ export default function OrganizationsPage() {
                               </div>
                             )}
                             
-                            {/* Handles */}
+                            {/* Disciplines */}
                             {contact.handles && contact.handles.length > 0 && (
-                              <div className="mb-2">
-                                <span className="text-xs font-medium text-[#64748B] dark:text-[#9AA7C2]">Handles: </span>
-                                <span className="text-xs text-[#9AA7C2]">
-                                  {contact.handles.join(', ')}
-                                </span>
+                              <div className="flex flex-wrap gap-1 mb-2">
+                                {contact.handles.slice(0, 4).map((handle: string, i: number) => (
+                                  <DisciplineChip key={i} name={handle} size="sm" />
+                                ))}
+                                {contact.handles.length > 4 && (
+                                  <span className="text-xs text-muted-foreground">+{contact.handles.length - 4} more</span>
+                                )}
                               </div>
                             )}
                             

@@ -101,6 +101,17 @@ export async function GET(request: NextRequest) {
           orderBy: {
             createdAt: 'desc'
           }
+        },
+        CompanyDuty: {
+          include: {
+            duty: {
+              select: {
+                id: true,
+                name: true,
+                category: true
+              }
+            }
+          }
         }
       },
       orderBy: [
@@ -200,7 +211,8 @@ export async function GET(request: NextRequest) {
           logoUrl: client.logoUrl || undefined,
           color: generateColor(client.name)
         })),
-        totalTeams: clientsArray.length
+        totalTeams: clientsArray.length,
+        duties: (agency as any).CompanyDuty?.map((cd: any) => cd.duty) || []
       };
     });
 

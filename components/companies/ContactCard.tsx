@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Building2, Linkedin } from 'lucide-react';
 import Link from 'next/link';
 import { EmailCopy } from '@/components/ui/EmailCopy';
+import { DisciplineChipList } from '@/components/ui/DisciplineChip';
 
 interface Team {
   id: string;
@@ -272,27 +273,24 @@ export function ContactCard({ contact, agencyId }: ContactCardProps) {
               </div>
             )}
 
-            {/* Handles/Duties */}
+            {/* Discipline Chips */}
             {loadingDuties ? (
               <p className="text-sm text-muted-foreground mb-2">Loading duties...</p>
             ) : duties.length > 0 && (
-              <div className="text-sm text-muted-foreground mb-2">
-                <span className="font-medium">Handles:</span>{' '}
-                {visibleDuties.map((duty, index) => (
-                  <span key={duty.id}>
-                    {duty.name}
-                    {index < visibleDuties.length - 1 && ', '}
-                  </span>
-                ))}
+              <div className="mb-2">
+                <DisciplineChipList
+                  duties={duties}
+                  max={showAllDuties ? undefined : visibleDutyCount}
+                />
                 {hiddenDutyCount > 0 && !showAllDuties && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowAllDuties(true);
                     }}
-                    className="text-primary hover:text-primary/80 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium text-xs ml-1 mt-1"
                   >
-                    +{hiddenDutyCount} {hiddenDutyCount === 1 ? 'duty' : 'duties'}
+                    +{hiddenDutyCount} more
                   </button>
                 )}
                 {showAllDuties && hiddenDutyCount > 0 && (
@@ -301,7 +299,7 @@ export function ContactCard({ contact, agencyId }: ContactCardProps) {
                       e.stopPropagation();
                       setShowAllDuties(false);
                     }}
-                    className="text-primary hover:text-primary/80 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium text-xs ml-1 mt-1"
                   >
                     Show less
                   </button>

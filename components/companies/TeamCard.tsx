@@ -12,6 +12,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import Link from 'next/link';
+import { DisciplineChipList } from '@/components/ui/DisciplineChip';
 
 interface ClientCompany {
   id: string;
@@ -253,36 +254,33 @@ export function TeamCard({
               </div>
             ) : null}
 
-            {/* Handles/Duties Inline */}
+            {/* Discipline Chips */}
             {loadingDuties ? (
               <p className="text-sm text-muted-foreground">Loading duties...</p>
             ) : teamDuties.length > 0 && (
-              <div className="text-sm text-muted-foreground mb-2">
-                <span className="font-medium">Handles:</span>{' '}
-                {visibleDuties.map((duty, index) => (
-                  <span key={duty.id}>
-                    {duty.name}
-                    {index < visibleDuties.length - 1 && ', '}
-                  </span>
-                ))}
+              <div className="mb-2">
+                <DisciplineChipList
+                  duties={teamDuties}
+                  max={showAllDuties ? undefined : visibleDutyCount}
+                />
                 {hiddenDutyCount > 0 && !showAllDuties && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowAllDuties(true);
                     }}
-                    className="text-primary hover:text-primary/80 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium text-xs ml-1 mt-1"
                   >
-                    +{hiddenDutyCount} {hiddenDutyCount === 1 ? 'duty' : 'duties'}
+                    +{hiddenDutyCount} more
                   </button>
                 )}
-                {showAllDuties && (
+                {showAllDuties && teamDuties.length > visibleDutyCount && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowAllDuties(false);
                     }}
-                    className="text-primary hover:text-primary/80 font-medium ml-1"
+                    className="text-primary hover:text-primary/80 font-medium text-xs ml-1 mt-1"
                   >
                     Show less
                   </button>

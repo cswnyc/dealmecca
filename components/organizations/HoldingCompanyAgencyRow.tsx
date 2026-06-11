@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import { DisciplineChipList } from '@/components/ui/DisciplineChip';
 
 interface Branch {
   id: string;
@@ -18,7 +19,8 @@ interface AgencyRowProps {
     verified: boolean;
     branches: Branch[];
     totalBranches: number;
-    lastActivity: string;
+    lastActivity: string | null;
+    duties?: Array<{ id: string; name: string; category?: string }>;
   };
 }
 
@@ -67,6 +69,13 @@ export function HoldingCompanyAgencyRow({ agency }: AgencyRowProps) {
                 </span>
               )}
             </div>
+
+            {/* Discipline chips */}
+            {agency.duties && agency.duties.length > 0 && (
+              <div className="mb-1.5">
+                <DisciplineChipList duties={agency.duties} max={5} />
+              </div>
+            )}
 
             {/* Branches - displayed vertically */}
             {agency.branches.length > 0 && (
