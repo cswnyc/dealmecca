@@ -269,16 +269,28 @@ export const DISCIPLINE_LABELS: Record<DisciplineKey, string> = {
   Production: 'Production',
 };
 
-/** Color config per discipline for the chip component */
+/** Hex color per discipline — used for color-mix() based chip styling */
+export const DISCIPLINE_HEX: Record<DisciplineKey, string> = {
+  Media:        '#2575FC',
+  Programmatic: '#16A34A',
+  Digital:      '#8B5CF6',
+  Social:       '#0EA5E9',
+  Creative:     '#EC4899',
+  OOH:          '#F59E0B',
+  PR:           '#6366F1',
+  Production:   '#0D9488',
+};
+
+/** Tailwind class fallbacks for contexts where inline styles aren't practical (e.g. filter buttons) */
 export const DISCIPLINE_COLORS: Record<DisciplineKey, { bg: string; text: string; border: string; darkBg: string; darkText: string }> = {
-  Media:         { bg: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200',    darkBg: 'dark:bg-blue-950',    darkText: 'dark:text-blue-300' },
-  Programmatic:  { bg: 'bg-purple-50',  text: 'text-purple-700',  border: 'border-purple-200',  darkBg: 'dark:bg-purple-950',  darkText: 'dark:text-purple-300' },
-  Digital:       { bg: 'bg-teal-50',    text: 'text-teal-700',    border: 'border-teal-200',    darkBg: 'dark:bg-teal-950',    darkText: 'dark:text-teal-300' },
-  Social:        { bg: 'bg-pink-50',    text: 'text-pink-700',    border: 'border-pink-200',    darkBg: 'dark:bg-pink-950',    darkText: 'dark:text-pink-300' },
-  Creative:      { bg: 'bg-orange-50',  text: 'text-orange-700',  border: 'border-orange-200',  darkBg: 'dark:bg-orange-950',  darkText: 'dark:text-orange-300' },
-  OOH:           { bg: 'bg-green-50',   text: 'text-green-700',   border: 'border-green-200',   darkBg: 'dark:bg-green-950',   darkText: 'dark:text-green-300' },
-  PR:            { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',   darkBg: 'dark:bg-amber-950',   darkText: 'dark:text-amber-300' },
-  Production:    { bg: 'bg-slate-50',   text: 'text-slate-700',   border: 'border-slate-200',   darkBg: 'dark:bg-slate-900',   darkText: 'dark:text-slate-300' },
+  Media:         { bg: 'bg-blue-50',     text: 'text-blue-700',    border: 'border-blue-200',    darkBg: 'dark:bg-blue-950',     darkText: 'dark:text-blue-300' },
+  Programmatic:  { bg: 'bg-green-50',    text: 'text-green-700',   border: 'border-green-200',   darkBg: 'dark:bg-green-950',    darkText: 'dark:text-green-300' },
+  Digital:       { bg: 'bg-violet-50',   text: 'text-violet-700',  border: 'border-violet-200',  darkBg: 'dark:bg-violet-950',   darkText: 'dark:text-violet-300' },
+  Social:        { bg: 'bg-sky-50',      text: 'text-sky-700',     border: 'border-sky-200',     darkBg: 'dark:bg-sky-950',      darkText: 'dark:text-sky-300' },
+  Creative:      { bg: 'bg-pink-50',     text: 'text-pink-700',    border: 'border-pink-200',    darkBg: 'dark:bg-pink-950',     darkText: 'dark:text-pink-300' },
+  OOH:           { bg: 'bg-amber-50',    text: 'text-amber-700',   border: 'border-amber-200',   darkBg: 'dark:bg-amber-950',    darkText: 'dark:text-amber-300' },
+  PR:            { bg: 'bg-indigo-50',   text: 'text-indigo-700',  border: 'border-indigo-200',  darkBg: 'dark:bg-indigo-950',   darkText: 'dark:text-indigo-300' },
+  Production:    { bg: 'bg-teal-50',     text: 'text-teal-700',    border: 'border-teal-200',    darkBg: 'dark:bg-teal-950',     darkText: 'dark:text-teal-300' },
 };
 
 /**

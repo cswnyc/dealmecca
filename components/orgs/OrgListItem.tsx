@@ -2,9 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { MapPin, Users, CheckCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { MapPin, Users, CheckCircle, Building2, Briefcase, Award, Shield } from 'lucide-react';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { SearchHighlight } from '@/components/ui/SearchHighlight';
 import { DisciplineChipList } from '@/components/ui/DisciplineChip';
@@ -15,10 +13,14 @@ interface OrgListItemProps {
   name: string;
   logoUrl?: string;
   type: string;
+  /** Entity kind for icon/badge styling */
+  kind?: 'agency' | 'advertiser' | 'holding';
   location?: {
     city?: string;
     state?: string;
   };
+  /** Parent / holding company name */
+  parentName?: string;
   verified?: boolean;
   teamCount?: number;
   typeBadgeVariant?: 'default' | 'secondary' | 'outline' | 'destructive';
@@ -26,83 +28,123 @@ interface OrgListItemProps {
   searchQuery?: string;
   showOrgChart?: boolean;
   duties?: Array<{ id: string; name: string; category?: string }>;
+  /** Additional stats to show in the bottom row */
+  stats?: Array<{ label: string; value: string | number }>;
 }
+
+const KIND_META: Record<string, { icon: React.ElementType; color: string }> = {
+  holding:    { icon: Building2, color: 'var(--text-secondary, #334155)' },
+  agency:     { icon: Briefcase, color: 'var(--accent, #2575FC)' },
+  advertiser: { icon: Award,     color: 'var(--violet, #8B5CF6)' },
+};
 
 export function OrgListItem({
   id,
   name,
   logoUrl,
   type,
+  kind = 'agency',
   location,
+  parentName,
   verified,
   teamCount,
   typeBadgeVariant = 'secondary',
   children,
   searchQuery,
   showOrgChart = true,
-  duties
+  duties,
+  stats,
 }: OrgListItemProps) {
+  const meta = KIND_META[kind] || KIND_META.agency;
+  const KindIcon = meta.icon;
+  const locationStr = [location?.city, location?.state].filter(Boolean).join(', ');
+
   return (
-    <div className="p-4 lg:p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-600 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+    <Link
+      href={`/companies/${id}`}
+      className="group flex flex-col text-left bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-2xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+    >
+      {/* Header: logo + name + meta */}
+      <div className="flex items-center gap-3.5">
         <CompanyLogo
           logoUrl={logoUrl}
           companyName={name}
-          size="md"
-          className="flex-shrink-0"
+          size="lg"
+          className="flex-shrink-0 w-11 h-11 rounded-xl"
         />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-0.5">
-            <Link href={`/companies/${id}`} className="group min-w-0">
-              <h3 className="text-sm font-semibold text-[#162B54] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors truncate">
-                {searchQuery ? (
-                  <SearchHighlight
-                    text={name}
-                    searchTerm={searchQuery}
-                    highlightClassName="bg-[#2575FC]/20 text-[#2575FC] px-1 rounded font-semibold"
-                  />
-                ) : (
-                  name
-                )}
-              </h3>
-            </Link>
-            {verified && (
-              <CheckCircle className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
-            )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[15px] font-extrabold tracking-tight text-[#0B1220] dark:text-[#EAF0FF] group-hover:text-[#2575FC] dark:group-hover:text-[#5B8DFF] transition-colors truncate">
+              {searchQuery ? (
+                <SearchHighlight
+                  text={name}
+                  searchTerm={searchQuery}
+                  highlightClassName="bg-[#2575FC]/20 text-[#2575FC] px-0.5 rounded font-extrabold"
+                />
+              ) : (
+                name
+              )}
+            </span>
+            <span
+              className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10.5px] font-semibold"
+              style={{ color: meta.color, borderColor: 'var(--border-strong, #D7DEEA)' }}
+            >
+              <KindIcon className="w-3 h-3" />
+              {type}
+            </span>
           </div>
-          <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5 text-xs text-[#64748B] dark:text-[#9AA7C2]">
-            <span className="font-medium">{type}</span>
-            {location && (location.city || location.state) && (
-              <span className="flex items-center gap-0.5">
+          <div className="flex items-center gap-2 mt-0.5 text-xs text-[#64748B] dark:text-[#9AA7C2] flex-wrap">
+            {parentName && (
+              <span className="inline-flex items-center gap-1">
+                <Building2 className="w-3 h-3" />
+                {parentName}
+              </span>
+            )}
+            {parentName && locationStr && <span className="opacity-50">·</span>}
+            {locationStr && (
+              <span className="inline-flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
                 {searchQuery ? (
                   <SearchHighlight
-                    text={`${location.city || ''}, ${location.state || ''}`.replace(/^,\s*|\s*,$/g, '')}
+                    text={locationStr}
                     searchTerm={searchQuery}
-                    highlightClassName="bg-[#2575FC]/20 text-[#2575FC] px-1 rounded font-medium"
+                    highlightClassName="bg-[#2575FC]/20 text-[#2575FC] px-0.5 rounded font-medium"
                   />
                 ) : (
-                  `${location.city || ''}, ${location.state || ''}`.replace(/^,\s*|\s*,$/g, '')
+                  locationStr
                 )}
               </span>
             )}
-            {teamCount !== undefined && teamCount > 0 && (
-              <span className="flex items-center gap-0.5">
-                <Users className="w-3 h-3" />
-                {teamCount} people
-              </span>
-            )}
           </div>
-          {/* Discipline chips */}
-          {duties && duties.length > 0 && (
-            <div className="mt-1.5">
-              <DisciplineChipList duties={duties} max={5} />
-            </div>
-          )}
-          {children}
         </div>
       </div>
-    </div>
+
+      {/* Discipline chips — the primary signal */}
+      {duties && duties.length > 0 && (
+        <div className="mt-3">
+          <DisciplineChipList duties={duties} max={4} size="sm" />
+        </div>
+      )}
+
+      {/* Children (client team chips etc) */}
+      {children}
+
+      {/* Stats row */}
+      {stats && stats.length > 0 && (
+        <div className="flex gap-5 mt-3 pt-3 border-t border-[#E6EAF2] dark:border-[#22304A]">
+          {stats.map((s) => (
+            <div key={s.label}>
+              <div className="text-[15px] font-extrabold text-[#0B1220] dark:text-[#EAF0FF] tabular-nums">
+                {s.value}
+              </div>
+              <div className="text-[9.5px] font-semibold uppercase tracking-wider text-[#64748B] dark:text-[#9AA7C2] mt-0.5">
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Link>
   );
 }
 
@@ -148,23 +190,21 @@ export function RelatedItems({ items, label, searchQuery, maxVisible = 3 }: Rela
                 item.name
               )}
             </span>
-            {index < visibleItems.length - 1 && (
-              <span className="text-muted-foreground">,</span>
-            )}
           </div>
         ))}
         {items.length > maxVisible && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setExpanded(!expanded)}
-            className="h-auto py-0 text-xs"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setExpanded(!expanded);
+            }}
+            className="text-xs text-primary font-medium hover:underline"
           >
             {expanded ? 'Show less' : `+${items.length - maxVisible} more`}
-          </Button>
+          </button>
         )}
       </div>
     </div>
   );
 }
-

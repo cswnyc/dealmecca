@@ -1268,70 +1268,33 @@ export default function OrganizationsPage() {
                 </div>
               </div>
 
-              {/* Agencies List */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 overflow-hidden">
-                <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
-                    {searchQuery ? `Search Results (${filteredAgencies.length})` : 'Agency Directory'}
-                  </h2>
-                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">
-                    {searchQuery ? `Found ${filteredAgencies.length} agencies matching your search` : 'Discover and connect with leading agencies'}
-                  </p>
-                </div>
-                <div className="space-y-3 lg:space-y-4">
-                  {filteredAgencies.map((agency) => {
-                    const isExpanded = expandedAgencies.has(agency.id);
-                    const displayedTeams = isExpanded ? agency.clientTeams : agency.clientTeams?.slice(0, 3) || [];
-                    
-                    return (
-                      <OrgListItem
-                        key={agency.id}
-                        id={agency.id}
-                        name={agency.name}
-                        logoUrl={agency.logoUrl}
-                        type={getAgencyTypeLabel(agency.type)}
-                        location={{ city: agency.city, state: agency.state }}
-                        verified={agency.verified}
-                        teamCount={agency.teamCount}
-                        searchQuery={searchQuery}
-                        duties={agency.duties}
-                      >
-                        {agency.clientTeams && agency.clientTeams.length > 0 && (
-                          <div className="mt-2">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {displayedTeams.map(team => (
-                                <TeamChip
-                                  key={team.id}
-                                  name={team.name}
-                                  logo={team.logoUrl}
-                                  color={team.color}
-                                  href={`/companies/${team.id}?from=${agency.id}`}
-                                />
-                              ))}
-                              {agency.totalTeams > 3 && (
-                                <MoreTeamsLink
-                                  count={agency.totalTeams - 3}
-                                  expanded={isExpanded}
-                                  onToggle={() => {
-                                    setExpandedAgencies(prev => {
-                                      const next = new Set(prev);
-                                      if (next.has(agency.id)) {
-                                        next.delete(agency.id);
-                                      } else {
-                                        next.add(agency.id);
-                                      }
-                                      return next;
-                                    });
-                                  }}
-                                />
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </OrgListItem>
-                    );
-                  })}
-                </div>
+              {/* Agencies Grid */}
+              <div className="flex items-center gap-2.5 mb-4">
+                <span className="text-sm text-[#334155] dark:text-[#C7D2FE]">
+                  <b className="font-extrabold text-[#0B1220] dark:text-[#EAF0FF] tabular-nums">{filteredAgencies.length}</b>{' '}
+                  result{filteredAgencies.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
+                {filteredAgencies.map((agency) => (
+                  <OrgListItem
+                    key={agency.id}
+                    id={agency.id}
+                    name={agency.name}
+                    logoUrl={agency.logoUrl}
+                    type={getAgencyTypeLabel(agency.type)}
+                    kind={agency.type === 'HOLDING_COMPANY' || agency.type === 'MEDIA_HOLDING_COMPANY' ? 'holding' : 'agency'}
+                    location={{ city: agency.city, state: agency.state }}
+                    verified={agency.verified}
+                    searchQuery={searchQuery}
+                    duties={agency.duties}
+                    stats={[
+                      ...(agency.totalTeams > 0 ? [{ label: 'Accounts', value: agency.totalTeams }] : []),
+                      ...(agency.teamCount > 0 ? [{ label: 'People', value: agency.teamCount }] : []),
+                      { label: 'Type', value: getAgencyTypeLabel(agency.type) },
+                    ]}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -1347,68 +1310,32 @@ export default function OrganizationsPage() {
                 ]}
               />
 
-              {/* Advertisers List */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 overflow-hidden">
-                <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-[#162B54] dark:text-[#EAF0FF]">
-                    {searchQuery ? `Search Results (${filteredAdvertisers.length})` : 'Advertiser Directory'}
-                  </h2>
-                  <p className="text-sm text-[#64748B] dark:text-[#9AA7C2]">Discover and connect with leading advertisers</p>
-                </div>
-                <div className="space-y-3 lg:space-y-4">
-                  {filteredAdvertisers.map((advertiser) => {
-                    const isExpanded = expandedAdvertisers.has(advertiser.id);
-                    const displayedTeams = isExpanded ? advertiser.agencyTeams : advertiser.agencyTeams?.slice(0, 3) || [];
-                    
-                    return (
-                      <OrgListItem
-                        key={advertiser.id}
-                        id={advertiser.id}
-                        name={advertiser.name}
-                        logoUrl={advertiser.logoUrl}
-                        type={advertiser.industry}
-                        location={{ city: advertiser.city, state: advertiser.state }}
-                        verified={advertiser.verified}
-                        teamCount={advertiser.teamCount}
-                        searchQuery={searchQuery}
-                        showOrgChart={false}
-                      >
-                        {advertiser.agencyTeams && advertiser.agencyTeams.length > 0 && (
-                          <div className="space-y-2 mt-2">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {displayedTeams.map(team => (
-                                <TeamChip
-                                  key={team.id}
-                                  name={team.name}
-                                  logo={team.logoUrl}
-                                  color={team.color}
-                                  href={`/companies/${team.id}?from=${advertiser.id}`}
-                                />
-                              ))}
-                              {advertiser.totalTeams > 3 && (
-                                <MoreTeamsLink 
-                                  count={advertiser.totalTeams - 3}
-                                  expanded={isExpanded}
-                                  onToggle={() => {
-                                    setExpandedAdvertisers(prev => {
-                                      const next = new Set(prev);
-                                      if (next.has(advertiser.id)) {
-                                        next.delete(advertiser.id);
-                                      } else {
-                                        next.add(advertiser.id);
-                                      }
-                                      return next;
-                                    });
-                                  }}
-                                />
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </OrgListItem>
-                    );
-                  })}
-                </div>
+              {/* Advertisers Grid */}
+              <div className="flex items-center gap-2.5 mb-4">
+                <span className="text-sm text-[#334155] dark:text-[#C7D2FE]">
+                  <b className="font-extrabold text-[#0B1220] dark:text-[#EAF0FF] tabular-nums">{filteredAdvertisers.length}</b>{' '}
+                  result{filteredAdvertisers.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
+                {filteredAdvertisers.map((advertiser) => (
+                  <OrgListItem
+                    key={advertiser.id}
+                    id={advertiser.id}
+                    name={advertiser.name}
+                    logoUrl={advertiser.logoUrl}
+                    type={advertiser.industry || 'Advertiser'}
+                    kind="advertiser"
+                    location={{ city: advertiser.city, state: advertiser.state }}
+                    verified={advertiser.verified}
+                    searchQuery={searchQuery}
+                    showOrgChart={false}
+                    stats={[
+                      ...(advertiser.totalTeams > 0 ? [{ label: 'Agencies', value: advertiser.totalTeams }] : []),
+                      ...(advertiser.teamCount > 0 ? [{ label: 'People', value: advertiser.teamCount }] : []),
+                    ]}
+                  />
+                ))}
               </div>
             </div>
           )}
