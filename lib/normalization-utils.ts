@@ -11,17 +11,33 @@
  */
 export function normalizeCompanyName(name: string): string {
   if (!name) return '';
-  
+
   return name
     .toLowerCase()
     .trim()
-    // Remove punctuation and special characters, keep only letters, numbers, and spaces
-    .replace(/[^\w\s]/g, ' ')
+    // Remove punctuation and special characters, keep letters, numbers, hyphens (for names like 7-Eleven), and spaces
+    .replace(/[^\w\s-]/g, ' ')
+    // Collapse standalone hyphens (but keep hyphens between word chars, e.g. "7-eleven")
+    .replace(/(?<!\w)-|-(?!\w)/g, ' ')
     // Remove common legal entity suffixes
     .replace(/\b(inc|corp|corporation|company|ltd|limited|llc|group|plc|co|llp|lp|sa|ag|gmbh|bv|nv|spa|srl|oy|ab|as|aps|kft|sas|sarl|pty|pvt|pte|bhd|sdn|pte ltd|pty ltd|pvt ltd)\b/gi, '')
     // Normalize multiple spaces to single space
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/**
+ * Check if a company name looks like a corrupted/truncated variant
+ * (e.g. "-Eleven" is likely a corrupted "7-Eleven")
+ */
+export function isCorruptedName(name: string): boolean {
+  if (!name) return false;
+  const trimmed = name.trim();
+  // Starts with a hyphen or dash (leading character was stripped)
+  if (/^[-\u2013\u2014]/.test(trimmed)) return true;
+  // Single character followed by nothing useful
+  if (trimmed.length <= 1) return true;
+  return false;
 }
 
 /**

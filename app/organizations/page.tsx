@@ -32,6 +32,8 @@ import { Linkedin } from 'lucide-react';
 import { CompactHeader, FilterDrawer, ActiveFilterPills, type Filter as FilterType } from '@/components/organizations';
 import { DarkModeToggle } from '@/components/ui/DarkModeToggle';
 import { LogoMark } from '@/components/ui/Logo';
+import { getCompanyTypeLabel, formatEnumLabel, AGENCY_TYPE_LABELS } from '@/lib/labels';
+import { DisciplineChip } from '@/components/ui/DisciplineChip';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useDarkMode } from '@/hooks/useDarkMode';
 
@@ -96,6 +98,7 @@ interface Agency {
     color: string
   }>
   totalTeams: number
+  duties?: Array<{ id: string; name: string; category: string }>
 }
 
 interface Advertiser {
@@ -523,14 +526,7 @@ export default function OrganizationsPage() {
 
   // Helper functions for agency view
   const getAgencyTypeLabel = (type: string) => {
-    switch (type) {
-      case 'HOLDING_COMPANY': return 'Holding Company';
-      case 'MEDIA_HOLDING_COMPANY': return 'Media Holding Company';
-      case 'HOLDING_COMPANY_AGENCY': return 'Agency';
-      case 'INDEPENDENT_AGENCY': return 'Independent Agency';
-      case 'NETWORK_AGENCY': return 'Network Agency';
-      default: return type;
-    }
+    return AGENCY_TYPE_LABELS[type] || formatEnumLabel(type);
   };
 
   const getAgencyTypeBadgeColor = (type: string) => {
@@ -1298,9 +1294,10 @@ export default function OrganizationsPage() {
                         verified={agency.verified}
                         teamCount={agency.teamCount}
                         searchQuery={searchQuery}
+                        duties={agency.duties}
                       >
                         {agency.clientTeams && agency.clientTeams.length > 0 && (
-                          <div className="space-y-2 mt-2">
+                          <div className="mt-2">
                             <div className="flex items-center gap-2 flex-wrap">
                               {displayedTeams.map(team => (
                                 <TeamChip
@@ -1312,7 +1309,7 @@ export default function OrganizationsPage() {
                                 />
                               ))}
                               {agency.totalTeams > 3 && (
-                                <MoreTeamsLink 
+                                <MoreTeamsLink
                                   count={agency.totalTeams - 3}
                                   expanded={isExpanded}
                                   onToggle={() => {
@@ -1329,7 +1326,6 @@ export default function OrganizationsPage() {
                                 />
                               )}
                             </div>
-                            <p className="text-xs text-[#9AA7C2]">Last activity: {agency.lastActivity}</p>
                           </div>
                         )}
                       </OrgListItem>
@@ -1347,8 +1343,7 @@ export default function OrganizationsPage() {
               <StatsBar
                 stats={[
                   { icon: Globe, label: 'Total Advertisers', value: filteredAdvertisers.length, colorClass: 'bg-[#8B5CF6]/10 text-[#8B5CF6]' },
-                  { icon: Users, label: 'Team Members', value: filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0), colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' },
-                  { icon: CheckCircle, label: 'Verified Rate', value: `${filteredAdvertisers.length > 0 ? Math.round((filteredAdvertisers.filter(a => a.verified).length / filteredAdvertisers.length) * 100) : 0}%`, colorClass: 'bg-green-500/10 text-green-500' }
+                  { icon: Users, label: 'Team Members', value: filteredAdvertisers.reduce((total, adv) => total + adv.teamCount, 0), colorClass: 'bg-[#2575FC]/10 dark:bg-[#5B8DFF]/10 text-[#2575FC] dark:text-[#5B8DFF]' }
                 ]}
               />
 
@@ -1408,7 +1403,6 @@ export default function OrganizationsPage() {
                                 />
                               )}
                             </div>
-                            <p className="text-xs text-[#9AA7C2]">Last activity: {advertiser.lastActivity}</p>
                           </div>
                         )}
                       </OrgListItem>
@@ -1484,13 +1478,15 @@ export default function OrganizationsPage() {
                               </div>
                             )}
                             
-                            {/* Handles */}
+                            {/* Disciplines */}
                             {contact.handles && contact.handles.length > 0 && (
-                              <div className="mb-2">
-                                <span className="text-xs font-medium text-[#64748B] dark:text-[#9AA7C2]">Handles: </span>
-                                <span className="text-xs text-[#9AA7C2]">
-                                  {contact.handles.join(', ')}
-                                </span>
+                              <div className="flex flex-wrap gap-1 mb-2">
+                                {contact.handles.slice(0, 4).map((handle: string, i: number) => (
+                                  <DisciplineChip key={i} name={handle} size="sm" />
+                                ))}
+                                {contact.handles.length > 4 && (
+                                  <span className="text-xs text-muted-foreground">+{contact.handles.length - 4} more</span>
+                                )}
                               </div>
                             )}
                             

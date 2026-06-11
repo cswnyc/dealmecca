@@ -340,12 +340,10 @@ async function main() {
     }
 
     // Link to partnership via PartnershipContact
-    const existingLink = await prisma.partnershipContact.findUnique({
+    const existingLink = await prisma.partnershipContact.findFirst({
       where: {
-        partnershipId_contactId: {
-          partnershipId: horizonMediaPartnership.id,
-          contactId: contact.id
-        }
+        partnershipId: horizonMediaPartnership.id,
+        contactId: contact.id
       }
     });
 
@@ -404,12 +402,10 @@ async function main() {
   }
 
   // Link to partnership
-  const existingNextLink = await prisma.partnershipContact.findUnique({
+  const existingNextLink = await prisma.partnershipContact.findFirst({
     where: {
-      partnershipId_contactId: {
-        partnershipId: horizonNextPartnership.id,
-        contactId: nextContact.id
-      }
+      partnershipId: horizonNextPartnership.id,
+      contactId: nextContact.id
     }
   });
 

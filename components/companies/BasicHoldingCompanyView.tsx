@@ -18,6 +18,7 @@ import {
   Search,
   X
 } from 'lucide-react';
+import { getDisciplineKey, DISCIPLINE_KEYS, DISCIPLINE_LABELS, DISCIPLINE_COLORS, type DisciplineKey } from '@/lib/labels';
 
 interface SubsidiaryLocation {
   id: string;
@@ -52,6 +53,12 @@ interface Subsidiary {
       name: string;
       logoUrl?: string;
       verified: boolean;
+    };
+  }>;
+  CompanyDuty?: Array<{
+    duty: {
+      id: string;
+      name: string;
     };
   }>;
 }
@@ -103,6 +110,7 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
 
   const [activeTab, setActiveTab] = useState<'agencies' | 'intel' | 'overview'>('agencies');
   const [searchQuery, setSearchQuery] = useState('');
+  const [disciplineFilter, setDisciplineFilter] = useState<DisciplineKey | 'all'>('all');
 
   // Global search state
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
@@ -182,6 +190,7 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
   const topLocations = Object.entries(subsidiaryStats.locationCounts)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5)
+    .filter(([, count]) => count > 0)
     .map(([name, count]) => ({ name, count: `${count} people` }));
 
   // Filter branches based on search
@@ -202,8 +211,26 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
     sub.Team && sub.Team.length > 0
   );
 
+  // Collect all disciplines across subsidiaries
+  const allDisciplines = new Set<DisciplineKey>();
+  for (const sub of company.subsidiaries) {
+    if (sub.CompanyDuty) {
+      for (const cd of sub.CompanyDuty) {
+        const dk = getDisciplineKey(cd.duty.name);
+        if (dk) allDisciplines.add(dk);
+      }
+    }
+  }
+
+  // Apply discipline filter
+  const disciplineFilteredBranches = disciplineFilter === 'all'
+    ? filteredBranches
+    : filteredBranches.filter(sub =>
+        sub.CompanyDuty?.some(cd => getDisciplineKey(cd.duty.name) === disciplineFilter)
+      );
+
   // Transform agencies into the row format (with their branches) - for holding companies
-  const agencyRowData = filteredBranches.map(agency => {
+  const agencyRowData = disciplineFilteredBranches.map(agency => {
     return {
       id: agency.id,
       name: agency.name,
@@ -214,7 +241,8 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
         name: sub.name
       })),
       totalBranches: agency._count?.subsidiaries || agency.subsidiaries?.length || 0,
-      lastActivity: '23 hrs'
+      lastActivity: null,
+      duties: agency.CompanyDuty?.map(cd => cd.duty) || []
     };
   });
 
@@ -232,7 +260,7 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
       name: branch.name,
       teams,
       peopleCount: branch._count?.contacts || 0,
-      lastActivity: '23 hrs'
+      lastActivity: null
     };
   });
 
@@ -417,6 +445,42 @@ export function BasicHoldingCompanyView({ company }: HoldingCompanyViewProps) {
           <div className="flex-1 min-w-0">
             {activeTab === 'agencies' && (
               <div>
+                {/* Discipline Filter */}
+                {allDisciplines.size > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <button
+                      onClick={() => setDisciplineFilter('all')}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        disciplineFilter === 'all'
+                          ? 'bg-foreground text-background'
+                          : 'bg-muted text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      All ({filteredBranches.length})
+                    </button>
+                    {DISCIPLINE_KEYS.filter(dk => allDisciplines.has(dk)).map(dk => {
+                      const count = filteredBranches.filter(sub =>
+                        sub.CompanyDuty?.some(cd => getDisciplineKey(cd.duty.name) === dk)
+                      ).length;
+                      const isActive = disciplineFilter === dk;
+                      const colors = DISCIPLINE_COLORS[dk];
+                      return (
+                        <button
+                          key={dk}
+                          onClick={() => setDisciplineFilter(isActive ? 'all' : dk)}
+                          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors border ${
+                            isActive
+                              ? `${colors.bg} ${colors.text} ${colors.border} ${colors.darkBg} ${colors.darkText}`
+                              : 'bg-muted text-muted-foreground hover:text-foreground border-transparent'
+                          }`}
+                        >
+                          {DISCIPLINE_LABELS[dk]} ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
                 {/* Search Bar */}
                 <div className="mb-6">
                   <SearchInput

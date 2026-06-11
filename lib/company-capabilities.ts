@@ -1,4 +1,5 @@
 // Utility functions for determining company capabilities from existing data
+import { getDepartmentLabel as formatDepartmentLabel, getIndustryLabel as formatIndustryLabel, ADVERTISING_MODEL_LABELS, formatEnumLabel } from '@/lib/labels';
 
 interface Contact {
   department?: string;
@@ -158,74 +159,18 @@ export function getAdvertiserCapabilities(company: Company, contacts?: Contact[]
 /**
  * Format department enum to readable label
  */
-function formatDepartmentLabel(department: string): string {
-  const labels: Record<string, string> = {
-    MEDIA_PLANNING: 'Media Planning',
-    MEDIA_BUYING: 'Media Buying',
-    DIGITAL_MARKETING: 'Digital Marketing',
-    PROGRAMMATIC: 'Programmatic',
-    SOCIAL_MEDIA: 'Social Media',
-    SEARCH_MARKETING: 'Search Marketing',
-    STRATEGY_PLANNING: 'Strategy',
-    ANALYTICS_INSIGHTS: 'Analytics & Insights',
-    CREATIVE_SERVICES: 'Creative',
-    ACCOUNT_MANAGEMENT: 'Account Management',
-    BUSINESS_DEVELOPMENT: 'Business Development',
-    OPERATIONS: 'Operations',
-    TECHNOLOGY: 'Technology',
-    FINANCE: 'Finance',
-    LEADERSHIP: 'Leadership',
-    MARKETING: 'Marketing',
-    SALES: 'Sales',
-    PRODUCT: 'Product',
-  };
-
-  return labels[department] || department.replace(/_/g, ' ');
-}
+// formatDepartmentLabel imported from @/lib/labels
 
 /**
  * Format industry enum to readable label
  */
-function formatIndustryLabel(industry: string): string {
-  const labels: Record<string, string> = {
-    AUTOMOTIVE: 'Automotive',
-    CPG_FOOD_BEVERAGE: 'CPG - Food & Beverage',
-    CPG_PERSONAL_CARE: 'CPG - Personal Care',
-    CPG_HOUSEHOLD: 'CPG - Household',
-    FINANCIAL_SERVICES: 'Financial Services',
-    HEALTHCARE_PHARMA: 'Healthcare & Pharma',
-    RETAIL_ECOMMERCE: 'Retail & E-commerce',
-    TECHNOLOGY: 'Technology',
-    ENTERTAINMENT_MEDIA: 'Entertainment & Media',
-    TRAVEL_HOSPITALITY: 'Travel & Hospitality',
-    TELECOM: 'Telecommunications',
-    FASHION_BEAUTY: 'Fashion & Beauty',
-    SPORTS_FITNESS: 'Sports & Fitness',
-    EDUCATION: 'Education',
-    REAL_ESTATE: 'Real Estate',
-    ENERGY: 'Energy',
-    GOVERNMENT_NONPROFIT: 'Government & Nonprofit',
-    GAMING: 'Gaming',
-    CRYPTOCURRENCY: 'Cryptocurrency',
-    INSURANCE: 'Insurance',
-    B2B_SERVICES: 'B2B Services',
-    PROFESSIONAL_SERVICES: 'Professional Services',
-  };
-
-  return labels[industry] || industry.replace(/_/g, ' ');
-}
+// formatIndustryLabel imported from @/lib/labels
 
 /**
  * Format advertising model to readable label
  */
 function formatAdvertisingModelLabel(model: string): string {
-  const labels: Record<string, string> = {
-    AGENCY_MANAGED: 'Works with Agencies',
-    IN_HOUSE: 'In-House Marketing Team',
-    HYBRID: 'Hybrid Approach',
-  };
-
-  return labels[model] || model;
+  return ADVERTISING_MODEL_LABELS[model] || formatEnumLabel(model);
 }
 
 /**

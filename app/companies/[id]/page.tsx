@@ -13,6 +13,7 @@ import { PartnershipCard } from '@/components/companies/PartnershipCard';
 import { TeamCard } from '@/components/companies/TeamCard';
 import { ContactCard } from '@/components/companies/ContactCard';
 import { RelationshipGraph } from '@/components/companies/RelationshipGraph';
+import { AgencyRosterByDiscipline } from '@/components/companies/AgencyRosterByDiscipline';
 import { BasicHoldingCompanyView } from '@/components/companies/BasicHoldingCompanyView';
 import { MediaHoldingCompanyView } from '@/components/companies/MediaHoldingCompanyView';
 import { AgencyDetailHeader } from '@/components/organizations/AgencyDetailHeader';
@@ -49,6 +50,8 @@ import {
   Plus,
   Lightbulb
 } from 'lucide-react';
+import { getCompanyTypeLabel, getDutyCategoryLabel, formatEnumLabel, getDisciplineKey, DISCIPLINE_KEYS, DISCIPLINE_LABELS, DISCIPLINE_COLORS, type DisciplineKey } from '@/lib/labels';
+import { DisciplineChip, DisciplineChipList } from '@/components/ui/DisciplineChip';
 
 interface Company {
   id: string;
@@ -153,6 +156,15 @@ interface Company {
       seniority?: string;
       department?: string;
     }>;
+    contactRoles?: Array<{
+      contactId: string;
+      role?: string;
+      responsibilities?: string;
+      isPrimary: boolean;
+      dutyId?: string | null;
+      duty?: { id: string; name: string; category: string } | null;
+    }>;
+    duties?: Array<{ id: string; name: string; category: string }>;
   }>;
   teams: Array<{
     id: string;
@@ -160,9 +172,11 @@ interface Company {
     description?: string;
     type: string;
     isActive: boolean;
+    duties?: Array<{ id: string; name: string; category: string }>;
     _count: {
       ContactTeam: number;
       PartnershipTeam: number;
+      TeamDuty?: number;
     };
   }>;
   _count: {
@@ -192,6 +206,9 @@ export default function CompanyDetailPage() {
   const [isSuggestEditExpanded, setIsSuggestEditExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+
+  // Teams discipline filter
+  const [teamDisciplineFilter, setTeamDisciplineFilter] = useState<DisciplineKey | 'all'>('all');
 
   // Duties state
   const [duties, setDuties] = useState<any[]>([]);
@@ -399,23 +416,7 @@ export default function CompanyDetailPage() {
     }
   };
 
-  const getCompanyTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      AGENCY: 'Agency',
-      INDEPENDENT_AGENCY: 'Independent Agency',
-      HOLDING_COMPANY_AGENCY: 'Holding Company Agency',
-      NETWORK_AGENCY: 'Network Agency',
-      MEDIA_HOLDING_COMPANY: 'Media Holding Company',
-      ADVERTISER: 'Advertiser',
-      BRAND: 'Brand',
-      VENDOR: 'Vendor',
-      PUBLISHER: 'Publisher',
-      DSP: 'Demand Side Platform',
-      SSP: 'Supply Side Platform',
-      ADTECH: 'AdTech'
-    };
-    return labels[type] || type;
-  };
+  // getCompanyTypeLabel imported from @/lib/labels
 
   const getCompanyTypeBadgeColor = (type: string) => {
     const colors: Record<string, string> = {
@@ -502,10 +503,15 @@ export default function CompanyDetailPage() {
     return company.teams?.length || 0;
   }, [company?.teams]);
 
-  // Calculate total partnerships (disabled for now - will be added later)
   const totalPartnerships = useMemo(() => {
-    return 0; // Partnerships functionality disabled
-  }, []);
+    return company?.partnerships?.length || 0;
+  }, [company?.partnerships]);
+
+  const isAdvertiser = useMemo(() => {
+    if (!company) return false;
+    const type = company.companyType;
+    return type === 'ADVERTISER' || type === 'NATIONAL_ADVERTISER' || type === 'LOCAL_ADVERTISER' || type === 'BRAND';
+  }, [company?.companyType]);
 
   if (loading) {
     return (
@@ -922,23 +928,38 @@ export default function CompanyDetailPage() {
                     </div>
 
                     {/* Stats Row */}
-                    <div className="grid grid-cols-4 gap-4 pt-4 border-t border-border">
+                    <div className="flex gap-6 pt-4 border-t border-border flex-wrap">
+                      {totalPartnerships > 0 && (
                       <div>
                         <div className="text-2xl font-bold text-foreground">{totalPartnerships}</div>
-                        <div className="text-sm text-muted-foreground">Partnerships</div>
+                        <div className="text-sm text-muted-foreground">{isAdvertiser ? 'Agencies' : 'Partnerships'}</div>
                       </div>
+                      )}
+                      {totalContacts > 0 && (
                       <div>
                         <div className="text-2xl font-bold text-foreground">{totalContacts}</div>
-                        <div className="text-sm text-muted-foreground">Contacts</div>
+                        <div className="text-sm text-muted-foreground">People</div>
                       </div>
+                      )}
+                      {totalTeams > 0 && (
                       <div>
                         <div className="text-2xl font-bold text-foreground">{totalTeams}</div>
                         <div className="text-sm text-muted-foreground">Teams</div>
                       </div>
+                      )}
+                      {company.updatedAt && (
                       <div>
-                        <div className="text-2xl font-bold text-foreground">2 hrs</div>
+                        <div className="text-2xl font-bold text-foreground">{(() => {
+                          const diff = Date.now() - new Date(company.updatedAt).getTime();
+                          const hours = Math.floor(diff / 3600000);
+                          const days = Math.floor(hours / 24);
+                          if (days > 0) return `${days}d`;
+                          if (hours > 0) return `${hours}h`;
+                          return 'Now';
+                        })()}</div>
                         <div className="text-sm text-muted-foreground">Last activity</div>
                       </div>
+                      )}
                     </div>
                   </div>
 
@@ -948,10 +969,10 @@ export default function CompanyDetailPage() {
                       <nav className="flex px-6">
                         {[
                           { id: 'overview', label: 'Overview', count: null },
-                          { id: 'people', label: 'People', count: totalContacts },
-                          { id: 'teams', label: 'Teams', count: totalTeams },
+                          { id: 'people', label: 'People', count: totalContacts > 0 ? totalContacts : null },
+                          { id: 'teams', label: 'Teams', count: totalTeams > 0 ? totalTeams : null },
                           { id: 'duties', label: 'Duties', count: duties.length > 0 ? duties.length : null },
-                          { id: 'partnerships', label: 'Partnerships', count: totalPartnerships },
+                          { id: 'partnerships', label: isAdvertiser ? 'Agencies' : 'Partnerships', count: totalPartnerships > 0 ? totalPartnerships : null },
                           ...(company._count.subsidiaries > 0 ? [{ id: 'subsidiaries', label: 'Subsidiaries', count: company._count.subsidiaries }] : []),
                           { id: 'activity', label: 'Activity', count: null }
                         ].map((tab) => (
@@ -1006,15 +1027,68 @@ export default function CompanyDetailPage() {
           {/* Teams Tab - Shows company teams */}
           {activeTab === 'teams' && (
             <div className="bg-white dark:bg-dark-surface rounded-xl border border-border dark:border-dark-border p-6">
-                      {/* Group teams by type */}
                       {(() => {
                         const inHouseTeams = company.teams.filter(t => t.type !== 'ADVERTISER_TEAM');
                         const clientTeams = company.teams.filter(t => t.type === 'ADVERTISER_TEAM');
 
+                        // Collect all disciplines across client teams for the filter
+                        const teamDisciplines = new Set<DisciplineKey>();
+                        for (const team of clientTeams) {
+                          if (team.duties) {
+                            for (const duty of team.duties) {
+                              const dk = getDisciplineKey(duty.name);
+                              if (dk) teamDisciplines.add(dk);
+                            }
+                          }
+                        }
+
+                        // Filter client teams by selected discipline
+                        const filteredClientTeams = teamDisciplineFilter === 'all'
+                          ? clientTeams
+                          : clientTeams.filter(team =>
+                              team.duties?.some(d => getDisciplineKey(d.name) === teamDisciplineFilter)
+                            );
+
                         return (
                           <>
+                            {/* Discipline filter row (only for agencies with client teams) */}
+                            {clientTeams.length > 0 && teamDisciplines.size > 0 && (
+                              <div className="flex flex-wrap items-center gap-2 mb-6">
+                                <button
+                                  onClick={() => setTeamDisciplineFilter('all')}
+                                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                    teamDisciplineFilter === 'all'
+                                      ? 'bg-foreground text-background'
+                                      : 'bg-muted text-muted-foreground hover:text-foreground'
+                                  }`}
+                                >
+                                  All accounts ({clientTeams.length})
+                                </button>
+                                {DISCIPLINE_KEYS.filter(dk => teamDisciplines.has(dk)).map(dk => {
+                                  const count = clientTeams.filter(t =>
+                                    t.duties?.some(d => getDisciplineKey(d.name) === dk)
+                                  ).length;
+                                  const isActive = teamDisciplineFilter === dk;
+                                  const colors = DISCIPLINE_COLORS[dk];
+                                  return (
+                                    <button
+                                      key={dk}
+                                      onClick={() => setTeamDisciplineFilter(isActive ? 'all' : dk)}
+                                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors border ${
+                                        isActive
+                                          ? `${colors.bg} ${colors.text} ${colors.border} ${colors.darkBg} ${colors.darkText}`
+                                          : 'bg-muted text-muted-foreground hover:text-foreground border-transparent'
+                                      }`}
+                                    >
+                                      {DISCIPLINE_LABELS[dk]} ({count})
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+
                             {/* In-House Teams */}
-                            {inHouseTeams.length > 0 && (
+                            {teamDisciplineFilter === 'all' && inHouseTeams.length > 0 && (
                               <div className="mb-8">
                                 <h3 className="text-base font-semibold text-foreground mb-4">In-House Teams</h3>
                                 <div className="space-y-4">
@@ -1026,11 +1100,13 @@ export default function CompanyDetailPage() {
                             )}
 
                             {/* Agency Client Teams */}
-                            {clientTeams.length > 0 && (
+                            {filteredClientTeams.length > 0 && (
                               <div>
-                                <h3 className="text-base font-semibold text-foreground mb-4">Agency Client Teams</h3>
+                                <h3 className="text-base font-semibold text-foreground mb-4">
+                                  {isAdvertiser ? 'Agency Teams' : 'Client Accounts'} ({filteredClientTeams.length})
+                                </h3>
                                 <div className="space-y-4">
-                                  {clientTeams.map((team) => (
+                                  {filteredClientTeams.map((team) => (
                                     <TeamCard key={team.id} team={team} agencyId={companyId} />
                                   ))}
                                 </div>
@@ -1042,6 +1118,15 @@ export default function CompanyDetailPage() {
                               <div className="text-center py-12">
                                 <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                                 <p className="text-muted-foreground">No teams listed yet</p>
+                              </div>
+                            )}
+
+                            {/* Filtered empty state */}
+                            {company.teams.length > 0 && filteredClientTeams.length === 0 && teamDisciplineFilter !== 'all' && (
+                              <div className="text-center py-8">
+                                <p className="text-muted-foreground text-sm">
+                                  No accounts tagged with {DISCIPLINE_LABELS[teamDisciplineFilter]}
+                                </p>
                               </div>
                             )}
                           </>
@@ -1104,7 +1189,7 @@ export default function CompanyDetailPage() {
                               <div>
                                 <h4 className="font-semibold text-foreground">{duty.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  {duty.category.replace(/_/g, ' ')}
+                                  {getDutyCategoryLabel(duty.category)}
                                 </p>
                                 {duty.description && (
                                   <p className="text-sm text-muted-foreground mt-2">{duty.description}</p>
@@ -1117,7 +1202,36 @@ export default function CompanyDetailPage() {
                     </div>
                   )}
 
-                  {/* Partnerships Tab - Placeholder for DSP/SSP/AdTech */}
+                  {/* Partnerships Tab */}
+                  {activeTab === 'partnerships' && (
+                    <div className="bg-white dark:bg-dark-surface rounded-xl border border-border dark:border-dark-border p-6">
+                      {isAdvertiser ? (
+                        <AgencyRosterByDiscipline
+                          partnerships={company.partnerships}
+                          advertiserName={company.name}
+                        />
+                      ) : (
+                        <div className="space-y-4">
+                          <h2 className="text-lg font-semibold text-foreground">
+                            Partnerships ({totalPartnerships})
+                          </h2>
+                          {company.partnerships.length === 0 ? (
+                            <div className="text-center py-12">
+                              <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                              <p className="text-muted-foreground text-sm">No partnerships on file yet</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {company.partnerships.map((partnership) => (
+                                <PartnershipCard key={partnership.id} partnership={partnership} />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Subsidiaries Tab */}
                   {activeTab === 'subsidiaries' && company._count.subsidiaries > 0 && (
                     <div className="space-y-4">
@@ -1126,7 +1240,8 @@ export default function CompanyDetailPage() {
                         const clients = subsidiary.Team?.map(t => t.clientCompany).filter(Boolean) || [];
                         const visibleClients = clients.slice(0, 3);
                         const hiddenClientsCount = clients.length - visibleClients.length;
-                        const duties = subsidiary.CompanyDuty?.map(cd => cd.duty.name) || [];
+                        const dutyObjects = subsidiary.CompanyDuty?.map(cd => cd.duty) || [];
+                        const duties = dutyObjects.map(d => d.name);
                         const visibleDuties = duties.slice(0, 3);
                         const hiddenDutiesCount = duties.length - visibleDuties.length;
                         const contactCount = subsidiary._count?.contacts || 0;
@@ -1188,18 +1303,10 @@ export default function CompanyDetailPage() {
                                   </div>
                                 )}
 
-                                {/* Duties */}
-                                {duties.length > 0 && (
-                                  <div className="text-sm text-muted-foreground mb-2">
-                                    <span className="font-medium">Handles:</span> {visibleDuties.join(', ')}
-                                    {hiddenDutiesCount > 0 && (
-                                      <Link
-                                        href={`/companies/${subsidiary.id}?from=${companyId}`}
-                                        className="text-blue-600 hover:text-blue-700 font-medium ml-1"
-                                      >
-                                        +{hiddenDutiesCount} duties
-                                      </Link>
-                                    )}
+                                {/* Disciplines */}
+                                {dutyObjects.length > 0 && (
+                                  <div className="mb-2">
+                                    <DisciplineChipList duties={dutyObjects} max={4} />
                                   </div>
                                 )}
 
@@ -1210,10 +1317,19 @@ export default function CompanyDetailPage() {
                                   </div>
                                 )}
 
-                                {/* Last Activity */}
+                                {/* Last Activity - only show if real data exists */}
+                                {sub.updatedAt && (
                                 <div className="text-xs text-muted-foreground/70">
-                                  Last activity: 23 hrs
+                                  Last activity: {(() => {
+                                    const diff = Date.now() - new Date(sub.updatedAt).getTime();
+                                    const hours = Math.floor(diff / 3600000);
+                                    const days = Math.floor(hours / 24);
+                                    if (days > 0) return `${days}d ago`;
+                                    if (hours > 0) return `${hours}h ago`;
+                                    return 'Just now';
+                                  })()}
                                 </div>
+                                )}
                               </div>
 
                               {/* Right side: People count and action icons */}

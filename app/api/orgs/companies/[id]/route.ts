@@ -214,10 +214,28 @@ export async function GET(
                     primaryRole: true,
                     updatedAt: true
                   }
+                },
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
+                  }
                 }
               },
               orderBy: {
                 isPrimary: 'desc'
+              }
+            },
+            PartnershipDuty: {
+              include: {
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
+                  }
+                }
               }
             }
           },
@@ -257,10 +275,28 @@ export async function GET(
                     primaryRole: true,
                     updatedAt: true
                   }
+                },
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
+                  }
                 }
               },
               orderBy: {
                 isPrimary: 'desc'
+              }
+            },
+            PartnershipDuty: {
+              include: {
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
+                  }
+                }
               }
             }
           },
@@ -304,6 +340,17 @@ export async function GET(
               },
               orderBy: {
                 isPrimary: 'desc'
+              }
+            },
+            TeamDuty: {
+              include: {
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
+                  }
+                }
               }
             },
             _count: {
@@ -354,6 +401,17 @@ export async function GET(
               },
               orderBy: {
                 isPrimary: 'desc'
+              }
+            },
+            TeamDuty: {
+              include: {
+                duty: {
+                  select: {
+                    id: true,
+                    name: true,
+                    category: true
+                  }
+                }
               }
             },
             _count: {
@@ -434,8 +492,11 @@ export async function GET(
           contactId: pc.contactId,
           role: pc.role,
           responsibilities: pc.responsibilities,
-          isPrimary: pc.isPrimary
-        }))
+          isPrimary: pc.isPrimary,
+          dutyId: pc.dutyId || null,
+          duty: pc.duty || null
+        })),
+        duties: p.PartnershipDuty.map(pd => pd.duty)
       })),
       ...company.CompanyPartnership_advertiserIdToCompany.map(p => ({
         id: p.id,
@@ -462,8 +523,11 @@ export async function GET(
           contactId: pc.contactId,
           role: pc.role,
           responsibilities: pc.responsibilities,
-          isPrimary: pc.isPrimary
-        }))
+          isPrimary: pc.isPrimary,
+          dutyId: pc.dutyId || null,
+          duty: pc.duty || null
+        })),
+        duties: p.PartnershipDuty.map(pd => pd.duty)
       }))
     ];
 
@@ -488,6 +552,7 @@ export async function GET(
         role: ct.role,
         isPrimary: ct.isPrimary
       })),
+      duties: team.TeamDuty.map(td => td.duty),
       _count: team._count
     }));
 
@@ -507,6 +572,7 @@ export async function GET(
         role: ct.role,
         isPrimary: ct.isPrimary
       })),
+      duties: team.TeamDuty.map(td => td.duty),
       _count: team._count
     }));
 
