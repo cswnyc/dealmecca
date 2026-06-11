@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Search, Moon, Sun, X } from 'lucide-react';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Search, Moon, Sun, X, Settings, Receipt, HelpCircle, LogOut, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { useFirebaseAuth } from '@/lib/auth/firebase-auth';
 
 interface DirectoryTopNavProps {
@@ -20,8 +20,11 @@ const NAV_ITEMS = [
 
 export function DirectoryTopNav({ searchQuery = '', onSearchChange }: DirectoryTopNavProps) {
   const pathname = usePathname();
-  const { user } = useFirebaseAuth();
+  const router = useRouter();
+  const { user, signOut } = useFirebaseAuth();
   const [isDark, setIsDark] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleDark = () => {
     const html = document.documentElement;
@@ -30,7 +33,34 @@ export function DirectoryTopNav({ searchQuery = '', onSearchChange }: DirectoryT
     setIsDark(next);
   };
 
-  // User initials for avatar
+  // Close menu on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    if (menuOpen) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpen]);
+
+  const handleNav = (path: string) => {
+    setMenuOpen(false);
+    router.push(path);
+  };
+
+  const handleSignOut = async () => {
+    setMenuOpen(false);
+    try {
+      if (signOut) await signOut();
+      router.push('/');
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+  };
+
+  // User info
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
   const initials = user?.displayName
     ? user.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : user?.email?.[0]?.toUpperCase() || '?';
@@ -118,12 +148,79 @@ export function DirectoryTopNav({ searchQuery = '', onSearchChange }: DirectoryT
           {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
         </button>
 
-        {/* User avatar */}
-        <div
-          className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
-        >
-          {initials}
+        {/* User avatar + dropdown */}
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #2575FC 0%, #8B5CF6 100%)' }}
+            >
+              {initials}
+            </div>
+          </button>
+
+          {/* Dropdown menu */}
+          {menuOpen && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-xl shadow-lg overflow-hidden z-50">
+              {/* User info */}
+              <div className="px-4 py-3 border-b border-[#E6EAF2] dark:border-[#22304A]">
+                <div className="text-sm font-semibold text-[#0B1220] dark:text-[#EAF0FF] truncate">
+                  {displayName}
+                </div>
+                {user?.email && (
+                  <div className="text-xs text-[#64748B] dark:text-[#9AA7C2] truncate mt-0.5">
+                    {user.email}
+                  </div>
+                )}
+              </div>
+
+              {/* Menu items */}
+              <div className="py-1">
+                <button
+                  onClick={() => handleNav('/settings')}
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#334155] dark:text-[#C7D2FE] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] transition-colors"
+                >
+                  <Settings className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
+                  Settings
+                </button>
+                <button
+                  onClick={() => handleNav('/billing')}
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#334155] dark:text-[#C7D2FE] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] transition-colors"
+                >
+                  <Receipt className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
+                  Billing
+                </button>
+                <button
+                  onClick={() => handleNav('/events')}
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#334155] dark:text-[#C7D2FE] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] transition-colors"
+                >
+                  <Search className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
+                  Events
+                </button>
+                <button
+                  onClick={() => handleNav('/forum')}
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#334155] dark:text-[#C7D2FE] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
+                  Forum
+                </button>
+              </div>
+
+              {/* Sign out */}
+              <div className="border-t border-[#E6EAF2] dark:border-[#22304A] py-1">
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
