@@ -35,6 +35,7 @@ import { LogoMark } from '@/components/ui/Logo';
 import { getCompanyTypeLabel, formatEnumLabel, AGENCY_TYPE_LABELS } from '@/lib/labels';
 import { DisciplineChip } from '@/components/ui/DisciplineChip';
 import { DirectoryTopNav } from '@/components/navigation/DirectoryTopNav';
+import { DisciplineFilterSidebar } from '@/components/orgs/DisciplineFilterSidebar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useDarkMode } from '@/hooks/useDarkMode';
 
@@ -439,6 +440,7 @@ export default function OrganizationsPage() {
   const [loading, setLoading] = useState(false); // Use mock data immediately
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [discFilter, setDiscFilter] = useState<string[]>([]);
 
   // New enhancement state and hooks
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
@@ -1159,7 +1161,17 @@ export default function OrganizationsPage() {
 
         <div className="py-5 pb-20">
 
-          {/* V1: filters removed, search is in the heading area */}
+          <div className="grid grid-cols-1 lg:grid-cols-[230px_1fr] gap-7 items-start">
+            {/* Discipline filter sidebar */}
+            <aside className="hidden lg:block sticky top-20">
+              <DisciplineFilterSidebar
+                selected={discFilter}
+                onToggle={(id) => setDiscFilter(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
+                onClear={() => setDiscFilter([])}
+              />
+            </aside>
+
+            <div className="min-w-0">
 
           {/* Agencies Tab */}
           {(activeTab === 'agencies' || activeTab === 'all') && (
@@ -1172,7 +1184,7 @@ export default function OrganizationsPage() {
                   result{filteredAgencies.length !== 1 ? 's' : ''}
                 </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {filteredAgencies.map((agency) => (
                   <OrgListItem
                     key={agency.id}
@@ -1516,6 +1528,9 @@ export default function OrganizationsPage() {
             }
             clientOptions={advertisers.map(a => a.name).sort()}
           />
+
+            </div>{/* end content column */}
+          </div>{/* end grid layout */}
 
           {/* Floating Action Buttons - appear with compact header on scroll (mobile & desktop) */}
           <div
