@@ -14,6 +14,7 @@ import { TeamCard } from '@/components/companies/TeamCard';
 import { ContactCard } from '@/components/companies/ContactCard';
 import { RelationshipGraph } from '@/components/companies/RelationshipGraph';
 import { AgencyRosterByDiscipline } from '@/components/companies/AgencyRosterByDiscipline';
+import { DisciplineCoverageCard } from '@/components/companies/DisciplineCoverageCard';
 import { BasicHoldingCompanyView } from '@/components/companies/BasicHoldingCompanyView';
 import { MediaHoldingCompanyView } from '@/components/companies/MediaHoldingCompanyView';
 import { AgencyDetailHeader } from '@/components/organizations/AgencyDetailHeader';
@@ -512,6 +513,13 @@ export default function CompanyDetailPage() {
     const type = company.companyType;
     return type === 'ADVERTISER' || type === 'NATIONAL_ADVERTISER' || type === 'LOCAL_ADVERTISER' || type === 'BRAND';
   }, [company?.companyType]);
+
+  // Default advertisers to Agencies tab when they have partnerships
+  useEffect(() => {
+    if (isAdvertiser && totalPartnerships > 0 && activeTab === 'overview') {
+      setActiveTab('partnerships');
+    }
+  }, [isAdvertiser, totalPartnerships]);
 
   if (loading) {
     return (
@@ -1548,6 +1556,14 @@ export default function CompanyDetailPage() {
 
                 {/* Right Sidebar for NON-HOLDING companies */}
                 <div className="space-y-6">
+                  {/* Discipline Coverage Card (advertisers only) */}
+                  {isAdvertiser && company.partnerships && company.partnerships.length > 0 && (
+                    <DisciplineCoverageCard
+                      partnerships={company.partnerships}
+                      advertiserName={company.name}
+                    />
+                  )}
+
                   {/* Suggest Edit Panel */}
                   <SuggestEditCard />
 
