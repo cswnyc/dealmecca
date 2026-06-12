@@ -69,7 +69,7 @@ export function DirectoryTopNav({ searchQuery = '', onSearchChange }: DirectoryT
     <header
       className="sticky top-0 z-50 w-full border-b border-[#E6EAF2] dark:border-[#22304A]"
       style={{
-        background: 'color-mix(in srgb, var(--surface, #FFFFFF) 86%, transparent)',
+        background: '#F7F9FC',
         backdropFilter: 'blur(12px) saturate(1.4)',
       }}
     >

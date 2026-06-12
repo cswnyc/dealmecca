@@ -1095,6 +1095,8 @@ export default function OrganizationsPage() {
       {/* Top Nav */}
       <DirectoryTopNav searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
+      {/* White heading section */}
+      <div className="bg-white dark:bg-[#0F1A2E] border-b border-[#E6EAF2] dark:border-[#22304A]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page heading */}
         <div className="flex items-end justify-between gap-4 flex-wrap pt-7 pb-0">
@@ -1159,7 +1161,12 @@ export default function OrganizationsPage() {
             );
           })}
         </div>
+      </div>{/* end white heading max-w */}
+      </div>{/* end white heading bg */}
 
+      {/* Gray card area */}
+      <div className="bg-[#F7F9FC] dark:bg-[#0B1220] min-h-screen">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-5 pb-20">
 
           <div className="grid grid-cols-1 lg:grid-cols-[230px_1fr] gap-7 items-start">
@@ -1551,7 +1558,8 @@ export default function OrganizationsPage() {
 
           </div>
         </div>
-      </div>
+      </div>{/* end gray max-w */}
+      </div>{/* end gray bg */}
     </AuthGuard>
   );
 }

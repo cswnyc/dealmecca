@@ -80,7 +80,8 @@ export function OrgListItem({
   return (
     <Link
       href={`/companies/${id}`}
-      className="group flex flex-col text-left bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-2xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+      className="group flex flex-col text-left bg-white dark:bg-[#0F1A2E] border border-[#E6EAF2] dark:border-[#22304A] rounded-2xl p-4 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+      style={{ boxShadow: '0 10px 30px -20px rgba(15,23,42,0.18)' }}
     >
       {/* Header: logo + name + meta */}
       <div className="flex items-center gap-3.5">
