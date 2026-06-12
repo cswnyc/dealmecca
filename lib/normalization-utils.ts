@@ -31,12 +31,16 @@ export function normalizeCompanyName(name: string): string {
  * (e.g. "-Eleven" is likely a corrupted "7-Eleven")
  */
 export function isCorruptedName(name: string): boolean {
-  if (!name) return false;
+  if (!name) return true;
   const trimmed = name.trim();
-  // Starts with a hyphen or dash (leading character was stripped)
-  if (/^[-\u2013\u2014]/.test(trimmed)) return true;
-  // Single character followed by nothing useful
+  // Empty or single character
   if (trimmed.length <= 1) return true;
+  // Starts with a hyphen or dash (leading character was stripped, e.g. "-hour Energy" from "5-hour Energy")
+  if (/^[-\u2013\u2014]/.test(trimmed)) return true;
+  // Starts with an apostrophe or quote (leading chars stripped, e.g. "'4" from "'47 Brand")
+  if (/^['"\u2018\u2019\u201C\u201D]/.test(trimmed)) return true;
+  // Very short lowercase-only fragment that looks like a truncated word (e.g. "owers" from "1-800-Flowers")
+  if (trimmed.length <= 5 && /^[a-z]+$/.test(trimmed)) return true;
   return false;
 }
 

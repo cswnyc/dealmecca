@@ -32,7 +32,8 @@ import { Linkedin } from 'lucide-react';
 import { CompactHeader, FilterDrawer, ActiveFilterPills, type Filter as FilterType } from '@/components/organizations';
 import { DarkModeToggle } from '@/components/ui/DarkModeToggle';
 import { LogoMark } from '@/components/ui/Logo';
-import { getCompanyTypeLabel, formatEnumLabel, AGENCY_TYPE_LABELS } from '@/lib/labels';
+import { getCompanyTypeLabel, formatEnumLabel, getIndustryLabel, AGENCY_TYPE_LABELS } from '@/lib/labels';
+import { isCorruptedName } from '@/lib/normalization-utils';
 import { DisciplineChip } from '@/components/ui/DisciplineChip';
 import { DirectoryTopNav } from '@/components/navigation/DirectoryTopNav';
 import { DisciplineFilterSidebar } from '@/components/orgs/DisciplineFilterSidebar';
@@ -1185,7 +1186,7 @@ export default function OrganizationsPage() {
                 </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                {filteredAgencies.map((agency) => (
+                {filteredAgencies.filter(a => !isCorruptedName(a.name)).map((agency) => (
                   <OrgListItem
                     key={agency.id}
                     id={agency.id}
@@ -1200,7 +1201,6 @@ export default function OrganizationsPage() {
                     stats={[
                       ...(agency.totalTeams > 0 ? [{ label: 'Accounts', value: agency.totalTeams }] : []),
                       ...(agency.teamCount > 0 ? [{ label: 'People', value: agency.teamCount }] : []),
-                      { label: 'Type', value: getAgencyTypeLabel(agency.type) },
                     ]}
                   />
                 ))}
@@ -1227,13 +1227,13 @@ export default function OrganizationsPage() {
                 </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
-                {filteredAdvertisers.map((advertiser) => (
+                {filteredAdvertisers.filter(a => !isCorruptedName(a.name)).map((advertiser) => (
                   <OrgListItem
                     key={advertiser.id}
                     id={advertiser.id}
                     name={advertiser.name}
                     logoUrl={advertiser.logoUrl}
-                    type={advertiser.industry || 'Advertiser'}
+                    type={advertiser.industry ? getIndustryLabel(advertiser.industry) : 'Advertiser'}
                     kind="advertiser"
                     location={{ city: advertiser.city, state: advertiser.state }}
                     verified={advertiser.verified}
