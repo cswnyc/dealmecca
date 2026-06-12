@@ -193,20 +193,6 @@ export function DirectoryTopNav({ searchQuery = '', onSearchChange }: DirectoryT
                   <Receipt className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
                   Billing
                 </button>
-                <button
-                  onClick={() => handleNav('/events')}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#334155] dark:text-[#C7D2FE] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] transition-colors"
-                >
-                  <Search className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
-                  Events
-                </button>
-                <button
-                  onClick={() => handleNav('/forum')}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#334155] dark:text-[#C7D2FE] hover:bg-[#F3F6FB] dark:hover:bg-[#101E38] transition-colors"
-                >
-                  <HelpCircle className="w-4 h-4 text-[#64748B] dark:text-[#9AA7C2]" />
-                  Forum
-                </button>
               </div>
 
               {/* Sign out */}
